@@ -2,13 +2,17 @@
 
 Norsk, responsivt kontrollsenter for `studio.radiorubben.no`, tilpasset vanlig PHP-webhotell. **Ingen Node.js, npm eller JavaScript-bygging kreves.** GitHub er fortsatt kode-master, og repoet skal være privat.
 
+## Venteside
+
+Ventesiden er standard og stopper alle PHP-innganger før sesjon eller innlogging startes. Den viser bare offentlig informasjon og en lenke til hovednettsiden. Kontrollsenteret er bevart. For lokal utvikling kan `STUDIO_SITE_MODE=app php -S 127.0.0.1:8080 -t public` brukes. På produksjon skal `site_mode` først settes til `app` når HTTPS, PHP og Entra-tilgang er kontrollert, sammen med `auth_mode=entra`. Ingen URL-parameter åpner demoen. Ventesiden ble publisert 23. september 2026 ved å oppdatere `studio-private/app/bootstrap.php`; den bruker eksisterende logo og CSS. Offentlige PHP-innganger er kontrollert og svarer med ventesiden og HTTP 503.
+
 ## Status
 
 - Kontrollsenter med samme utseende som første versjon, nå rendret med PHP.
-- Offentlig demonstrasjon som standard; inneholder bare statisk eksempelinnhold.
+- Offentlig venteside som standard. Demoen er bevart for lokal utvikling og må aktiveres eksplisitt.
 - Microsoft Entra ID-innlogging via OpenID Connect, med tenant-avgrensing, PKCE, state, nonce, signaturkontroll og serverbaserte sesjoner.
 - OneDrive og WordPress er forberedt som grensesnitt, uten aktive API-kall.
-- Ingen ekte credentials eller DNS-endringer er lagt inn. Publiseringspakken er lastet opp til Uniweb; domenekobling, PHP-versjon og HTTPS er ikke ferdigstilt.
+- Ingen ekte credentials er lagt inn. Ventesiden er publisert på Uniweb. Domenene er separert: hovednettsiden bruker roten og Studio bruker studio-public. PHP-oppgradering og gyldig HTTPS for Studio gjenstår.
 - Reell Microsoft-innlogging og kjøring på Uniweb må testes etter konfigurasjon.
 
 ## Krav

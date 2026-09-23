@@ -33,7 +33,7 @@ function request(string $path, string $method='GET', string $body=''): array {
 function server(array $env, callable $test): void {
  global $root;
  $log=tempnam(sys_get_temp_dir(),'rubben-test-');
- $proc=proc_open([PHP_BINARY,'-S','127.0.0.1:8197','-t',$root.'/public'],[0=>['pipe','r'],1=>['file',$log,'a'],2=>['file',$log,'a']],$pipes,$root,array_merge(getenv(),$env));
+ $proc=proc_open([PHP_BINARY,'-S','127.0.0.1:8197','-t',$root.'/public'],[0=>['pipe','r'],1=>['file',$log,'a'],2=>['file',$log,'a']],$pipes,$root,array_merge(getenv(),['STUDIO_SITE_MODE'=>'app'],$env));
  if (!is_resource($proc)) throw new RuntimeException('Server failed');
  try {
   $ready=false;
@@ -41,6 +41,12 @@ function server(array $env, callable $test): void {
   check($ready,'test server ready');$test();
  } finally {fclose($pipes[0]);proc_terminate($proc);proc_close($proc);unlink($log);}
 }
+server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
+ foreach(['/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/?preview=1'] as $path){
+  [$code,$html]=request($path);check($code===503 && str_contains($html,'Vi klargjør det nye arbeidsrommet') && !str_contains($html,'Åpne demonstrasjonen') && !str_contains($html,'Set-Cookie:'),'waiting page blocks entry: '.$path);
+ }
+ check(request('/assets/studio.css')[0]===200,'waiting page assets accessible');
+});
 server(['STUDIO_AUTH_MODE'=>'demo'],function(){
  [$code,$html]=request('/');check($code===200 && str_contains($html,'Demonstrasjon') && !str_contains($html,'integrations.map'),'demo dashboard rendered');
  check(request('/login.php')[0]===200,'login explanation');
