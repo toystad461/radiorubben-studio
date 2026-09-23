@@ -1,10 +1,10 @@
-node_modules/
-.next/
-out/
+/vendor/
+/config/local.php
+/dist/
 .env*
-!.env.example
-*.tsbuildinfo
-.DS_Store
 *.log
-coverage/
-.pnpm-store/
+.DS_Store
+# Leftovers from the previous Next.js checkout (not used by PHP).
+/node_modules/
+/.next/
+*.tsbuildinfo

@@ -1,23 +1,17 @@
-# Integrasjoner og neste versjon
+# Videre integrasjoner
 
-## Microsoft
+## Microsoft Entra ID
 
-Innloggingsgrunnlaget er implementert med NextAuth.js v4 og en tenant-spesifikk Azure AD-provider. Konfigurasjonsvalidering krever organisasjons-ID, app-ID, klienthemmelighet, sesjonshemmelighet og en gyldig base-URL. Tilgang må begrenses gjennom Entra-apptildeling. Test med både tildelt og ikke-tildelt bruker før produksjonsbruk.
+PHP bruker `jumbojett/openid-connect-php` via Composer. Klienten validerer signaturen og standard OIDC-claims; Studio krever i tillegg nonce, gyldig exp, sub og riktig tenant. PKCE bruker S256. Callback-state kontrolleres før tokenutveksling. Bruker-ID og navn hentes bare fra verifiserte claims. Nye interne sider/API-er må laste bootstrap og kreve current_user() før de behandler data. Ingen interne data må være tilgjengelige i demo-modus.
 
-Fremtidige interne sider og API-ruter må kontrollere sesjon og tillatelser på serveren hver gang. Den offentlige demonstrasjonen inneholder ingen brukerdata. Konfigurasjonsstatus er ikke en helsesjekk av Microsoft-tjenesten.
+## OneDrive
 
-## OneDrive / Microsoft Graph
-
-`src/lib/integrations/onedrive.ts` definerer kontrakten for et fremtidig filbibliotek. Ingen Graph-klient eller filhenting er aktivert. Avklar personlig OneDrive kontra delt SharePoint-bibliotek før implementering. Bruk minste nødvendige delegerte lesetilgang; vurder eksplisitt samtykke og `offline_access` bare hvis bakgrunnsarbeid er nødvendig. Implementer sikker serverlagring, fornyelse og tilbakekalling av tokens før bruk. Tokens skal ikke sendes til klientkomponenter eller logger.
+Kontrakten er `app/integrations/OneDrive.php`. Avklar personlig OneDrive eller delt SharePoint-bibliotek. Innlogging ber bare om openid/profile/email og gir ikke filtilgang. Implementer minste nødvendige Graph-tilgang, samtykke og sikker serverlagring/fornyelse av tokens før filhenting.
 
 ## WordPress
 
-`src/lib/integrations/wordpress.ts` definerer en fremtidig funksjon for artikkelutkast. `WORDPRESS_API_URL` er kun en reservert miljøvariabel og blir ikke brukt ennå. Neste steg er å avklare nettstedets REST API og autentisering. Bruk en dedikert WordPress-bruker med minimale rettigheter og et application password lagret på serveren. Første skriveoperasjon bør lage et utkast; publisering krever en egen bekreftet arbeidsflyt.
+Kontrakten er `app/integrations/WordPress.php`. Avklar REST API og en dedikert bruker med minst nødvendige rettigheter. Application password skal lagres utenfor public/ og Git. Start med artikkelutkast; publisering trenger egen arbeidsflyt.
 
-## Før lansering
+## Før produksjon
 
-- Sett opp hosting, HTTPS og DNS for studio.radiorubben.no.
-- Konfigurer produksjonsmiljø og test innlogging, avvist tilgang, utlogging og utløpt sesjon.
-- Kontroller serverautorisasjon på alle nye dataendepunkter.
-- Legg til overvåking uten personopplysninger eller tokens i logger.
-- Behold GitHub-repoet privat; en privat kodebase gjør ikke selve nettstedet privat.
+Bekreft separat dokumentrot hos Uniweb, PHP-versjon, curl/openssl og sesjonslagring. Aktiver HTTPS før Entra-modus. Test vellykket og avvist innlogging med ekte tenant. DNS står urørt til dette er avklart. GitHub Actions tester syntaks, konfigurasjonsgrenser og HTTP-svar, men erstatter ikke test på Uniweb eller ekte Microsoft-innlogging.

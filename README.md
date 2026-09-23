@@ -1,77 +1,85 @@
-# Radio Rubben Studio
+# Radio Rubben Studio – PHP-utgave
 
-Internt arbeidsrom for **studio.radiorubben.no**, bygget med Next.js App Router, React og TypeScript. Første versjon har et responsivt norsk kontrollsenter og en klargjort Microsoft Entra ID-innlogging. OneDrive og WordPress er planlagte integrasjoner uten aktive API-kall.
+Norsk, responsivt kontrollsenter for `studio.radiorubben.no`, tilpasset vanlig PHP-webhotell. **Ingen Node.js, npm eller JavaScript-bygging kreves.** GitHub er fortsatt kode-master, og repoet skal være privat.
 
-## Kom i gang på Mac
+## Status
 
-Installer **Node.js 24 LTS** fra [nodejs.org](https://nodejs.org/) hvis `node --version` ikke virker. Installasjonen inkluderer npm. Installer deretter prosjektets pakkebehandler:
+- Kontrollsenter med samme utseende som første versjon, nå rendret med PHP.
+- Offentlig demonstrasjon som standard; inneholder bare statisk eksempelinnhold.
+- Microsoft Entra ID-innlogging via OpenID Connect, med tenant-avgrensing, PKCE, state, nonce, signaturkontroll og serverbaserte sesjoner.
+- OneDrive og WordPress er forberedt som grensesnitt, uten aktive API-kall.
+- Ingen ekte credentials, DNS-endringer eller opplasting til Uniweb er gjort.
+- Reell Microsoft-innlogging og kjøring på Uniweb må testes etter konfigurasjon.
+
+## Krav
+
+PHP 8.2 eller nyere med curl, json, openssl og session. Bruk en støttet PHP-versjon hos Uniweb, gjerne 8.4. Composer brukes bare til å hente PHP-bibliotekene; det kreves ikke på webhotellet når `vendor/` følger opplastingspakken. PHP-sesjoner må ha en skrivbar lagringsplass utenfor offentlig webrot.
+
+## Lokal oppstart
+
+Hvis PHP og Composer er installert:
 
 ```sh
-npm install --global pnpm@11.25.0
 cd ~/RadioRubben/radiorubben-studio
-pnpm install --frozen-lockfile
-pnpm dev
+composer install
+php -S 127.0.0.1:8080 -t public
 ```
 
-Åpne [localhost:3000](http://localhost:3000). Du trenger ingen nøkler eller miljøfil for demonstrasjonen. Node 22 eller nyere er minimum for dette prosjektet; `.nvmrc` velger 24 ved bruk av nvm.
+Åpne http://localhost:8080. PHPs innebygde server er kun for lokal utvikling. Den gamle Next.js-serveren på port 3000 brukes ikke av denne versjonen.
 
-**Uten komplett innloggingsoppsett er startsiden en offentlig demonstrasjon med bare statisk innhold.** Ikke legg inn interne data før autentisering og tilgang er satt opp. Statusmerkene beskriver konfigurasjon, ikke bekreftet forbindelse til eksterne tjenester.
-
-## Microsoft Entra ID
-
-Integrasjonen bruker NextAuth.js v4 og provider `azure-ad` (bibliotekets navn på Microsoft Entra ID). Hemmeligheter leses bare på serveren. Opprett ingen hemmeligheter i kildekoden.
-
-1. Registrer en **single-tenant** webapp i organisasjonens Entra ID.
-2. Registrer Web redirect URI-er:
-   - Lokalt: `http://localhost:3000/api/auth/callback/azure-ad`
-   - Produksjon: `https://studio.radiorubben.no/api/auth/callback/azure-ad`
-3. Aktiver **Assignment required** for Enterprise Application og tildel bare aktuelle medarbeidere/grupper. Uten dette kan øvrige brukere i organisasjonen også få tilgang.
-4. Kopier eksempelfilen lokalt:
+## Kontroller og ferdig opplastingspakke
 
 ```sh
-cp .env.example .env.local
+composer validate --strict
+composer audit
+composer test
+php scripts/package.php
 ```
 
-5. Fyll inn `AZURE_AD_TENANT_ID`, `AZURE_AD_CLIENT_ID` og `AZURE_AD_CLIENT_SECRET` fra din appregistrering. Tenant og client ID må være UUID-er. Sett `NEXTAUTH_SECRET` til en tilfeldig hemmelighet på minst 32 tegn (for eksempel generert lokalt med `openssl rand -base64 32`). Ikke del eller commit verdiene.
-6. Behold `NEXTAUTH_URL=http://localhost:3000` lokalt. Start utviklingsserveren på nytt. Besøk `/login`.
+Pakkeskriptet trenger PHP-utvidelsen zip. GitHub Actions kjører kontrollene med PHP 8.2 og 8.4 og lager artefakten `uniweb-package`. Den inneholder `radiorubben-studio-uniweb.zip` med alle PHP-avhengighetene, men aldri `config/local.php`. Last ned artefakten fra den grønne kjøringen under **Actions** i det private repoet.
 
-Appen ber bare om `openid profile email`. Den lagrer en kryptert sesjonscookie med åtte timers levetid og eksponerer ikke Graph-tokens til klienten. Når oppsettet er komplett, krever `/` en gyldig serverkontrollert sesjon. Delvis eller manglende oppsett deaktiverer auth-endepunktene med HTTP 503. Utlogging avslutter Studio-sesjonen, ikke hele Microsoft-kontoens nettleserøkt.
+## Uniweb: egen mappe før opplasting
 
-Reell Microsoft-innlogging må verifiseres i organisasjonens tenant etter at legitimasjon er konfigurert. Ingen ekte credentials følger med prosjektet.
+**Ikke last opp i mappen som brukes av hovednettsiden.** Skjermbildene viste samme mappe for `radiorubben.no` og `studio.radiorubben.no`. Avklar en separat mappe og endre bare Studio sin dokumentrot.
 
-## Kontroller og produksjonsbygg
+1. Pakk ut arkivet. Last opp hele `studio-app/` med SFTP til en egen plass, adskilt fra hovednettsiden.
+2. Sett dokumentroten for `studio.radiorubben.no` til den nye mappens **`studio-app/public/`**. Det er bare innholdet her som skal være offentlig.
+3. `app/`, `config/` og `vendor/` ligger utenfor offentlig dokumentrot. Ikke flytt dem inn i `public/`.
+4. Velg PHP 8.4 og kontroller at nødvendige utvidelser er aktive.
+5. Test demoen når DNS/hosting og HTTPS senere er avklart. Det er ikke nødvendig å endre hoveddomenet, e-postposter eller navnetjenere.
+6. Når Entra-oppsettet er klart, kopier `config/example.php` til `config/local.php` på serveren og fyll inn verdiene. Begrens filrettighetene til kontoen/PHP-prosessen som trenger den.
 
-```sh
-pnpm lint
-pnpm typecheck
-pnpm test
-pnpm build
-pnpm test:smoke
-pnpm start
-```
+Rotens `.htaccess` blokkerer utilsiktet eksponering av prosjektmappen. `public/.htaccess` tillater nettsiden og slår av kataloglisting. Dokumentrot til `public/` er likevel et krav. Hvis Uniweb gir HTTP 500, be support kontrollere tillatte .htaccess-direktiver og dokumentrot; ikke eksponer private mapper for å løse feilen.
 
-`pnpm start` krever et ferdig bygg. Produksjonsinnlogging krever HTTPS i `NEXTAUTH_URL`; sett den til `https://studio.radiorubben.no`. Sett miljøverdiene i hostingplattformens hemmelighetshåndtering. Appen trenger Node-server eller Next.js-kompatibel hosting, ikke statisk eksport. Domene, DNS, hosting og TLS er ikke satt opp av denne første versjonen.
+## Microsoft-innlogging
 
-## Struktur
+Registrer en single-tenant **Web**-app i Entra ID. Redirect URI for PHP-versjonen:
 
-```text
-src/app/                     Kontrollsenter, layout og innloggingsside
-src/app/api/auth/            Innloggings- og callback-endepunkter
-src/components/              Gjenbrukbare UI-komponenter
-src/lib/auth/                Validering og serverkonfigurasjon for Entra ID
-src/lib/integrations/        OneDrive-/WordPress-grensesnitt og visningsdata
-tests/                       Kontroller av innloggingskonfigurasjon
-docs/integrations.md         Videre plan for integrasjoner
-```
+- Lokalt: `http://localhost:8080/auth/callback.php`
+- Produksjon: `https://studio.radiorubben.no/auth/callback.php`
 
-## GitHub er kode-master
+Disse erstatter NextAuth-adressene fra den gamle versjonen. Sett **Assignment required** og tildel bare aktuelle medarbeidere/grupper i Enterprise Application.
 
-Privat repo: [toystad461/radiorubben-studio](https://github.com/toystad461/radiorubben-studio). Behold synligheten **Private**. `private: true` i package.json hindrer utilsiktet pakkepublisering; GitHub-synlighet styres separat på GitHub.
+I `config/local.php`:
 
-Hent siste versjon før videre arbeid med `git pull --ff-only`. Bruk egne grener og pull requests for videre endringer. Commit kildekode, dokumentasjon og `pnpm-lock.yaml`; ikke `.env.local`, `.next` eller `node_modules`. Bruk pnpm konsekvent, slik at prosjektet har én låsefil.
+- `auth_mode`: `entra` for innlogging, `demo` bare for offentlig statisk demonstrasjon.
+- `base_url`: eksakt adresse uten ekstra sti. Produksjon krever HTTPS.
+- `tenant_id`, `client_id`, `client_secret`: fra appregistreringen. Ingen verdier skal legges i GitHub eller klientkode.
 
-## Referanser
+Tilsvarende miljøvariabler kan brukes: `STUDIO_AUTH_MODE`, `STUDIO_BASE_URL`, `ENTRA_TENANT_ID`, `ENTRA_CLIENT_ID`, `ENTRA_CLIENT_SECRET`.
 
-- [Next.js – installasjon](https://nextjs.org/docs/app/getting-started/installation)
-- [NextAuth.js – Microsoft Entra / Azure AD](https://next-auth.js.org/providers/azure-ad)
-- [NextAuth.js – App Router](https://next-auth.js.org/configuration/initialization#route-handlers-app)
+Entra-modus med manglende konfigurasjon gir HTTP 503 og faller aldri tilbake til demo. Tilgangen sjekkes på serveren. Kun navn og bruker-ID lagres i sesjonen; ingen Graph-tokens lagres. Sesjonen utløper senest ved ID-tokenets utløp eller etter åtte timer. Utlogging krever POST og CSRF-token og avslutter kun Studio-sesjonen.
+
+Før intern bruk: test tildelt og ikke-tildelt bruker, utløpt sesjon, utlogging og feil i callback. Ikke legg interne data inn i demonstrasjonen.
+
+## Struktur og GitHub
+
+- `public/`: offentlig dokumentrot, sider og CSS.
+- `app/`: serverkode, innlogging, visningsmaler og integrasjonsgrensesnitt.
+- `config/`: eksempel og ignorert lokal konfigurasjon.
+- `tests/`: syntaks-, konfigurasjons- og HTTP-tester.
+- `scripts/`: lager opplastingspakke uten lokale hemmeligheter.
+
+Repo: https://github.com/toystad461/radiorubben-studio (privat). Den tidligere Next.js-utgaven er bevart i Git-historikken, blant annet commit `edd36fd`. Bruk `git pull --ff-only` før videre arbeid. Commit `composer.lock`; aldri `vendor/` eller `config/local.php`.
+
+Referanser: [PHP lokal server](https://www.php.net/features.commandline.webserver.php), [OpenID Connect-biblioteket](https://github.com/jumbojett/OpenID-Connect-PHP), [Uniweb webhotell](https://www.uniweb.no/hosting/webhotell/).

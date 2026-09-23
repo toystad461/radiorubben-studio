@@ -1,0 +1,31 @@
+name: PHP checks and Uniweb package
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, openssl, mbstring, zip
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-dev --prefer-dist --no-interaction
+      - run: composer validate --strict
+      - run: composer audit
+      - run: composer test
+      - if: matrix.php == '8.4'
+        run: php scripts/package.php
+      - if: matrix.php == '8.4'
+        uses: actions/upload-artifact@v4
+        with:
+          name: uniweb-package
+          path: |
+            dist/radiorubben-studio-uniweb.zip
+            composer.lock

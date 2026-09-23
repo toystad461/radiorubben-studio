@@ -1,0 +1,22 @@
+{
+  "name": "radiorubben/studio",
+  "description": "Radio Rubben Studio for PHP web hosting",
+  "type": "project",
+  "license": "proprietary",
+  "require": {
+    "php": "^8.2",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "ext-openssl": "*",
+    "ext-session": "*",
+    "jumbojett/openid-connect-php": "1.0.2"
+  },
+  "config": {
+    "allow-plugins": {},
+    "sort-packages": true
+  },
+  "scripts": {
+    "test": "php tests/run.php",
+    "serve": "php -S 127.0.0.1:8080 -t public"
+  }
+}
