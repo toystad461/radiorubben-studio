@@ -119,8 +119,7 @@ require dirname(__DIR__) . '/app/views/head.php';
                 <p class="eyebrow">TILGANG OG SAMARBEID</p>
                 <h3>Microsoft 365</h3>
                 <p>
-                  <?= $user ? "Du er innlogget som " . escape($user["name"]) . "." : "Én arbeidskonto. En felles inngang for medarbeiderne våre." ?>.`
-                    : "Én arbeidskonto. En felles inngang for medarbeiderne våre."}
+                  <?= $user ? "Du er innlogget som " . escape($user["name"]) . "." : "Én arbeidskonto. En felles inngang for medarbeiderne våre." ?>
                 </p>
                 <div class="card-action">
                   <?php if ($user): ?>
