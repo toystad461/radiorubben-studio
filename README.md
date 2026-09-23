@@ -42,12 +42,12 @@ Pakkeskriptet trenger PHP-utvidelsen zip. GitHub Actions kjører kontrollene med
 
 **Ikke last opp i mappen som brukes av hovednettsiden.** Skjermbildene viste samme mappe for `radiorubben.no` og `studio.radiorubben.no`. Avklar en separat mappe og endre bare Studio sin dokumentrot.
 
-1. Pakk ut arkivet. Last opp hele `studio-app/` med SFTP til en egen plass, adskilt fra hovednettsiden.
-2. Sett dokumentroten for `studio.radiorubben.no` til den nye mappens **`studio-app/public/`**. Det er bare innholdet her som skal være offentlig.
-3. `app/`, `config/` og `vendor/` ligger utenfor offentlig dokumentrot. Ikke flytt dem inn i `public/`.
+1. Pakk ut arkivet. Last opp begge mappene `studio-public/` og `studio-private/` ved siden av hverandre i webhotellets rot, uten å overskrive hovednettsidens filer.
+2. Sett dokumentroten for `studio.radiorubben.no` til **`/r1417157/studio-public`**. Det er bare innholdet her som skal være offentlig.
+3. `app/`, `config/` og `vendor/` ligger i `studio-private/`, utenfor offentlig dokumentrot. Denne mappen er også sperret med `.htaccess`. Uniweb tillater bare én undermappe som dokumentrot; pakkeskriptet tilpasser PHP-filbanene til dette. Ikke gi `studio-private/` et domene.
 4. Velg PHP 8.4 og kontroller at nødvendige utvidelser er aktive.
 5. Test demoen når DNS/hosting og HTTPS senere er avklart. Det er ikke nødvendig å endre hoveddomenet, e-postposter eller navnetjenere.
-6. Når Entra-oppsettet er klart, kopier `config/example.php` til `config/local.php` på serveren og fyll inn verdiene. Begrens filrettighetene til kontoen/PHP-prosessen som trenger den.
+6. Når Entra-oppsettet er klart, kopier `studio-private/config/example.php` til `studio-private/config/local.php` på serveren og fyll inn verdiene. Begrens filrettighetene til kontoen/PHP-prosessen som trenger den.
 
 Rotens `.htaccess` blokkerer utilsiktet eksponering av prosjektmappen. `public/.htaccess` tillater nettsiden og slår av kataloglisting. Dokumentrot til `public/` er likevel et krav. Hvis Uniweb gir HTTP 500, be support kontrollere tillatte .htaccess-direktiver og dokumentrot; ikke eksponer private mapper for å løse feilen.
 
