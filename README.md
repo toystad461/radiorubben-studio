@@ -8,7 +8,7 @@ Norsk, responsivt kontrollsenter for `studio.radiorubben.no`, tilpasset vanlig P
 - Offentlig demonstrasjon som standard; inneholder bare statisk eksempelinnhold.
 - Microsoft Entra ID-innlogging via OpenID Connect, med tenant-avgrensing, PKCE, state, nonce, signaturkontroll og serverbaserte sesjoner.
 - OneDrive og WordPress er forberedt som grensesnitt, uten aktive API-kall.
-- Ingen ekte credentials, DNS-endringer eller opplasting til Uniweb er gjort.
+- Ingen ekte credentials eller DNS-endringer er lagt inn. Publiseringspakken er lastet opp til Uniweb; domenekobling, PHP-versjon og HTTPS er ikke ferdigstilt.
 - Reell Microsoft-innlogging og kjøring på Uniweb må testes etter konfigurasjon.
 
 ## Krav
@@ -40,7 +40,9 @@ Pakkeskriptet trenger PHP-utvidelsen zip. GitHub Actions kjører kontrollene med
 
 ## Uniweb: egen mappe før opplasting
 
-**Ikke last opp i mappen som brukes av hovednettsiden.** Skjermbildene viste samme mappe for `radiorubben.no` og `studio.radiorubben.no`. Avklar en separat mappe og endre bare Studio sin dokumentrot.
+**Ikke last opp i mappen som brukes av hovednettsiden.** Skjermbildene viste samme mappe for `radiorubben.no` og `studio.radiorubben.no`. Avklar et separat nettsted før Studio sin dokumentrot endres. Ved forsøk 23. september 2026 endret mappevalget i Studio-innstillingene også hoveddomenets mappe fordi begge var knyttet til samme nettsted. Endringen ble reversert og begge viser igjen `/r1417157/studio`. Ikke gjenta dette før nettstedene er skilt i kontrollpanelet eller av Uniweb support.
+
+Filene er plassert i `/r1417157/studio-public` og `/r1417157/studio-private`. Midlertidige opplastingsarkiver ligger i den beskyttede private mappen. Uniweb viste PHP 8.1 og manglende gyldig HTTPS for Studio ved kontroll; disse må avklares før publisering regnes som fullført. Ingen SSL-bestilling er gjort.
 
 1. Pakk ut arkivet. Last opp begge mappene `studio-public/` og `studio-private/` ved siden av hverandre i webhotellets rot, uten å overskrive hovednettsidens filer.
 2. Sett dokumentroten for `studio.radiorubben.no` til **`/r1417157/studio-public`**. Det er bare innholdet her som skal være offentlig.
