@@ -1,5 +1,9 @@
 <?php
 declare(strict_types=1);
+if (!in_array(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), ['/', '/index.php'], true)) {
+    http_response_code(404);
+    exit('Siden finnes ikke.');
+}
 require dirname(__DIR__) . '/app/bootstrap.php';
 $user = current_user();
 $ready = $config['auth_mode'] === 'entra';
