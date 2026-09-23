@@ -27,6 +27,11 @@ session_start();
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 function current_user(): ?array
 {
+    global $config;
+    if ($config['auth_mode'] !== 'entra') {
+        unset($_SESSION['user'], $_SESSION['expires']);
+        return null;
+    }
     if (!isset($_SESSION['user'], $_SESSION['expires']) || $_SESSION['expires'] <= time()) {
         unset($_SESSION['user'], $_SESSION['expires']);
         return null;

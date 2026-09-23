@@ -1,6 +1,7 @@
 <?php
 require dirname(__DIR__, 2) . '/app/auth/init.php';
 if ($_SERVER['REQUEST_METHOD'] !== 'GET' || $_GET !== []) { http_response_code(400); exit('Ugyldig forespørsel.'); }
+$_REQUEST = [];
 $_SESSION['auth_started'] = time();
 try {
     (new EntraClient($config))->authenticate();
