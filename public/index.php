@@ -14,12 +14,8 @@ require dirname(__DIR__) . '/app/views/head.php';
     <div class="shell">
       <aside class="sidebar">
         <a href="/" class="brand">
-          <span class="brand-icon">
-            <?= icon('Radio', 25) ?>
-          </span>
-          <span>
-            radio rubben<small>STUDIO</small>
-          </span>
+          <img src="/assets/radio-rubben-logo.png" alt="Radio Rubben" width="2172" height="724">
+          <small>STUDIO / ARBEIDSROM</small>
         </a>
         <div class="nav-label">ARBEIDSROM</div>
         <nav aria-label="Hovedmeny">
@@ -73,7 +69,7 @@ require dirname(__DIR__) . '/app/views/head.php';
               <h2 id="hero-title">
                 Mer tid til radio.
                 <br />
-                Alt samlet på ett sted.
+                <em>Alt samlet på ett sted.</em>
               </h2>
               <p>
                 Fra den første ideen til historien som når ut.
@@ -89,7 +85,7 @@ require dirname(__DIR__) . '/app/views/head.php';
               <div class="orbit orbit-two" ></div>
               <div class="orbit orbit-three" ></div>
               <div class="radio-center">
-                <?= icon('AudioLines', 88) ?>
+                <img src="/assets/radio-rubben-logo.png" alt="" width="2172" height="724">
               </div>
               <span class="frequency">RADIO RUBBEN — NÆR DEG</span>
             </div>

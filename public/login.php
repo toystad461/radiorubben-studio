@@ -4,7 +4,7 @@ if (current_user() && $config['auth_mode'] === 'entra') redirect('/');
 require dirname(__DIR__) . '/app/views/head.php';
 ?>
 <main id="main" class="login-wrap"><section class="login-card">
-<?= icon('Radio', 40) ?><p class="eyebrow">RADIO RUBBEN / STUDIO</p><h1>Velkommen inn.</h1><p>Arbeidsrommet for deg som lager Radio Rubben.</p>
+<img class="login-logo" src="/assets/radio-rubben-logo.png" alt="Radio Rubben" width="2172" height="724"><p class="eyebrow">RADIO RUBBEN / STUDIO</p><h1>Velkommen inn.</h1><p>Arbeidsrommet for deg som lager Radio Rubben.</p>
 <?php if (isset($_GET['error'])): ?><p role="alert" class="notice">Innloggingen kunne ikke fullføres. Prøv igjen eller kontakt administrator.</p><?php endif; ?>
 <?php if ($config['auth_mode'] === 'entra'): ?>
 <a class="button" href="/auth/start.php">Logg inn med Microsoft</a>
