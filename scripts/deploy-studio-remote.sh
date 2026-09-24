@@ -12,13 +12,19 @@ private="$base/studio-private"
 work="$HOME/.radiorubben-studio-deploy"
 stage="$work/staging/$run"
 url=https://studio.radiorubben.no
-for cmd in php curl rsync tar sha256sum flock realpath; do command -v "$cmd" >/dev/null; done
+for cmd in php curl rsync tar sha256sum flock realpath stat; do command -v "$cmd" >/dev/null; done
 for dir in "$public" "$private"; do
   [[ -d "$dir" && ! -L "$dir" && "$(realpath "$dir")" == "$dir" ]] || {
     echo 'STOP: Studio document paths must be verified before deployment.' >&2; exit 1;
   }
 done
+# Refuse a layout that could redirect an overlay or rollback outside Studio.
+[[ -z "$(find "$public" "$private" -type l -print -quit)" ]] || {
+  echo 'STOP: Symlinks in Studio require a separate deployment review.' >&2; exit 1;
+}
 [[ -f "$private/app/bootstrap.php" && -f "$public/index.php" ]] || exit 1
+public_mode=$(stat -c '%a' "$public")
+private_mode=$(stat -c '%a' "$private")
 mkdir -p "$work/backups"
 exec 9>"$work/deploy.lock"
 flock -n 9 || { echo 'Another Studio deployment is running.' >&2; exit 1; }
@@ -71,7 +77,9 @@ verify_home() {
   fi
 }
 verify_home || { echo 'STOP: Existing web mode does not match the safe expected mode.' >&2; exit 1; }
-flags=(-a --itemize-changes)
+# Staging/backups remain private. Apply predictable modes to shipped code only;
+# never transfer the runner's owner/group or replace local secret configuration.
+flags=(-rlpt --itemize-changes --chmod=D755,F644)
 [[ "$mode" == dry-run ]] && flags+=(--dry-run)
 if [[ "$mode" == dry-run ]]; then
   rsync "${flags[@]}" --exclude='/config/local.php' "$stage/unpacked/studio-private/" "$private/"
@@ -84,12 +92,12 @@ backup="$work/backups/$run"
 mkdir "$backup"
 tar -czf "$backup/studio.tar.gz" -C "$base" studio-public studio-private
 mkdir "$backup/restore"
-tar -xzf "$backup/studio.tar.gz" -C "$backup/restore"
+tar -xzpf "$backup/studio.tar.gz" -C "$backup/restore"
 rollback() {
   trap - ERR HUP INT TERM
   echo 'Deployment failed; attempting Studio-only rollback.' >&2
-  rsync -a --delete "$backup/restore/studio-private/" "$private/" &&
-  rsync -a --delete "$backup/restore/studio-public/" "$public/" || {
+  rsync -rlpt --delete "$backup/restore/studio-private/" "$private/" &&
+  rsync -rlpt --delete "$backup/restore/studio-public/" "$public/" || {
     echo 'ROLLBACK FAILED: manual restoration from the private backup is required.' >&2; exit 2;
   }
   echo 'Previous Studio files restored. Check the website before retrying.' >&2
@@ -98,6 +106,9 @@ rollback() {
 trap rollback ERR HUP INT TERM
 rsync "${flags[@]}" --exclude='/config/local.php' "$stage/unpacked/studio-private/" "$private/"
 rsync "${flags[@]}" "$stage/unpacked/studio-public/" "$public/"
+# Retain existing document-root restrictions even when copied archive roots are 755.
+chmod "$private_mode" "$private"
+chmod "$public_mode" "$public"
 verify_home
 code=$(curl -sS --proto '=https' --max-time 25 -o "$stage/live-release.json" -w '%{http_code}' "$url/release.json")
 [[ "$code" == 200 ]]
