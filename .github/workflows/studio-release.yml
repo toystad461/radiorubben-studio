@@ -1,0 +1,189 @@
+name: Studio release and guarded Uniweb deployment
+on:
+  push:
+    branches: [main, 'release/**']
+    paths: ['VERSION', 'docs/releases/**', 'scripts/*release*', 'scripts/*studio*.sh', '.github/workflows/studio-release.yml']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Kontroll eller publisering av versjonen i VERSION'
+        type: choice
+        options: [dry-run, apply]
+        default: dry-run
+permissions:
+  contents: read
+concurrency:
+  group: studio-release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, openssl, mbstring, zip
+          tools: composer:v2
+          coverage: none
+      - name: Validate and test the existing PHP Studio
+        run: |
+          composer install --no-dev --prefer-dist --no-interaction
+          composer validate --strict
+          composer audit
+          composer test
+          bash -n scripts/deploy-studio.sh
+          bash -n scripts/deploy-studio-remote.sh
+      - name: Build versioned release using the existing packager
+        run: |
+          php scripts/build-release.php "$GITHUB_SHA"
+          cd dist
+          sha256sum -c radiorubben-studio-*.zip.sha256
+          unzip -t "radiorubben-studio-$(cat ../VERSION)-uniweb.zip"
+      - if: matrix.php == '8.4'
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-release
+          if-no-files-found: error
+          path: |
+            dist/radiorubben-studio-*-uniweb.zip
+            dist/*.sha256
+            dist/release.json
+  draft:
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: studio-release
+          path: dist
+      - name: Create draft release, never overwrite a published release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          version=$(tr -d '\r\n' < VERSION)
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          tag="v$version"
+          if gh release view "$tag" --json isDraft,targetCommitish > /tmp/release.json 2>/dev/null; then
+            jq -e --arg sha "$GITHUB_SHA" '.isDraft == true and .targetCommitish == $sha' /tmp/release.json >/dev/null || {
+              echo 'Existing release is published or belongs to another commit; do not overwrite it.' >&2; exit 1;
+            }
+          else
+            gh release create "$tag" --target "$GITHUB_SHA" --title "Radio Rubben Studio $tag" \
+              --notes-file "docs/releases/$version.md" --draft
+          fi
+          gh release upload "$tag" "dist/radiorubben-studio-$version-uniweb.zip" \
+            "dist/radiorubben-studio-$version-uniweb.zip.sha256" dist/release.json --clobber
+          echo "## $tag is packaged as a draft; this does not mean the website is deployed." >> "$GITHUB_STEP_SUMMARY"
+  deploy:
+    needs: draft
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    environment: studio-production
+    outputs:
+      applied: ${{ steps.ship.outputs.applied }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: studio-release
+          path: dist
+      - name: Check Studio-specific deployment settings without exposing secrets
+        id: settings
+        env:
+          ENABLED: ${{ vars.STUDIO_DEPLOY_ENABLED }}
+          DEPLOY_KEY: ${{ secrets.STUDIO_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STUDIO_DEPLOY_KNOWN_HOSTS }}
+          SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
+          SSH_USER: ${{ vars.STUDIO_SSH_USER }}
+        run: |
+          set -Eeuo pipefail
+          ready=true
+          for pair in 'DEPLOY_KEY:STUDIO_DEPLOY_SSH_KEY' 'KNOWN_HOSTS:STUDIO_DEPLOY_KNOWN_HOSTS' 'SSH_HOST:STUDIO_SSH_HOST' 'SSH_USER:STUDIO_SSH_USER'; do
+            key=${pair%%:*}; name=${pair#*:}
+            if [[ -z "${!key}" ]]; then
+              echo "::warning::Missing Studio setting: $name"
+              echo "- Missing: $name" >> "$GITHUB_STEP_SUMMARY"
+              ready=false
+            fi
+          done
+          if [[ "$ENABLED" != true ]]; then
+            echo '::warning::STUDIO_DEPLOY_ENABLED is not true. No website deployment.'
+            echo '- STUDIO_DEPLOY_ENABLED must be true after server settings are verified.' >> "$GITHUB_STEP_SUMMARY"
+            ready=false
+          fi
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+          if [[ "$ready" == false ]]; then
+            echo '## Not deployed: release remains a draft. Website files and access controls are unchanged.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Configure verified SSH connection
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          DEPLOY_KEY: ${{ secrets.STUDIO_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STUDIO_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+      - name: Dry-run or apply to Studio directories only
+        id: ship
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          EVENT: ${{ github.event_name }}
+          REQUESTED_MODE: ${{ inputs.mode }}
+          AUTO_APPLY: ${{ vars.STUDIO_DEPLOY_AUTO_APPLY }}
+          STUDIO_SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
+          STUDIO_SSH_USER: ${{ vars.STUDIO_SSH_USER }}
+        run: |
+          set -Eeuo pipefail
+          mode=dry-run
+          if [[ "$EVENT" == workflow_dispatch ]]; then
+            mode="$REQUESTED_MODE"
+          elif [[ "$AUTO_APPLY" == true ]]; then
+            mode=apply
+          fi
+          # An apply always repeats every preflight immediately before writing.
+          bash scripts/deploy-studio.sh "$mode"
+          if [[ "$mode" == apply ]]; then
+            echo 'applied=true' >> "$GITHUB_OUTPUT"
+            echo '## Studio package deployed and HTTP-checked. Existing site/auth mode is preserved.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '## Dry-run only: website files unchanged; release remains a draft.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Remove SSH key
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519
+  publish:
+    needs: deploy
+    if: needs.deploy.outputs.applied == 'true'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Publish release only after successful website deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(tr -d '\r\n' < VERSION)
+          gh release edit "v$version" --draft=false
