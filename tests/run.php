@@ -23,17 +23,18 @@ foreach (['http://example.com', 'https://user@example.com', 'https://example.com
 check(!config_valid(array_replace($valid,['tenant_id'=>'common'])), 'reject multi-tenant login');
 check(!config_valid(['auth_mode'=>'other']), 'invalid mode fails closed');
 check(escape('<script>"') === '&lt;script&gt;&quot;', 'escape displayed account names');
-function request(string $path, string $method='GET', string $body=''): array {
+function request(string $path, string $method='GET', string $body='', string $cookie=''): array {
  $c = curl_init('http://127.0.0.1:8197'.$path);
  curl_setopt_array($c, [CURLOPT_RETURNTRANSFER=>true,CURLOPT_HEADER=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_TIMEOUT=>3,CURLOPT_CUSTOMREQUEST=>$method]);
+ if ($cookie !== '') curl_setopt($c,CURLOPT_COOKIE,$cookie);
  if ($method==='POST') curl_setopt($c,CURLOPT_POSTFIELDS,$body);
  $response=curl_exec($c);$code=curl_getinfo($c,CURLINFO_RESPONSE_CODE);curl_close($c);
  return [$code, (string)$response];
 }
-function server(array $env, callable $test): void {
+function server(array $env, callable $test, ?string $sessionPath = null): void {
  global $root;
  $log=tempnam(sys_get_temp_dir(),'rubben-test-');
- $proc=proc_open([PHP_BINARY,'-S','127.0.0.1:8197','-t',$root.'/public'],[0=>['pipe','r'],1=>['file',$log,'a'],2=>['file',$log,'a']],$pipes,$root,array_merge(getenv(),['STUDIO_SITE_MODE'=>'app'],$env));
+ $proc=proc_open(array_merge([PHP_BINARY], $sessionPath === null ? [] : ['-d', 'session.save_path='.$sessionPath], ['-S','127.0.0.1:8197','-t',$root.'/public']),[0=>['pipe','r'],1=>['file',$log,'a'],2=>['file',$log,'a']],$pipes,$root,array_merge(getenv(),['STUDIO_SITE_MODE'=>'app'],$env));
  if (!is_resource($proc)) throw new RuntimeException('Server failed');
  try {
   $ready=false;
@@ -42,7 +43,7 @@ function server(array $env, callable $test): void {
  } finally {fclose($pipes[0]);proc_terminate($proc);proc_close($proc);unlink($log);}
 }
 server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
- foreach(['/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/?preview=1'] as $path){
+ foreach(['/azuracast-test.php', '/azuracast-test.php?preview=1', '/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/?preview=1'] as $path){
   [$code,$html]=request($path);check($code===503 && str_contains($html,'Vi klargjør det nye arbeidsrommet') && !str_contains($html,'Åpne demonstrasjonen') && !str_contains($html,'Set-Cookie:'),'waiting page blocks entry: '.$path);
  }
  check(request('/assets/studio.css')[0]===200,'waiting page assets accessible');
@@ -64,4 +65,5 @@ server(['STUDIO_AUTH_MODE'=>'entra','STUDIO_BASE_URL'=>'http://localhost:8080','
  [$code,$html]=request('/auth/callback.php?code=fake&state=fake');check($code===303 && str_contains($html,'error=signin'),'unsolicited callback rejected before token request');
 });
 server(['STUDIO_AUTH_MODE'=>'entra','ENTRA_CLIENT_SECRET'=>''],function(){check(request('/')[0]===503,'partial configuration never falls back to demo');});
+require __DIR__.'/azuracast.php';
 echo "All tests passed. Real tenant login remains a deployment check.\n";

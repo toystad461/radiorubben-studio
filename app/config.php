@@ -21,8 +21,11 @@ function load_config(): array
     $config = require dirname(__DIR__) . '/config/example.php';
     $local = dirname(__DIR__) . '/config/local.php';
     if (is_file($local)) $config = array_replace($config, require $local);
-    foreach (['STUDIO_AUTH_MODE'=>'auth_mode', 'STUDIO_BASE_URL'=>'base_url', 'ENTRA_TENANT_ID'=>'tenant_id', 'ENTRA_CLIENT_ID'=>'client_id', 'ENTRA_CLIENT_SECRET'=>'client_secret'] as $env=>$key) {
+    foreach (['STUDIO_AUTH_MODE'=>'auth_mode', 'STUDIO_BASE_URL'=>'base_url', 'ENTRA_TENANT_ID'=>'tenant_id', 'ENTRA_CLIENT_ID'=>'client_id', 'ENTRA_CLIENT_SECRET'=>'client_secret', 'AZURACAST_BASE_URL'=>'azuracast_base_url', 'AZURACAST_STATION_ID'=>'azuracast_station_id', 'AZURACAST_API_KEY'=>'azuracast_api_key'] as $env=>$key) {
         if (getenv($env) !== false) $config[$key] = getenv($env);
+    }
+    foreach (['AZURACAST_TEST_ENABLED'=>'azuracast_test_enabled', 'AZURACAST_ALLOW_LOCAL_HTTP'=>'azuracast_allow_local_http'] as $env=>$key) {
+        if (getenv($env) !== false) $config[$key] = getenv($env) === '1';
     }
     return $config;
 }

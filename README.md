@@ -89,3 +89,11 @@ Før intern bruk: test tildelt og ikke-tildelt bruker, utløpt sesjon, utlogging
 Repo: https://github.com/toystad461/radiorubben-studio (privat). Den tidligere Next.js-utgaven er bevart i Git-historikken, blant annet commit `edd36fd`. Bruk `git pull --ff-only` før videre arbeid. Commit `composer.lock`; aldri `vendor/` eller `config/local.php`.
 
 Referanser: [PHP lokal server](https://www.php.net/features.commandline.webserver.php), [OpenID Connect-biblioteket](https://github.com/jumbojett/OpenID-Connect-PHP), [Uniweb webhotell](https://www.uniweb.no/hosting/webhotell/).
+
+## AzuraCast TEST (read-only)
+
+Isolert testside på `/azuracast-test.php`, deaktivert som standard og beskyttet av
+både eksisterende venteside og Microsoft Entra-sesjon. Server-side PHP-klient med
+syntetiske eksempeldata uten konfigurert server, og kun lesemetoder.
+Se [API-kartlegging, lokal konfigurasjon, MacBook-tilkobling og tester](docs/azuracast-test.md).
+Ingen produksjonsdeploy eller sendekontroller i denne fasen.
