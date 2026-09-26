@@ -23,6 +23,10 @@ require dirname(__DIR__) . '/app/views/head.php';
             <?= icon('LayoutDashboard', 18) ?>
             Oversikt
           </a>
+          <a href="/desk.php" class="nav-item">
+            <?= icon('FileText', 18) ?>
+            Desken
+          </a>
           <a href="#integrasjoner" class="nav-item">
             <?= icon('SlidersHorizontal', 18) ?>
             Integrasjoner

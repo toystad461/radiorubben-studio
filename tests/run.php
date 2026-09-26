@@ -14,6 +14,7 @@ foreach (['app', 'public', 'config', 'tests', 'scripts'] as $dir) {
  }
 }
 check(true, 'PHP syntax');
+require __DIR__.'/desk.php';
 $valid = ['auth_mode'=>'entra','base_url'=>'http://localhost:8080','tenant_id'=>'00000000-0000-0000-0000-000000000001','client_id'=>'00000000-0000-0000-0000-000000000002','client_secret'=>'test-only'];
 check(config_valid(['auth_mode'=>'demo']), 'explicit demo mode');
 check(config_valid($valid), 'local Entra configuration');
@@ -42,7 +43,7 @@ function server(array $env, callable $test): void {
  } finally {fclose($pipes[0]);proc_terminate($proc);proc_close($proc);unlink($log);}
 }
 server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
- foreach(['/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/?preview=1'] as $path){
+ foreach(['/', '/index.php', '/desk.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/?preview=1'] as $path){
   [$code,$html]=request($path);check($code===503 && str_contains($html,'Vi klargjør det nye arbeidsrommet') && !str_contains($html,'Åpne demonstrasjonen') && !str_contains($html,'Set-Cookie:'),'waiting page blocks entry: '.$path);
  }
  check(request('/assets/studio.css')[0]===200,'waiting page assets accessible');
@@ -50,6 +51,8 @@ server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
 server(['STUDIO_AUTH_MODE'=>'demo'],function(){
  [$code,$html]=request('/');check($code===200 && str_contains($html,'Demonstrasjon') && !str_contains($html,'integrations.map'),'demo dashboard rendered');
  check(request('/login.php')[0]===200,'login explanation');
+ check(request('/desk.php')[0]===303,'demo cannot access editorial desk');
+ check(request('/desk.php','POST','action=create')[0]===303,'demo cannot write desk');
  check(request('/assets/studio.css')[0]===200,'stylesheet served');
  check(request('/auth/start.php')[0]===503,'demo cannot initiate auth');
  check(request('/auth/callback.php?code=fake&state=fake')[0]===503,'demo rejects callback');
@@ -60,6 +63,8 @@ server(['STUDIO_AUTH_MODE'=>'demo'],function(){
 server(['STUDIO_AUTH_MODE'=>'entra','STUDIO_BASE_URL'=>'http://localhost:8080','ENTRA_TENANT_ID'=>$valid['tenant_id'],'ENTRA_CLIENT_ID'=>$valid['client_id'],'ENTRA_CLIENT_SECRET'=>'test-only'],function(){
  [$code,$html]=request('/');check($code===303 && str_contains($html,'Location: /login.php'),'configured dashboard requires session');
  check(str_contains(request('/login.php')[1],'Logg inn med Microsoft'),'Microsoft button enabled');
+ check(request('/desk.php')[0]===303,'desk requires authenticated session');
+ check(request('/desk.php','POST','action=create')[0]===303,'desk writes require authenticated session');
  check(request('/auth/start.php?code=fake')[0]===400,'start rejects injected callback parameters');
  [$code,$html]=request('/auth/callback.php?code=fake&state=fake');check($code===303 && str_contains($html,'error=signin'),'unsolicited callback rejected before token request');
 });
