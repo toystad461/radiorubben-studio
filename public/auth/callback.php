@@ -13,7 +13,7 @@ try {
     $claims = $oidc->getVerifiedClaims();
     session_regenerate_id(true);
     $_SESSION = [
-        'user'=>['id'=>$claims->sub, 'name'=>(string)($claims->name ?? 'medarbeider')],
+        'user'=>['provider'=>'entra', 'id'=>$claims->sub, 'oid'=>strtolower((string)($claims->oid ?? '')), 'name'=>(string)($claims->name ?? 'medarbeider')],
         'expires'=>min(time() + 28800, $claims->exp),
         'csrf'=>bin2hex(random_bytes(32)),
     ];
