@@ -3,6 +3,8 @@ declare(strict_types=1);
 require dirname(__DIR__).'/app/config.php';
 require dirname(__DIR__).'/app/helpers.php';
 require dirname(__DIR__).'/app/integrations/RobotInbox.php';
+require dirname(__DIR__).'/app/auth/StudioAdmin.php';
+require dirname(__DIR__).'/app/auth/StudioGraph.php';
 require dirname(__DIR__).'/vendor/autoload.php';
 require dirname(__DIR__).'/app/auth/EntraClient.php';
 function check(bool $ok, string $label): void { if (!$ok) throw new RuntimeException($label); echo "PASS: $label\n"; }
@@ -24,6 +26,12 @@ foreach (['http://example.com', 'https://user@example.com', 'https://example.com
 check(!config_valid(array_replace($valid,['tenant_id'=>'common'])), 'reject multi-tenant login');
 check(!config_valid(['auth_mode'=>'other']), 'invalid mode fails closed');
 check(escape('<script>"') === '&lt;script&gt;&quot;', 'escape displayed account names');
+check(studio_is_admin(['oid'=>STUDIO_OWNER_OID]), 'owner object ID has administrator role');
+check(!studio_is_admin(['oid'=>'00000000-0000-0000-0000-000000000001']), 'other user cannot manage accounts');
+check(!studio_is_admin(['id'=>STUDIO_OWNER_OID]), 'subject ID alone never grants administrator');
+check(studio_valid_upn('new.user@radiorubben.no') && !studio_valid_upn('new.user@example.com'), 'new account restricted to organization domain');
+$password=studio_temporary_password();
+check(strlen($password)>=32 && preg_match('/[A-Z]/',$password) && preg_match('/[a-z]/',$password) && preg_match('/[0-9]/',$password) && preg_match('/[^a-zA-Z0-9]/',$password), 'temporary password meets complexity');
 $feedPath=tempnam(sys_get_temp_dir(),'rr-feed-');
 file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
  ['event'=>['id'=>'football:test:1:finished','type'=>'football.match.finished','editorialStatus'=>'review','facts'=>[],'source'=>['url'=>'https://www.fotball.no/fotballdata/kamp/?fiksId=1']], 'draft'=>['eventId'=>'football:test:1:finished','status'=>'review','title'=>'Test','body'=>'Utkast']],
@@ -68,6 +76,7 @@ server(['STUDIO_AUTH_MODE'=>'demo'],function(){
  [$code,$html]=request('/');check($code===200 && str_contains($html,'Demonstrasjon') && !str_contains($html,'integrations.map'),'demo dashboard rendered');
  check(request('/login.php')[0]===200,'login explanation');
  check(request('/robot.php')[0]===403,'demo cannot view robot inbox');
+ check(request('/admin/users.php')[0]===403,'demo cannot view user administration');
  check(request('/assets/studio.css')[0]===200,'stylesheet served');
  check(request('/auth/start.php')[0]===503,'demo cannot initiate auth');
  check(request('/auth/callback.php?code=fake&state=fake')[0]===503,'demo rejects callback');
@@ -78,6 +87,8 @@ server(['STUDIO_AUTH_MODE'=>'demo'],function(){
 server(['STUDIO_AUTH_MODE'=>'entra','STUDIO_BASE_URL'=>'http://localhost:8080','ENTRA_TENANT_ID'=>$valid['tenant_id'],'ENTRA_CLIENT_ID'=>$valid['client_id'],'ENTRA_CLIENT_SECRET'=>'test-only'],function(){
  [$code,$html]=request('/');check($code===303 && str_contains($html,'Location: /login.php'),'configured dashboard requires session');
  check(str_contains(request('/login.php')[1],'Logg inn med Microsoft'),'Microsoft button enabled');
+ check(request('/admin/users.php')[0]===403,'unauthenticated user cannot administer accounts');
+ check(request('/admin/connect.php')[0]===403,'unauthenticated user cannot request Graph permissions');
  check(request('/auth/start.php?code=fake')[0]===400,'start rejects injected callback parameters');
  [$code,$html]=request('/auth/callback.php?code=fake&state=fake');check($code===303 && str_contains($html,'error=signin'),'unsolicited callback rejected before token request');
 });
