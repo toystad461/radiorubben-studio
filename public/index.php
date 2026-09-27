@@ -24,6 +24,7 @@ require dirname(__DIR__) . '/app/views/head.php';
             Oversikt
           </a>
           <?php if ($user): ?><a href="/robot.php" class="nav-item"><?= icon('FileText', 18) ?> Redaksjonell innboks</a><?php endif; ?>
+          <?php if (studio_is_admin($user)): ?><a href="/admin/users.php" class="nav-item"><?= icon('ShieldCheck', 18) ?> Brukere og tilgang</a><?php endif; ?>
           <a href="#integrasjoner" class="nav-item">
             <?= icon('SlidersHorizontal', 18) ?>
             Integrasjoner
