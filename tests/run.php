@@ -26,8 +26,8 @@ check(!config_valid(['auth_mode'=>'other']), 'invalid mode fails closed');
 check(escape('<script>"') === '&lt;script&gt;&quot;', 'escape displayed account names');
 $feedPath=tempnam(sys_get_temp_dir(),'rr-feed-');
 file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
- ['event'=>['id'=>'football:test:1:finished','type'=>'football.match.finished','editorialStatus'=>'review','source'=>['url'=>'https://www.fotball.no/fotballdata/kamp/?fiksId=1']], 'draft'=>['eventId'=>'football:test:1:finished','status'=>'review','title'=>'Test','body'=>'Utkast']],
- ['event'=>['id'=>'evil','type'=>'football.match.finished','editorialStatus'=>'review','source'=>['url'=>'javascript:alert(1)']], 'draft'=>['eventId'=>'evil','status'=>'review','title'=>'Feil','body'=>'Feil']]
+ ['event'=>['id'=>'football:test:1:finished','type'=>'football.match.finished','editorialStatus'=>'review','facts'=>[],'source'=>['url'=>'https://www.fotball.no/fotballdata/kamp/?fiksId=1']], 'draft'=>['eventId'=>'football:test:1:finished','status'=>'review','title'=>'Test','body'=>'Utkast']],
+ ['event'=>['id'=>'evil','type'=>'football.match.finished','editorialStatus'=>'review','facts'=>[],'source'=>['url'=>'javascript:alert(1)']], 'draft'=>['eventId'=>'evil','status'=>'review','title'=>'Feil','body'=>'Feil']]
 ]]));
 check(count(robot_inbox_items($feedPath))===1,'robot inbox validates source and schema');
 unlink($feedPath);
