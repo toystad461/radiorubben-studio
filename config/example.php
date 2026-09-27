@@ -7,4 +7,5 @@ return [
     'tenant_id' => '',
     'client_id' => '',
     'client_secret' => '',
+    'local_users_enabled' => false, // opt in after the private store is writable
 ];
