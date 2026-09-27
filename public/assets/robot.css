@@ -1,0 +1,5 @@
+.robot-inbox { max-width: 900px; margin: 0 auto; padding: 48px 24px; }
+.robot-inbox > p a, .robot-card a { color: #ff9ca2; text-decoration: underline; }
+.robot-card { background: #15181f; border: 1px solid #2b303a; border-left: 3px solid #e43843; border-radius: 9px; margin: 24px 0; padding: 24px; }
+.robot-card h2 { margin: 0 0 12px; }
+.robot-card p { overflow-wrap: anywhere; }

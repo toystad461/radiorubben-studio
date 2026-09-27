@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require dirname(__DIR__).'/app/config.php';
 require dirname(__DIR__).'/app/helpers.php';
+require dirname(__DIR__).'/app/integrations/RobotInbox.php';
 require dirname(__DIR__).'/vendor/autoload.php';
 require dirname(__DIR__).'/app/auth/EntraClient.php';
 function check(bool $ok, string $label): void { if (!$ok) throw new RuntimeException($label); echo "PASS: $label\n"; }
@@ -23,6 +24,22 @@ foreach (['http://example.com', 'https://user@example.com', 'https://example.com
 check(!config_valid(array_replace($valid,['tenant_id'=>'common'])), 'reject multi-tenant login');
 check(!config_valid(['auth_mode'=>'other']), 'invalid mode fails closed');
 check(escape('<script>"') === '&lt;script&gt;&quot;', 'escape displayed account names');
+$feedPath=tempnam(sys_get_temp_dir(),'rr-feed-');
+file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
+ ['event'=>['id'=>'football:test:1:finished','type'=>'football.match.finished','editorialStatus'=>'review','facts'=>[],'source'=>['url'=>'https://www.fotball.no/fotballdata/kamp/?fiksId=1']], 'draft'=>['eventId'=>'football:test:1:finished','status'=>'review','title'=>'Test','body'=>'Utkast']],
+ ['event'=>['id'=>'evil','type'=>'football.match.finished','editorialStatus'=>'review','facts'=>[],'source'=>['url'=>'javascript:alert(1)']], 'draft'=>['eventId'=>'evil','status'=>'review','title'=>'Feil','body'=>'Feil']]
+]]));
+check(count(robot_inbox_items($feedPath))===1,'robot inbox validates source and schema');
+file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
+ ['event'=>['id'=>'news:test:1','type'=>'news.item.discovered','editorialStatus'=>'new','facts'=>['publishedAt'=>'2026-09-25T12:00:00Z'],'source'=>['url'=>'https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/test.123.aspx']], 'draft'=>['eventId'=>'news:test:1','status'=>'review','title'=>'Kommunesak','body'=>'Kort kildebeskrivelse']]
+]]));
+check(count(robot_inbox_items($feedPath))===1,'municipal news appears as source card');
+unlink($feedPath);
+require dirname(__DIR__).'/app/integrations/MunicipalityRss.php';
+$sampleRss='<rss><channel><item><title>Kommunesak</title><link>https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/test.123.aspx</link><guid>aid123</guid><description>Kort omtale.</description><pubDate>Fri, 25 Sep 2026 12:12:30 GMT</pubDate></item></channel></rss>';
+check(count(municipality_rss_parse($sampleRss,'2026-09-27T10:00:00Z'))===1,'municipal RSS parses source card');
+check(count(municipality_rss_parse(str_replace('www.bomlo.kommune.no','example.org',$sampleRss),'2026-09-27T10:00:00Z'))===0,'external RSS link rejected');
+
 function request(string $path, string $method='GET', string $body=''): array {
  $c = curl_init('http://127.0.0.1:8197'.$path);
  curl_setopt_array($c, [CURLOPT_RETURNTRANSFER=>true,CURLOPT_HEADER=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_TIMEOUT=>3,CURLOPT_CUSTOMREQUEST=>$method]);
@@ -42,7 +59,7 @@ function server(array $env, callable $test): void {
  } finally {fclose($pipes[0]);proc_terminate($proc);proc_close($proc);unlink($log);}
 }
 server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
- foreach(['/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/?preview=1'] as $path){
+ foreach(['/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/robot.php', '/?preview=1'] as $path){
   [$code,$html]=request($path);check($code===503 && str_contains($html,'Vi klargjør det nye arbeidsrommet') && !str_contains($html,'Åpne demonstrasjonen') && !str_contains($html,'Set-Cookie:'),'waiting page blocks entry: '.$path);
  }
  check(request('/assets/studio.css')[0]===200,'waiting page assets accessible');
@@ -50,6 +67,7 @@ server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
 server(['STUDIO_AUTH_MODE'=>'demo'],function(){
  [$code,$html]=request('/');check($code===200 && str_contains($html,'Demonstrasjon') && !str_contains($html,'integrations.map'),'demo dashboard rendered');
  check(request('/login.php')[0]===200,'login explanation');
+ check(request('/robot.php')[0]===403,'demo cannot view robot inbox');
  check(request('/assets/studio.css')[0]===200,'stylesheet served');
  check(request('/auth/start.php')[0]===503,'demo cannot initiate auth');
  check(request('/auth/callback.php?code=fake&state=fake')[0]===503,'demo rejects callback');
