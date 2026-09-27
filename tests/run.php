@@ -5,6 +5,7 @@ require dirname(__DIR__).'/app/helpers.php';
 require dirname(__DIR__).'/app/integrations/RobotInbox.php';
 require dirname(__DIR__).'/vendor/autoload.php';
 require dirname(__DIR__).'/app/auth/EntraClient.php';
+require dirname(__DIR__).'/app/auth/StudioUsers.php';
 function check(bool $ok, string $label): void { if (!$ok) throw new RuntimeException($label); echo "PASS: $label\n"; }
 $root = dirname(__DIR__);
 foreach (['app', 'public', 'config', 'tests', 'scripts'] as $dir) {
@@ -24,6 +25,29 @@ foreach (['http://example.com', 'https://user@example.com', 'https://example.com
 check(!config_valid(array_replace($valid,['tenant_id'=>'common'])), 'reject multi-tenant login');
 check(!config_valid(['auth_mode'=>'other']), 'invalid mode fails closed');
 check(escape('<script>"') === '&lt;script&gt;&quot;', 'escape displayed account names');
+check(studio_is_admin(['provider'=>'entra','oid'=>STUDIO_OWNER_OID]), 'specified Entra owner is administrator');
+check(!studio_is_admin(['provider'=>'local','oid'=>STUDIO_OWNER_OID]), 'local account cannot gain administrator role');
+check(!studio_is_admin(['provider'=>'entra','oid'=>'00000000-0000-0000-0000-000000000000']), 'other Entra account is not administrator');
+check(studio_valid_email('medarbeider@example.org') && !studio_valid_email("bad\\n@example.org"), 'validate local account email');
+$usersPath = studio_users_path();
+if (is_file($usersPath)) throw new RuntimeException('Test requires empty private user store');
+try {
+ $password = studio_new_password();
+ $created = studio_user_create('Test Medarbeider', 'MEDARBEIDER@example.org', $password);
+ check(password_verify($password, $created['hash']) && $created['mustChange'], 'temporary password is hashed and change required');
+ check(studio_user_by_email('medarbeider@example.org')['id'] === $created['id'], 'local account read by email');
+ $changed = studio_user_set_password($created['id'], 'a-safe-new-password-123');
+ check(!$changed['mustChange'] && $changed['version'] === 2 && password_verify('a-safe-new-password-123', $changed['hash']), 'password change rotates session version');
+ $disabled = studio_user_change($created['id'], false);
+ check(!$disabled['enabled'] && $disabled['version'] === 3, 'disable invalidates session version');
+ $reset = studio_user_change($created['id'], null, studio_new_password());
+ check($reset['mustChange'] && $reset['version'] === 4, 'reset requires new password');
+ $duplicateRejected = false;
+ try { studio_user_create('Duplicate', 'medarbeider@example.org', studio_new_password()); }
+ catch (InvalidArgumentException $error) { $duplicateRejected = true; }
+ check($duplicateRejected, 'duplicate email rejected');
+} finally { if (is_file($usersPath)) unlink($usersPath); }
+
 $feedPath=tempnam(sys_get_temp_dir(),'rr-feed-');
 file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
  ['event'=>['id'=>'football:test:1:finished','type'=>'football.match.finished','editorialStatus'=>'review','facts'=>[],'source'=>['url'=>'https://www.fotball.no/fotballdata/kamp/?fiksId=1']], 'draft'=>['eventId'=>'football:test:1:finished','status'=>'review','title'=>'Test','body'=>'Utkast']],
@@ -72,12 +96,16 @@ server(['STUDIO_AUTH_MODE'=>'demo'],function(){
  check(request('/auth/start.php')[0]===503,'demo cannot initiate auth');
  check(request('/auth/callback.php?code=fake&state=fake')[0]===503,'demo rejects callback');
  check(request('/logout.php')[0]===405,'logout requires POST');
+ check(request('/admin/users.php')[0]===403,'demo cannot manage users');
+ check(request('/local/login.php')[0]===404,'local login disabled by default');
  check(request('/logout.php','POST','csrf=fake')[0]===403,'logout requires valid CSRF');
  foreach(['/config/example.php','/app/config.php','/composer.json','/.git/config'] as $path)check(request($path)[0]===404,'private file inaccessible: '.$path);
 });
 server(['STUDIO_AUTH_MODE'=>'entra','STUDIO_BASE_URL'=>'http://localhost:8080','ENTRA_TENANT_ID'=>$valid['tenant_id'],'ENTRA_CLIENT_ID'=>$valid['client_id'],'ENTRA_CLIENT_SECRET'=>'test-only'],function(){
  [$code,$html]=request('/');check($code===303 && str_contains($html,'Location: /login.php'),'configured dashboard requires session');
  check(str_contains(request('/login.php')[1],'Logg inn med Microsoft'),'Microsoft button enabled');
+ check(request('/admin/users.php')[0]===403,'anonymous user cannot manage users');
+ check(request('/local/login.php')[0]===404,'local login requires explicit activation');
  check(request('/auth/start.php?code=fake')[0]===400,'start rejects injected callback parameters');
  [$code,$html]=request('/auth/callback.php?code=fake&state=fake');check($code===303 && str_contains($html,'error=signin'),'unsolicited callback rejected before token request');
 });
