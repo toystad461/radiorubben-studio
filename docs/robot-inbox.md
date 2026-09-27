@@ -6,6 +6,8 @@ RR Robot eksporterer formatversjon 1 med `npm run export:studio -- /sikker/sti/r
 
 Bømlo kommunes RSS-saker eksporteres separat med `npm run export:bomlo -- data/bomlo-news.json privat/robot-news.json`. Overfør filen til `studio-private/config/robot-news.json`. Kommunesakene vises som kildekort med lenke til originalen. Beskrivelsen er hentet fra RSS og er ikke en Radio Rubben-artikkel.
 
-Hvis den private eksportfilen ennå ikke finnes, henter den innloggede Studio-siden den offentlige kommunale RSS-strømmen direkte ved sidevisning. Dette er en midlertidig lesevisning uten lagring, dublettstatus eller automatisert publisering. Ved nettverksfeil vises en tom innboks; PHP på webserveren må ha curl og SimpleXML. Når eksportfilen er på plass, brukes den i stedet.
+Hvis den private eksportfilen ennå ikke finnes, henter den innloggede Studio-siden den offentlige kommunale RSS-strømmen direkte ved sidevisning. Dette er en midlertidig lesevisning uten lagring, dublettstatus eller automatisert publisering. Ved nettverksfeil kan kommunesakene mangle; PHP på webserveren må ha curl og SimpleXML. Når eksportfilen er på plass, brukes den i stedet.
+
+NRKs «Siste nyheter» fra `https://www.nrk.no/nyheter/siste.rss` hentes ved sidevisning og vises sammen med kommunesakene. Kildekortet viser tittel, kort RSS-beskrivelse og lenke til NRK, med verifisering som `unverified`. Strømmen lagres ikke, og ingen NRK-sak publiseres automatisk. Hvis NRK-strømmen er utilgjengelig, vises de andre tilgjengelige kortene fortsatt. RSS-endepunktet må kontrolleres i drift; NRKs RSS-side ga feil ved oppsettet.
 
 NFF-siden tillater ikke automatiserte roboter. Bruk kontrollerte snapshots inntil avtalt API-tilgang fra fotballdata.no kan implementeres og testes. Ingen API-nøkkel eller responsformat antas her.
