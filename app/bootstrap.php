@@ -4,6 +4,7 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 require __DIR__ . '/config.php';
 require __DIR__ . '/helpers.php';
+require __DIR__ . '/auth/StudioUsers.php';
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
@@ -61,13 +62,28 @@ $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 function current_user(): ?array
 {
     global $config;
-    if ($config['auth_mode'] !== 'entra') {
+    if ($config['auth_mode'] !== 'entra' || !isset($_SESSION['user'], $_SESSION['expires'])
+        || $_SESSION['expires'] <= time()) {
         unset($_SESSION['user'], $_SESSION['expires']);
         return null;
     }
-    if (!isset($_SESSION['user'], $_SESSION['expires']) || $_SESSION['expires'] <= time()) {
+    $user = $_SESSION['user'];
+    if (($user['provider'] ?? 'entra') !== 'local') return $user;
+    if (($config['local_users_enabled'] ?? false) !== true || !is_string($user['id'] ?? null)) {
         unset($_SESSION['user'], $_SESSION['expires']);
         return null;
     }
-    return $_SESSION['user'];
+    $record = studio_user_by_id($user['id']);
+    if (!$record || !$record['enabled'] || ($user['version'] ?? null) !== $record['version']) {
+        unset($_SESSION['user'], $_SESSION['expires']);
+        return null;
+    }
+    return ['provider'=>'local', 'id'=>$record['id'], 'name'=>$record['name'],
+        'email'=>$record['email'], 'role'=>$record['role'], 'version'=>$record['version'],
+        'mustChange'=>$record['mustChange']];
+}
+$activeUser = current_user();
+if (($activeUser['provider'] ?? null) === 'local' && ($activeUser['mustChange'] ?? false)
+    && !in_array(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), ['/local/change-password.php', '/logout.php'], true)) {
+    redirect('/local/change-password.php');
 }
