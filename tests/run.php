@@ -30,6 +30,10 @@ file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
  ['event'=>['id'=>'evil','type'=>'football.match.finished','editorialStatus'=>'review','facts'=>[],'source'=>['url'=>'javascript:alert(1)']], 'draft'=>['eventId'=>'evil','status'=>'review','title'=>'Feil','body'=>'Feil']]
 ]]));
 check(count(robot_inbox_items($feedPath))===1,'robot inbox validates source and schema');
+file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
+ ['event'=>['id'=>'news:test:1','type'=>'news.item.discovered','editorialStatus'=>'new','facts'=>['publishedAt'=>'2026-09-25T12:00:00Z'],'source'=>['url'=>'https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/test.123.aspx']], 'draft'=>['eventId'=>'news:test:1','status'=>'review','title'=>'Kommunesak','body'=>'Kort kildebeskrivelse']]
+]]));
+check(count(robot_inbox_items($feedPath))===1,'municipal news appears as source card');
 unlink($feedPath);
 function request(string $path, string $method='GET', string $body=''): array {
  $c = curl_init('http://127.0.0.1:8197'.$path);

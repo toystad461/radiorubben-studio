@@ -14,15 +14,19 @@ function robot_inbox_items(string $path): array
         if (!is_array($event['source'] ?? null) || !is_array($event['facts'] ?? null)) continue;
         $url = $event['source']['url'] ?? null;
         $host = is_string($url) ? parse_url($url, PHP_URL_HOST) : null;
-        if (($event['type'] ?? null) !== 'football.match.finished'
-            || ($event['editorialStatus'] ?? null) !== 'review'
+        $football = ($event['type'] ?? null) === 'football.match.finished'
+            && ($event['editorialStatus'] ?? null) === 'review'
+            && $host === 'www.fotball.no';
+        $news = ($event['type'] ?? null) === 'news.item.discovered'
+            && ($event['editorialStatus'] ?? null) === 'new'
+            && $host === 'www.bomlo.kommune.no';
+        if ((!$football && !$news)
             || ($draft['status'] ?? null) !== 'review'
             || !is_string($event['id'] ?? null)
             || ($draft['eventId'] ?? null) !== $event['id']
             || !is_string($draft['title'] ?? null)
             || !is_string($draft['body'] ?? null)
             || !is_string($url)
-            || $host !== 'www.fotball.no'
             || parse_url($url, PHP_URL_SCHEME) !== 'https') continue;
         $items[] = $item;
     }

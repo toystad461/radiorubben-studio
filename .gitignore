@@ -10,3 +10,4 @@
 *.tsbuildinfo
 
 /config/robot-inbox.json
+/config/robot-news.json
