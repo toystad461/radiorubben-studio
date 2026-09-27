@@ -19,7 +19,7 @@ function robot_inbox_items(string $path): array
             && $host === 'www.fotball.no';
         $news = ($event['type'] ?? null) === 'news.item.discovered'
             && ($event['editorialStatus'] ?? null) === 'new'
-            && $host === 'www.bomlo.kommune.no';
+            && in_array($host, ['www.bomlo.kommune.no', 'www.nrk.no', 'nrk.no'], true);
         if ((!$football && !$news)
             || ($draft['status'] ?? null) !== 'review'
             || !is_string($event['id'] ?? null)
