@@ -34,11 +34,21 @@ file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
  ['event'=>['id'=>'news:test:1','type'=>'news.item.discovered','editorialStatus'=>'new','facts'=>['publishedAt'=>'2026-09-25T12:00:00Z'],'source'=>['url'=>'https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/test.123.aspx']], 'draft'=>['eventId'=>'news:test:1','status'=>'review','title'=>'Kommunesak','body'=>'Kort kildebeskrivelse']]
 ]]));
 check(count(robot_inbox_items($feedPath))===1,'municipal news appears as source card');
+file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
+ ['event'=>['id'=>'news:nrk:1','type'=>'news.item.discovered','editorialStatus'=>'new','facts'=>['publishedAt'=>'2026-09-25T12:00:00Z'],'source'=>['url'=>'https://www.nrk.no/nyheter/test-1.123']], 'draft'=>['eventId'=>'news:nrk:1','status'=>'review','title'=>'NRK-sak','body'=>'Kort beskrivelse']]
+]]));
+check(count(robot_inbox_items($feedPath))===1,'exported NRK news appears as source card');
 unlink($feedPath);
 require dirname(__DIR__).'/app/integrations/MunicipalityRss.php';
 $sampleRss='<rss><channel><item><title>Kommunesak</title><link>https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/test.123.aspx</link><guid>aid123</guid><description>Kort omtale.</description><pubDate>Fri, 25 Sep 2026 12:12:30 GMT</pubDate></item></channel></rss>';
 check(count(municipality_rss_parse($sampleRss,'2026-09-27T10:00:00Z'))===1,'municipal RSS parses source card');
 check(count(municipality_rss_parse(str_replace('www.bomlo.kommune.no','example.org',$sampleRss),'2026-09-27T10:00:00Z'))===0,'external RSS link rejected');
+require dirname(__DIR__).'/app/integrations/NrkRss.php';
+$nrkRss='<rss><channel><item><title>Siste nytt</title><link>https://www.nrk.no/nyheter/eksempel-1.123</link><guid>nrk123</guid><description>&lt;p&gt;Kort omtale.&lt;/p&gt;</description><pubDate>Fri, 25 Sep 2026 12:12:30 GMT</pubDate></item></channel></rss>';
+$nrkCards=nrk_rss_parse($nrkRss,'2026-09-27T10:00:00Z');
+check(count($nrkCards)===1 && $nrkCards[0]['event']['verificationStatus']==='unverified' && $nrkCards[0]['draft']['status']==='review','NRK RSS becomes unverified source card');
+check(count(nrk_rss_parse(str_replace('www.nrk.no','example.org',$nrkRss),'2026-09-27T10:00:00Z'))===0,'external NRK RSS link rejected');
+check(count(nrk_rss_parse('<!DOCTYPE rss>'. $nrkRss,'2026-09-27T10:00:00Z'))===0,'NRK RSS document type rejected');
 
 function request(string $path, string $method='GET', string $body=''): array {
  $c = curl_init('http://127.0.0.1:8197'.$path);
