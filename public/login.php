@@ -8,5 +8,6 @@ require dirname(__DIR__) . '/app/views/head.php';
 <?php if (isset($_GET['error'])): ?><p role="alert" class="notice">Innloggingen kunne ikke fullføres. Prøv igjen eller kontakt administrator.</p><?php endif; ?>
 <?php if ($config['auth_mode'] === 'entra'): ?>
 <a class="button" href="/auth/start.php">Logg inn med Microsoft</a>
+<?php if (($config['local_users_enabled'] ?? false) === true): ?><p><a href="/local/login.php">Logg inn med Studio-konto</a></p><?php endif; ?>
 <?php else: ?><p class="notice">Microsoft-innlogging er ikke aktivert ennå. Du kan utforske demonstrasjonen uten konto.</p><a class="button" href="/">Åpne demonstrasjonen →</a><?php endif; ?>
 <p class="small">Kun for medarbeidere i Radio Rubben.</p></section></main></body></html>
