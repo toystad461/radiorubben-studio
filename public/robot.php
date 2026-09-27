@@ -6,14 +6,16 @@ if ($config['auth_mode'] !== 'entra' || !current_user()) {
     exit('Ingen tilgang.');
 }
 require dirname(__DIR__) . '/app/integrations/RobotInbox.php';
-$news = robot_inbox_items(dirname(__DIR__) . '/config/robot-news.json');
+$news = robot_inbox_items(dirname(__DIR__) . '/app/../config/robot-news.json');
 if (!$news) {
     require dirname(__DIR__) . '/app/integrations/MunicipalityRss.php';
     $news = municipality_rss_cards();
 }
+require dirname(__DIR__) . '/app/integrations/NrkRss.php';
 $items = array_merge(
     $news,
-    robot_inbox_items(dirname(__DIR__) . '/config/robot-inbox.json')
+    nrk_rss_cards(),
+    robot_inbox_items(dirname(__DIR__) . '/app/../config/robot-inbox.json')
 );
 $extraStylesheet = '/assets/robot.css';
 require dirname(__DIR__) . '/app/views/head.php';
