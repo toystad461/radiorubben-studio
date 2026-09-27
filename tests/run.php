@@ -35,6 +35,11 @@ file_put_contents($feedPath,json_encode(['schemaVersion'=>1,'items'=>[
 ]]));
 check(count(robot_inbox_items($feedPath))===1,'municipal news appears as source card');
 unlink($feedPath);
+require dirname(__DIR__).'/app/integrations/MunicipalityRss.php';
+$sampleRss='<rss><channel><item><title>Kommunesak</title><link>https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/test.123.aspx</link><guid>aid123</guid><description>Kort omtale.</description><pubDate>Fri, 25 Sep 2026 12:12:30 GMT</pubDate></item></channel></rss>';
+check(count(municipality_rss_parse($sampleRss,'2026-09-27T10:00:00Z'))===1,'municipal RSS parses source card');
+check(count(municipality_rss_parse(str_replace('www.bomlo.kommune.no','example.org',$sampleRss),'2026-09-27T10:00:00Z'))===0,'external RSS link rejected');
+
 function request(string $path, string $method='GET', string $body=''): array {
  $c = curl_init('http://127.0.0.1:8197'.$path);
  curl_setopt_array($c, [CURLOPT_RETURNTRANSFER=>true,CURLOPT_HEADER=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_TIMEOUT=>3,CURLOPT_CUSTOMREQUEST=>$method]);
