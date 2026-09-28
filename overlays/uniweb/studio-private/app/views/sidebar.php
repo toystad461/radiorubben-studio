@@ -12,6 +12,7 @@
 $menu = [
  ['overview','/?overview=1','LayoutDashboard','Hjem',''],
  ['ai-studio','/ai-studio.php','AudioLines','AI Studio','board'],
+ ['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],
  ['schedule','/workspace.php?section=schedule','FileText','Sendeplan',''],
  ['music','/ai-studio.php#music-title','AudioLines','Musikkbibliotek','music'],
  ['scripts','/ai-studio.php#producer-title','FileText','Stikk & Manus','scripts'],
