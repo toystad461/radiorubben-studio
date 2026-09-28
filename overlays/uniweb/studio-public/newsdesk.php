@@ -64,7 +64,7 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
         <?php if (!$feed['items']): ?><p class="desk-empty">Ingen saker tilgjengelig fra denne kilden nå. Andre kilder vises fortsatt.</p><?php endif; ?>
         <div class="desk-stories">
         <?php foreach ($feed['items'] as $index=>$item): ?>
-          <?php if ($index === 5): ?><details class="desk-more"><summary>Vis <?= count($feed['items']) - 5 ?> flere saker</summary><?php endif; ?>
+          <?php if ($index === 3): ?><details class="desk-more"><summary>Vis <?= count($feed['items']) - 3 ?> flere saker</summary><?php endif; ?>
           <article class="desk-story">
             <p class="desk-meta"><?= escape($spec['name']) ?> · Publisert <?= escape(newsdesk_local_time($item['publishedAt'])) ?> norsk tid</p>
             <h3><?= escape($item['title']) ?></h3>
@@ -74,7 +74,7 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
             </div>
           </article>
         <?php endforeach; ?>
-        <?php if (count($feed['items']) > 5): ?></details><?php endif; ?>
+        <?php if (count($feed['items']) > 3): ?></details><?php endif; ?>
         </div>
       </section>
       <?php endforeach; ?>
@@ -86,10 +86,10 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
       <?php elseif (!$traffic['items']): ?><p>Ingen registrerte hendelser i valgt område akkurat nå.</p>
       <?php else: ?><div class="desk-stories">
       <?php foreach ($traffic['items'] as $index=>$item): ?>
-      <?php if ($index === 4): ?><details class="desk-more"><summary>Vis <?= count($traffic['items']) - 4 ?> flere meldinger</summary><?php endif; ?>
+      <?php if ($index === 3): ?><details class="desk-more"><summary>Vis <?= count($traffic['items']) - 3 ?> flere meldinger</summary><?php endif; ?>
       <article class="desk-story"><p class="desk-meta">Oppdatert <?= escape(newsdesk_local_time($item['publishedAt'])) ?> norsk tid</p><h3><?= escape($item['title']) ?></h3><details class="desk-description"><summary>Les trafikkmeldingen</summary><p><?= escape($item['summary']) ?></p></details><div class="desk-actions"><?php if ($canPrepare && !isset($rundown[$item['id']])): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="add"><input type="hidden" name="id" value="<?= escape($item['id']) ?>"><button type="submit">Legg i sendeliste</button></form><?php endif; ?></div></article>
       <?php endforeach; ?>
-      <?php if (count($traffic['items']) > 4): ?></details><?php endif; ?>
+      <?php if (count($traffic['items']) > 3): ?></details><?php endif; ?>
       </div><?php endif; ?>
       <p class="desk-meta">Meldingene kan gjelde planlagt arbeid. Kontroller tid og status i originalkilden før sending.</p><a href="https://www.vegvesen.no/trafikk/" target="_blank" rel="noopener noreferrer">Åpne Vegvesen trafikk ↗</a></section>
       <div class="desk-tools">
