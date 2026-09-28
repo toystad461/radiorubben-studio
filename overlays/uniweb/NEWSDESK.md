@@ -13,6 +13,8 @@ Før publisering: PHP 8.2/8.4 syntakskontroll og `php test-newsdesk.php`, kontro
 
 Kilder: Bømlo kommunes Aktuelt RSS (15 min cache), NRK Siste nyheter (5 min cache), MET Locationforecast via Studios eksisterende værfunksjon. Hver kildesak har lenke og tidspunkt; stale data merkes og skjules etter seks timer. På nettverksfeil påvirkes ikke de andre kildene. Sendelisten er begrenset til åtte saker per innloggingsøkt, krever produsent/programleder/administrator, og er ikke et arkiv eller en godkjenningsmekanisme.
 
+Sendelisten kan lastes ned som tekst og lagres i OneDrive under **Manus & Stikk**. Studio har foreløpig ikke OneDrive-skrivetilgang og gjør ingen automatisk arkivering.
+
 Kontroll 28.09.2026: Bømlo-RSS svarte HTTP 200 med `application/rss+xml`; NRK-endepunktet svarte HTTP 403 fra utviklingsmiljøet. Test NRK fra Uniweb før kilden regnes som operativ. Bruk ingen omgåelse av NRKs sperre.
 
 Trafikkpanelet viser inntil videre lenke til Vegvesen trafikk. DATEX trafikkmeldinger dekker hele landet, men krever registrering/tilgang. Den nyere REST/JSON-katalogen har en tilgangsportal; lokalt filter og innhenting må verifiseres med dokumentert tilgang og respons før ekte hendelser vises.
