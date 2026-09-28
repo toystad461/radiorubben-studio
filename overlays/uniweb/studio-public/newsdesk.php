@@ -8,6 +8,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET' && $_SERVER['REQUEST_METHOD'] !== 'POST
 }
 require dirname(__DIR__) . '/studio-private/app/integrations/NewsDesk.php';
 require dirname(__DIR__) . '/studio-private/app/weather.php';
+require dirname(__DIR__) . '/studio-private/app/board.php';
 $feeds = newsdesk_all(dirname(__DIR__) . '/studio-private/config');
 $traffic = newsdesk_traffic(dirname(__DIR__) . '/studio-private/config');
 $all = [];
@@ -18,20 +19,20 @@ function newsdesk_local_time(string $value): string
 {
     return (new DateTimeImmutable($value))->setTimezone(new DateTimeZone('Europe/Oslo'))->format('d.m.Y H:i');
 }
-$rundown = $_SESSION['newsdesk_rundown'] ?? [];
-if (!is_array($rundown)) $rundown = [];
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['export'] ?? null) === '1' && $canPrepare) {
-    header('Content-Type: text/plain; charset=utf-8');
-    header('Content-Disposition: attachment; filename="RadioRubben-sendeliste-' . gmdate('Ymd-Hi') . '.txt"');
-    echo "RADIO RUBBEN / SENDELISTE\nLaget " . newsdesk_local_time(gmdate('c')) . " norsk tid\n";
-    echo "Lagre gjerne filen i OneDrive under Manus & Stikk. Kontroller originalkildene før opplesing.\n\n";
-    foreach (array_values($rundown) as $index=>$item) {
-        echo ($index + 1) . '. ' . $item['title'] . "\n" . $item['sourceName'] . " · "
-            . newsdesk_local_time($item['publishedAt']) . " norsk tid\n"
-            . str_replace(["\r", "\n"], '', $item['url']) . "\n\n";
-    }
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['export'] ?? null) === '1') redirect('/sending.php?export=1');
+// Carry over selections made in the previous session-only desk once.
+if ($canPrepare && is_array($_SESSION['newsdesk_rundown'] ?? null)) {
+    try {
+        foreach ($_SESSION['newsdesk_rundown'] as $oldId=>$oldItem) {
+            if (isset($all[$oldId])) studio_board_add_source($all[$oldId], $user);
+        }
+        unset($_SESSION['newsdesk_rundown']);
+    } catch (Throwable $e) { error_log('Newsdesk migration failed: ' . $e->getMessage()); }
 }
+try { $boardItems = studio_board_active(studio_board_read()); }
+catch (Throwable $e) { error_log('Newsdesk board read failed: ' . $e->getMessage()); $boardItems = []; $boardUnavailable = true; }
+$rundown = [];
+foreach ($boardItems as $item) if ($item['originId']) $rundown[$item['originId']] = $item;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf'], $_POST['csrf'])) {
         http_response_code(403); exit('Ugyldig forespørsel. Last siden på nytt.');
@@ -39,10 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$canPrepare) { http_response_code(403); exit('Rollen kan bare lese nyhetsdesken.'); }
     $action = is_string($_POST['action'] ?? null) ? $_POST['action'] : '';
     $id = is_string($_POST['id'] ?? null) ? $_POST['id'] : '';
-    if ($action === 'add' && isset($all[$id]) && count($rundown) < 8) $rundown[$id] = $all[$id];
-    if ($action === 'remove' && isset($rundown[$id])) unset($rundown[$id]);
-    if ($action === 'clear') $rundown = [];
-    $_SESSION['newsdesk_rundown'] = $rundown;
+    if ($action === 'add' && isset($all[$id])) {
+        try { studio_board_add_source($all[$id], $user); }
+        catch (Throwable $e) { error_log('Newsdesk add failed: ' . $e->getMessage()); $_SESSION['sending_error'] = 'Kunne ikke legge til saken. Kontroller sendelisten.'; }
+    }
     redirect('/newsdesk.php');
 }
 try { $weather = studio_weather(); } catch (Throwable $e) { $weather = null; }
@@ -97,11 +98,10 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
       <?php if ($weather): ?><p class="desk-weather"><?= escape((string)$weather['temperature']) ?>°</p><p>Prognose: <?= escape(str_replace('_', ' ', (string)$weather['symbol'])) ?></p><p class="desk-meta">MET Norge · prognosetid <?= escape((string)$weather['time']) ?></p><a href="https://www.met.no/" target="_blank" rel="noopener noreferrer">Kilde: MET Norge ↗</a>
       <?php else: ?><p>Værprognosen er utilgjengelig. Ikke bruk gamle tall som dagens vær.</p><?php endif; ?>
       </section>
-      <section class="desk-panel" aria-labelledby="rundown-title"><p class="eyebrow">DIN ØKT</p><h2 id="rundown-title">Sendeliste <span class="desk-count"><?= count($rundown) ?>/8</span></h2><p class="desk-meta">Et utvalg for denne innloggingsøkten. Ingen sak publiseres eller sendes automatisk.</p>
-      <?php if (!$rundown): ?><p class="desk-empty">Velg saker fra kildene til venstre.</p><?php endif; ?>
-      <ol class="desk-rundown"><?php foreach ($rundown as $id=>$item): ?><li><strong><?= escape($item['title']) ?></strong><span class="desk-meta"><?= escape($item['sourceName']) ?></span><a href="<?= escape($item['url']) ?>" target="_blank" rel="noopener noreferrer">Kontroller original ↗</a><?php if ($canPrepare): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="remove"><input type="hidden" name="id" value="<?= escape($id) ?>"><button type="submit">Fjern</button></form><?php endif; ?></li><?php endforeach; ?></ol>
-      <?php if ($canPrepare && $rundown): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="clear"><button type="submit">Tøm sendelisten</button></form><?php endif; ?>
-      <?php if ($canPrepare && $rundown): ?><p><a href="/newsdesk.php?export=1">Last ned sendeliste</a><br><span class="desk-meta">Lagre filen i OneDrive under Manus & Stikk.</span></p><?php endif; ?>
+      <section class="desk-panel" aria-labelledby="rundown-title"><p class="eyebrow">FELLES ARBEID</p><h2 id="rundown-title">Sendeliste <span class="desk-count"><?= count($boardItems) ?>/30</span></h2><p class="desk-meta">Lagret for medarbeiderne. Manus og kildekontroll gjøres i Sending. Ingen sak sendes automatisk.</p>
+      <?php if (isset($boardUnavailable)): ?><p class="desk-empty">Sendelisten er utilgjengelig akkurat nå.</p><?php elseif (!$boardItems): ?><p class="desk-empty">Velg saker fra kildene eller opprett et eget punkt.</p><?php endif; ?>
+      <ol class="desk-rundown"><?php foreach (array_slice($boardItems, 0, 5) as $item): ?><li><strong><?= escape($item['title']) ?></strong><span class="desk-meta"><?= escape($item['sourceName']) ?> · <?= $item['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span><a href="/sending.php?item=<?= escape($item['id']) ?>">Åpne i Sending ↗</a></li><?php endforeach; ?></ol>
+      <p><a href="/sending.php">Åpne hele sendelisten ↗</a></p>
       </section>
       </div>
     </aside>
