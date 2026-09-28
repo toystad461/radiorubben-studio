@@ -62,7 +62,7 @@ function studio_board_add_source(array $source, array $user, ?string $path = nul
             'title'=>$source['title'], 'sourceName'=>$source['sourceName'] ?? 'Kilde',
             'sourceUrl'=>$source['url'] ?? '', 'sourceAt'=>$source['publishedAt'] ?? null,
             'capturedAt'=>$source['fetchedAt'] ?? gmdate('c'), 'summary'=>$source['summary'] ?? '',
-            'script'=>'', 'notes'=>'', 'status'=>'draft', 'verified'=>false,
+            'program'=>'god-morgen-vestland', 'script'=>'', 'notes'=>'', 'status'=>'draft', 'verified'=>false,
             'createdAt'=>gmdate('c'), 'updatedAt'=>gmdate('c'),
             'createdBy'=>$user['name'] ?? 'Medarbeider', 'approvedBy'=>null, 'revision'=>1,
         ];
@@ -78,7 +78,7 @@ function studio_board_add_manual(string $title, array $user, ?string $path = nul
         $board['items'][] = [
             'id'=>bin2hex(random_bytes(8)), 'originId'=>null, 'title'=>$title,
             'sourceName'=>'Eget punkt', 'sourceUrl'=>'', 'sourceAt'=>null,
-            'capturedAt'=>null, 'summary'=>'', 'script'=>'', 'notes'=>'',
+            'capturedAt'=>null, 'summary'=>'', 'program'=>'god-morgen-vestland', 'script'=>'', 'notes'=>'',
             'status'=>'draft', 'verified'=>false, 'createdAt'=>gmdate('c'),
             'updatedAt'=>gmdate('c'), 'createdBy'=>$user['name'] ?? 'Medarbeider',
             'approvedBy'=>null, 'revision'=>1,
@@ -94,7 +94,15 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                 || ($board['items'][$position]['status'] ?? '') === 'archived') continue;
             $item = &$board['items'][$position];
             if (($item['revision'] ?? 0) !== $revision) throw new InvalidArgumentException('Punktet ble endret av en annen medarbeider. Last siden på nytt.');
+            // Keep the previous state before every successful editorial mutation.
+            // Old items remain unassigned until a person chooses their program.
+            $before = $item;
+            unset($before['history']);
             if ($action === 'save') {
+                $program = (string)($input['program'] ?? $item['program'] ?? '');
+                if (!in_array($program, ['', 'god-morgen-vestland'], true))
+                    throw new InvalidArgumentException('Velg et gyldig program.');
+                $item['program'] = $program;
                 $title = trim((string)($input['title'] ?? ''));
                 $script = trim((string)($input['script'] ?? ''));
                 $notes = trim((string)($input['notes'] ?? ''));
@@ -110,6 +118,8 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                     throw new InvalidArgumentException('Manusutkastet kan ikke lagres for dette punktet.');
                 $item['script'] = $script;
                 $item['generatedAt'] = gmdate('c');
+                $item['generation'] = $input['generation'] ?? [];
+                $item['generatedOriginal'] = $script;
                 $item['verified'] = false;
                 $item['status'] = 'draft'; $item['approvedBy'] = null;
             } elseif ($action === 'ready') {
@@ -130,6 +140,10 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                     $item = &$board['items'][$other];
                 }
             } else throw new InvalidArgumentException('Ukjent handling.');
+            if (!in_array($action, ['up', 'down'], true)) {
+                $item['history'][] = ['action'=>$action, 'at'=>gmdate('c'),
+                    'actor'=>$user['name'] ?? 'Medarbeider', 'before'=>$before];
+            }
             $item['updatedAt'] = gmdate('c'); $item['revision']++;
             unset($item);
             return;
@@ -137,3 +151,4 @@ function studio_board_update(string $id, int $revision, string $action, array $i
         throw new InvalidArgumentException('Punktet finnes ikke lenger.');
     }, $path);
 }
+

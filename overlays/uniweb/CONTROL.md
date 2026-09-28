@@ -16,6 +16,11 @@ Deploy bare disse filene. Behold eksisterende `studio-private/config/local.php`,
 
 Den gamle sendelisten i PHP-sesjonen migreres ved første besøk i Nyhetsdesk. Nye punkter lagres felles. Produsent, programleder og administrator kan redigere; observatør kan lese. `Klar` krever lagret manus og bekreftet innholdskontroll. Ingen lyd sendes på lufta, og ingen artikkel publiseres av dette tillegget. Statusen «På lufta» er eksplisitt ukjent til en faktisk avspillingsintegrasjon er tilkoblet.
 
-I Sending kan en medarbeider generere et kort manusutkast per sak fra lagret tittel, kildeomtale og publiseringstid. Dette er hele faktagrunnlaget; full artikkel hentes ikke automatisk. For korte omtaler avvises, og medarbeideren må skrive manuelt etter å ha lest originalen. Generering krever `openai_api_key` og `openai_model` i eksisterende privat Studio-konfigurasjon. API-kallet bruker `store=false`. Ny generering erstatter manusfeltet på punktet, men lagrer alltid som utkast med kildekontroll avslått. Samtidige redigeringer avvises ved revisjonsnummer. Kjør `php test-story-script.php` med samme overlay-struktur som CI før utrulling.
+I Sending kan en medarbeider generere et kort manusutkast per sak fra lagret tittel, kildeomtale og publiseringstid. Dette er hele faktagrunnlaget; full artikkel hentes ikke automatisk. For korte omtaler avvises, og medarbeideren må skrive manuelt etter å ha lest originalen. Generering krever `openai_api_key` og `openai_model` i eksisterende privat Studio-konfigurasjon. API-kallet bruker `store=false`. Ny generering bevarer forrige manus i historikken og lagrer det nye som utkast med kildekontroll avslått. God morgen Vestland har godkjente programregler som beskrives i LEARNING.md. Samtidige redigeringer avvises ved revisjonsnummer. Kjør `php test-story-script.php` med samme overlay-struktur som CI før utrulling.
 
 Kontroller etter utrulling: `/` videresender til Kontrollsenter; `Nyhetsdesk → Legg i sendeliste → Sending` bevarer punktet etter ny innlogging; lagre manus, merk klart, flytt, arkiver og last ned tekst. Sjekk på Mac/PC, iPad liggende/stående og mobil. Rollene skal håndheves på serveren, også ved direkte POST.
+
+
+## Redaksjonell hukommelse
+
+Ved utrulling av læringsversjonen må også filene i [LEARNING.md](LEARNING.md) følge med. Den eldre fillisten over er ikke tilstrekkelig for denne versjonen.
