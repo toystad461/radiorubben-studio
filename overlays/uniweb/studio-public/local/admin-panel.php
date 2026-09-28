@@ -24,8 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $notice = 'Studio-kontoen er opprettet. Del det midlertidige passordet gjennom en sikker kanal.';
             try {
                 if (!studio_intro_send($record, $config)) throw new RuntimeException('Mail transport rejected message');
-                studio_local_user_mark_intro_sent($record['id']);
                 $mailNotice = 'Intro-e-posten er levert til e-postserveren for utsending.';
+                try { studio_local_user_mark_intro_sent($record['id']); }
+                catch (Throwable $statusError) { error_log('Studio introduction status save failed: ' . $statusError->getMessage()); }
             } catch (Throwable $mailError) {
                 error_log('Studio introduction email failed: ' . $mailError->getMessage());
                 $mailNotice = 'Intro-e-posten ble ikke sendt. Kontoen er opprettet; du kan prøve igjen fra brukerlisten.';
@@ -36,8 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $record = studio_local_user_by_id($id);
             if (!$record || !$record['enabled']) throw new InvalidArgumentException('Brukeren finnes ikke eller er deaktivert.');
             if (!studio_intro_send($record, $config)) throw new RuntimeException('Mail transport rejected message');
-            studio_local_user_mark_intro_sent($id);
             $notice = 'Intro-e-posten er levert til e-postserveren for utsending.';
+            try { studio_local_user_mark_intro_sent($id); }
+            catch (Throwable $statusError) { error_log('Studio introduction status save failed: ' . $statusError->getMessage()); }
         } elseif (in_array($action, ['disable', 'enable', 'reset', 'role'], true)) {
             $id = (string)($_POST['id'] ?? '');
             if (!preg_match('/^[a-f0-9]{32}$/D', $id)) throw new InvalidArgumentException('Ugyldig bruker.');
