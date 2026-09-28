@@ -13,6 +13,8 @@ Før publisering: PHP 8.2/8.4 syntakskontroll og `php test-newsdesk.php`, kontro
 
 Kilder: Bømlo kommunes Aktuelt RSS (15 min cache), NRK Siste nyheter (5 min cache), MET Locationforecast via Studios eksisterende værfunksjon. Hver kildesak har lenke og tidspunkt; stale data merkes og skjules etter seks timer. På nettverksfeil påvirkes ikke de andre kildene. Sendelisten er begrenset til åtte saker per innloggingsøkt, krever produsent/programleder/administrator, og er ikke et arkiv eller en godkjenningsmekanisme.
 
+Kontroll 28.09.2026: Bømlo-RSS svarte HTTP 200 med `application/rss+xml`; NRK-endepunktet svarte HTTP 403 fra utviklingsmiljøet. Test NRK fra Uniweb før kilden regnes som operativ. Bruk ingen omgåelse av NRKs sperre.
+
 Trafikkpanelet viser inntil videre lenke til Vegvesen trafikk. DATEX trafikkmeldinger dekker hele landet, men krever registrering/tilgang. Den nyere REST/JSON-katalogen har en tilgangsportal; lokalt filter og innhenting må verifiseres med dokumentert tilgang og respons før ekte hendelser vises.
 
 Dette tillegget tar ikke med NRK-endringen i RR Robots eksisterende `robot.php`. Robot-innboksen og nyhetsdesken har ulike oppgaver: kildevurdering for direktesending versus artikkelutkast. En senere samordning kan dele kildeinnhenting og kilde-ID-er uten å slå sammen publiseringsflytene.
