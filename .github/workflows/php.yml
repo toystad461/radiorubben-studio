@@ -22,12 +22,14 @@ jobs:
       - run: composer audit
       - run: composer test
       - run: |
-          for file in overlays/uniweb/studio-public/{index,control,sending,newsdesk,learning}.php overlays/uniweb/studio-private/app/{board,story-script,editorial-memory,views/sidebar,auth/StudioLocalUsers,intro-mail}.php overlays/uniweb/studio-public/local/admin-panel.php; do php -l "$file"; done
+          for file in overlays/uniweb/studio-public/{index,control,sending,newsdesk,learning,music-plan}.php overlays/uniweb/studio-private/app/{board,story-script,editorial-memory,music-plan,views/sidebar,auth/StudioLocalUsers,intro-mail}.php overlays/uniweb/studio-public/local/admin-panel.php; do php -l "$file"; done
           php overlays/uniweb/test-board.php
           php overlays/uniweb/test-newsdesk.php
           php overlays/uniweb/test-intro-mail.php
           php overlays/uniweb/test-story-script.php
           php overlays/uniweb/test-editorial-memory.php
+          php overlays/uniweb/test-music-plan.php
+          node --test overlays/uniweb/test-music-check.mjs
       - if: matrix.php == '8.4'
         run: php scripts/package.php
       - if: matrix.php == '8.4'

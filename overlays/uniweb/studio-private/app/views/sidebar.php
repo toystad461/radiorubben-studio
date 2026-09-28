@@ -11,6 +11,7 @@
 <?php
 $menu = [
  ['overview','/control.php','LayoutDashboard','Kontrollsenter',''],
+ ['music-plan','/music-plan.php','AudioLines','Musikkontroll',''],
  ['learning','/learning.php','FileText','Robåt – læring',''],
  ['sending','/sending.php','FileText','Sending',''],
  ['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],
