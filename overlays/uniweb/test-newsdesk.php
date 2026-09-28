@@ -1,7 +1,12 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/app/integrations/NewsDesk.php';
+require __DIR__ . '/studio-private/app/integrations/NewsDesk.php';
 function newsdesk_check(bool $condition, string $label): void { if (!$condition) throw new RuntimeException($label); }
+foreach ([__DIR__ . '/studio-public/newsdesk.php', __DIR__ . '/studio-private/app/integrations/NewsDesk.php'] as $file) {
+    exec(escapeshellarg(PHP_BINARY) . ' -l ' . escapeshellarg($file) . ' 2>&1', $output, $code);
+    newsdesk_check($code === 0, 'PHP syntax: ' . basename($file) . ' ' . implode(' ', $output));
+    $output = [];
+}
 $sources = newsdesk_sources();
 $rss = '<rss><channel><item><title>Vegarbeid på Bømlo</title><link>https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/test.123.aspx</link><description>&lt;p&gt;Kort omtale.&lt;/p&gt;</description><pubDate>Mon, 28 Sep 2026 09:00:00 GMT</pubDate></item></channel></rss>';
 $cards = newsdesk_parse_rss($rss, 'bomlo', $sources['bomlo'], '2026-09-28T10:00:00Z');
