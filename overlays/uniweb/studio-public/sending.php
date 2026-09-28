@@ -40,6 +40,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action !== 'generate') $_SESSION['sending_message'] = 'Sendelisten er oppdatert.';
     } catch (InvalidArgumentException $e) {
         $_SESSION['sending_error'] = $e->getMessage();
+    } catch (RuntimeException $e) {
+        error_log('Studio sending save failed: ' . $e->getMessage());
+        $_SESSION['sending_error'] = $action === 'generate'
+            ? 'Manusgeneratoren er utilgjengelig eller ikke konfigurert. Skriv manus manuelt eller kontakt administrator.'
+            : 'Kunne ikke lagre. Prøv igjen litt senere.';
     } catch (Throwable $e) {
         error_log('Studio sending save failed: ' . $e->getMessage());
         $_SESSION['sending_error'] = 'Kunne ikke lagre. Prøv igjen litt senere.';
