@@ -83,4 +83,5 @@ server(['STUDIO_AUTH_MODE'=>'entra','STUDIO_BASE_URL'=>'http://localhost:8080','
 });
 server(['STUDIO_AUTH_MODE'=>'entra','ENTRA_CLIENT_SECRET'=>''],function(){check(request('/')[0]===503,'partial configuration never falls back to demo');});
 require dirname(__DIR__).'/overlays/uniweb/test-overlay.php';
+require dirname(__DIR__).'/overlays/uniweb/test-newsdesk.php';
 echo "All tests passed. Real tenant login remains a deployment check.\n";
