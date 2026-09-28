@@ -130,3 +130,105 @@ function newsdesk_all(string $cacheDir): array
     foreach (newsdesk_sources() as $id=>$source) $result[$id] = newsdesk_feed($id, $source, $cacheDir);
     return $result;
 }
+
+/** Vegvesen's public WFS SituationSimple feed, limited to the Bømlo/Sunnhordland area. */
+function newsdesk_traffic_url(): string
+{
+    return 'https://ogckart-sn1.atlas.vegvesen.no/datex_3_1/ows?' . http_build_query([
+        'service'=>'WFS', 'version'=>'1.0.0', 'request'=>'GetFeature',
+        'typeName'=>'datex_3_1:SituationSimple', 'outputFormat'=>'application/json',
+        'bbox'=>'4.75,59.45,5.8,60.05,EPSG:4326', 'maxFeatures'=>'200',
+    ], '', '&', PHP_QUERY_RFC3986);
+}
+
+function newsdesk_traffic_parse(string $body, string $fetchedAt): ?array
+{
+    $data = json_decode($body, true);
+    if (!is_array($data) || ($data['type'] ?? null) !== 'FeatureCollection'
+        || !isset($data['features']) || !is_array($data['features'])) return null;
+    // A truncated result must never be presented as a complete local overview.
+    if (count($data['features']) >= 200 || (int)($data['totalFeatures'] ?? 0) > count($data['features'])) return null;
+    $items = []; $seen = [];
+    foreach ($data['features'] as $feature) {
+        if (!is_array($feature) || !is_array($feature['properties'] ?? null)) continue;
+        $p = $feature['properties'];
+        if (($p['@featureType'] ?? null) !== 'geoJsonSituationSimple'
+            || ($p['isMainRecord'] ?? null) !== true
+            || ($p['confidentiality'] ?? null) !== 'noRestriction') continue;
+        $situationId = $p['situationId'] ?? null;
+        $location = $p['locationDescription'] ?? null;
+        $description = $p['description'] ?? null;
+        $updated = is_string($p['lastUpdateTime'] ?? null) ? strtotime($p['lastUpdateTime']) : false;
+        $end = is_string($p['endTime'] ?? null) ? strtotime($p['endTime']) : false;
+        if (!is_string($situationId) || $situationId === '' || isset($seen[$situationId])
+            || !is_string($location) || trim($location) === '' || !is_string($description)
+            || trim($description) === '' || $updated === false || $updated > time() + 300
+            || ($end !== false && $end < time())) continue;
+        $seen[$situationId] = true;
+        $summary = newsdesk_clean(str_replace('|', ' ', $description), 360);
+        $title = newsdesk_clean($location, 180);
+        $items[] = [
+            'id'=>hash('sha256', 'vegvesen:' . $situationId), 'source'=>'vegvesen',
+            'sourceName'=>'Statens vegvesen', 'title'=>$title, 'summary'=>$summary,
+            'url'=>'https://www.vegvesen.no/trafikk/', 'publishedAt'=>gmdate('c', $updated),
+            'fetchedAt'=>$fetchedAt, 'severity'=>newsdesk_clean((string)($p['severity'] ?? ''), 30),
+        ];
+    }
+    usort($items, static fn(array $a, array $b): int => strcmp($b['publishedAt'], $a['publishedAt']));
+    return array_slice($items, 0, 20);
+}
+
+function newsdesk_traffic(string $cacheDir): array
+{
+    $path = rtrim($cacheDir, '/') . '/newsdesk-traffic.json';
+    $handle = @fopen($path, 'c+');
+    if (!$handle || !flock($handle, LOCK_EX)) {
+        if ($handle) fclose($handle);
+        return ['status'=>'unavailable', 'items'=>[], 'fetchedAt'=>null];
+    }
+    @chmod($path, 0600);
+    try {
+        $cache = json_decode(stream_get_contents($handle) ?: '', true);
+        if (!is_array($cache)) $cache = [];
+        $now = time();
+        if (($cache['checkedAt'] ?? 0) + 300 <= $now) {
+            $body = newsdesk_fetch_json(newsdesk_traffic_url());
+            $items = $body === null ? null : newsdesk_traffic_parse($body, gmdate('c', $now));
+            if ($items !== null) {
+                $cache = ['checkedAt'=>$now, 'fetchedAt'=>gmdate('c', $now), 'items'=>$items, 'failed'=>false];
+            } else {
+                $cache['checkedAt'] = $now - 240; // retry after a minute
+                $cache['failed'] = true;
+            }
+            rewind($handle); ftruncate($handle, 0);
+            fwrite($handle, json_encode($cache, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE));
+            fflush($handle);
+        }
+        $age = $now - (int)(strtotime((string)($cache['fetchedAt'] ?? '')) ?: 0);
+        $status = $age <= 360 && empty($cache['failed']) ? 'updated'
+            : ($age <= 900 && isset($cache['items']) ? 'stale' : 'unavailable');
+        return ['status'=>$status, 'items'=>$status === 'unavailable' ? [] : $cache['items'],
+            'fetchedAt'=>$cache['fetchedAt'] ?? null];
+    } finally { flock($handle, LOCK_UN); fclose($handle); }
+}
+
+function newsdesk_fetch_json(string $url): ?string
+{
+    if (!function_exists('curl_init')) return null;
+    $body = '';
+    $curl = curl_init($url);
+    curl_setopt_array($curl, [
+        CURLOPT_FOLLOWLOCATION=>false, CURLOPT_CONNECTTIMEOUT=>4, CURLOPT_TIMEOUT=>12,
+        CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS, CURLOPT_HTTPHEADER=>['Accept: application/json'],
+        CURLOPT_USERAGENT=>'RadioRubben-Studio/1.0 (+https://www.radiorubben.no/kontakt/)',
+        CURLOPT_WRITEFUNCTION=>static function ($handle, string $chunk) use (&$body): int {
+            if (strlen($body) + strlen($chunk) > 3000000) return 0;
+            $body .= $chunk; return strlen($chunk);
+        },
+    ]);
+    $ok = curl_exec($curl);
+    $status = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+    $type = (string)curl_getinfo($curl, CURLINFO_CONTENT_TYPE);
+    curl_close($curl);
+    return $ok && $status === 200 && preg_match('~^application/(?:[\w.-]+\+)?json\b~i', $type) ? $body : null;
+}
