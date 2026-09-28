@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/studio-private/app/users.php';
+function studio_roles(): array { return ['presenter'=>'Programleder', 'observer'=>'Observatør']; }
 require __DIR__ . '/studio-private/app/auth/StudioLocalUsers.php';
 require __DIR__ . '/studio-private/app/intro-mail.php';
 
