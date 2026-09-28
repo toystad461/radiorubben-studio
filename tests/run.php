@@ -82,4 +82,5 @@ server(['STUDIO_AUTH_MODE'=>'entra','STUDIO_BASE_URL'=>'http://localhost:8080','
  [$code,$html]=request('/auth/callback.php?code=fake&state=fake');check($code===303 && str_contains($html,'error=signin'),'unsolicited callback rejected before token request');
 });
 server(['STUDIO_AUTH_MODE'=>'entra','ENTRA_CLIENT_SECRET'=>''],function(){check(request('/')[0]===503,'partial configuration never falls back to demo');});
+require dirname(__DIR__).'/overlays/uniweb/test-overlay.php';
 echo "All tests passed. Real tenant login remains a deployment check.\n";
