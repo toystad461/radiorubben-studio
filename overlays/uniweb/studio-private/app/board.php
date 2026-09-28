@@ -112,14 +112,15 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                 $item['status'] = 'draft'; $item['approvedBy'] = null;
             } elseif ($action === 'archive') {
                 $item['status'] = 'archived'; $item['approvedBy'] = null;
-            } elseif ($action === 'up' && $position > 0) {
-                unset($item);
-                [$board['items'][$position - 1], $board['items'][$position]] = [$board['items'][$position], $board['items'][$position - 1]];
-                $item = &$board['items'][$position - 1];
-            } elseif ($action === 'down' && $position < count($board['items']) - 1) {
-                unset($item);
-                [$board['items'][$position + 1], $board['items'][$position]] = [$board['items'][$position], $board['items'][$position + 1]];
-                $item = &$board['items'][$position + 1];
+            } elseif ($action === 'up' || $action === 'down') {
+                $direction = $action === 'up' ? -1 : 1;
+                $other = $position + $direction;
+                while (isset($board['items'][$other]) && ($board['items'][$other]['status'] ?? '') === 'archived') $other += $direction;
+                if (isset($board['items'][$other])) {
+                    unset($item);
+                    [$board['items'][$other], $board['items'][$position]] = [$board['items'][$position], $board['items'][$other]];
+                    $item = &$board['items'][$other];
+                }
             } else throw new InvalidArgumentException('Ukjent handling.');
             $item['updatedAt'] = gmdate('c'); $item['revision']++;
             unset($item);
