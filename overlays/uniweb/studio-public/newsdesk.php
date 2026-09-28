@@ -12,6 +12,10 @@ $feeds = newsdesk_all(dirname(__DIR__) . '/studio-private/config');
 $all = [];
 foreach ($feeds as $feed) foreach ($feed['items'] as $item) $all[$item['id']] = $item;
 $canPrepare = studio_can($user, 'produce');
+function newsdesk_local_time(string $value): string
+{
+    return (new DateTimeImmutable($value))->setTimezone(new DateTimeZone('Europe/Oslo'))->format('d.m.Y H:i');
+}
 $rundown = $_SESSION['newsdesk_rundown'] ?? [];
 if (!is_array($rundown)) $rundown = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -42,12 +46,12 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
       <?php foreach (newsdesk_sources() as $sourceId=>$spec): $feed = $feeds[$sourceId]; ?>
       <section class="desk-panel" aria-labelledby="source-<?= escape($sourceId) ?>">
         <div class="desk-panel-head"><div><p class="eyebrow"><?= $sourceId === 'bomlo' ? 'LOKALT' : 'NORGE' ?></p><h2 id="source-<?= escape($sourceId) ?>"><?= escape($spec['name']) ?></h2></div><span class="desk-state <?= escape($feed['status']) ?>"><?= match ($feed['status']) { 'updated'=>'Oppdatert', 'stale'=>'Eldre data', default=>'Utilgjengelig' } ?></span></div>
-        <?php if ($feed['fetchedAt']): ?><p class="desk-meta">Hentet <?= escape(gmdate('d.m.Y H:i', strtotime($feed['fetchedAt']))) ?> UTC · Kontroller originalkilden</p><?php endif; ?>
+        <?php if ($feed['fetchedAt']): ?><p class="desk-meta">Hentet <?= escape(newsdesk_local_time($feed['fetchedAt'])) ?> norsk tid · Kontroller originalkilden</p><?php endif; ?>
         <?php if (!$feed['items']): ?><p class="desk-empty">Ingen saker tilgjengelig fra denne kilden nå. Andre kilder vises fortsatt.</p><?php endif; ?>
         <div class="desk-stories">
         <?php foreach ($feed['items'] as $item): ?>
           <article class="desk-story">
-            <p class="desk-meta"><?= escape($spec['name']) ?> · Publisert <?= escape(gmdate('d.m.Y H:i', strtotime($item['publishedAt']))) ?> UTC</p>
+            <p class="desk-meta"><?= escape($spec['name']) ?> · Publisert <?= escape(newsdesk_local_time($item['publishedAt'])) ?> norsk tid</p>
             <h3><?= escape($item['title']) ?></h3>
             <?php if ($item['summary']): ?><p><?= escape($item['summary']) ?></p><?php endif; ?>
             <div class="desk-actions"><a href="<?= escape($item['url']) ?>" target="_blank" rel="noopener noreferrer">Les originalen ↗</a>
