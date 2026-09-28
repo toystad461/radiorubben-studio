@@ -7,6 +7,8 @@ if (!in_array($_SERVER['REQUEST_METHOD'], ['GET', 'POST'], true)) {
     http_response_code(405); header('Allow: GET, POST'); exit;
 }
 require dirname(__DIR__) . '/studio-private/app/board.php';
+require dirname(__DIR__) . '/studio-private/app/story-script.php';
+require dirname(__DIR__) . '/studio-private/app/producer.php';
 $canPrepare = studio_can($user, 'produce');
 function sending_time(?string $value): string
 {
@@ -23,8 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = is_string($_POST['id'] ?? null) ? $_POST['id'] : '';
     try {
         if ($action === 'add') studio_board_add_manual((string)($_POST['title'] ?? ''), $user);
-        else studio_board_update($id, (int)($_POST['revision'] ?? 0), $action, $_POST, $user);
-        $_SESSION['sending_message'] = 'Sendelisten er oppdatert.';
+        elseif ($action === 'generate') {
+            $revision = (int)($_POST['revision'] ?? 0);
+            $sourceItem = null;
+            foreach (studio_board_active(studio_board_read()) as $candidate) {
+                if (($candidate['id'] ?? null) === $id) { $sourceItem = $candidate; break; }
+            }
+            if (!$sourceItem || ($sourceItem['revision'] ?? 0) !== $revision)
+                throw new InvalidArgumentException('Punktet er endret. Last siden på nytt før du genererer manus.');
+            $script = studio_story_script_generate($sourceItem, $config);
+            studio_board_update($id, $revision, 'generated', ['script'=>$script], $user);
+            $_SESSION['sending_message'] = 'Manusutkast laget. Les originalkilden og kontroller alle opplysninger før du merker punktet klart.';
+        } else studio_board_update($id, (int)($_POST['revision'] ?? 0), $action, $_POST, $user);
+        if ($action !== 'generate') $_SESSION['sending_message'] = 'Sendelisten er oppdatert.';
     } catch (InvalidArgumentException $e) {
         $_SESSION['sending_error'] = $e->getMessage();
     } catch (Throwable $e) {
@@ -57,7 +70,7 @@ if (($_GET['export'] ?? null) === '1' && $canPrepare) {
     }
     exit;
 }
-$extraStylesheet = '/assets/control.css?v=1';
+$extraStylesheet = '/assets/control.css?v=2';
 require dirname(__DIR__) . '/studio-private/app/views/head.php';
 ?>
 <div class="shell">
@@ -77,9 +90,11 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
     </section>
     <section class="control-panel sending-editor" aria-labelledby="editor-title">
       <?php if ($selected): ?>
-      <div class="panel-top"><div><p class="eyebrow">PUNKT <?= array_search($selected, $items, true) + 1 ?></p><h2 id="editor-title">Manus og kontroll</h2></div><span class="status-pill <?= escape($selected['status']) ?>"><?= $selected['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span></div>
+      <div class="panel-top"><div><p class="eyebrow">PUNKT <?= array_search($selected, $items, true) + 1 ?></p><h2 id="editor-title">Manus og kontroll</h2><p class="control-muted"><?= escape($selected['title']) ?></p></div><span class="status-pill <?= escape($selected['status']) ?>"><?= $selected['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span></div><a class="sending-jump" href="#sending-list-title">Velg annet punkt ↓</a>
       <p class="control-muted">Fra <?= escape($selected['sourceName']) ?> · <?= escape(sending_time($selected['sourceAt'])) ?><?php if ($selected['sourceUrl']): ?> · <a href="<?= escape($selected['sourceUrl']) ?>" target="_blank" rel="noopener noreferrer">Kontroller original ↗</a><?php endif; ?></p>
       <?php if ($selected['summary']): ?><details class="source-summary"><summary>Vis kildeomtale</summary><p><?= escape($selected['summary']) ?></p></details><?php endif; ?>
+      <?php if ($canPrepare && !empty($selected['originId'])): ?><form method="post" class="script-generate"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="generate"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><button type="submit"><?= $selected['script'] ? 'Generer nytt manusutkast' : 'Generer manusutkast' ?></button><span class="control-muted">Bruker lagret kildeomtale. <?= $selected['script'] ? 'Erstatter manuset i dette punktet. ' : '' ?>Kontroller originalen før sending.</span></form><?php endif; ?>
+      <?php if (!empty($selected['generatedAt'])): ?><p class="control-muted">AI-utkast laget <?= escape(sending_time($selected['generatedAt'])) ?>. Må gjennomleses og kildekontrolleres.</p><?php endif; ?>
       <?php if ($canPrepare): ?><form method="post" class="editor-form"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><label for="item-title">Tittel</label><input id="item-title" name="title" maxlength="180" required value="<?= escape($selected['title']) ?>"><label for="item-script">Manus</label><textarea id="item-script" name="script" maxlength="5000" rows="9" placeholder="Skriv et kort manus som kan leses på lufta."><?= escape($selected['script']) ?></textarea><label for="item-notes">Notater til sendingen</label><textarea id="item-notes" name="notes" maxlength="1000" rows="3"><?= escape($selected['notes']) ?></textarea><label class="verify-row"><input type="checkbox" name="verified" value="1" <?= $selected['verified'] ? 'checked' : '' ?>> <?= $selected['sourceUrl'] ? 'Jeg har kontrollert opplysningene i originalkilden' : 'Jeg har kontrollert innholdet' ?></label><p class="control-muted">Lagring setter punktet til utkast. Merk det klart etter siste kontroll.</p><button type="submit">Lagre utkast</button></form>
       <div class="item-controls"><?php foreach (['ready'=>'Merk klar', 'draft'=>'Tilbake til utkast', 'up'=>'Flytt opp', 'down'=>'Flytt ned', 'archive'=>'Arkiver'] as $action=>$label): if ($action === 'ready' && $selected['status'] === 'ready' || $action === 'draft' && $selected['status'] !== 'ready') continue; ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="<?= $action ?>"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><button type="submit" class="<?= $action === 'archive' ? 'quiet' : '' ?>"><?= $label ?></button></form><?php endforeach; ?></div>
       <?php else: ?><h3><?= escape($selected['title']) ?></h3><p class="script-view"><?= nl2br(escape($selected['script'] ?: 'Manus er ikke skrevet ennå.')) ?></p><?php endif; ?>
