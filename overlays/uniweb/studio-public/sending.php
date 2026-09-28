@@ -44,6 +44,7 @@ $readyCount = count(array_filter($items, static fn($item) => $item['status'] ===
 $message = $_SESSION['sending_message'] ?? null; $error = $_SESSION['sending_error'] ?? null;
 unset($_SESSION['sending_message'], $_SESSION['sending_error']);
 if (($_GET['export'] ?? null) === '1' && $canPrepare) {
+    if (isset($readError)) { http_response_code(503); exit('Sendelisten kan ikke leses nå. Prøv igjen senere.'); }
     header('Content-Type: text/plain; charset=utf-8');
     header('Content-Disposition: attachment; filename="RadioRubben-sendeliste-' . gmdate('Ymd-Hi') . '.txt"');
     echo "RADIO RUBBEN / SENDELISTE\nLaget " . sending_time(gmdate('c')) . " norsk tid\n";
