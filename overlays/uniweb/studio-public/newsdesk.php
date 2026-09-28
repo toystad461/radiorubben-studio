@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     redirect('/newsdesk.php');
 }
 try { $weather = studio_weather(); } catch (Throwable $e) { $weather = null; }
-$extraStylesheet = '/assets/newsdesk.css?v=1';
+$extraStylesheet = '/assets/newsdesk.css?v=2';
 require dirname(__DIR__) . '/studio-private/app/views/head.php';
 ?>
 <div class="shell">
