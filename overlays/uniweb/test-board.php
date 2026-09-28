@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-require __DIR__ . '/app/board.php';
+require __DIR__ . '/studio-private/app/board.php';
 function board_check(bool $condition, string $message): void
 {
     if (!$condition) throw new RuntimeException($message);
