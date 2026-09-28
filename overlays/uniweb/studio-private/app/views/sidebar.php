@@ -10,15 +10,13 @@
         <nav aria-label="Hovedmeny">
 <?php
 $menu = [
- ['overview','/?overview=1','LayoutDashboard','Hjem',''],
- ['ai-studio','/ai-studio.php','AudioLines','AI Studio','board'],
+ ['overview','/control.php','LayoutDashboard','Kontrollsenter',''],
+ ['sending','/sending.php','FileText','Sending',''],
  ['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],
- ['schedule','/workspace.php?section=schedule','FileText','Sendeplan',''],
- ['music','/ai-studio.php#music-title','AudioLines','Musikkbibliotek','music'],
- ['scripts','/ai-studio.php#producer-title','FileText','Stikk & Manus','scripts'],
+ ['ai-studio','/ai-studio.php','AudioLines','AI Studio','board'],
+ ['music','/ai-studio.php#music-title','AudioLines','Musikk & lyd','music'],
+ ['articles','/robot.php','FileText','Artikkelutkast',''],
  ['social','/workspace.php?section=social','Cloud','Sosiale medier',''],
- ['sponsors','/workspace.php?section=sponsors','ShieldCheck','Sponsorer',''],
- ['radio','/workspace.php?section=radio','Radio','Radio.co',''],
  ['rode','/ai-studio.php#rode','AudioLines','Studio (RØDE)','rode'],
  ['settings','/ai-studio.php#innstillinger','SlidersHorizontal','Innstillinger','settings'],
 ];
