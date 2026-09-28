@@ -126,6 +126,15 @@ function studio_local_user_set_role(string $id, string $role): array
     });
 }
 
+function studio_local_user_mark_intro_sent(string $id): void
+{
+    studio_local_users_update(static function (array &$users) use ($id): void {
+        if (!isset($users[$id])) throw new InvalidArgumentException('Brukeren finnes ikke.');
+        // A delivery receipt is metadata. It must not invalidate an active login session.
+        $users[$id]['introSentAt'] = gmdate('c');
+    });
+}
+
 function studio_local_user_change(string $id, ?bool $enabled, ?string $password = null): array
 {
     return studio_local_users_update(static function (array &$users) use ($id, $enabled, $password): array {
