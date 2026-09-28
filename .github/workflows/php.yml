@@ -22,7 +22,7 @@ jobs:
       - run: composer audit
       - run: composer test
       - run: |
-          for file in overlays/uniweb/studio-public/{control,sending,newsdesk}.php overlays/uniweb/studio-private/app/{board,views/sidebar}.php; do php -l "$file"; done
+          for file in overlays/uniweb/studio-public/{index,control,sending,newsdesk}.php overlays/uniweb/studio-private/app/{board,views/sidebar}.php; do php -l "$file"; done
           php overlays/uniweb/test-board.php
           php overlays/uniweb/test-newsdesk.php
       - if: matrix.php == '8.4'
