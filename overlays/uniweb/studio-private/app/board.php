@@ -104,6 +104,14 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                 $item['title'] = $title; $item['script'] = $script; $item['notes'] = $notes;
                 $item['verified'] = ($input['verified'] ?? '') === '1';
                 $item['status'] = 'draft'; $item['approvedBy'] = null;
+            } elseif ($action === 'generated') {
+                $script = trim((string)($input['script'] ?? ''));
+                if (!$item['originId'] || $script === '' || studio_board_length($script) > 2200)
+                    throw new InvalidArgumentException('Manusutkastet kan ikke lagres for dette punktet.');
+                $item['script'] = $script;
+                $item['generatedAt'] = gmdate('c');
+                $item['verified'] = false;
+                $item['status'] = 'draft'; $item['approvedBy'] = null;
             } elseif ($action === 'ready') {
                 if (trim((string)($item['script'] ?? '')) === '' || empty($item['verified']))
                     throw new InvalidArgumentException('Lagre manus og bekreft kildekontroll før du merker punktet klart.');
