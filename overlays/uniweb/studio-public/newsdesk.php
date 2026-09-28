@@ -25,6 +25,7 @@ if ($canPrepare && is_array($_SESSION['newsdesk_rundown'] ?? null)) {
     try {
         foreach ($_SESSION['newsdesk_rundown'] as $oldId=>$oldItem) {
             if (isset($all[$oldId])) studio_board_add_source($all[$oldId], $user);
+            elseif (is_array($oldItem) && ($oldItem['id'] ?? null) === $oldId) studio_board_add_source($oldItem, $user);
         }
         unset($_SESSION['newsdesk_rundown']);
     } catch (Throwable $e) { error_log('Newsdesk migration failed: ' . $e->getMessage()); }
@@ -42,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = is_string($_POST['id'] ?? null) ? $_POST['id'] : '';
     if ($action === 'add' && isset($all[$id])) {
         try { studio_board_add_source($all[$id], $user); }
-        catch (Throwable $e) { error_log('Newsdesk add failed: ' . $e->getMessage()); $_SESSION['sending_error'] = 'Kunne ikke legge til saken. Kontroller sendelisten.'; }
+        catch (Throwable $e) { error_log('Newsdesk add failed: ' . $e->getMessage()); $_SESSION['newsdesk_error'] = 'Kunne ikke legge til saken. Kontroller sendelisten.'; }
     }
     redirect('/newsdesk.php');
 }
@@ -56,6 +57,7 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
 <header class="topbar"><span>Arbeidsrom / <strong>Nyhetsdesk</strong></span><span>Kilder til sending</span><?php require dirname(__DIR__) . '/studio-private/app/views/account.php'; ?></header>
 <main id="main" class="newsdesk">
   <div class="heading-row"><div><p class="eyebrow">RADIO RUBBEN / REDAKSJON</p><h1>Nyhetsdesk</h1><p class="intro">Finn saker til sendingen. Åpne originalen og kontroller fakta før du leser noe på lufta.</p></div><a class="desk-refresh" href="/newsdesk.php">Oppdater visning</a></div>
+  <?php if (isset($_SESSION['newsdesk_error'])): ?><p class="desk-empty" role="alert"><?= escape($_SESSION['newsdesk_error']) ?></p><?php unset($_SESSION['newsdesk_error']); endif; ?>
   <div class="desk-grid">
     <div class="desk-main">
       <?php foreach (newsdesk_sources() as $sourceId=>$spec): $feed = $feeds[$sourceId]; ?>
