@@ -1,34 +1,40 @@
-.newsdesk { max-width: 1550px; margin: 0 auto; padding: 28px; }
-.newsdesk .heading-row { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+.newsdesk { max-width: 1900px; margin: 0 auto; padding: clamp(14px, 2vw, 28px); }
+.newsdesk .heading-row { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
 .newsdesk h1 { margin: 4px 0 8px; }
 .newsdesk .intro { max-width: 760px; }
 .desk-refresh { display: inline-block; border: 1px solid var(--line, #345); border-radius: 999px; padding: 10px 16px; white-space: nowrap; }
-.desk-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(290px, 1fr); gap: 22px; align-items: start; }
-.desk-main, .desk-side { display: grid; gap: 20px; min-width: 0; }
-.desk-side > section:nth-child(3) { order: 2; }
-.desk-side > section:nth-child(2) { order: 3; }
-.desk-panel { background: var(--panel, #0d2135); border: 1px solid var(--line, #24425c); border-radius: 18px; padding: 22px; }
+.desk-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; align-items: start; }
+.desk-main, .desk-side { display: contents; }
+.desk-main > .desk-panel:first-child { order: 1; }
+.desk-side > .desk-panel { order: 2; }
+.desk-tools { order: 3; display: grid; gap: 16px; min-width: 0; }
+.desk-main > .desk-panel:not(:first-child) { order: 4; }
+.desk-panel { min-width: 0; background: var(--panel, #0d2135); border: 1px solid var(--line, #24425c); border-radius: 16px; padding: 16px; }
 .desk-panel h2 { margin: 2px 0 8px; font-size: 1.35rem; }
 .desk-panel-head { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
 .desk-state { font-size: .78rem; font-weight: 700; border-radius: 99px; padding: 5px 10px; white-space: nowrap; background: #173c52; color: #9be3ff; }
 .desk-state.stale { background: #503f1d; color: #ffe0a0; }
 .desk-state.unavailable { background: #492c37; color: #ffc0c9; }
 .desk-meta { display: block; color: var(--muted, #a9bbcb); font-size: .83rem; line-height: 1.5; }
-.desk-stories { margin-top: 14px; }
-.desk-story { padding: 18px 0; border-top: 1px solid var(--line, #24425c); }
-.desk-story h3 { margin: 6px 0 8px; font-size: 1.08rem; line-height: 1.35; }
-.desk-story p { margin: 8px 0; line-height: 1.5; }
+.desk-stories { margin-top: 10px; }
+.desk-story { padding: 11px 0; border-top: 1px solid var(--line, #24425c); }
+.desk-story h3 { margin: 4px 0 6px; font-size: 1rem; line-height: 1.3; overflow-wrap: anywhere; }
+.desk-story p { margin: 6px 0; line-height: 1.4; }
 .desk-story .desk-meta { margin: 0; }
-.desk-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-top: 12px; }
+.desk-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin-top: 8px; }
+.desk-description summary, .desk-more summary { color: var(--brand, #53bcf0); cursor: pointer; }
+.desk-description summary { font-size: .87rem; }
+.desk-more { border-top: 1px solid var(--line, #24425c); padding-top: 12px; }
+.desk-more > summary { font-weight: 700; padding: 4px 0; }
+.desk-description p { overflow-wrap: anywhere; }
 .desk-actions form { margin: 0; }
 .newsdesk button { border: 1px solid var(--brand, #129de4); color: var(--ink, #fff); background: transparent; border-radius: 99px; padding: 8px 12px; cursor: pointer; }
 .newsdesk button:hover { background: rgba(18,157,228,.18); }
-.desk-weather { font-size: 3rem; font-weight: 800; line-height: 1; margin: 12px 0; }
+.desk-weather { font-size: 2.4rem; font-weight: 800; line-height: 1; margin: 8px 0; }
 .desk-count { color: var(--muted, #a9bbcb); font-size: .85rem; font-weight: 400; }
 .desk-rundown { padding-left: 22px; }
 .desk-rundown li { padding: 10px 0; border-bottom: 1px solid var(--line, #24425c); }
 .desk-rundown li strong, .desk-rundown li a { display: block; margin: 4px 0; }
 .desk-rundown form { margin-top: 8px; }
 .desk-empty { color: var(--muted, #a9bbcb); }
-@media (max-width: 1050px) { .desk-grid { grid-template-columns: 1fr; } .desk-side { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 650px) { .newsdesk { padding: 16px; } .newsdesk .heading-row { align-items: start; flex-direction: column; } .desk-side { grid-template-columns: 1fr; } .desk-panel { padding: 16px; } }
+@media (max-width: 650px) { .newsdesk .heading-row { align-items: start; flex-direction: column; } }
