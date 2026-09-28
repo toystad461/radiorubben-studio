@@ -16,3 +16,7 @@ Verifiser etter aktivering:
 6. Kontroller at AI Studio, eksisterende menyer og felles Studio-stil fortsatt virker.
 
 Den eksisterende Vipps-baserte brukersiden er bevart når `auth_mode=vipps`. Ved `auth_mode=entra` brukes den nye lokale kontosiden med samme `head.php`, `sidebar.php`, `account.php`, `studio.css` og `users.css` som resten av Arbeidsrommet.
+
+## Visuell mal
+
+`theme-bridge.css` tar grunnfargene fra `radiorubben-web` sitt Radio Rubben One-tema: marine `#06111F`, blå `#129DE4`, lyseblå `#58C9FF` og rød LIVE-markering `#FF3447`. Studio beholder sin egen arbeidsromsnavigasjon og felles PHP-maler. Nye brukersider gjenbruker samme kort, knapper og skjemastiler som resten av Studio, mens broen trekker farger og fokusmarkering mot hovedtemaet. Kontroller kontrast og mobilvisning visuelt før publisering.
