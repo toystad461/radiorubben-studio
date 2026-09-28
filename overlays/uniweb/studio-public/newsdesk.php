@@ -18,6 +18,18 @@ function newsdesk_local_time(string $value): string
 }
 $rundown = $_SESSION['newsdesk_rundown'] ?? [];
 if (!is_array($rundown)) $rundown = [];
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['export'] ?? null) === '1' && $canPrepare) {
+    header('Content-Type: text/plain; charset=utf-8');
+    header('Content-Disposition: attachment; filename="RadioRubben-sendeliste-' . gmdate('Ymd-Hi') . '.txt"');
+    echo "RADIO RUBBEN / SENDELISTE\nLaget " . newsdesk_local_time(gmdate('c')) . " norsk tid\n";
+    echo "Lagre gjerne filen i OneDrive under Manus & Stikk. Kontroller originalkildene før opplesing.\n\n";
+    foreach (array_values($rundown) as $index=>$item) {
+        echo ($index + 1) . '. ' . $item['title'] . "\n" . $item['sourceName'] . " · "
+            . newsdesk_local_time($item['publishedAt']) . " norsk tid\n"
+            . str_replace(["\r", "\n"], '', $item['url']) . "\n\n";
+    }
+    exit;
+}
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf'], $_POST['csrf'])) {
         http_response_code(403); exit('Ugyldig forespørsel. Last siden på nytt.');
@@ -73,6 +85,7 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
       <?php if (!$rundown): ?><p class="desk-empty">Velg saker fra kildene til venstre.</p><?php endif; ?>
       <ol class="desk-rundown"><?php foreach ($rundown as $id=>$item): ?><li><strong><?= escape($item['title']) ?></strong><span class="desk-meta"><?= escape($item['sourceName']) ?></span><a href="<?= escape($item['url']) ?>" target="_blank" rel="noopener noreferrer">Kontroller original ↗</a><?php if ($canPrepare): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="remove"><input type="hidden" name="id" value="<?= escape($id) ?>"><button type="submit">Fjern</button></form><?php endif; ?></li><?php endforeach; ?></ol>
       <?php if ($canPrepare && $rundown): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="clear"><button type="submit">Tøm sendelisten</button></form><?php endif; ?>
+      <?php if ($canPrepare && $rundown): ?><p><a href="/newsdesk.php?export=1">Last ned sendeliste</a><br><span class="desk-meta">Lagre filen i OneDrive under Manus & Stikk.</span></p><?php endif; ?>
       </section>
     </aside>
   </div>
