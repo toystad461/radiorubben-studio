@@ -16,4 +16,19 @@ newsdesk_check(count(newsdesk_parse_rss(str_replace('https://', 'http://', $rss)
 newsdesk_check(count(newsdesk_parse_rss('<!DOCTYPE rss>' . $rss, 'bomlo', $sources['bomlo'], '2026-09-28T10:00:00Z')) === 0, 'DTD rejected');
 $nrk = str_replace(['www.bomlo.kommune.no/aktuelt-og-kunngjeringar/', 'Vegarbeid på Bømlo'], ['www.nrk.no/nyheter/', 'Siste nytt'], $rss);
 newsdesk_check(count(newsdesk_parse_rss($nrk, 'nrk', $sources['nrk'], '2026-09-28T10:00:00Z')) === 1, 'NRK card');
+$traffic = ['type'=>'FeatureCollection', 'totalFeatures'=>2, 'features'=>[]];
+$road = ['@featureType'=>'geoJsonSituationSimple', 'isMainRecord'=>true,
+    'confidentiality'=>'noRestriction', 'situationId'=>'NPRA_HBT_28-09-2026.1',
+    'locationDescription'=>'Fv. 541 Sakseid i Bømlo', 'description'=>'Vegarbeid.|Lysregulering.',
+    'lastUpdateTime'=>gmdate('c', time()-60), 'endTime'=>gmdate('c', time()+3600)];
+$traffic['features'] = [['properties'=>$road], ['properties'=>$road + ['isMainRecord'=>false]]];
+$traffic['features'][1]['properties']['isMainRecord'] = false;
+$parsed = newsdesk_traffic_parse(json_encode($traffic), gmdate('c'));
+newsdesk_check(count($parsed ?? []) === 1 && $parsed[0]['source'] === 'vegvesen'
+    && $parsed[0]['summary'] === 'Vegarbeid. Lysregulering.', 'traffic main record');
+$traffic['totalFeatures'] = 3;
+newsdesk_check(newsdesk_traffic_parse(json_encode($traffic), gmdate('c')) === null, 'truncated traffic rejected');
+$traffic['totalFeatures'] = 2;
+$traffic['features'][0]['properties']['endTime'] = gmdate('c', time()-3600);
+newsdesk_check(newsdesk_traffic_parse(json_encode($traffic), gmdate('c')) === [], 'expired traffic omitted');
 echo "NewsDesk parser OK\n";
