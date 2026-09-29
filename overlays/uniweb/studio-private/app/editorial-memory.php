@@ -16,7 +16,8 @@ function studio_memory_context(array $board, string $program, ?array $registry =
     }
     return ['registryVersion'=>$registry['registryVersion'], 'profileVersion'=>$profile['profileVersion'],
         'program'=>$profile['id'], 'name'=>$profile['name'], 'style'=>$profile['style'],
-        'learningEnabled'=>$profile['learningEnabled'], 'rules'=>$rules];
+        'learningEnabled'=>$profile['learningEnabled'], 'rules'=>$rules,
+        'format'=>$profile['format'] ?? [], 'styleExamples'=>$profile['styleExamples'] ?? []];
 }
 
 /** Correction evidence belongs to the program that generated the original draft. */

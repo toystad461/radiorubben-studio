@@ -12,6 +12,7 @@
 $menu = [
  ['overview','/control.php','LayoutDashboard','Kontrollsenter',''],
  ['learning','/learning.php','FileText','Robåt – læring',''],
+ ['broadcast','/broadcast.php','FileText','Robåt – sendeforslag',''],
  ['sending','/sending.php','FileText','Sending',''],
  ['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],
  ['ai-studio','/ai-studio.php','AudioLines','AI Studio','board'],
