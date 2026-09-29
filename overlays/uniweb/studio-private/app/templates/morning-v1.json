@@ -1,0 +1,564 @@
+{
+  "id": "morning-v1",
+  "version": 1,
+  "theme": "Hva er du hverdagsmester i?",
+  "timezone": "Europe/Oslo",
+  "start": "05:00",
+  "end": "09:00",
+  "blocks": [
+    {
+      "id": "block-01",
+      "start": "05:00",
+      "end": "05:15",
+      "title": "Velkomst og lokalnytt",
+      "script": "God morgen, Bømlo – og god morgen til deg som lytter et annet sted! Du hører God morgen Vestland på Radio Rubben. Jeg heter {{presenter}} og holder deg med selskap fram til ni. Vi skal ha musikk å våkne til og spørsmålet: Hva er du hverdagsmester i?",
+      "news": true,
+      "service": false,
+      "music": [
+        {
+          "artist": "Bill Withers",
+          "title": "Lovely Day",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "The Beatles",
+          "title": "Here Comes the Sun",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Sondre Lerche",
+          "title": "Two Way Monologue",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-02",
+      "start": "05:15",
+      "end": "05:30",
+      "title": "Hverdagsmester",
+      "script": "Er du den som finner nøklene alle andre har lett etter? Eller får du alt til å passe i oppvaskmaskinen, selv når resten av familien har gitt opp? Da er det deg jeg er ute etter. I dag feirer vi de små ferdighetene. Selv det å komme seg ut døra med både telefon og matpakke kan fortjene litt anerkjennelse på en morgen.",
+      "news": false,
+      "service": false,
+      "music": [
+        {
+          "artist": "Fleetwood Mac",
+          "title": "Everywhere",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Norah Jones",
+          "title": "Sunrise",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Hellbillies",
+          "title": "Den finast eg veit",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-03",
+      "start": "05:30",
+      "end": "05:45",
+      "title": "Lokalt og service",
+      "script": "",
+      "news": true,
+      "service": true,
+      "music": [
+        {
+          "artist": "Stevie Wonder",
+          "title": "For Once in My Life",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Crowded House",
+          "title": "Weather with You",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "deLillos",
+          "title": "Neste sommer",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-04",
+      "start": "05:45",
+      "end": "06:00",
+      "title": "Morgenfølge",
+      "script": "Til deg som er på vei hjem fra en nattevakt: Takk for jobben du har gjort. Og til deg som nettopp har begynt dagen: Vi tar en låt til sammen.",
+      "news": false,
+      "service": false,
+      "music": [
+        {
+          "artist": "Jack Johnson",
+          "title": "Better Together",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "ABBA",
+          "title": "I Have a Dream",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Chris Rea",
+          "title": "On the Beach",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Eagles",
+          "title": "Peaceful Easy Feeling",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-05",
+      "start": "06:00",
+      "end": "06:15",
+      "title": "Ny time og lokalnytt",
+      "script": "Klokka er seks. God morgen fra Radio Rubben! {{presenter}} her, med musikk og morgenfølge fram til ni.",
+      "news": true,
+      "service": false,
+      "music": [
+        {
+          "artist": "The Bangles",
+          "title": "Manic Monday",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "a-ha",
+          "title": "The Sun Always Shines on T.V.",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Katrina and the Waves",
+          "title": "Walking on Sunshine",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-06",
+      "start": "06:15",
+      "end": "06:30",
+      "title": "Tema og lytterkontakt",
+      "script": "Hvilken helt vanlig ting er du uvanlig god på? Kanskje er du den som finner igjen nøklene, eller får alt til å passe i bilen. I dag gir vi de små ferdighetene litt oppmerksomhet.",
+      "news": false,
+      "service": false,
+      "music": [
+        {
+          "artist": "Madness",
+          "title": "Driving in My Car",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "D.D.E.",
+          "title": "Det går likar no",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Sheryl Crow",
+          "title": "Soak Up the Sun",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-07",
+      "start": "06:30",
+      "end": "06:45",
+      "title": "Lokalt og service",
+      "script": "",
+      "news": true,
+      "service": true,
+      "music": [
+        {
+          "artist": "Toto",
+          "title": "Africa",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Gabrielle",
+          "title": "Ring meg",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "George Ezra",
+          "title": "Shotgun",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-08",
+      "start": "06:45",
+      "end": "07:00",
+      "title": "Musikkminne",
+      "script": "Noen låter setter oss rett tilbake til et kjøkken, en biltur eller den første sommerjobben. Jeg liker tanken på at du kan høre den samme sangen som naboen akkurat nå, og likevel være på to helt forskjellige steder i minnene. Nå får du noen minutter til dine egne.",
+      "news": false,
+      "service": false,
+      "music": [
+        {
+          "artist": "Roxette",
+          "title": "The Look",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Di Derre",
+          "title": "Jenter",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Dolly Parton",
+          "title": "9 to 5",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Hall & Oates",
+          "title": "You Make My Dreams",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-09",
+      "start": "07:00",
+      "end": "07:15",
+      "title": "Ny time og lokalnytt",
+      "script": "God morgen! Klokka er sju, og dette er Radio Rubben. Her får du musikk og små hverdagsmestere fram til ni.",
+      "news": true,
+      "service": false,
+      "music": [
+        {
+          "artist": "Electric Light Orchestra",
+          "title": "Mr. Blue Sky",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Sigrid",
+          "title": "Don't Feel Like Crying",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Earth, Wind & Fire",
+          "title": "September",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-10",
+      "start": "07:15",
+      "end": "07:30",
+      "title": "Hverdagsmesterskapet",
+      "script": "Jeg har tenkt på en ny øvelse til et mulig hverdagsmesterskap: Å finne riktig lokk til riktig matboks på første forsøk. Ingen store bevegelser, ingen jubeltribune. Bare stille, imponerende presisjon. Hva er din spesialitet?",
+      "news": false,
+      "service": false,
+      "music": [
+        {
+          "artist": "Queen",
+          "title": "Don't Stop Me Now",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Postgirobygget",
+          "title": "Idyll",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Shania Twain",
+          "title": "Man! I Feel Like a Woman!",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-11",
+      "start": "07:30",
+      "end": "07:45",
+      "title": "Musikkquiz og service",
+      "script": "En liten musikkgåte: Hvilken artist forbinder du med låten 9 to 5? Svaret kommer før åtte.",
+      "news": false,
+      "service": true,
+      "music": [
+        {
+          "artist": "Kygo & Whitney Houston",
+          "title": "Higher Love",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Åge Aleksandersen",
+          "title": "Lys og varme",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "The Pointer Sisters",
+          "title": "I'm So Excited",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-12",
+      "start": "07:45",
+      "end": "08:00",
+      "title": "Quizfasit",
+      "script": "Svaret på musikkgåten er Dolly Parton. Enten arbeidsdagen din begynner fem, ni eller på et helt annet tidspunkt: Vi håper du har godt selskap i radioen.",
+      "news": false,
+      "service": false,
+      "music": [
+        {
+          "artist": "Bruce Springsteen",
+          "title": "Dancing in the Dark",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Dagny",
+          "title": "Somebody",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Lionel Richie",
+          "title": "All Night Long (All Night)",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Bryan Adams",
+          "title": "Summer of '69",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-13",
+      "start": "08:00",
+      "end": "08:15",
+      "title": "Ny time og lokalnytt",
+      "script": "Klokka er åtte. Du hører God morgen Vestland på Radio Rubben, og jeg heter {{presenter}}. Vi har én time igjen sammen, med mer musikk og spørsmålet: Hva er du hverdagsmester i?",
+      "news": true,
+      "service": false,
+      "music": [
+        {
+          "artist": "U2",
+          "title": "Beautiful Day",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Vamp",
+          "title": "Tir n'a Noir",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Dua Lipa",
+          "title": "Levitating",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-14",
+      "start": "08:15",
+      "end": "08:30",
+      "title": "Lokal refleksjon",
+      "script": "Det finnes mange slags flinke folk i et lokalsamfunn. Noen tar ordet i møtet. Andre møter opp med verktøy, lager kaffe eller sørger for at nye folk føler seg velkomne. Det er lett å legge merke til den som står fremst. I dag kan vi også tenke litt på den som får ting til å fungere rundt oss.",
+      "news": false,
+      "service": false,
+      "music": [
+        {
+          "artist": "Tom Petty",
+          "title": "Free Fallin'",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Odd Nordstoga",
+          "title": "Kveldssong for deg og meg",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Michael Bublé",
+          "title": "Haven't Met You Yet",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-15",
+      "start": "08:30",
+      "end": "08:45",
+      "title": "Siste temarunde og service",
+      "script": "Dagens lille utfordring fra meg er enkel: Legg merke til én ting noen rundt deg er gode på, og si det til dem. Det trenger ikke være en stor tale. Bare: Det der gjør du skikkelig bra. Og hvis din egen prestasjon i dag var å komme deg i gang, så teller den også.",
+      "news": false,
+      "service": true,
+      "music": [
+        {
+          "artist": "Robbie Williams",
+          "title": "Feel",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "The Corrs",
+          "title": "Breathless",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Trang Fødsel",
+          "title": "Drømmedame",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Tilpass tale og musikk til faktiske spilletider."
+    },
+    {
+      "id": "block-16",
+      "start": "08:45",
+      "end": "09:00",
+      "title": "Avslutning",
+      "script": "Takk for at du startet dagen sammen med Radio Rubben. Jeg heter {{presenter}}. Ta vare på deg selv og de du møter i dag. Her kommer siste låt fra meg denne morgenen.",
+      "news": false,
+      "service": false,
+      "music": [
+        {
+          "artist": "Phil Collins",
+          "title": "You Can't Hurry Love",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "James Taylor",
+          "title": "How Sweet It Is (To Be Loved by You)",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Van Morrison",
+          "title": "Days Like This",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        },
+        {
+          "artist": "Ole Paus",
+          "title": "Mitt lille land",
+          "archiveStatus": "unknown",
+          "durationSeconds": null
+        }
+      ],
+      "note": "Avslutningsstikk før siste låt."
+    }
+  ],
+  "reserves": [
+    {
+      "artist": "The Monkees",
+      "title": "I'm a Believer",
+      "archiveStatus": "unknown",
+      "durationSeconds": null
+    },
+    {
+      "artist": "Jason Mraz",
+      "title": "I'm Yours",
+      "archiveStatus": "unknown",
+      "durationSeconds": null
+    },
+    {
+      "artist": "Wilson Pickett",
+      "title": "In the Midnight Hour",
+      "archiveStatus": "unknown",
+      "durationSeconds": null
+    },
+    {
+      "artist": "Creedence Clearwater Revival",
+      "title": "Have You Ever Seen the Rain",
+      "archiveStatus": "unknown",
+      "durationSeconds": null
+    },
+    {
+      "artist": "The Beach Boys",
+      "title": "Wouldn't It Be Nice",
+      "archiveStatus": "unknown",
+      "durationSeconds": null
+    },
+    {
+      "artist": "Bonnie Tyler",
+      "title": "It's a Heartache",
+      "archiveStatus": "unknown",
+      "durationSeconds": null
+    },
+    {
+      "artist": "Morten Abel",
+      "title": "Lydia",
+      "archiveStatus": "unknown",
+      "durationSeconds": null
+    },
+    {
+      "artist": "ABBA",
+      "title": "Dancing Queen",
+      "archiveStatus": "unknown",
+      "durationSeconds": null
+    }
+  ]
+}
