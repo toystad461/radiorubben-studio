@@ -11,6 +11,7 @@
 <?php
 $menu = [
  ['overview','/control.php','LayoutDashboard','Kontrollsenter',''],
+ ['learning','/learning.php','FileText','Robåt – læring',''],
  ['sending','/sending.php','FileText','Sending',''],
  ['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],
  ['ai-studio','/ai-studio.php','AudioLines','AI Studio','board'],
@@ -33,3 +34,4 @@ if (in_array($key,['rode','settings'],true) && $user && !studio_can($user,'setti
           <p>studio.radiorubben.no</p>
         </div>
       </aside>
+

@@ -43,3 +43,4 @@ try {
 } finally {
     @unlink($path); @unlink($path . '.lock'); @rmdir($dir);
 }
+

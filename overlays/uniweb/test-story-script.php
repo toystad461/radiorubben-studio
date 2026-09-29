@@ -48,3 +48,4 @@ try {
     story_check($rejected, 'model insufficient response rejected');
     echo "Per-story script workflow OK\n";
 } finally { @unlink($path); @unlink($path . '.lock'); @rmdir($dir); }
+
