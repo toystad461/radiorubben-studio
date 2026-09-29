@@ -40,8 +40,13 @@ try {
     story_check($rejected, 'thin excerpt rejected');
     $rejected = false;
     try { studio_story_script_generate($item, [], static fn(): string => 'Manus'); }
-    catch (RuntimeException $e) { $rejected = true; }
-    story_check($rejected, 'missing AI config rejected');
+    catch (StudioStoryScriptUnavailable $e) { $rejected = str_contains($e->getMessage(), 'nøkkel'); }
+    story_check($rejected, 'missing AI config identified');
+    $rejected = false;
+    try { studio_story_script_generate($item, ['openai_api_key'=>'test','openai_model'=>'test'],
+        static function (): never { throw new RuntimeException('internal transport details'); }); }
+    catch (StudioStoryScriptUnavailable $e) { $rejected = !str_contains($e->getMessage(), 'internal transport details'); }
+    story_check($rejected, 'transport error sanitized');
     $rejected = false;
     try { studio_story_script_generate($item, ['openai_api_key'=>'test','openai_model'=>'test'], static fn(): string => 'INSUFFICIENT_SOURCE'); }
     catch (RuntimeException $e) { $rejected = true; }
