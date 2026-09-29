@@ -29,6 +29,10 @@ jobs:
           php overlays/uniweb/test-story-script.php
           php overlays/uniweb/test-editorial-memory.php
           php overlays/uniweb/test-programs.php
+          php -l overlays/uniweb/studio-private/app/integrations/WeatherOverview.php
+          php -l overlays/uniweb/studio-public/weather.php
+          php overlays/uniweb/test-weather-overview.php
+          for mode in get guest method; do php overlays/uniweb/test-weather-page.php "$mode"; done
           php -l overlays/uniweb/studio-private/app/broadcast.php
           php -l overlays/uniweb/studio-public/broadcast.php
           php overlays/uniweb/test-broadcast.php

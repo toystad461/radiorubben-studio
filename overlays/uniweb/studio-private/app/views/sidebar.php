@@ -15,6 +15,7 @@ $menu = [
  ['broadcast','/broadcast.php','FileText','Robåt – sendeforslag',''],
  ['sending','/sending.php','FileText','Sending',''],
  ['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],
+ ['weather','/weather.php','Cloud','Været',''],
  ['ai-studio','/ai-studio.php','AudioLines','AI Studio','board'],
  ['music','/ai-studio.php#music-title','AudioLines','Musikk & lyd','music'],
  ['articles','/robot.php','FileText','Artikkelutkast',''],
