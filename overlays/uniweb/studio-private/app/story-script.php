@@ -22,6 +22,8 @@ function studio_story_script_context(array $item): array
 
 function studio_story_script_generate(array $item, array $config, ?callable $request = null, array $editorial = []): string
 {
+    if ($editorial && ($editorial['program'] ?? '') !== ($item['program'] ?? ''))
+        throw new InvalidArgumentException('Programprofilen tilhører ikke dette punktet.');
     $context = studio_story_script_context($item);
     if (!is_string($config['openai_api_key'] ?? null) || trim($config['openai_api_key']) === ''
         || !is_string($config['openai_model'] ?? null) || trim($config['openai_model']) === '') {
@@ -44,4 +46,5 @@ function studio_story_script_generate(array $item, array $config, ?callable $req
     }
     return $script;
 }
+
 

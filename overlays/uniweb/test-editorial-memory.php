@@ -35,7 +35,7 @@ try {
     check(str_contains($payload['instructions'],$ruleText) && str_contains($payload['instructions'],'Kildekravene over har alltid forrang'),'approved rule reaches the next AI request below source constraints');
     check(!str_contains($payload['instructions'],'Originalutkast.'),'old manuscript facts are excluded from generator instructions');
     check($payload['store']===false,'API storage remains disabled');
-    check(studio_memory_context(studio_board_read($path),'another-program')===[],'rules do not leak into another program');
+    rejected(fn()=>studio_memory_context(studio_board_read($path),'another-program'),'unknown program is rejected');
     studio_board_update($id,4,'generated',['script'=>'Nytt utkast.','generation'=>['model'=>'mock-model','editorial'=>$ctx]],$presenter,$path);
     $item=studio_board_read($path)['items'][0];
     check($item['history'][3]['before']['script']==='Rettet og kontrollert manus.' && $item['status']==='draft' && !$item['verified'],'regeneration preserves approved manuscript and resets approval');
@@ -52,6 +52,7 @@ try {
     file_put_contents($dir.'/legacy.json',json_encode(['items'=>[['id'=>'legacy','title'=>'Old','script'=>'Old script','notes'=>'','status'=>'draft','revision'=>1]],'updatedAt'=>null]));
     studio_board_update('legacy',1,'save',['title'=>'Old','script'=>'Edited'],$presenter,$dir.'/legacy.json');
     $legacy=studio_board_read($dir.'/legacy.json')['items'][0];
-    check($legacy['program']==='' && $legacy['history'][0]['before']['script']==='Old script','legacy items preserved and remain unassigned');
+    check(!array_key_exists('program', $legacy) && $legacy['history'][0]['before']['script']==='Old script','legacy items preserved and remain unassigned');
     echo "Editorial memory workflow passed\n";
 } finally { foreach (glob($dir.'/*') as $file) unlink($file); rmdir($dir); }
+

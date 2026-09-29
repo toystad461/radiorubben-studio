@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__ . '/programs.php';
 
 /** Shared editorial rundown. This file lives outside the public document root. */
 function studio_board_path(): string
@@ -49,9 +50,9 @@ function studio_board_length(string $value): int
     return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
 }
 
-function studio_board_add_source(array $source, array $user, ?string $path = null): void
+function studio_board_add_source(array $source, array $user, ?string $path = null, ?array $registry = null): void
 {
-    studio_board_change(static function (array &$board) use ($source, $user): void {
+    studio_board_change(static function (array &$board) use ($source, $user, $registry): void {
         foreach (studio_board_active($board) as $item) {
             if (($item['originId'] ?? null) === ($source['id'] ?? null)) return;
         }
@@ -62,23 +63,23 @@ function studio_board_add_source(array $source, array $user, ?string $path = nul
             'title'=>$source['title'], 'sourceName'=>$source['sourceName'] ?? 'Kilde',
             'sourceUrl'=>$source['url'] ?? '', 'sourceAt'=>$source['publishedAt'] ?? null,
             'capturedAt'=>$source['fetchedAt'] ?? gmdate('c'), 'summary'=>$source['summary'] ?? '',
-            'program'=>'god-morgen-vestland', 'script'=>'', 'notes'=>'', 'status'=>'draft', 'verified'=>false,
+            'program'=>studio_program_default($registry), 'script'=>'', 'notes'=>'', 'status'=>'draft', 'verified'=>false,
             'createdAt'=>gmdate('c'), 'updatedAt'=>gmdate('c'),
             'createdBy'=>$user['name'] ?? 'Medarbeider', 'approvedBy'=>null, 'revision'=>1,
         ];
     }, $path);
 }
 
-function studio_board_add_manual(string $title, array $user, ?string $path = null): void
+function studio_board_add_manual(string $title, array $user, ?string $path = null, ?array $registry = null): void
 {
     $title = trim($title);
     if ($title === '' || studio_board_length($title) > 180 || preg_match('/[\x00-\x1f\x7f]/', $title)) throw new InvalidArgumentException('Skriv en tittel på inntil 180 tegn.');
-    studio_board_change(static function (array &$board) use ($title, $user): void {
+    studio_board_change(static function (array &$board) use ($title, $user, $registry): void {
         if (count(studio_board_active($board)) >= 30) throw new InvalidArgumentException('Sendelisten er full.');
         $board['items'][] = [
             'id'=>bin2hex(random_bytes(8)), 'originId'=>null, 'title'=>$title,
             'sourceName'=>'Eget punkt', 'sourceUrl'=>'', 'sourceAt'=>null,
-            'capturedAt'=>null, 'summary'=>'', 'program'=>'god-morgen-vestland', 'script'=>'', 'notes'=>'',
+            'capturedAt'=>null, 'summary'=>'', 'program'=>studio_program_default($registry), 'script'=>'', 'notes'=>'',
             'status'=>'draft', 'verified'=>false, 'createdAt'=>gmdate('c'),
             'updatedAt'=>gmdate('c'), 'createdBy'=>$user['name'] ?? 'Medarbeider',
             'approvedBy'=>null, 'revision'=>1,
@@ -86,9 +87,9 @@ function studio_board_add_manual(string $title, array $user, ?string $path = nul
     }, $path);
 }
 
-function studio_board_update(string $id, int $revision, string $action, array $input, array $user, ?string $path = null): void
+function studio_board_update(string $id, int $revision, string $action, array $input, array $user, ?string $path = null, ?array $registry = null): void
 {
-    studio_board_change(static function (array &$board) use ($id, $revision, $action, $input, $user): void {
+    studio_board_change(static function (array &$board) use ($id, $revision, $action, $input, $user, $registry): void {
         foreach (array_keys($board['items']) as $position) {
             if (!is_array($board['items'][$position]) || ($board['items'][$position]['id'] ?? null) !== $id
                 || ($board['items'][$position]['status'] ?? '') === 'archived') continue;
@@ -100,9 +101,9 @@ function studio_board_update(string $id, int $revision, string $action, array $i
             unset($before['history']);
             if ($action === 'save') {
                 $program = (string)($input['program'] ?? $item['program'] ?? '');
-                if (!in_array($program, ['', 'god-morgen-vestland'], true))
-                    throw new InvalidArgumentException('Velg et gyldig program.');
-                $item['program'] = $program;
+                studio_program_profile($program, $registry);
+                // Saving an unassigned legacy item must not add a program field.
+                if ($program !== '' || array_key_exists('program', $item)) $item['program'] = $program;
                 $title = trim((string)($input['title'] ?? ''));
                 $script = trim((string)($input['script'] ?? ''));
                 $notes = trim((string)($input['notes'] ?? ''));
@@ -151,4 +152,5 @@ function studio_board_update(string $id, int $revision, string $action, array $i
         throw new InvalidArgumentException('Punktet finnes ikke lenger.');
     }, $path);
 }
+
 
