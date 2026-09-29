@@ -112,6 +112,19 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                 $item['generatedAt'] = gmdate('c');
                 $item['verified'] = false;
                 $item['status'] = 'draft'; $item['approvedBy'] = null;
+            } elseif ($action === 'article') {
+                if (empty($item['originId'])) throw new InvalidArgumentException('Artikkelen må være knyttet til en kildesak.');
+                $facts = trim((string)($input['facts'] ?? ''));
+                $title = trim((string)($input['title'] ?? ''));
+                $body = trim((string)($input['body'] ?? ''));
+                if ($title === '' || studio_board_length($title) > 180 || studio_board_length($facts) > 4000
+                    || studio_board_length($body) > 6000 || preg_match('/[\x00-\x1f\x7f]/', $title))
+                    throw new InvalidArgumentException('Kontroller lengden på artikkeltittel, faktanotater og tekst.');
+                $item['articleTitle'] = $title;
+                $item['articleFacts'] = $facts;
+                $item['articleBody'] = $body;
+                $item['articleUpdatedAt'] = gmdate('c');
+                $item['articleReviewed'] = false;
             } elseif ($action === 'ready') {
                 if (trim((string)($item['script'] ?? '')) === '' || empty($item['verified']))
                     throw new InvalidArgumentException('Lagre manus og bekreft kildekontroll før du merker punktet klart.');
