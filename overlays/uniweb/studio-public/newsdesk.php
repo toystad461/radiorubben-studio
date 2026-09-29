@@ -45,6 +45,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try { studio_board_add_source($all[$id], $user); }
         catch (Throwable $e) { error_log('Newsdesk add failed: ' . $e->getMessage()); $_SESSION['newsdesk_error'] = 'Kunne ikke legge til saken. Kontroller sendelisten.'; }
     }
+    if ($action === 'article' && isset($all[$id]) && ($all[$id]['source'] ?? '') !== 'vegvesen') {
+        try {
+            studio_board_add_source($all[$id], $user);
+            foreach (studio_board_active(studio_board_read()) as $entry)
+                if (($entry['originId'] ?? null) === $id) redirect('/article.php?item=' . $entry['id']);
+            throw new RuntimeException('Saken ble ikke funnet etter lagring.');
+        } catch (Throwable $e) {
+            error_log('Newsdesk article start failed: ' . $e->getMessage());
+            $_SESSION['newsdesk_error'] = 'Kunne ikke åpne artikkelutkastet. Kontroller sendelisten.';
+        }
+    }
     redirect('/newsdesk.php');
 }
 try { $weather = studio_weather(); } catch (Throwable $e) { $weather = null; }
@@ -74,6 +85,7 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
             <?php if ($item['summary']): ?><details class="desk-description"><summary>Kort omtale</summary><p><?= escape($item['summary']) ?></p></details><?php endif; ?>
             <div class="desk-actions"><a href="<?= escape($item['url']) ?>" target="_blank" rel="noopener noreferrer">Les originalen ↗</a>
             <?php if ($canPrepare && !isset($rundown[$item['id']])): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="add"><input type="hidden" name="id" value="<?= escape($item['id']) ?>"><button type="submit">Legg i sendeliste</button></form><?php endif; ?>
+            <?php if ($canPrepare): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="article"><input type="hidden" name="id" value="<?= escape($item['id']) ?>"><button type="submit">Lag artikkelutkast</button></form><?php endif; ?>
             </div>
           </article>
         <?php endforeach; ?>
