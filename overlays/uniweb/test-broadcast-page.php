@@ -6,7 +6,7 @@ if (!in_array($mode,['get','observer','csrf','nonce','unknown','create','method'
 $dir=sys_get_temp_dir().'/broadcast-page-'.bin2hex(random_bytes(5));
 mkdir($dir.'/studio-public',0700,true);mkdir($dir.'/studio-private/app/views',0700,true);
 mkdir($dir.'/studio-private/app/templates',0700,true);mkdir($dir.'/studio-private/config',0700,true);
-foreach (['broadcast','board','programs','editorial-memory','story-script'] as $file)
+foreach (['broadcast','board','programs','editorial-memory','story-script','news-script'] as $file)
     copy(__DIR__.'/studio-private/app/'.$file.'.php',$dir.'/studio-private/app/'.$file.'.php');
 copy(__DIR__.'/studio-private/app/templates/morning-v1.json',$dir.'/studio-private/app/templates/morning-v1.json');
 copy(__DIR__.'/studio-public/broadcast.php',$dir.'/studio-public/broadcast.php');
