@@ -15,33 +15,53 @@ try { $traffic = newsdesk_traffic(dirname(__DIR__) . '/studio-private/config'); 
 catch (Throwable $e) { $traffic = ['status'=>'unavailable', 'items'=>[]]; }
 try { $weather = studio_weather(); } catch (Throwable $e) { $weather = null; }
 $ready = count(array_filter($items, static fn($item) => $item['status'] === 'ready'));
-$extraStylesheet = '/assets/control.css?v=1';
+$drafts = count($items) - $ready;
+$nextDraft = null;
+foreach ($items as $item) {
+    if ($item['status'] !== 'ready') { $nextDraft = $item; break; }
+}
+$extraStylesheet = '/assets/control.css?v=4';
 require dirname(__DIR__) . '/studio-private/app/views/head.php';
 ?>
 <div class="shell">
 <?php $activePage = 'overview'; require dirname(__DIR__) . '/studio-private/app/views/sidebar.php'; ?>
 <div class="workspace">
 <header class="topbar"><span>Arbeidsrom / <strong>Kontrollsenter</strong></span><span>Radio Rubben Studio</span><?php require dirname(__DIR__) . '/studio-private/app/views/account.php'; ?></header>
-<main id="main" class="control-page">
-  <div class="control-heading"><div><p class="eyebrow">RADIO RUBBEN / ARBEIDSROM</p><h1>Kontrollsenter</h1><p class="control-intro">Dette er klart til sending og dette bør du se på nå.</p></div><a class="control-link" href="/newsdesk.php">Finn en sak ↗</a></div>
-  <section class="control-status" aria-label="Studiostatus"><div><span class="status-led unknown" aria-hidden="true"></span><strong>På lufta: ikke tilkoblet</strong><small>Bekreft sending i avspillingssystemet.</small></div><div><span class="eyebrow">KLAR I SENDELISTEN</span><strong><?= $ready ?> punkt<?= $ready === 1 ? '' : 'er' ?></strong><small>Dette er redaksjonell status, ikke avspilling.</small></div><div><span class="eyebrow">TIL BEHANDLING</span><strong><?= count($items) - $ready ?> utkast</strong><small>Manus og kildekontroll.</small></div></section>
+<main id="main" class="control-page control-dashboard">
+  <header class="dashboard-heading"><div><p class="eyebrow">RADIO RUBBEN / STUDIO</p><h1>Studiooversikt</h1><p class="control-muted">Arbeidsflyten for neste sending.</p></div><div class="dashboard-heading-actions"><span class="dashboard-air-state"><span class="status-led unknown" aria-hidden="true"></span> Sendestatus ukjent</span><a class="dashboard-primary-link" href="/sending.php">Åpne Sending <span aria-hidden="true">↗</span></a></div></header>
   <?php if (isset($boardUnavailable)): ?><p class="control-alert error" role="alert">Sendelisten kan ikke leses nå. Prøv igjen senere.</p><?php endif; ?>
-  <div class="control-grid">
-    <section class="control-panel control-primary" aria-labelledby="today-title"><div class="panel-top"><div><p class="eyebrow">DAGENS ARBEID</p><h2 id="today-title">Sendeliste</h2></div><a href="/sending.php">Åpne Sending ↗</a></div>
-      <?php if (!$items): ?><p class="control-empty">Ingen punkter ennå. Velg lokalsaker i Nyhetsdesk, eller legg til et eget punkt i Sending.</p><?php endif; ?>
-      <ol class="control-rundown"><?php foreach (array_slice($items, 0, 5) as $item): ?><li><span class="status-pill <?= escape($item['status']) ?>"><?= $item['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span><a href="/sending.php?item=<?= escape($item['id']) ?>"><?= escape($item['title']) ?></a><small><?= escape($item['sourceName']) ?></small></li><?php endforeach; ?></ol>
-      <?php if (count($items) > 5): ?><p class="control-muted">Og <?= count($items) - 5 ?> punkter til i Sending.</p><?php endif; ?>
+  <section class="dashboard-priority" aria-label="Neste oppgave">
+    <div><p class="eyebrow">NESTE OPPGAVE</p>
+      <?php if (isset($boardUnavailable)): ?><strong>Kontroller sendelisten</strong><span>Listen er midlertidig utilgjengelig.</span>
+      <?php elseif ($nextDraft): ?><strong><?= escape($nextDraft['title']) ?></strong><span>Utkast · kontroller kilden og gjør manus klart i Sending.</span>
+      <?php elseif (!$items): ?><strong>Bygg neste sending</strong><span>Velg en sak fra Nyhetsdesk eller legg inn et eget punkt.</span>
+      <?php else: ?><strong>Alle punktene er redaksjonelt klare</strong><span>Kontroller rekkefølgen før sending. Avspilling er ikke bekreftet her.</span><?php endif; ?>
+    </div>
+    <a href="<?= $nextDraft ? '/sending.php?item=' . rawurlencode((string)$nextDraft['id']) : ($items || isset($boardUnavailable) ? '/sending.php' : '/newsdesk.php') ?>"><?= $nextDraft ? 'Åpne utkast' : ($items || isset($boardUnavailable) ? 'Se sendelisten' : 'Finn saker') ?> <span aria-hidden="true">↗</span></a>
+  </section>
+  <nav class="dashboard-flow" aria-label="Produksjonsflyt">
+    <a href="/newsdesk.php"><span class="flow-number">01</span><span><strong>Finn saker</strong><small>Lokalt, trafikk og vær</small></span><span aria-hidden="true">↗</span></a>
+    <a href="/sending.php"><span class="flow-number">02</span><span><strong>Lag manus</strong><small><?= $drafts ?> utkast · <?= $ready ?> klar<?= $ready === 1 ? '' : 'e' ?></small></span><span aria-hidden="true">↗</span></a>
+    <a href="/ai-studio.php"><span class="flow-number">03</span><span><strong>Gå i studio</strong><small>Lyd og produksjon</small></span><span aria-hidden="true">↗</span></a>
+  </nav>
+  <div class="dashboard-columns">
+    <section class="control-panel dashboard-rundown" aria-labelledby="today-title">
+      <div class="panel-top"><div><p class="eyebrow">NESTE SENDING</p><h2 id="today-title">Sendeliste <span class="dashboard-count"><?= count($items) ?></span></h2></div><a href="/sending.php">Hele listen ↗</a></div>
+      <?php if (!$items): ?><p class="control-empty">Listen er tom. Velg en sak i Nyhetsdesk eller legg til et punkt i Sending.</p><?php endif; ?>
+      <ol class="control-rundown"><?php foreach (array_slice($items, 0, 5) as $position=>$item): ?><li><span class="dashboard-position"><?= $position + 1 ?></span><a href="/sending.php?item=<?= escape($item['id']) ?>"><strong><?= escape($item['title']) ?></strong><small><?= escape($item['sourceName']) ?></small></a><span class="status-pill <?= escape($item['status']) ?>"><?= $item['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span></li><?php endforeach; ?></ol>
+      <?php if (count($items) > 5): ?><a class="dashboard-more" href="/sending.php">Vis <?= count($items) - 5 ?> flere punkter ↗</a><?php endif; ?>
     </section>
-    <section class="control-panel" aria-labelledby="local-title"><div class="panel-top"><div><p class="eyebrow">BØMLO</p><h2 id="local-title">Lokalt nå</h2></div><a href="/newsdesk.php">Nyhetsdesk ↗</a></div>
-      <?php if (!$local['items']): ?><p class="control-empty">Ingen ferske saker tilgjengelig fra kommunen.</p><?php endif; ?>
-      <ul class="control-news"><?php foreach (array_slice($local['items'], 0, 3) as $story): ?><li><a href="<?= escape($story['url']) ?>" target="_blank" rel="noopener noreferrer"><?= escape($story['title']) ?> ↗</a></li><?php endforeach; ?></ul>
-      <?php if ($local['status'] === 'stale'): ?><p class="control-muted">Eldre data – kontroller kilden.</p><?php endif; ?>
+    <section class="control-panel dashboard-local" aria-labelledby="local-title">
+      <div class="panel-top"><div><p class="eyebrow">KILDESTRØM / BØMLO</p><h2 id="local-title">Lokale saker</h2></div><a href="/newsdesk.php">Nyhetsdesk ↗</a></div>
+      <?php if (!$local['items']): ?><p class="control-empty">Ingen kommunesaker tilgjengelig akkurat nå.</p><?php endif; ?>
+      <ul class="control-news"><?php foreach (array_slice($local['items'], 0, 3) as $story): ?><li><a href="/newsdesk.php"><?= escape($story['title']) ?> <span aria-hidden="true">↗</span></a></li><?php endforeach; ?></ul>
+      <?php if ($local['status'] === 'stale'): ?><p class="dashboard-caution">Eldre data. Kontroller originalkilden.</p><?php endif; ?>
     </section>
-    <section class="control-panel" aria-labelledby="service-title"><div class="panel-top"><div><p class="eyebrow">SUNNHORDLAND</p><h2 id="service-title">Vær og veg</h2></div><a href="/newsdesk.php">Se alle ↗</a></div>
-      <?php if ($weather): ?><p class="control-temperature"><?= escape((string)$weather['temperature']) ?>° <span>Bremnes</span></p><p class="control-muted">MET Norge · prognose, kontroller før opplesing.</p><?php else: ?><p class="control-muted">Værdata er utilgjengelige.</p><?php endif; ?>
-      <?php if ($traffic['items']): ?><ul class="control-news"><?php foreach (array_slice($traffic['items'], 0, 2) as $event): ?><li><?= escape($event['title']) ?></li><?php endforeach; ?></ul><?php else: ?><p class="control-muted"><?= $traffic['status'] === 'unavailable' ? 'Vegmeldinger er utilgjengelige.' : 'Ingen registrerte hendelser i området.' ?></p><?php endif; ?>
-      <p class="control-muted">Planlagt arbeid kan vises her. Sjekk tid og status hos Vegvesenet.</p>
-    </section>
-    <section class="control-panel control-shortcuts" aria-labelledby="tools-title"><p class="eyebrow">SNARVEIER</p><h2 id="tools-title">Gå videre</h2><div><a href="/sending.php">Skriv manus og bygg sending <span>↗</span></a><a href="/ai-studio.php">Åpne AI Studio <span>↗</span></a><a href="/robot.php">Åpne fotballroboten <span>↗</span></a><a href="/workspace.php?section=social">Publisering og sosiale medier <span>↗</span></a></div></section>
   </div>
+  <div class="dashboard-bottom">
+    <section class="control-panel dashboard-weather" aria-labelledby="weather-title"><div><p class="eyebrow">BREMNES / MET NORGE</p><h2 id="weather-title">Vær</h2></div><?php if ($weather): ?><p class="control-temperature"><?= escape((string)$weather['temperature']) ?>°</p><p class="control-muted">Prognose · <?= escape((string)$weather['time']) ?></p><?php else: ?><p class="control-muted">Værdata utilgjengelige.</p><?php endif; ?><a href="/newsdesk.php">Se kilde og detaljer ↗</a></section>
+    <section class="control-panel dashboard-traffic" aria-labelledby="traffic-title"><div class="panel-top"><div><p class="eyebrow">STATENS VEGVESEN</p><h2 id="traffic-title">På vegen</h2></div><a href="/newsdesk.php">Alle meldinger ↗</a></div><?php if ($traffic['items']): ?><ul class="control-news"><?php foreach (array_slice($traffic['items'], 0, 2) as $event): ?><li><?= escape($event['title']) ?></li><?php endforeach; ?></ul><?php else: ?><p class="control-muted"><?= $traffic['status'] === 'unavailable' ? 'Vegmeldinger utilgjengelige.' : 'Ingen registrerte hendelser i området.' ?></p><?php endif; ?><p class="dashboard-caution">Kontroller tidspunkt og status før omtale.</p></section>
+    <section class="control-panel dashboard-tools" aria-labelledby="tools-title"><p class="eyebrow">PRODUSER VIDERE</p><h2 id="tools-title">Verktøy</h2><div><a href="/robot.php">Artikkelutkast <span>↗</span></a><a href="/ai-studio.php#music-title">Musikk og lyd <span>↗</span></a><a href="/workspace.php?section=social">Sosiale medier <span>↗</span></a></div></section>
+  </div>
+  <p class="dashboard-footnote">«Klar» er redaksjonell status. Studio bekrefter ikke om lyden faktisk er på lufta.</p>
 </main></div></div></body></html>
