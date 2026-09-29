@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+final class StudioStoryScriptUnavailable extends RuntimeException {}
+
 /** The cached RSS/traffic excerpt is the entire factual basis for this draft. */
 function studio_story_script_context(array $item): array
 {
@@ -25,7 +27,7 @@ function studio_story_script_generate(array $item, array $config, ?callable $req
     $context = studio_story_script_context($item);
     if (!is_string($config['openai_api_key'] ?? null) || trim($config['openai_api_key']) === ''
         || !is_string($config['openai_model'] ?? null) || trim($config['openai_model']) === '') {
-        throw new RuntimeException('Manusgeneratoren er ikke konfigurert. Skriv manus manuelt foreløpig.');
+        throw new StudioStoryScriptUnavailable('AI-nøkkel eller modell mangler i Studio. Administrator må konfigurere OpenAI i privat Studio-oppsett.');
     }
     $payload = [
         'model'=>$config['openai_model'], 'store'=>false, 'max_output_tokens'=>350,
@@ -33,7 +35,12 @@ function studio_story_script_generate(array $item, array $config, ?callable $req
         'input'=>json_encode($context, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE),
     ];
     $request ??= 'producer_request';
-    $script = trim($request($config, $payload));
+    try {
+        $script = trim($request($config, $payload));
+    } catch (RuntimeException $e) {
+        // producer_request returns controlled, credential-free messages. Do not show raw transport details.
+        throw new StudioStoryScriptUnavailable('AI-tjenesten avviste eller fullførte ikke forespørselen. Kontroller API-tilgang, modell og bruksgrense.');
+    }
     if ($script === 'INSUFFICIENT_SOURCE' || $script === '' || strlen($script) > 2200
         || preg_match('/[\[\]{}<>]|\b(?:TODO|TBD)\b/ui', $script)) {
         throw new RuntimeException('Kilden ga ikke et brukbart manusutkast. Les originalen og skriv manuelt.');
