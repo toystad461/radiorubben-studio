@@ -1,0 +1,19 @@
+name: News scripts isolated review patch
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: python3 scripts/test-news-release.py
+      - run: python3 scripts/news-release.py build
+      - run: python3 scripts/news-release.py verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: news-scripts-pr18-review-only
+          path: dist/news-scripts-pr18.zip
+          if-no-files-found: error

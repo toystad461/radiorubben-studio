@@ -62,3 +62,11 @@ Mockede tester dekker kildebegrensninger, parsing, manglende kildebelegg,
 ugyldige svar, utløp, endringer, manuell godkjenning og samtidighet på PHP
 8.2/8.4. Ekte kildehenting, kostnad/ventetid og AI-svar må kontrolleres i
 driftsmiljøet før publisering. Testene påstår ikke at AI-faktasjekk er feilfri.
+
+## Separat patch
+
+Se [NEWS-RELEASE.md](NEWS-RELEASE.md) for avhengighetskart, låst patchbygger,
+negative pakkekontroller og konkret sperre mot uavklart Uniweb-utgangspunkt.
+Artefakten `news-scripts-pr18-review-only` er for offline avstemming, ikke direkte
+opplasting. Den tar ikke med programregister, PR #15/#16 eller private data.
+
