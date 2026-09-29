@@ -14,7 +14,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: curl, openssl, mbstring, zip
+          extensions: curl, openssl, mbstring, zip, dom
           tools: composer:v2
           coverage: none
       - run: composer install --no-dev --prefer-dist --no-interaction
@@ -26,6 +26,9 @@ jobs:
           php overlays/uniweb/test-board.php
           php overlays/uniweb/test-newsdesk.php
           php overlays/uniweb/test-intro-mail.php
+          php -l overlays/uniweb/studio-private/app/news-script.php
+          php overlays/uniweb/test-news-script.php
+          for mode in get guest method observer csrf forged; do php overlays/uniweb/test-news-page.php "$mode"; done
           php overlays/uniweb/test-story-script.php
           php overlays/uniweb/test-editorial-memory.php
           php overlays/uniweb/test-programs.php

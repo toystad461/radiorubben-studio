@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/programs.php';
+require_once __DIR__ . '/news-script.php';
 
 /** Shared editorial rundown. This file lives outside the public document root. */
 function studio_board_path(): string
@@ -42,7 +43,15 @@ function studio_board_change(callable $change, ?string $path = null): mixed
 
 function studio_board_active(array $board): array
 {
-    return array_values(array_filter($board['items'] ?? [], static fn($item) => is_array($item) && ($item['status'] ?? '') !== 'archived'));
+    $items = array_values(array_filter($board['items'] ?? [], static fn($item) => is_array($item) && ($item['status'] ?? '') !== 'archived'));
+    // Expiry must also affect exports and consumers of the rundown, not only the badge.
+    foreach ($items as &$item) {
+        if (($item['status'] ?? '') === 'ready' && isset($item['sourceCheck']) && !studio_news_check_current($item)) {
+            $item['status'] = 'draft'; $item['approvedBy'] = null;
+        }
+    }
+    unset($item);
+    return $items;
 }
 
 function studio_board_length(string $value): int
@@ -120,10 +129,19 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                 $item['script'] = $script;
                 $item['generatedAt'] = gmdate('c');
                 $item['generation'] = $input['generation'] ?? [];
+                if (isset($input['sourceCheck'])) $item['sourceCheck'] = $input['sourceCheck'];
+                elseif (isset($item['sourceCheck'])) $item['sourceCheck'] = ['status'=>'needs_review'];
                 $item['generatedOriginal'] = $script;
                 $item['verified'] = false;
                 $item['status'] = 'draft'; $item['approvedBy'] = null;
+            } elseif ($action === 'source_checked') {
+                if (!is_array($input['sourceCheck'] ?? null)) throw new InvalidArgumentException('Ugyldig kildekontroll.');
+                $item['sourceCheck'] = $input['sourceCheck'];
+                $item['verified'] = false;
+                $item['status'] = 'draft'; $item['approvedBy'] = null;
             } elseif ($action === 'ready') {
+                if (isset($item['sourceCheck']) && !studio_news_check_current($item))
+                    throw new InvalidArgumentException('Kjør kildekontroll på nytt. Manuset er endret, kontrollen har avvik eller den er eldre enn én time.');
                 if (trim((string)($item['script'] ?? '')) === '' || empty($item['verified']))
                     throw new InvalidArgumentException('Lagre manus og bekreft kildekontroll før du merker punktet klart.');
                 $item['status'] = 'ready'; $item['approvedBy'] = $user['name'] ?? 'Medarbeider';
@@ -152,5 +170,4 @@ function studio_board_update(string $id, int $revision, string $action, array $i
         throw new InvalidArgumentException('Punktet finnes ikke lenger.');
     }, $path);
 }
-
 

@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = is_string($_POST['id'] ?? null) ? $_POST['id'] : '';
     try {
         if ($action === 'add') studio_board_add_manual((string)($_POST['title'] ?? ''), $user);
-        elseif ($action === 'generate') {
+        elseif (in_array($action, ['generate', 'recheck'], true)) {
             $revision = (int)($_POST['revision'] ?? 0);
             $sourceItem = null;
             foreach (studio_board_active(studio_board_read()) as $candidate) {
@@ -35,18 +35,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$sourceItem || ($sourceItem['revision'] ?? 0) !== $revision)
                 throw new InvalidArgumentException('Punktet er endret. Last siden på nytt før du genererer manus.');
             $editorial = studio_memory_context(studio_board_read(), (string)($sourceItem['program'] ?? ''));
-            $script = studio_story_script_generate($sourceItem, $config, null, $editorial);
-            studio_board_update($id, $revision, 'generated', ['script'=>$script,
-                'generation'=>['model'=>$config['openai_model'], 'editorial'=>$editorial]], $user);
-            $_SESSION['sending_message'] = 'Manusutkast laget. Les originalkilden og kontroller alle opplysninger før du merker punktet klart.';
-        } else studio_board_update($id, (int)($_POST['revision'] ?? 0), $action, $_POST, $user);
-        if ($action !== 'generate') $_SESSION['sending_message'] = 'Sendelisten er oppdatert.';
+            if (studio_news_allowed_url((string)$sourceItem['sourceUrl']) || $action === 'recheck') {
+                // Invalidate the old result before network work, including on timeout/failure.
+                studio_board_update($id, $revision, 'source_checked', ['sourceCheck'=>['status'=>'checking']], $user);
+                $revision++;
+                $result = studio_news_prepare($sourceItem, $config, $editorial,
+                    $action === 'recheck' ? (string)$sourceItem['script'] : null);
+                if ($action === 'recheck') {
+                    studio_board_update($id, $revision, 'source_checked', ['sourceCheck'=>$result['check']], $user);
+                } else {
+                    studio_board_update($id, $revision, 'generated', ['script'=>$result['script'],
+                        'generation'=>['model'=>$config['openai_model'], 'editorial'=>$editorial],
+                        'sourceCheck'=>$result['check']], $user);
+                }
+                $_SESSION['sending_message'] = $result['check']['status'] === 'passed'
+                    ? 'AI-kontrollen fant kildebelegg. Les manus og kontrollrapport før du godkjenner for sending.'
+                    : 'Manuset har kildeavvik eller usikkerheter. Se kontrollrapporten og rett teksten før sending.';
+            } else {
+                $script = studio_story_script_generate($sourceItem, $config, null, $editorial);
+                studio_board_update($id, $revision, 'generated', ['script'=>$script,
+                    'generation'=>['model'=>$config['openai_model'], 'editorial'=>$editorial]], $user);
+                $_SESSION['sending_message'] = 'Utkast fra kildeomtale laget. Automatisk originalkontroll er ikke utført for denne kilden.';
+            }
+        } else {
+            if (!in_array($action, ['save', 'ready', 'draft', 'up', 'down', 'archive'], true))
+                throw new InvalidArgumentException('Ukjent handling.');
+            studio_board_update($id, (int)($_POST['revision'] ?? 0), $action, $_POST, $user);
+        }
+        if (!in_array($action, ['generate', 'recheck'], true)) $_SESSION['sending_message'] = 'Sendelisten er oppdatert.';
     } catch (InvalidArgumentException $e) {
         $_SESSION['sending_error'] = $e->getMessage();
     } catch (RuntimeException $e) {
         error_log('Studio sending save failed: ' . $e->getMessage());
-        $_SESSION['sending_error'] = $action === 'generate'
-            ? 'Manusgeneratoren er utilgjengelig eller ikke konfigurert. Skriv manus manuelt eller kontakt administrator.'
+        $_SESSION['sending_error'] = in_array($action, ['generate', 'recheck'], true)
+            ? 'Manus eller kildekontroll kunne ikke fullføres. Kilden eller AI-tjenesten er utilgjengelig, teksten kan ikke leses, eller tjenesten er ikke konfigurert. Ingen ny kontroll er godkjent.'
             : 'Kunne ikke lagre. Prøv igjen litt senere.';
     } catch (Throwable $e) {
         error_log('Studio sending save failed: ' . $e->getMessage());
@@ -101,7 +123,22 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
       <div class="panel-top"><div><p class="eyebrow">PUNKT <?= array_search($selected, $items, true) + 1 ?></p><h2 id="editor-title">Manus og kontroll</h2><p class="control-muted"><?= escape($selected['title']) ?></p></div><span class="status-pill <?= escape($selected['status']) ?>"><?= $selected['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span></div><a class="sending-jump" href="#sending-list-title">Velg annet punkt ↓</a>
       <p class="control-muted">Fra <?= escape($selected['sourceName']) ?> · <?= escape(sending_time($selected['sourceAt'])) ?><?php if ($selected['sourceUrl']): ?> · <a href="<?= escape($selected['sourceUrl']) ?>" target="_blank" rel="noopener noreferrer">Kontroller original ↗</a><?php endif; ?></p>
       <?php if ($selected['summary']): ?><details class="source-summary"><summary>Vis kildeomtale</summary><p><?= escape($selected['summary']) ?></p></details><?php endif; ?>
-      <?php if ($canPrepare && !empty($selected['originId'])): ?><form method="post" class="script-generate"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="generate"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><button type="submit"><?= $selected['script'] ? 'Generer nytt manusutkast' : 'Generer manusutkast' ?></button><span class="control-muted">Bruker lagret kildeomtale. <?= $selected['script'] ? 'Lagrer forrige versjon i historikken. ' : '' ?>Kontroller originalen før sending.</span></form><?php endif; ?>
+      <?php if ($canPrepare && !empty($selected['originId'])): ?><form method="post" class="script-generate"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="generate"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><button type="submit"><?= studio_news_allowed_url((string)$selected['sourceUrl']) ? 'Lag og kildekontroller nyhetsmanus' : 'Generer manusutkast fra omtale' ?></button><span class="control-muted"><?= studio_news_allowed_url((string)$selected['sourceUrl']) ? 'Henter originaltekst og kjører separat AI-kontroll. ' : 'Bruker lagret kildeomtale uten automatisk originalkontroll. ' ?><?= $selected['script'] ? 'Lagrer forrige versjon i historikken. ' : '' ?></span></form><?php endif; ?>
+      <?php if ($canPrepare && $selected['script'] && studio_news_allowed_url((string)$selected['sourceUrl'])): ?>
+      <form method="post" class="script-generate"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="recheck"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><button type="submit">Kontroller lagret manus på nytt</button><span class="control-muted">Lagre tekstendringer først. Henter originalen på nytt.</span></form>
+      <?php endif; ?>
+      <?php if (isset($selected['sourceCheck'])): $check = $selected['sourceCheck']; ?>
+      <section aria-labelledby="source-check-title" class="source-summary">
+        <h3 id="source-check-title">Robåtens kildekontroll</h3>
+        <p role="status"><?= studio_news_check_current($selected) ? 'AI-kontroll bestått – venter på redaksjonell godkjenning.' : 'Må kontrolleres: avvik, endret manus, utløpt eller ufullført kontroll.' ?></p>
+        <p class="control-muted">Kontrollert <?= escape(sending_time($check['checkedAt'] ?? null)) ?>. Kontroll gjelder denne teksten i én time. AI-kontroll er ikke en garanti for at kilden er korrekt eller uendret.</p>
+        <?php if (!empty($check['issues'])): ?><ul><?php foreach ($check['issues'] as $issue): ?><li><?= escape($issue) ?></li><?php endforeach; ?></ul><?php endif; ?>
+        <details><summary>Se påstander og kildebelegg</summary>
+        <?php foreach ($check['segments'] ?? [] as $segment): ?><p><strong><?= escape($segment['text']) ?></strong><br><?= escape(['supported'=>'Har kildebelegg', 'unsupported'=>'Mangler kildebelegg', 'uncertain'=>'Usikkert'][$segment['verdict']] ?? 'Ukjent') ?>: <?= escape($segment['reason']) ?></p><blockquote><?= escape($segment['evidence']) ?></blockquote><?php endforeach; ?>
+        </details>
+        <?php if (!empty($check['source']['text'])): ?><details><summary>Originaltekst brukt i kontrollen</summary><p>Hentet <?= escape(sending_time($check['source']['fetchedAt'])) ?> fra <?= escape($check['source']['url']) ?></p><p class="script-view"><?= nl2br(escape($check['source']['text'])) ?></p></details><?php endif; ?>
+      </section>
+      <?php endif; ?>
       <?php if (!empty($selected['generatedAt'])): ?><p class="control-muted">AI-utkast laget <?= escape(sending_time($selected['generatedAt'])) ?>. Må gjennomleses og kildekontrolleres.</p><?php endif; ?>
       <?php if ($canPrepare): ?><form method="post" class="editor-form"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="save"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><label for="item-program">Program</label><select id="item-program" name="program"><option value="">Ikke tilordnet</option><?php foreach (studio_program_registry()['programs'] as $profile): ?><option value="<?= escape($profile['id']) ?>" <?= ($selected['program'] ?? '') === $profile['id'] ? 'selected' : '' ?>><?= escape($profile['name']) ?></option><?php endforeach; ?></select><label for="item-title">Tittel</label><input id="item-title" name="title" maxlength="180" required value="<?= escape($selected['title']) ?>"><label for="item-script">Manus</label><textarea id="item-script" name="script" maxlength="5000" rows="9" placeholder="Skriv et kort manus som kan leses på lufta."><?= escape($selected['script']) ?></textarea><label for="item-notes">Notater til sendingen</label><textarea id="item-notes" name="notes" maxlength="1000" rows="3"><?= escape($selected['notes']) ?></textarea><label class="verify-row"><input type="checkbox" name="verified" value="1" <?= $selected['verified'] ? 'checked' : '' ?>> <?= $selected['sourceUrl'] ? 'Jeg har kontrollert opplysningene i originalkilden' : 'Jeg har kontrollert innholdet' ?></label><p class="control-muted">Lagring setter punktet til utkast. Merk det klart etter siste kontroll.</p><button type="submit">Lagre utkast</button></form>
       <div class="item-controls"><?php foreach (['ready'=>'Merk klar', 'draft'=>'Tilbake til utkast', 'up'=>'Flytt opp', 'down'=>'Flytt ned', 'archive'=>'Arkiver'] as $action=>$label): if ($action === 'ready' && $selected['status'] === 'ready' || $action === 'draft' && $selected['status'] !== 'ready') continue; ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="<?= $action ?>"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><button type="submit" class="<?= $action === 'archive' ? 'quiet' : '' ?>"><?= $label ?></button></form><?php endforeach; ?></div>
