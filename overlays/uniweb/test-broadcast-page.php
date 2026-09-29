@@ -28,6 +28,7 @@ $_GET=$mode==='unknown'?['program'=>'unknown']:[];
 $_POST=['program'=>'god-morgen-vestland','date'=>'2026-10-05','presenter'=>'Thomas',
     'csrf'=>$mode==='csrf'?'bad':'test-csrf','token'=>$mode==='nonce'?'bad':str_repeat('a',32)];
 $_SERVER['REQUEST_METHOD']=match($mode) {'get','unknown'=>'GET','method'=>'DELETE',default=>'POST'};
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') $_POST=[];
 ob_start();
 register_shutdown_function(static function() use($mode,$dir) {
     $html=ob_get_clean();$code=http_response_code() ?: 200;
