@@ -96,7 +96,7 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
       </div><?php endif; ?>
       <p class="desk-meta">Meldingene kan gjelde planlagt arbeid. Kontroller tid og status i originalkilden før sending.</p><a href="https://www.vegvesen.no/trafikk/" target="_blank" rel="noopener noreferrer">Åpne Vegvesen trafikk ↗</a></section>
       <div class="desk-tools">
-      <section class="desk-panel"><p class="eyebrow">BØMLO / BREMNES</p><h2>Vær</h2>
+      <section class="desk-panel"><p class="eyebrow">BØMLO / BREMNES</p><h2>Vær</h2><p><a href="/weather.php">Åpne væroversikten – fem steder ↗</a></p>
       <?php if ($weather): ?><p class="desk-weather"><?= escape((string)$weather['temperature']) ?>°</p><p>Prognose: <?= escape(str_replace('_', ' ', (string)$weather['symbol'])) ?></p><p class="desk-meta">MET Norge · prognosetid <?= escape((string)$weather['time']) ?></p><a href="https://www.met.no/" target="_blank" rel="noopener noreferrer">Kilde: MET Norge ↗</a>
       <?php else: ?><p>Værprognosen er utilgjengelig. Ikke bruk gamle tall som dagens vær.</p><?php endif; ?>
       </section>
