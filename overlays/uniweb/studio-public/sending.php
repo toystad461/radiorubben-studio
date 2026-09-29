@@ -40,6 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($action !== 'generate') $_SESSION['sending_message'] = 'Sendelisten er oppdatert.';
     } catch (InvalidArgumentException $e) {
         $_SESSION['sending_error'] = $e->getMessage();
+    } catch (StudioStoryScriptUnavailable $e) {
+        error_log('Studio script generation unavailable: ' . $e->getMessage());
+        $_SESSION['sending_error'] = $e->getMessage();
     } catch (RuntimeException $e) {
         error_log('Studio sending save failed: ' . $e->getMessage());
         $_SESSION['sending_error'] = $action === 'generate'
