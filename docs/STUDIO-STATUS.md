@@ -11,7 +11,14 @@ tidligere antakelsen om at produksjonsfiler ikke var tilgjengelige.
 [Manifestet](../snapshots/uniweb-20260930/manifest.json) inneholder 80 filhasher
 og sammenligning med 20 låste GitHub branch-tips.
 
-## Bekreftet nå
+## Konsolidering i PR #19
+
+Servergrunnlaget er samlet i repoets app/ og public/, med rettet Uniweb-pakking
+og logo fra brukerens logopakke. Se [avstemming og tester](CONSOLIDATION-20260930.md).
+Snapshotet beholdes uendret. Ingen produksjonsdeploy eller merge er utført.
+Aktuell kildecommit og CI-status finnes på PR #19.
+
+## Bekreftet ved kildeinnsamling
 - Privat serverbackup av app og offentlig kode er opprettet; config, vendor,
   docs og rotfiler er også kopiert. Backupen er tatt i flere trinn.
 - 80 tekstfiler er bevart i Git-snapshotet uten private innstillinger/data.
@@ -32,8 +39,8 @@ og sammenligning med 20 låste GitHub branch-tips.
 | Prioritet | Status | Oppgave / ferdigkriterium |
 | --- | --- | --- |
 | 1 | Utført for tekstkode | Serverbackup, kildeinnsamling og filkart med teksthasher. Råbyte-hasher, binærlogo og avhengighetslås må fortsatt avstemmes før reinstallasjon. |
-| 2 | Neste | Lag konsolidert runtime-gren fra kjent servergrunnlag. Avstem 11 ulike filer og nødvendige eksempelinnstillinger/avhengigheter uten å miste aktive funksjoner. |
-| 3 | Venter på 2 | Kjør funksjonstester og produksjonsnær UI; avklar PR #13-konflikt og integreringsrekkefølge for programregister, sendeforslag og vær. |
+| 2 | Samlet i PR #19 | Lag konsolidert runtime-gren fra kjent servergrunnlag. Avstem 11 ulike filer og nødvendige eksempelinnstillinger/avhengigheter uten å miste aktive funksjoner. |
+| 3 | Funksjonstester innført; UI gjenstår | Kjør funksjonstester og produksjonsnær UI; avklar PR #13-konflikt og integreringsrekkefølge for programregister, sendeforslag og vær. |
 | 4 | Produktmål | Samle automatisk klargjøring, kilder, kontroll, redigering og manuell sluttgodkjenning i én Studio-flyt. |
 | 5 | Senere | Verifiser faktiske OneDrive-mapper/filreferanser og bygg ElevenLabs-lydsporet; playout behandles separat. |
 

@@ -1,3 +1,6 @@
 Options -Indexes
 DirectoryIndex index.php
 Require all granted
+
+# Native ES modules for AI Studio.
+AddType application/javascript .mjs
