@@ -171,3 +171,47 @@ function studio_board_update(string $id, int $revision, string $action, array $i
     }, $path);
 }
 
+/** Detect edits, additions and reordering while the confirmation is open. */
+function studio_board_snapshot(array $board): string
+{
+    return hash('sha256', json_encode(array_map(static fn($item) => [$item['id'], $item['revision']], studio_board_active($board)), JSON_THROW_ON_ERROR));
+}
+
+function studio_board_clear(string $snapshot, array $user, ?string $path = null, ?array $selected = null): string
+{
+    if (!in_array($user['role'] ?? '', ['admin', 'producer', 'presenter'], true)) throw new InvalidArgumentException('Ingen tilgang.');
+    return studio_board_change(static function (array &$board) use ($snapshot, $user, $selected): string {
+        if (!hash_equals(studio_board_snapshot($board), $snapshot)) throw new InvalidArgumentException('Sendelisten er endret. Last siden på nytt før du tømmer den.');
+        if ($selected !== null) {
+            $valid = array_column(studio_board_active($board), 'id');
+            if (!$selected || count($selected) > 30 || array_diff($selected, $valid)) throw new InvalidArgumentException('Velg minst én gyldig sak.');
+        }
+        $batch = bin2hex(random_bytes(16));
+        foreach ($board['items'] as &$item) {
+            if (($item['status'] ?? '') === 'archived' || ($selected !== null && !in_array($item['id'], $selected, true))) continue;
+            $before = $item; unset($before['history']);
+            $item['history'][] = ['action'=>'archive_all', 'at'=>gmdate('c'), 'actor'=>$user['name'] ?? 'Medarbeider', 'before'=>$before];
+            $item['status'] = 'archived'; $item['approvedBy'] = null;
+            $item['archiveBatch'] = $batch; $item['revision']++; $item['updatedAt'] = gmdate('c');
+        }
+        unset($item); return $batch;
+    }, $path);
+}
+
+function studio_board_undo_clear(string $batch, array $user, ?string $path = null): void
+{
+    if (!in_array($user['role'] ?? '', ['admin', 'producer', 'presenter'], true) || !preg_match('/^[a-f0-9]{32}$/D', $batch)) throw new InvalidArgumentException('Ugyldig gjenoppretting.');
+    studio_board_change(static function (array &$board) use ($batch, $user): void {
+        $count = 0;
+        foreach ($board['items'] as $item) if (($item['archiveBatch'] ?? '') === $batch && $item['status'] === 'archived') $count++;
+        if (!$count || count(studio_board_active($board)) + $count > 30) throw new InvalidArgumentException('Kan ikke gjenopprette: ingen punkter eller for lite plass i listen.');
+        foreach ($board['items'] as &$item) {
+            if (($item['archiveBatch'] ?? '') !== $batch || $item['status'] !== 'archived') continue;
+            $before = $item; unset($before['history']);
+            $item['history'][] = ['action'=>'undo_archive_all', 'at'=>gmdate('c'), 'actor'=>$user['name'] ?? 'Medarbeider', 'before'=>$before];
+            $item['status'] = 'draft'; $item['verified'] = false; $item['approvedBy'] = null;
+            unset($item['archiveBatch']); $item['revision']++; $item['updatedAt'] = gmdate('c');
+        }
+        unset($item);
+    }, $path);
+}

@@ -92,4 +92,29 @@ try {
     expect_news(!$stored['verified'] && $stored['generatedOriginal'] === $sentence && $stored['script'] === 'Changed text.', 'check invalidation retains original and corrections');
     rejects_news(fn()=>studio_board_update($id, 5, 'source_checked', ['sourceCheck'=>$result['check']], $user, $path), 'concurrent revision protected');
 } finally { foreach (glob($dir . '/*') as $file) unlink($file); rmdir($dir); }
+$clearDir = sys_get_temp_dir() . '/clear-' . bin2hex(random_bytes(4)); mkdir($clearDir);
+$clearPath = $clearDir . '/board.json'; $editor = ['role'=>'producer', 'name'=>'Test'];
+try {
+    studio_board_add_manual('A', $editor, $clearPath);
+    $snapshot = studio_board_snapshot(studio_board_read($clearPath));
+    studio_board_add_manual('B', $editor, $clearPath);
+    rejects_news(fn()=>studio_board_clear($snapshot, $editor, $clearPath), 'stale clear rejected');
+    $snapshot = studio_board_snapshot(studio_board_read($clearPath));
+    rejects_news(fn()=>studio_board_clear($snapshot, ['role'=>'observer'], $clearPath), 'observer cannot clear');
+    expect_news(count(studio_board_active(studio_board_read($clearPath))) === 2, 'rejections are atomic');
+    $batch = studio_board_clear($snapshot, $editor, $clearPath);
+    $archived = studio_board_read($clearPath);
+    expect_news(count(studio_board_active($archived)) === 0 && count($archived['items']) === 2, 'clear archives without deletion');
+    expect_news($archived['items'][0]['history'][0]['before']['title'] === 'A', 'archive keeps history');
+    studio_board_undo_clear($batch, $editor, $clearPath);
+    $restored = studio_board_active(studio_board_read($clearPath));
+    expect_news(count($restored) === 2 && $restored[0]['status'] === 'draft' && !$restored[0]['verified'], 'undo restores drafts');
+    rejects_news(fn()=>studio_board_undo_clear($batch, $editor, $clearPath), 'repeated undo rejected');
+    $one = $restored[0]['id'];
+    $batch = studio_board_clear(studio_board_snapshot(studio_board_read($clearPath)), $editor, $clearPath, [$one]);
+    expect_news(count(studio_board_active(studio_board_read($clearPath))) === 1, 'selected removal preserves other cases');
+    studio_board_undo_clear($batch, $editor, $clearPath);
+    expect_news(count(studio_board_active(studio_board_read($clearPath))) === 2, 'selected removal can be undone');
+
+} finally { foreach (glob($clearDir . '/*') as $f) unlink($f); rmdir($clearDir); }
 echo "News script checks: $tests passed\n";
