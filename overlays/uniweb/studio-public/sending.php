@@ -119,7 +119,7 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
 <div class="workspace">
 <header class="topbar"><span>Arbeidsrom / <strong>Sending</strong></span><span>Redaksjonell sendeliste</span><?php require dirname(__DIR__) . '/studio-private/app/views/account.php'; ?></header>
 <main id="main" class="control-page">
-  <div class="control-heading"><div><p class="eyebrow">RADIO RUBBEN / PRODUKSJON</p><h1>Sending</h1><p class="control-intro">Felles sendeliste for medarbeiderne. Ingen punkter sendes automatisk på lufta.</p></div><div class="control-heading-actions"><a class="control-link" href="/newsdesk.php">Finn saker ↗</a><?php if ($canPrepare && $items): ?><a class="control-link" href="/sending.php?export=1">Last ned sendeliste</a><?php endif; ?></div></div>
+  <div class="control-heading"><div><p class="eyebrow">RADIO RUBBEN / PRODUKSJON</p><h1>Sending</h1><p class="control-intro">Felles sendeliste for medarbeiderne. Ingen punkter sendes automatisk på lufta.</p></div><div class="control-heading-actions"><a class="control-link" href="/desk.php">Innkomne saker – radio og nett ↗</a><?php if ($canPrepare && $items): ?><a class="control-link" href="/sending.php?export=1">Last ned sendeliste</a><?php endif; ?></div></div>
   <?php if ($message): ?><p class="control-alert" role="status"><?= escape($message) ?></p><?php endif; ?>
   <?php if ($error || isset($readError)): ?><p class="control-alert error" role="alert"><?= escape($error ?? 'Sendelisten er utilgjengelig. Prøv igjen senere.') ?></p><?php endif; ?>
   <div class="control-stats"><span><strong><?= count($items) ?></strong> punkter</span><span><strong><?= $readyCount ?></strong> klare</span><span><strong><?= count($items) - $readyCount ?></strong> utkast</span></div>
@@ -134,6 +134,7 @@ require dirname(__DIR__) . '/studio-private/app/views/head.php';
     </section>
     <section class="control-panel sending-editor" aria-labelledby="editor-title">
       <?php if ($selected): ?>
+      <p><a class="control-link" href="/case.php?item=<?= escape($selected['id']) ?>">Åpne saken – radio og nettside ↗</a></p>
       <div class="panel-top"><div><p class="eyebrow">PUNKT <?= array_search($selected, $items, true) + 1 ?></p><h2 id="editor-title">Manus og kontroll</h2><p class="control-muted"><?= escape($selected['title']) ?></p></div><span class="status-pill <?= escape($selected['status']) ?>"><?= $selected['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span></div><a class="sending-jump" href="#sending-list-title">Velg annet punkt ↓</a>
       <p class="control-muted">Fra <?= escape($selected['sourceName']) ?> · <?= escape(sending_time($selected['sourceAt'])) ?><?php if ($selected['sourceUrl']): ?> · <a href="<?= escape($selected['sourceUrl']) ?>" target="_blank" rel="noopener noreferrer">Kontroller original ↗</a><?php endif; ?></p>
       <?php if ($selected['summary']): ?><details class="source-summary"><summary>Vis kildeomtale</summary><p><?= escape($selected['summary']) ?></p></details><?php endif; ?>
