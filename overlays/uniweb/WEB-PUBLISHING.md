@@ -1,7 +1,7 @@
 # Nettsak og publisering – selektiv utrulling
 
 ## Status
-Implementert og testet med PHP WASM 8.2/8.4. Ekte WordPress-overføring og visuell Studio-test gjenstår. Ingen artikkel publiseres som del av installasjonen.
+Implementert og testet med PHP WASM 8.2/8.4. De fem filene er selektivt lastet opp. Innlogget saksflate og ekte AI-generering er prøvd. Første nettutkast ble stoppet av kildekontrollen; språk- og segmentinstruksen er strammet inn. Ekte WordPress-overføring gjenstår fordi serveren mangler WordPress-tilgang. Ingen artikkel publiseres som del av installasjonen.
 
 ## Utrulling
 Bare disse fem filene: studio-private/app/web-publish.php, studio-private/app/case-workflow.php, studio-public/case.php, studio-public/desk.php og den aktive sending.php med to navigasjonslenker. Bevar aktiv board.php, news-script.php, programprofil og alle private data. Ikke last opp hele PR-grenen.
@@ -16,3 +16,4 @@ Uavklart transport låser ny overføring: ikke fjern sperren eller send på nytt
 Ny saksflyt: /desk.php → Åpne sak → klargjør radio eller nett → se konkrete avvik → lagre rettelser og kontroller → godkjenn → sending / WordPress-kladd / publisering. Robåt-læring bruker eksisterende godkjenningsflyt via lenke på saken; ingen automatisk læring fra rå RSS.
 
 Tester: stale revisions, manglende godkjenning, gjentatt kladd, publisering av samme post-ID, opphevet kontroll etter redigering, rollebegrensning, timeout og sperret retry, bevaring av radiomanus. Nettverk og modell er mocket. Før fullføring må en ekte kladd opprettes og bekreftes i WordPress. Ingen endelig liveverifisering er gjort ennå.
+
