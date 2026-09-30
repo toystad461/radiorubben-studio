@@ -45,8 +45,15 @@ $request = function ($config, $payload) use (&$calls, $sentence): string {
 $result = studio_news_prepare($item, $config, [], null, $request, $fetch);
 expect_news($calls === 2 && $result['check']['status'] === 'passed', 'separate generation and check');
 expect_news($result['check']['source']['text'] === $text, 'snapshot retained');
+// Source evidence must remain verbatim even when the manuscript is corrected.
+$rawTypo = $body . ' Dette.er ein skrivefeil.';
+expect_news(str_contains(studio_news_extract('<article><p>' . $rawTypo . '</p></article>'), 'Dette.er'), 'source spelling remains untouched');
+$languageIssue = static fn()=>json_encode(['segments'=>[['index'=>0, 'verdict'=>'supported', 'evidence'=>$sentence, 'reason'=>'Fakta har dekning.']], 'issues'=>['Manuset må omskrives til bokmål.']]);
+expect_news(studio_news_review($item, $sentence, $source = $result['check']['source'], $config, $languageIssue)['status'] === 'needs_review', 'language issues block approval even with factual support');
 $checked = $item + ['script'=>$result['script'], 'sourceCheck'=>$result['check']];
 expect_news(studio_news_check_current($checked), 'current matching check');
+$oldPolicy = $checked; $oldPolicy['sourceCheck']['policy'] = 'radio-news-1';
+expect_news(!studio_news_check_current($oldPolicy), 'old policy requires renewed language review');
 expect_news(!studio_news_check_current(array_replace($checked, ['script'=>'Changed.'])), 'changed text invalidates');
 expect_news(!studio_news_check_current(array_replace($checked, ['sourceUrl'=>'https://www.nrk.no/a-1.123'])), 'changed source invalidates');
 expect_news(!studio_news_check_current($checked, time()+3601), 'expires after one hour');
