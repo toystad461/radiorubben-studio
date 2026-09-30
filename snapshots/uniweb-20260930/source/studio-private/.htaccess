@@ -1,0 +1,2 @@
+# Never expose the repository root. Set the web document root to public/.
+Require all denied

@@ -1,69 +1,53 @@
 # Studio – felles status og arbeidsliste
 
-Sist kontrollert: 30.09.2026, Europe/Oslo.
+Oppdatert 30.09.2026 etter direkte lesing via Uniweb File Manager.
 Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
-## Bruk denne siden
-Dette er inngangen til videre Codex-arbeid. GitHub inneholder kode og tekniske
-beslutninger, Studio er den daglige arbeidsflaten, og OneDrive er ønsket
-innholdsarkiv. Nye samtalebeslutninger føres hit eller i lenket fagdoc.
-Samtaler alene er ikke en deploylogg. Hent ferske PR-heads før videre arbeid.
+## Start her
+Følg [AGENTS.md](../AGENTS.md). Det ferske
+[Uniweb-kodegrunnlaget](../snapshots/uniweb-20260930/README.md) erstatter den
+tidligere antakelsen om at produksjonsfiler ikke var tilgjengelige.
+[Manifestet](../snapshots/uniweb-20260930/manifest.json) inneholder 80 filhasher
+og sammenligning med 20 låste GitHub branch-tips.
 
-## Kontrollert grunnlag
-GitHub lesing og skrivetilgang er tilgjengelig i etableringsøkten.
-Main har en eldre README og mangler overlays-kjeden. Produksjon er derfor
-ikke lik main. Ingen fersk innlogget Uniweb-kontroll eller serverfilavstemming
-er utført i denne økten. Tabellen nedenfor skiller GitHub-observasjon fra
-tidligere dokumentert publisering; PR-beskrivelser er ikke dagens serverbevis.
+## Bekreftet nå
+- Privat serverbackup av app og offentlig kode er opprettet; config, vendor,
+  docs og rotfiler er også kopiert. Backupen er tatt i flere trinn.
+- 80 tekstfiler er bevart i Git-snapshotet uten private innstillinger/data.
+- Mot main: 10 identiske, 12 ulike og 58 manglende filer.
+- Mot alle undersøkte branch-tips: 41 identiske, 11 ulike og 28 manglende.
+- 54 PHP-filer passerer syntakskontroll på PHP WASM 8.2/8.4; 15 JS-moduler
+  passerer Node-syntakskontroll. Ingen ende-til-ende-godkjenning er gitt.
+- Nyhetsmanus og nettpubliseringsmoduler finnes på serveren og matcher deler
+  av gjeldende PR #18. Den gamle teksten «ikke deployet» er ikke pålitelig
+  som beskrivelse av hele dagens produksjonskode.
+- programs.php finnes ikke i den kopierte app-katalogen. board/sending/story-script
+  avviker fra gjeldende GitHub-grener. Ingen eksisterende patch skal lastes opp
+  uten ny avstemming.
+- Ingen aktiv kode er endret. Hovedgrenen og standardpakken er fortsatt ikke
+  en bekreftet kopi av produksjonen.
 
-| Område | GitHub / dokumentert status | Neste kontroll |
+## Arbeidsliste
+| Prioritet | Status | Oppgave / ferdigkriterium |
 | --- | --- | --- |
-| Læring og programregister, [PR #13](https://github.com/toystad461/radiorubben-studio/pull/13) | Åpen draft, head 7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7. GitHub rapporterte mergeable=false. Tidligere læring selektivt publisert 28.09; senere programregisterarbeid er ikke bevist publisert. | Avstem publiserte filer og undersøk basekonflikt før integrering. |
-| Musikkontroll, [PR #14](https://github.com/toystad461/radiorubben-studio/pull/14) | PR-beskrivelsen dokumenterer selektiv publisering 28.09. Virkelig arkivmappe/reserveflyt gjenstår. | Test på studiomaskinen med brukerens arkiv. |
-| Sendeforslag, [PR #15](https://github.com/toystad461/radiorubben-studio/pull/15) | Dokumentert som ikke deployet; fast mal og profil v2. | Avstem programregister og meny før senere utrulling. |
-| Væroversikt, [PR #16](https://github.com/toystad461/radiorubben-studio/pull/16) | Åpen draft, head 9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e. Beskrivelsen sier ikke publisert. | Bekreft om senere serverendringer finnes; ekte MET/cache og visuell kontroll. |
-| Kontrollsenter, [PR #17](https://github.com/toystad461/radiorubben-studio/pull/17) | Åpen draft, head d753535963d9d1dbf20d104a8b23478547f75f36. To filer dokumentert publisert 29.09. | Innlogget PC/iPad/mobil-kontroll og ferske filhasher. |
-| Nyhetsmanus, [PR #18](https://github.com/toystad461/radiorubben-studio/pull/18) | Åpen draft. Ny head 4fe4eb110b66752e281e4e23f460bf9a4d72df9d, 25 endrede filer mot base; tidligere head med åtte filer er ikke lenger hele PR-en. Separat review-only-patch finnes. Ingen verifisert deploy. | Avstem eksisterende patch mot aktiv kode; ikke bygg samme leveranse på nytt uten grunn. |
-| WordPress / nettpublisering | Nyere samtalearbeid omtaler tilkobling, men denne kartleggingen har ikke bekreftet aktiv kode eller ende-til-ende-flyt. | Undersøk faktisk implementasjon og manuell sluttgodkjenning. |
-| OneDrive | Ingen aktiv synk verifisert i denne økten. | Finn eksisterende mapper og ønsket eksportretning før integrasjon. |
-| ElevenLabs / radio.co | Bruker prioriterer ElevenLabs for TTS. Aktiv lyd-/playout-integrasjon er ikke verifisert her. | Kartlegg separat etter produksjonsgrunnlaget. |
+| 1 | Utført for tekstkode | Serverbackup, kildeinnsamling og filkart med teksthasher. Råbyte-hasher, binærlogo og avhengighetslås må fortsatt avstemmes før reinstallasjon. |
+| 2 | Neste | Lag konsolidert runtime-gren fra kjent servergrunnlag. Avstem 11 ulike filer og nødvendige eksempelinnstillinger/avhengigheter uten å miste aktive funksjoner. |
+| 3 | Venter på 2 | Kjør funksjonstester og produksjonsnær UI; avklar PR #13-konflikt og integreringsrekkefølge for programregister, sendeforslag og vær. |
+| 4 | Produktmål | Samle automatisk klargjøring, kilder, kontroll, redigering og manuell sluttgodkjenning i én Studio-flyt. |
+| 5 | Senere | Verifiser faktiske OneDrive-mapper/filreferanser og bygg ElevenLabs-lydsporet; playout behandles separat. |
 
-## Viktigste tekniske funn
-PR #18 bygger på #17 → #16 → #15 → #13, med tidligere avhengigheter.
-Ikke behandle denne kjeden som én godkjent produksjonspakke.
-
-Gjeldende [NEWS-RELEASE.md](https://github.com/toystad461/radiorubben-studio/blob/4fe4eb110b66752e281e4e23f460bf9a4d72df9d/overlays/uniweb/NEWS-RELEASE.md)
-beskriver en review-only-patch for board.php, sending.php og news-script.php.
-Programregister og editorial-memory er forutsetninger, ikke inkluderte leveranser.
-producer.php / producer_request må avstemmes mot aktiv implementasjon.
-Eksakte hasher for aktiv kode mangler. En grønn preflight mot GitHub-referansen
-bekrefter ikke kompatibilitet med hele driftsmiljøet.
-
-## Prioritert arbeidsliste
-| Prioritet | Oppgave | Ferdig når |
-| --- | --- | --- |
-| 1 | Etabler en fersk, privat lesekopi av relevant Uniweb-kode og et filkart. | Berørte kodefiler har kilde, tidspunkt, hash og avklart GitHub-motstykke; hemmeligheter og redaksjonelle data er utelatt. |
-| 2 | Avstem eksisterende PR #18-patch og programavhengigheter mot denne kopien. | Minimal endring er testet isolert, med tilbakeføringsplan og tydelige gjenstående live-kontroller. |
-| 3 | Planlegg konsolidering av selektivt publisert kode og PR-kjeden. | En gjennomgåbar integreringsrekkefølge og base finnes; ingen blind merge eller full deploy. |
-| 4 | Samle automatisk klargjøring og manuell sluttgodkjenning i én Studio-flyt. | Kilder, avvik, manus/artikkel og neste handling er samlet; bare eksplisitt godkjenning åpner publisering. |
-| 5 | Koble dokumenter til faktiske OneDrive-mapper og bygg ElevenLabs-sporet. | Verifiserte filreferanser, klare feilstatuser og testet eksport/lydproduksjon; playout behandles separat. |
-
-Neste konkrete oppgave: Prioritet 1. Manglende forutsetning er en fersk kodekopi
-eller autorisert tilgang til Uniwebs aktive kode; GitHub alene kan ikke bevise
-innholdet på serveren. Ikke be brukeren lime inn passord eller private config-filer.
-
-## Beslutninger 30.09.2026
-- Codex brukes som fast utviklingsverktøy for Studio.
-- Repoet skal bære tekniske regler og status, slik at neste oppgave ikke krever
-  leting i gamle samtaler.
-- Arbeid utføres som avgrensede endringer; denne etableringen endrer bare
-  dokumentasjon og setter ikke produksjon eller integrasjoner i drift.
-- Automatisering frem til manuell sluttgodkjenning er ønsket produktretning.
-- OneDrive-lenker skal peke til virkelige, identifiserte filer.
+## Beslutninger
+Codex er fast utviklingsverktøy. Tekniske regler og status skal ligge i repoet.
+Kodeendringer går via GitHub før publisering; eventuelle nødrettelser på
+serveren må tilbakeføres straks med dokumentert avvik.
+Bruk én avgrenset hovedoppgave om gangen og gjenbruk eksisterende PR når det
+er samme arbeid. Ikke opprett flere parallelle oversikter.
+Manuell redaksjonell sluttgodkjenning beholdes. OneDrive-lenker skal være
+verifiserte filreferanser; ingen synk eller lydintegrasjon er aktivert her.
 
 ## Oppdatering ved hver levering
-Noter dato, oppgave/PR og eksakt head, endrede filer, relevante testresultater,
-uprøvde integrasjoner, publiseringsbevis eller «ikke publisert», samt neste steg.
-Dokumenter serverstatus med filhash og kontrolltidspunkt når tilgjengelig.
-Ikke kopier hele logger eller hemmeligheter inn i denne oversikten.
+Noter oppgave/PR og eksakt head, endrede filer, tester, uprøvde integrasjoner,
+publiseringsbevis eller «ikke publisert», og neste steg.
+Skill alltid mellom innsamlet kode, testet kode, integrert kode og deployet kode.
+Samtalehistorikk, grønn CI og PR-tekst alene er ikke serverbevis.

@@ -1,0 +1,37 @@
+.users-panel {
+  background: var(--panel, #0d2135);
+  border: 1px solid var(--line, rgba(88,201,255,.18));
+  border-radius: 18px;
+  padding: 28px;
+  margin-bottom: 24px;
+  max-width: 960px;
+}
+.users-panel h2 { margin-top: 0; }
+.users-panel p { line-height: 1.6; }
+.users-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: end; }
+.users-form p { margin: 0; }
+.users-form input, .users-panel select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: #06111f;
+  border: 1px solid #536b7d;
+  border-radius: 8px;
+  color: #f7fafc;
+  padding: 12px;
+  font: inherit;
+}
+.users-form input:focus, .users-panel select:focus {
+  outline: 3px solid var(--signal, #58c9ff);
+  outline-offset: 2px;
+}
+.users-form .button { justify-self: start; }
+.users-panel hr { border: 0; border-top: 1px solid var(--line, rgba(88,201,255,.18)); margin: 24px 0; }
+.users-panel .button { cursor: pointer; font: inherit; }
+.users-panel label { font-weight: 600; }
+.users-panel select { margin: 8px 0; }
+.users-panel form button { margin: 8px 6px 8px 0; }
+@media (max-width: 650px) {
+  .users-form { grid-template-columns: 1fr; }
+  .users-panel { padding: 20px; }
+}
