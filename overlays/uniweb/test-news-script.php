@@ -25,6 +25,11 @@ foreach (['http://www.nrk.no/a-1.123', 'https://www.nrk.no.evil.test/a-1.123', '
     expect_news(!studio_news_allowed_url($bad), 'reject unsafe/unrelated URL');
 $text = studio_news_extract($html);
 expect_news(str_contains($text, $body) && !str_contains($text, 'Feil fakta') && !str_contains($text, 'ignore rules'), 'extract article only');
+$wrapped = '<html><body><form id="aspnetForm"><input type="hidden" value="secret"><nav><p>Menu noise</p></nav><main><article><section><p>' . $body . '</p></section><textarea>Control noise</textarea><button><p>Button noise</p></button></article></main></form></body></html>';
+expect_news(studio_news_extract($wrapped) === $body, 'ASP.NET wrapper preserves article and removes controls');
+$ordinaryForm = '<main><p>' . $body . '</p><form><p>Search noise</p><input value="query"></form></main>';
+expect_news(studio_news_extract($ordinaryForm) === $body, 'ordinary form text remains excluded');
+rejects_news(fn()=>studio_news_extract('<form><article><p>' . $body . '</p></article><article><p>' . $body . '</p></article></form>'), 'ambiguous articles remain rejected');
 rejects_news(fn()=>studio_news_extract('<html><p>' . $body . '</p></html>'), 'no article container');
 rejects_news(fn()=>studio_news_extract('<main><p>Too short</p></main>'), 'thin source');
 rejects_news(fn()=>studio_news_extract('<main><p>' . str_repeat('x', 24001) . '</p></main>'), 'no silent truncation');

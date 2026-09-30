@@ -59,7 +59,9 @@ function studio_news_extract(string $html): string
         if (!$doc->loadHTML('<?xml encoding="UTF-8">' . $html, LIBXML_NONET))
             throw new StudioNewsPreparationException('Kildesiden kan ikke leses.');
         $xp = new DOMXPath($doc);
-        foreach ($xp->query('//script|//style|//nav|//footer|//header|//aside|//form|//*[@hidden or @aria-hidden="true"]') as $node)
+        // ASP.NET may wrap the entire article in a form. Keep that wrapper,
+        // but remove interactive controls and ordinary forms from source text.
+        foreach ($xp->query('//script|//style|//nav|//footer|//header|//aside|//form[not(descendant::article or descendant::main or descendant::*[@itemprop="articleBody"])]|//input|//textarea|//select|//button|//label|//*[@hidden or @aria-hidden="true"]') as $node)
             $node->parentNode->removeChild($node);
         $nodes = $xp->query('//*[@itemprop="articleBody"]');
         if ($nodes->length !== 1) $nodes = $xp->query('//article');
