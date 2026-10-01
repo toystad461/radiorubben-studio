@@ -58,3 +58,11 @@ Noter oppgave/PR og eksakt head, endrede filer, tester, uprøvde integrasjoner,
 publiseringsbevis eller «ikke publisert», og neste steg.
 Skill alltid mellom innsamlet kode, testet kode, integrert kode og deployet kode.
 Samtalehistorikk, grønn CI og PR-tekst alene er ikke serverbevis.
+
+## Entra-test klargjort 01.10.2026
+Separat testendring basert på PR #19 head f7ce90ce393a625ba4b9ffc4cf494457dbb04244.
+CLI-forhåndskontroll og syntetiske tilgangstester er lagt til; se ENTRA-TEST.md.
+Ingen autentiseringskode, produksjonskonfigurasjon eller Entra-tenant er endret.
+Første gjestetest bruker observer; full Entra-rolletildeling er ikke implementert.
+Reell innlogging, app-tildeling og isolert testvert gjenstår. Ingen publisering.
+CI-resultat og endelig head dokumenteres i test-PR-en.
