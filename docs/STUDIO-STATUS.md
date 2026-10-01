@@ -58,3 +58,23 @@ Noter oppgave/PR og eksakt head, endrede filer, tester, uprøvde integrasjoner,
 publiseringsbevis eller «ikke publisert», og neste steg.
 Skill alltid mellom innsamlet kode, testet kode, integrert kode og deployet kode.
 Samtalehistorikk, grønn CI og PR-tekst alene er ikke serverbevis.
+
+## Kontroll 01.10.2026
+
+Kontrollert mot runtime-commit f7ce90ce393a625ba4b9ffc4cf494457dbb04244:
+Uniwebs aktive vendor/composer/installed.json oppgir samme versjon og source.reference
+som GitHub composer.lock for alle fire pakker: jumbojett/openid-connect-php v1.0.2,
+paragonie/constant_time_encoding v3.1.3, paragonie/random_compat v9.99.100 og
+phpseclib/phpseclib 3.0.57. Dette bekrefter pakkemetadata, ikke råbyte-likhet for
+composer.lock eller integriteten til hver vendor-fil.
+
+Nedlasting av composer.lock ga tidsavbrudd. En separat kopi av aktiv låsefil
+ligger i studio-private/reconciliation-backup-20260930-2002/dependency-check-20261001/.
+Originalen og de tidligere backupfilene er urørt. Foreslått endring av filtype
+ble avbrutt uten å godta filbehandlerens advarsel.
+
+Studio åpner innloggingssiden. Forespørselen om innloggingsmetode ble avbrutt;
+innlogget nettlesergjennomgang er derfor fortsatt ikke utført. Ingen kode,
+konfigurasjon eller redaksjonelle data er endret på produksjonsserveren.
+Ingen merge eller deploy. Neste steg er innlogget UI-kontroll og avstemming av
+ferske serverfiler før eventuell publisering.
