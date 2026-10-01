@@ -12,6 +12,10 @@ on:
         type: choice
         options: [dry-run, apply]
         default: dry-run
+      approved_sha:
+        description: 'Full commit SHA explicitly approved for production (required for apply)'
+        type: string
+        default: ''
 permissions:
   contents: read
 concurrency:
@@ -25,6 +29,14 @@ jobs:
       matrix:
         php: ['8.2', '8.4']
     steps:
+      - name: Require the exact approved production version
+        if: github.event_name == 'workflow_dispatch' && inputs.mode == 'apply'
+        env:
+          APPROVED_SHA: ${{ inputs.approved_sha }}
+        run: |
+          [[ "$APPROVED_SHA" =~ ^[0-9a-f]{40}$ && "$APPROVED_SHA" == "$GITHUB_SHA" ]] || {
+            echo 'The current source must match the explicitly approved commit.' >&2; exit 1;
+          }
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
@@ -153,7 +165,6 @@ jobs:
         env:
           EVENT: ${{ github.event_name }}
           REQUESTED_MODE: ${{ inputs.mode }}
-          AUTO_APPLY: ${{ vars.STUDIO_DEPLOY_AUTO_APPLY }}
           STUDIO_SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
           STUDIO_SSH_USER: ${{ vars.STUDIO_SSH_USER }}
         run: |
@@ -161,8 +172,6 @@ jobs:
           mode=dry-run
           if [[ "$EVENT" == workflow_dispatch ]]; then
             mode="$REQUESTED_MODE"
-          elif [[ "$AUTO_APPLY" == true ]]; then
-            mode=apply
           fi
           # An apply always repeats every preflight immediately before writing.
           bash scripts/deploy-studio.sh "$mode"

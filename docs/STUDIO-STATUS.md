@@ -58,3 +58,13 @@ Noter oppgave/PR og eksakt head, endrede filer, tester, uprøvde integrasjoner,
 publiseringsbevis eller «ikke publisert», og neste steg.
 Skill alltid mellom innsamlet kode, testet kode, integrert kode og deployet kode.
 Samtalehistorikk, grønn CI og PR-tekst alene er ikke serverbevis.
+
+## Deploymentarbeid 01.10.2026
+Ny avgrenset gren infra/render-staging-20261001 bygger på PR #19 head
+f7ce90ce393a625ba4b9ffc4cf494457dbb04244. Se RENDER-STAGING.md.
+Docker/Apache, eget testdiskområde, adgangssperre og container-CI er lagt til.
+Uniweb-produksjon krever nå manuell apply med eksakt godkjent SHA; automatisk
+apply er fjernet. PHP beholdes. PR #20 er ikke innlemmet.
+Dette er klargjøring, ikke en påstand om opprettet Render-tjeneste eller publisering.
+Fersk Uniweb-kontroll, Render-URL, faktiske kontoinnstillinger og ekte innlogging
+gjenstår. CI-resultat og eksakt ny head registreres på deployment-PR-en.

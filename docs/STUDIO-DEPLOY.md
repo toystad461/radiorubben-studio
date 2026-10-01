@@ -17,8 +17,9 @@ Koden publiseres ikke bare fordi byggingen er grønn.
 
 Studio-deploy må aktiveres separat. Første kjøring er `dry-run`. Etter kontroll:
 Actions → Studio release and guarded Uniweb deployment → Run workflow → main → apply.
-Kun vellykket apply publiserer GitHub-releasen. La automatisk apply være deaktivert
-inntil første manuelle publisering og funksjonstest er fullført.
+Oppgi også approved_sha: hele den testede og uttrykkelig godkjente commit-hashen.
+Workflowen avviser apply hvis denne ikke er identisk med kildecommiten.
+Kun vellykket apply publiserer GitHub-releasen. Automatisk apply er fjernet; produksjon krever alltid en manuell workflow-kjøring.
 
 ## GitHub-innstillinger i Studio-repoet
 
@@ -29,7 +30,7 @@ Bruk repository-innstillinger eller miljøet `studio-production`:
 - Variable `STUDIO_SSH_HOST`: bekreftet SSH-vert.
 - Variable `STUDIO_SSH_USER`: bekreftet SSH-bruker.
 - Variable `STUDIO_DEPLOY_ENABLED=true`: først når vert, nøkler og mappene er avklart.
-- Variable `STUDIO_DEPLOY_AUTO_APPLY=false`: behold false under innkjøringen.
+- `STUDIO_DEPLOY_AUTO_APPLY` brukes ikke lenger; den kan ikke aktivere publisering.
 
 Hjemmesidens dokumenterte SSH-vert er `ssh.cptk37ymg.service.one`, bruker
 `cptk37ymg_w1417156`, port 22. Dette er referanseverdier fra hjemmeside-repoets
@@ -84,3 +85,6 @@ for å tilfredsstille en publiseringstest.
 OneDrive: eventuelle langsiktige backupkopier og godkjenningsnotater kan legges
 under Radio Rubben / IT & Utstyr / Backup. Denne workflowen kopierer ikke til
 OneDrive og skal ikke omtales som en OneDrive-backup.
+
+## Render-testmiljø
+Se [RENDER-STAGING.md](RENDER-STAGING.md). Render-oppsettet er separat fra Uniweb-produksjon.

@@ -1,0 +1,31 @@
+# First creation is a paid staging service. Review the account price before creation.
+# Keep Blueprint Auto Sync disabled until the first successful isolated test.
+services:
+  - type: web
+    name: radiorubben-studio-staging
+    runtime: docker
+    repo: https://github.com/toystad461/radiorubben-studio
+    branch: infra/render-staging-20261001
+    plan: starter
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    autoDeployTrigger: checksPass
+    healthCheckPath: /healthz.php
+    disk:
+      name: studio-staging-data
+      mountPath: /var/studio
+      sizeGB: 1
+    envVars:
+      - key: STUDIO_ENV
+        value: staging
+      - key: STUDIO_SITE_MODE
+        value: app
+      - key: STUDIO_AUTH_MODE
+        value: demo
+      - key: STUDIO_BASE_URL
+        sync: false
+      - key: STAGING_BASIC_USER
+        sync: false
+      - key: STAGING_BASIC_PASSWORD
+        generateValue: true
