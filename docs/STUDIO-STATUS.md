@@ -59,6 +59,26 @@ publiseringsbevis eller «ikke publisert», og neste steg.
 Skill alltid mellom innsamlet kode, testet kode, integrert kode og deployet kode.
 Samtalehistorikk, grønn CI og PR-tekst alene er ikke serverbevis.
 
+## Kontroll 01.10.2026
+
+Kontrollert mot runtime-commit f7ce90ce393a625ba4b9ffc4cf494457dbb04244:
+Uniwebs aktive vendor/composer/installed.json oppgir samme versjon og source.reference
+som GitHub composer.lock for alle fire pakker: jumbojett/openid-connect-php v1.0.2,
+paragonie/constant_time_encoding v3.1.3, paragonie/random_compat v9.99.100 og
+phpseclib/phpseclib 3.0.57. Dette bekrefter pakkemetadata, ikke råbyte-likhet for
+composer.lock eller integriteten til hver vendor-fil.
+
+Nedlasting av composer.lock ga tidsavbrudd. En separat kopi av aktiv låsefil
+ligger i studio-private/reconciliation-backup-20260930-2002/dependency-check-20261001/.
+Originalen og de tidligere backupfilene er urørt. Foreslått endring av filtype
+ble avbrutt uten å godta filbehandlerens advarsel.
+
+Studio åpner innloggingssiden. Forespørselen om innloggingsmetode ble avbrutt;
+innlogget nettlesergjennomgang er derfor fortsatt ikke utført. Ingen kode,
+konfigurasjon eller redaksjonelle data er endret på produksjonsserveren.
+Ingen merge eller deploy. Neste steg er innlogget UI-kontroll og avstemming av
+ferske serverfiler før eventuell publisering.
+
 ## Deploymentarbeid 01.10.2026
 Ny avgrenset gren infra/render-staging-20261001 bygger på PR #19 head
 f7ce90ce393a625ba4b9ffc4cf494457dbb04244. Se RENDER-STAGING.md.
@@ -68,3 +88,22 @@ apply er fjernet. PHP beholdes. PR #20 er ikke innlemmet.
 Dette er klargjøring, ikke en påstand om opprettet Render-tjeneste eller publisering.
 Fersk Uniweb-kontroll, Render-URL, faktiske kontoinnstillinger og ekte innlogging
 gjenstår. CI-resultat og eksakt ny head registreres på deployment-PR-en.
+
+## Oppdatering av PR #21 03.10.2026
+
+Render-grenen er oppdatert mot PR #19 head
+049b42591e525055232503e4710787ad09b62139 med en merge-commit inn i
+infra/render-staging-20261001. Tidligere #21-head var
+e62f2c01df7d5a639e649f0740864e41b9a80dcf. Ingen PR er merget til basegrenen.
+Kontrollen fra 01.10 og Render-statusen over er bevart som historikk.
+
+Bare dette statusdokumentet har endret innhold fra tidligere #21-head.
+Alle øvrige filobjekter og filmoduser er identiske, inkludert Docker/Apache,
+Basic Auth, persistenskontrollen og kravet om full approved_sha.
+Nye kjøringer av Render staging container og PHP checks and Uniweb package
+kontrollerer oppdatert head. Eksakt head, kjøringslenker, resultater og faktisk
+GitHub merge-status registreres i PR #21.
+
+Ingen Render-tjeneste er opprettet, og ingenting er deployet til Uniweb eller
+produksjon i denne oppgaven. PR #21 beholdes som draft. Eksterne kontroller
+og produksjonsavstemming beskrevet over gjenstår før eventuell publisering.
