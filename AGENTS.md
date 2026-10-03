@@ -48,3 +48,12 @@ Bruk verifiserte eksisterende mapper/filreferanser; ikke konstruer lenker.
 Skill lokal eksport fra faktisk overføring. Ikke påstå synk uten implementert
 og testet integrasjon. Første TTS-spor er ElevenLabs etter brukerens prioritering.
 Lydproduksjon, playout og publisering er separate handlinger med synlig status.
+
+## Deployment fra 01.10.2026
+- Følg docs/RENDER-STAGING.md for isolert Render-test; dagens produksjon er Uniweb.
+- Automatiske tester og staging kommer før godkjenning av en eksakt produksjonscommit.
+- Produksjon krever manuell apply med approved_sha som matcher kildecommiten.
+  Ikke gjeninnfør automatisk apply eller utrulling fra vilkårlig nyeste main.
+- Render-testdisken skal aldri inneholde produksjonsdata eller produksjonsnøkler.
+- CI-grønt, opprettet tjeneste, publisert testadresse og innlogget funksjonstest
+  er ulike milepæler; rapporter dem hver for seg.

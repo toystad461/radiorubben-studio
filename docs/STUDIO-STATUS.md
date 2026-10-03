@@ -78,3 +78,32 @@ innlogget nettlesergjennomgang er derfor fortsatt ikke utført. Ingen kode,
 konfigurasjon eller redaksjonelle data er endret på produksjonsserveren.
 Ingen merge eller deploy. Neste steg er innlogget UI-kontroll og avstemming av
 ferske serverfiler før eventuell publisering.
+
+## Deploymentarbeid 01.10.2026
+Ny avgrenset gren infra/render-staging-20261001 bygger på PR #19 head
+f7ce90ce393a625ba4b9ffc4cf494457dbb04244. Se RENDER-STAGING.md.
+Docker/Apache, eget testdiskområde, adgangssperre og container-CI er lagt til.
+Uniweb-produksjon krever nå manuell apply med eksakt godkjent SHA; automatisk
+apply er fjernet. PHP beholdes. PR #20 er ikke innlemmet.
+Dette er klargjøring, ikke en påstand om opprettet Render-tjeneste eller publisering.
+Fersk Uniweb-kontroll, Render-URL, faktiske kontoinnstillinger og ekte innlogging
+gjenstår. CI-resultat og eksakt ny head registreres på deployment-PR-en.
+
+## Oppdatering av PR #21 03.10.2026
+
+Render-grenen er oppdatert mot PR #19 head
+049b42591e525055232503e4710787ad09b62139 med en merge-commit inn i
+infra/render-staging-20261001. Tidligere #21-head var
+e62f2c01df7d5a639e649f0740864e41b9a80dcf. Ingen PR er merget til basegrenen.
+Kontrollen fra 01.10 og Render-statusen over er bevart som historikk.
+
+Bare dette statusdokumentet har endret innhold fra tidligere #21-head.
+Alle øvrige filobjekter og filmoduser er identiske, inkludert Docker/Apache,
+Basic Auth, persistenskontrollen og kravet om full approved_sha.
+Nye kjøringer av Render staging container og PHP checks and Uniweb package
+kontrollerer oppdatert head. Eksakt head, kjøringslenker, resultater og faktisk
+GitHub merge-status registreres i PR #21.
+
+Ingen Render-tjeneste er opprettet, og ingenting er deployet til Uniweb eller
+produksjon i denne oppgaven. PR #21 beholdes som draft. Eksterne kontroller
+og produksjonsavstemming beskrevet over gjenstår før eventuell publisering.

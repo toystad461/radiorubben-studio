@@ -1,0 +1,25 @@
+name: Render staging container
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  container:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Check deployment scripts
+        run: |
+          sh -n deploy/render/entrypoint.sh
+          bash -n scripts/test-render.sh
+      - name: Build the PHP runtime
+        run: docker build --pull -t studio-render-test .
+      - name: Verify isolation and persistence
+        run: bash scripts/test-render.sh studio-render-test
+      - name: Record tested source
+        run: echo "Tested staging container source $GITHUB_SHA. This is not a deployment." >> "$GITHUB_STEP_SUMMARY"
