@@ -10,7 +10,7 @@ newsdesk_check(count(newsdesk_parse_rss(str_replace('www.bomlo.kommune.no', 'evi
 newsdesk_check(count(newsdesk_parse_rss(str_replace('https://', 'http://', $rss), 'bomlo', $sources['bomlo'], '2026-09-28T10:00:00Z')) === 0, 'non-HTTPS link rejected');
 newsdesk_check(count(newsdesk_parse_rss('<!DOCTYPE rss>' . $rss, 'bomlo', $sources['bomlo'], '2026-09-28T10:00:00Z')) === 0, 'DTD rejected');
 $nrk = str_replace(['www.bomlo.kommune.no/aktuelt-og-kunngjeringar/', 'Vegarbeid på Bømlo'], ['www.nrk.no/nyheter/', 'Siste nytt'], $rss);
-newsdesk_check(count(newsdesk_parse_rss($nrk, 'nrk', $sources['nrk'], '2026-09-28T10:00:00Z')) === 1, 'NRK card');
+newsdesk_check(count(newsdesk_parse_rss($nrk, 'nrk_vestland_siste', $sources['nrk_vestland_siste'], '2026-09-28T10:00:00Z')) === 1, 'NRK card');
 $traffic = ['type'=>'FeatureCollection', 'totalFeatures'=>2, 'features'=>[]];
 $road = ['@featureType'=>'geoJsonSituationSimple', 'isMainRecord'=>true,
     'confidentiality'=>'noRestriction', 'situationId'=>'NPRA_HBT_28-09-2026.1',

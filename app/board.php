@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/news-script.php';
+require_once __DIR__ . '/source-identity.php';
 
 /** Shared editorial rundown. This file lives outside the public document root. */
 function studio_board_path(): string
@@ -58,12 +59,21 @@ function studio_board_length(string $value): int
     return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
 }
 
+function studio_board_has_source(array $items, array $source): bool
+{
+    $identity = studio_source_identity((string)($source['url'] ?? ''));
+    foreach ($items as $item) {
+        if (!empty($source['id']) && ($item['originId'] ?? null) === $source['id']) return true;
+        if ($identity !== null && !empty($item['originId'])
+            && studio_source_identity((string)($item['sourceUrl'] ?? '')) === $identity) return true;
+    }
+    return false;
+}
+
 function studio_board_add_source(array $source, array $user, ?string $path = null): void
 {
     studio_board_change(static function (array &$board) use ($source, $user): void {
-        foreach (studio_board_active($board) as $item) {
-            if (($item['originId'] ?? null) === ($source['id'] ?? null)) return;
-        }
+        if (studio_board_has_source(studio_board_active($board), $source)) return;
         if (count(studio_board_active($board)) >= 30) throw new InvalidArgumentException('Sendelisten har plass til 30 aktive punkter. Arkiver et punkt først.');
         if (!is_string($source['id'] ?? null) || !is_string($source['title'] ?? null)) throw new InvalidArgumentException('Ugyldig kildesak.');
         $board['items'][] = [
@@ -71,6 +81,7 @@ function studio_board_add_source(array $source, array $user, ?string $path = nul
             'title'=>$source['title'], 'sourceName'=>$source['sourceName'] ?? 'Kilde',
             'sourceUrl'=>$source['url'] ?? '', 'sourceAt'=>$source['publishedAt'] ?? null,
             'capturedAt'=>$source['fetchedAt'] ?? gmdate('c'), 'summary'=>$source['summary'] ?? '',
+            'sourceFeeds'=>$source['feedIds'] ?? [],
             'program'=>'god-morgen-vestland', 'script'=>'', 'notes'=>'', 'status'=>'draft', 'verified'=>false,
             'createdAt'=>gmdate('c'), 'updatedAt'=>gmdate('c'),
             'createdBy'=>$user['name'] ?? 'Medarbeider', 'approvedBy'=>null, 'revision'=>1,
