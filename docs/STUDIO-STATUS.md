@@ -151,3 +151,28 @@ Etter brukerens «Aktiver» ble PR #22-avhengighetene og PR #23 aktivert selekti
 Live UI-test avdekket blokkering fra eksisterende CSP. Sakssiden er rettet til samme-origin JavaScript, CSS og bilde, uten å endre sikkerhetsheadere. Innlogget Studio viser fungerende feeder, bilde og kategorier, og lager både radio- og nettutkast fra originalkilden. Prøvesak: `37115a841ef21a07`. Kontrollmerknader krever redaksjonell gjennomgang; manuell sluttgodkjenning er bevart.
 
 **Gjenstående blokkering:** WordPress-kladdoverføringen feilet. Studios lesende tilkoblingskontroll bekrefter HTTP 401 / `incorrect_password`; den separate autentiserte WordPress-tilkoblingen finner ingen kladd med prøvens slug. Ingen ny levering ble forsøkt og ingen artikkel er publisert. Gyldig WordPress-applikasjonspassord, kontrollert avklaring av leveringsstatus og deretter en bekreftet kladdoverføring er neste nødvendige steg. Se [aktiveringsbevis, avvik og tilbakeføring](NEWS-ACTIVATION-20261004.md). Historiske «ikke aktivert»-avsnitt over beskriver tidligere leveranser.
+
+## Nyhetsdesk – samlet kø (04.10.2026, under verifisering)
+
+Arbeidsgren: `feat/unified-newsroom`, avhengig av PR #23. Den nye desken
+samler Studio-utkast og Fotballrobotens godkjenning gjennom en autentisert
+bro til WordPress. Fotballrobot-endringen ligger i `feat/newsroom-digest`
+og bygger på aktiv 0.9.9 / web-PR #49. Ingen merge er utført.
+
+- NRK Vestland- og Bømlo-RSS brukes til å finne saker. Originalen må hentes,
+  identiteten bekreftes og teksten kildekontrolleres før klar-status.
+- Korte selvstendige bokmålsutkast, eget nyhetsbilde og synlig lenke til
+  originalen. NRK-lenken heter «Les hele saken hos NRK».
+- Automatisk klargjøring er av som standard, maks åtte nye saker per døgn
+  og én per kjøring. Avviste, uendrede og mislykkede saker gjenskapes ikke.
+- Til godkjenning / Trenger avklaring / Under arbeid / Publisert.
+  Serverroller, CSRF, revisjoner, historikk og manuell godkjenning beholdes.
+- WordPress samler klare saker i ett e-postvarsel: ti minutters samleperiode,
+  høyst én sending per time ved nye revisjoner. Ingen artikkeltekst i e-post.
+  Uklar transportstatus stopper automatisk gjentakelse.
+
+Selektiv aktivering gjenstår. Fersk inspeksjon bekreftet at Studio sitt
+lagrede WordPress-passord avvises med HTTP 401. Eksisterende WPVibe-nøkkel
+skal bevares. Dette må rettes før samlet godkjenning kan verifiseres.
+Ingen ekte sak skal publiseres som test, og tidligere uklar overføring skal
+ikke gjentas uten oppslag etter eksisterende WordPress-innlegg.

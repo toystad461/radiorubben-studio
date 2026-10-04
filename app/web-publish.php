@@ -40,13 +40,15 @@ function studio_web_text(array $web): string {
 }
 function studio_web_checked(array $item): bool {
     $w=$item['web']??[];
-    return studio_news_check_current(array_replace($item,['script'=>studio_web_text($w),'sourceCheck'=>$w['check']??[]]));
+    return studio_news_original_read($item,$w['check']??[]) && studio_news_check_current(array_replace($item,['script'=>studio_web_text($w),'sourceCheck'=>$w['check']??[]]));
 }
 function studio_web_html(array $item): string {
     $esc=static fn($s)=>htmlspecialchars($s,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');
     $w=$item['web']; $html='';
     foreach (preg_split('/\R\s*\R/u',trim($w['body'])) as $p) $html.='<p>'.nl2br($esc($p)).'</p>';
-    return '<p><strong>'.$esc($w['intro']).'</strong></p>'.$html.'<p>Kilde: <a href="'.$esc($item['sourceUrl']).'">'.$esc($item['sourceName']).'</a></p>';
+    $nrk=parse_url($item['sourceUrl']??'',PHP_URL_HOST)==='www.nrk.no';
+    $label=$nrk?'Les hele saken hos NRK':'Les mer hos '.$item['sourceName'];
+    return '<p><strong>'.$esc($w['intro']).'</strong></p>'.$html.'<p>Basert på opplysninger fra '.($nrk?'NRK':$esc($item['sourceName'])).'. <a href="'.$esc($item['sourceUrl']).'" rel="noopener">'.$esc($label).'</a></p>';
 }
 /** Reserve durably before network I/O. An unknown outcome is never retried automatically. */
 function studio_web_publish(string $id,int $revision,string $status,array $user,array $config,?callable $request=null,?string $path=null): array {

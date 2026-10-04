@@ -22,7 +22,7 @@ jobs:
       - run: composer audit
       - name: Check Studio JavaScript and automatic case preparation
         run: |
-          find public -name '*.mjs' -exec node --check {} \;
+          find public \( -name '*.mjs' -o -name '*.js' \) -exec node --check {} \;
           node tests/recovered/test-case-flow.mjs
       - run: composer test
       - if: matrix.php == '8.4'

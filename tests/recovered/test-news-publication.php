@@ -18,7 +18,7 @@ $new=function($origin,$url)use($admin,$path){
 };
 $save=function($item,$data)use($admin,$path){studio_web_save($item['id'],$item['revision'],'save',$data,$admin,$path);return studio_case_get($item['id'],$path);};
 $approve=function($item)use($admin,$path){
-    $review=['policy'=>STUDIO_NEWS_POLICY,'status'=>'passed','checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,studio_web_text($item['web']))];
+    $review=['source'=>['url'=>$item['sourceUrl'],'text'=>str_repeat('Et kontrollert kildebelegg. ',8),'sha256'=>hash('sha256',str_repeat('Et kontrollert kildebelegg. ',8)),'fetchedAt'=>gmdate('c')],'policy'=>STUDIO_NEWS_POLICY,'status'=>'passed','checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,studio_web_text($item['web']))];
     studio_web_save($item['id'],$item['revision'],'check',['check'=>$review],$admin,$path);
     $item=studio_case_get($item['id'],$path);
     studio_web_save($item['id'],$item['revision'],'approve',['confirmed'=>'1'],$admin,$path);
@@ -33,7 +33,7 @@ try {
     reject(fn()=>$publish($local),'source check and manual approval required');
     $local=$publish($local,'draft');
     check($calls[0][1]['featured_media']===1079 && $calls[0][1]['categories']===[8,27],'initial WordPress draft receives news metadata, not generic category override');
-    check($calls[0][1]['status']==='draft' && str_contains($calls[0][1]['content'],'Kilde: <a href="https://www.bomlo.kommune.no/'),'draft keeps original source');
+    check($calls[0][1]['status']==='draft' && str_contains($calls[0][1]['content'],'<a href="https://www.bomlo.kommune.no/'),'draft keeps original source');
     check(studio_web_status_label($local)==='WordPress-kladd lagret','confirmed draft status');
     $local=$publish($local,'draft');check(count($calls)===1,'draft retry reuses delivery');
     $local=$approve($local);$local=$publish($local);
