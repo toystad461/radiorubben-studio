@@ -5,6 +5,27 @@ Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
 
+## Mobilflyt – 05.10.2026, under verifisering
+
+Arbeid på `fix/mobile-newsroom`, basert på fersk `feat/unified-newsroom`
+`871f4d91cc3894709a7084c6ce8a7f9a2c1938e4`. Kø og Studio-meny er foldet på
+mobil. Saken, hovedbildet, endringsønsker og manuell godkjenning blir på samme
+side. Bekreftet godkjenning/forkasting åpner neste ferdige sak; hver sak krever
+ny avkrysning. Nettverksfeil beholder innskrevet tekst og sperrer ny innsending
+inntil status er hentet. Serverroller, CSRF og eksakte revisjoner er bevart.
+
+WordPress-avhengigheten er eksplisitt: Fotballrobot 0.10.4 på egen gren/PR
+med hovedbilde i køresponsen og kvalitetssikret omskriving av ventende rettelser.
+Ingen publisert sak eller e-post endres av deploy. Studio-bilder leveres via
+en autentisert, domeneavgrenset bildeendepunkt; CSP utvides ikke.
+
+Lokale tester på 375/390/800/1280 px dekker ingen sideskift, lesebekreftelse,
+ny bekreftelse per sak, bevarte endringer, konflikt og nettverksbrudd. Isolerte
+PHP-tester dekker køvalg og bilde-URLer samt fragment og eksisterende rollegater.
+Endelig CI, eksakt selektiv release og produksjonsbevis føres etter utrulling.
+Neste steg: publisere de avgrensede runtime-filene med før-/etter-hasher,
+privat backup og tilbakeføring. Ingen hel gren eller standardpakke skal lastes opp.
+
 ## Aktiv nyhetsdesk – 04.10.2026
 
 Samlet desk er **selektivt aktivert**. Runtime følger Studio-commit

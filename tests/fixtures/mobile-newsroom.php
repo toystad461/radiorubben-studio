@@ -1,0 +1,14 @@
+<?php
+// Isolated visual fixture: no authentication, network, database, email or real story mutations.
+require dirname(__DIR__,2).'/app/newsroom-view.php';
+function escape($v){return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');}
+function newsroom_fields($key,$card){echo '<input type="hidden" name="item" value="'.escape($key).'"><input type="hidden" name="token" value="fixture-token"><input type="hidden" name="csrf" value="fixture-csrf">';}
+$second=($argv[1]??'')==='next';$selected=$second?'wp:2':'wp:1';$filter='ready';$admin=$can=true;$error=$notice=$wpError=null;$item=null;$settings=['enabled'=>true];$wpStatus=[];$sources=[];$board=['items'=>[]];
+$labels=['ready'=>'Til godkjenning','attention'=>'Trenger avklaring','working'=>'Under arbeid','published'=>'Publisert'];$counts=['ready'=>$second?1:2,'attention'=>0,'working'=>0,'published'=>$second?1:0];
+$card=['id'=>1,'title'=>$second?'Neste eksempelsak er klar':'Eksempelsak: En enklere nyhetsdesk på mobil','sourceName'=>'Fotball · Spillersak','sourceUrl'=>'','status'=>'ready','reasons'=>[],'intro'=>'Dette er en oppdiktet sak for å teste lesing og godkjenning på små skjermer.','body'=>"Du kan lese saken, se bildet og be om endringer i samme visning.\n".str_repeat("Eksempeltekst for å kontrollere plassering av knapper og lesbarhet på mobil.\n",5),'image'=>['previewUrl'=>'/fixture-image.svg','alt'=>'Eksempelbilde','caption'=>'Illustrasjon for test'],'canApprove'=>true,'canRevise'=>true,'canAddFacts'=>true,'links'=>[['url'=>'https://example.test/source','label'=>'Eksempelkilde']]];
+$cards=[$selected=>$card];if(!$second)$cards['wp:2']=array_replace($card,['title'=>'Neste eksempelsak er klar']);$visible=$cards;$position=0;$nextKey=$second?'':'wp:2';
+$extraStylesheet='/assets/newsroom.css';require dirname(__DIR__,2).'/app/views/head.php';
+?>
+<div class="shell newsroom-shell"><aside class="sidebar">Studio-meny</aside><div class="workspace"><header class="topbar"><span>Radio Rubben / <strong>Nyhetsdesk</strong></span><details class="nr-site-menu"><summary>Studio-meny</summary><nav><a href="/control.php">Kontrollsenter</a></nav></details></header>
+<?php require dirname(__DIR__,2).'/app/views/newsroom.php';?>
+</div></div><p id="newsroom-progress" role="status" aria-live="polite" hidden></p><script src="/assets/newsroom.js" defer></script></body></html>
