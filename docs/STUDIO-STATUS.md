@@ -1,8 +1,59 @@
 # Studio – felles status og arbeidsliste
 
-Oppdatert 30.09.2026 etter direkte lesing via Uniweb File Manager.
+Oppdatert 04.10.2026 etter selektiv aktivering, API-kontroll og innlogget UI-kontroll.
 Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
+
+
+## Aktiv nyhetsdesk – 04.10.2026
+
+Samlet desk er **selektivt aktivert**. Runtime følger Studio-commit
+`5fdee8efd3648b9cfb32f20f2113cb5a1b771d55` (PR #24), og Fotballrobot
+0.10.1 / web-runtime `a253cfa3c41aa175cdceebc6ce46e8c5cd4d7b76` (PR #50).
+Første aktivering: web-release `ef7808506f3c31837b8717198751ceac91eee385`,
+Actions 37236445470. Oppfølging som bevarer utkast ved kontrollfeil og
+begrenser køens høyde: release `9b92a8808fb1738da981717d27b4c2804e7bf264`,
+Actions 37237084802. Avsnittsreferanser til urørt kilde ble deretter aktivert i
+`74ea347da4b7e6483875dbb802a88bc5a39a0ad1`, Actions 37237550629.
+Alle før-/etter-hasher ble kontrollert på serveren.
+Privat backup og nøyaktig tilbakeføring er dokumentert i web-repoets
+`NEWSROOM-RELEASE.md` og `scripts/newsroom-release.json`.
+
+Studio CI på PHP 8.2/8.4 er grønn for denne runtime-committen (37237498827 og
+37237495149). Fotballrobotens fullstendige tester og release-kontroller er
+grønne. Ny dekning: kildeidentitet, manglende original, endrede revisjoner,
+CSRF/roller, dubletter, avviste kilder, ingen automatiske feilrepetisjoner,
+bevart utkast ved ufullstendig kontroll og samlevarslets transporttilstander.
+
+WordPress-forbindelsen er reparert med egen Studio-programnøkkel for samme
+allerede konfigurerte konto. Andre nøkler, inkludert WPVibe, er bevart.
+Hemmeligheten finnes bare i privat serverkonfigurasjon. API og worker er
+bekreftet i drift. Automatisk klargjøring (maks åtte nye saker per Oslo-døgn)
+og samlevarsler (ti minutter, maks én per time ved nye revisjoner) er på.
+Native WordPress-jobber ble aktivert i release
+`05eca254c7ad3d071f021925bf94de5fd8e1342b`, Actions 37237964444.
+Fersk autentisert HTTP-kontroll bekrefter at WordPress kan lese Studio-køen
+uten å starte en separat PHP-prosess. Versjon 0.10.1 er bekreftet via API.
+
+Live Studio er kontrollert med Thomas sin Microsoft-innlogging. Køen viser
+Studio- og WordPress-saker, mangler, kilde, bilde og manuelle avgjørelser.
+En ekte NRK-sak er hentet fra originalartikkelen og klargjort. Kontrolløren
+fanget opp en udokumentert påstand og hindret godkjenning; utkastet ble
+rettet gjennom den nye flaten. Kildelenken er «Les hele saken hos NRK».
+NRK-utkastet `8140cd54c5b6e21d` står nå som «Til godkjenning», med
+originalen lest, kontrollert korttekst og godkjenningsboksen urørt.
+Ingen ekte artikkel er publisert og ingen test-e-post er sendt i arbeidet.
+Første faktiske e-postlevering er ikke verifisert her.
+
+Den tidligere uavklarte kladdoverføringen for `37115a841ef21a07` er løst
+etter autentisert søk i alle WordPress-statuser: ingen innlegg med reservert
+slug fantes. Overføringen er merket `not_delivered`, tidligere status er
+bevart i historikken, og ingen ny overføring er gjort. Andre eldre saker
+som trenger kontroll er ikke automatisk godkjent, slettet eller overskrevet.
+
+Neste steg: bruk desken til redaksjonell godkjenning og vurder kvaliteten på
+nye utkast før eventuell videre automatisering. Mobilvisning er kodet
+responsivt, men ikke separat kontrollert på fysisk mobil i denne runden.
 
 ## Start her
 Følg [AGENTS.md](../AGENTS.md). Det ferske
@@ -171,8 +222,8 @@ og bygger på aktiv 0.9.9 / web-PR #49. Ingen merge er utført.
   høyst én sending per time ved nye revisjoner. Ingen artikkeltekst i e-post.
   Uklar transportstatus stopper automatisk gjentakelse.
 
-Selektiv aktivering gjenstår. Fersk inspeksjon bekreftet at Studio sitt
-lagrede WordPress-passord avvises med HTTP 401. Eksisterende WPVibe-nøkkel
-skal bevares. Dette må rettes før samlet godkjenning kan verifiseres.
+Historisk funn før aktivering: Studio sitt lagrede WordPress-passord ble
+avvist med HTTP 401. Forbindelsen er nå reparert, se aktiv status øverst. Eksisterende WPVibe-nøkkel
+skal bevares. Samlet godkjenning er nå verifisert i den innloggede flaten.
 Ingen ekte sak skal publiseres som test, og tidligere uklar overføring skal
 ikke gjentas uten oppslag etter eksisterende WordPress-innlegg.
