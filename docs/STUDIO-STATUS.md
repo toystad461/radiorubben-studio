@@ -134,3 +134,11 @@ Ikke produksjonsaktivert. Neste steg er fersk serveravstemming av disse fire
 filene og PR #22-avhengighetene, så innlogget Studio-test og kontrollert ekte
 WordPress-kladd. Live originalhenting og ende-til-ende-overføring er uprøvd.
 Ingen artikkel, automatisk jobb, OneDrive-overføring, merge eller deploy er gjort.
+
+
+Verifisering: [PR #23](https://github.com/toystad461/radiorubben-studio/pull/23),
+testet kodecommit `9795a3735c9d147e263f5deb66777c2103262275`.
+[CI 37220266577](https://github.com/toystad461/radiorubben-studio/actions/runs/37220266577)
+besto på native PHP 8.2 og 8.4: hele suiten, JavaScript, Composer-validering/audit
+og pakking. Denne etterfølgende oppdateringen endrer bare dokumentert status.
+PR #23 er åpen som draft og mergebar; ingen merge eller deploy er utført.
