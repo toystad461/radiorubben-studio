@@ -34,12 +34,13 @@ register_shutdown_function(static function()use($tmp,$mode,$path,$item):void{
     $html=ob_get_clean();$stored=json_decode(file_get_contents($path),true)['items'];$ok=count($stored)===1;
     if($mode==='save')$ok=$ok&&$stored[0]['web']['publication']['categories']===[8,27]&&$stored[0]['web']['approvedHash']===null&&$stored[0]['web']['check']===[];
     else $ok=$ok&&$stored[0]===$item;
-    if($mode==='get'||$mode==='open')$ok=$ok&&str_contains($html,'Radio-Rubben-–-Nyheter-1024x576.png')&&str_contains($html,'form="web-editor"')&&str_contains($html,'Redigert nettsak')&&str_contains($html,'Sluttgodkjenn og publiser');
+    if($mode==='get'||$mode==='open')$ok=$ok&&str_contains($html,'/assets/radio-rubben-nyheter.png')&&str_contains($html,'form="web-editor"')&&str_contains($html,'Redigert nettsak')&&str_contains($html,'Sluttgodkjenn og publiser');
+    if($mode==='get')$ok=$ok&&str_contains($html,'src="/assets/case.js?v=20261004-1"')&&!str_contains($html,'<style>')&&!str_contains($html,'<script>');
     if($mode==='published')$ok=$ok&&str_contains($html,'Publisert på radiorubben.no')&&str_contains($html,'Bilde og kategorier beholdes fra WordPress.')&&!str_contains($html,'<figure class="case-news-image">');
     if($mode==='legacy')$ok=$ok&&str_contains($html,'Lagre nettsaken for å knytte til nyhetsbildet')&&!str_contains($html,'value="approve_publish"');
     if($mode==='guest')$ok=$ok&&($GLOBALS['redirected']??'')==='/login.php';
     if($mode==='csrf'||$mode==='observer')$ok=$ok&&http_response_code()===403;
-    if($mode==='open')$ok=$ok&&!str_contains($html,"document.querySelector('#prepare-all').click();");
+    if($mode==='open')$ok=$ok&&str_contains($html,'data-auto-prepare="0"');
     $files=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tmp,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST);
     foreach($files as$f)$f->isDir()?rmdir($f->getPathname()):unlink($f->getPathname());rmdir($tmp);
     if(!$ok){fwrite(STDERR,"FAIL case page $mode\n".substr($html,-1000));exit(1);}echo "OK case page $mode\n";

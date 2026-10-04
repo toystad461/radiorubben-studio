@@ -1,0 +1,9 @@
+@import url('/assets/control.css?v=2');
+.case-workspace .sending-layout{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.case-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0}
+.case-toolbar select{max-width:100%;min-width:240px}.case-progress{padding:16px;border-left:4px solid #24a7df;background:#102635;margin:12px 0}
+.case-inbox{max-height:340px;overflow:auto}.case-inbox article{border-bottom:1px solid #345;padding:12px 0}
+.case-inbox h3{font-size:1rem;margin:4px 0}.case-workspace textarea{width:100%;box-sizing:border-box}
+.case-workspace [hidden]{display:none!important}.case-final{border-top:1px solid #345;padding-top:16px;margin-top:16px}
+.case-news-image{margin:12px 0}.case-news-image img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:8px}.case-news-image figcaption{font-size:.85rem;margin-top:8px}.case-news-placement{margin:12px 0}
+@media(max-width:900px){.case-workspace .sending-layout{grid-template-columns:1fr}}

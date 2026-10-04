@@ -93,18 +93,9 @@ function case_report(array $check): void {
 }
 $items=studio_board_active(studio_board_read());
 $feeds=newsdesk_all(dirname(__DIR__).'/config');
-$extraStylesheet='/assets/control.css?v=2'; require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet='/assets/case.css?v=20261004-1'; require dirname(__DIR__).'/app/views/head.php';
 ?>
-<style>
-.case-workspace .sending-layout{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
-.case-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0}
-.case-toolbar select{max-width:100%;min-width:240px}.case-progress{padding:16px;border-left:4px solid #24a7df;background:#102635;margin:12px 0}
-.case-inbox{max-height:340px;overflow:auto}.case-inbox article{border-bottom:1px solid #345;padding:12px 0}
-.case-inbox h3{font-size:1rem;margin:4px 0}.case-workspace textarea{width:100%;box-sizing:border-box}
-.case-workspace [hidden]{display:none!important}.case-final{border-top:1px solid #345;padding-top:16px;margin-top:16px}
-.case-news-image{margin:12px 0}.case-news-image img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:8px}.case-news-image figcaption{font-size:.85rem;margin-top:8px}.case-news-placement{margin:12px 0}
-@media(max-width:900px){.case-workspace .sending-layout{grid-template-columns:1fr}}
-</style>
+
 <div class="shell"><?php $activePage='newsdesk';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace"><main id="main" class="control-page case-workspace">
 <header><p class="eyebrow">RADIO RUBBEN / REDAKSJON</p><h1>Fra sak til sending og nettside</h1><p>Robåt klargjør og kontrollerer. Du leser, retter ved behov og sluttgodkjenner her.</p></header>
 <div class="case-toolbar"><form method="get" action="/case.php"><label for="case-picker">Saker under arbeid</label><select id="case-picker" name="item"><option value="">Velg sak</option><?php foreach($items as $row):?><option value="<?=escape($row['id'])?>" <?=$id===$row['id']?'selected':''?>><?=escape($row['title'])?></option><?php endforeach;?></select><button>Åpne</button></form><a href="/sending.php">Rekkefølge i sendelisten</a></div>
@@ -122,7 +113,7 @@ $extraStylesheet='/assets/control.css?v=2'; require dirname(__DIR__).'/app/views
 <details><summary>Flere valg for radio</summary><?php if($can):foreach(['prepare_radio'=>'Lag radiomanus på nytt','check_radio'=>'Kontroller lagret manus på nytt'] as $action=>$label):?><form method="post" data-step="<?=$action?>"><?php case_fields($item);?><button name="action" value="<?=$action?>"><?=$label?></button></form><?php endforeach;endif;?><a href="/learning.php?item=<?=escape($id)?>">Lær av godkjent rettelse</a></details></section>
 <section class="control-panel"><h2>Nettside</h2><p>Status: <?=escape(studio_web_status_label($item))?></p>
 <?php if(!empty($w['delivery']['id'])):?><p>Bilde og kategorier beholdes fra WordPress. <a href="https://www.radiorubben.no/wp-admin/post.php?post=<?=(int)$w['delivery']['id']?>&amp;action=edit" target="_blank" rel="noopener noreferrer">Se eller endre i WordPress</a></p>
-<?php elseif($newsProfile):?><figure class="case-news-image"><img src="<?=escape(STUDIO_NEWS_IMAGE_URL)?>" alt="Radio Rubben Nyheter – mikrofon og nyhetsstudio" width="1024" height="576"><figcaption>Illustrasjon: Radio Rubben (KI-generert). Viser ikke den aktuelle hendelsen.</figcaption></figure><p>Kategorier: <?=($newsProfile['scope']??'')==='local'?'Nyheter og Lokale Nyheter':'Nyheter'?>. Bildet følger med når WordPress-innlegget opprettes.</p><?php endif;?>
+<?php elseif($newsProfile):?><figure class="case-news-image"><img src="/assets/radio-rubben-nyheter.png" alt="Radio Rubben Nyheter – mikrofon og nyhetsstudio" width="1024" height="576"><figcaption>Illustrasjon: Radio Rubben (KI-generert). Viser ikke den aktuelle hendelsen.</figcaption></figure><p>Kategorier: <?=($newsProfile['scope']??'')==='local'?'Nyheter og Lokale Nyheter':'Nyheter'?>. Bildet følger med når WordPress-innlegget opprettes.</p><?php endif;?>
 <?php if($can):?><form method="post" id="web-editor" class="editor-form" data-save="web"><?php case_fields($item);?><label for="web-title">Overskrift</label><input id="web-title" name="title" maxlength="180" value="<?=escape($w['title']??'')?>" required><label for="web-intro">Ingress</label><textarea id="web-intro" name="intro" maxlength="500" required><?=escape($w['intro']??'')?></textarea><label for="web-body">Artikkeltekst</label><textarea id="web-body" name="body" rows="14" maxlength="5000" required><?=escape($w['body']??'')?></textarea><button name="action" value="save_web">Lagre og kontroller rettelser</button></form><?php else:?><h3><?=escape($w['title']??'')?></h3><p><?=nl2br(escape(studio_web_text($w)))?></p><?php endif;?>
 <?php if($can && $newsProfile && empty($w['delivery']['id'])):?><div class="case-news-placement"><label for="news-scope">Plassering av nyhetssaken</label><select id="news-scope" name="news_scope" form="web-editor"><option value="news" <?=($newsProfile['scope']??'')==='news'?'selected':''?>>Nyheter</option><option value="local" <?=($newsProfile['scope']??'')==='local'?'selected':''?>>Nyheter og Lokale Nyheter</option></select><p>Velg lokal kategori når saken gjelder Bømlo. Lagre endringen før sluttgodkjenning.</p></div><?php endif;?>
 <?php case_report($w['check']??[]);?>
@@ -132,41 +123,5 @@ $extraStylesheet='/assets/control.css?v=2'; require dirname(__DIR__).'/app/views
 <?php if(isset($w['delivery'])):?><p>WordPress: <?=escape(['confirmed'=>'Overføring bekreftet','pending'=>'Overføring pågår','unknown'=>'Overføringen må avklares før nytt forsøk'][$w['delivery']['state']]??'Ikke overført')?></p><?php if(!empty($w['delivery']['link'])):?><a href="<?=escape($w['delivery']['link'])?>" target="_blank" rel="noopener noreferrer">Åpne på nettsiden</a><?php endif;endif;?>
 <details><summary>Flere valg for nettsak</summary><?php if($can):foreach(['prepare_web'=>'Lag nettsak på nytt','check_web'=>'Kontroller lagret nettsak på nytt'] as $action=>$label):?><form method="post" data-step="<?=$action?>"><?php case_fields($item);?><button name="action" value="<?=$action?>"><?=$label?></button></form><?php endforeach;endif;?><?php if($admin && studio_wp_ready($wp) && !in_array($w['delivery']['state']??'', ['pending','unknown'],true)):?><form method="post"><?php case_fields($item);?><button name="action" value="wp_draft">Overfør bare som WordPress-kladd</button></form><?php endif;?></details>
 </section></div>
-<?php if($can):?><script>
-(()=>{
-const state={id:<?=json_encode($id)?>,revision:<?=(int)$item['revision']?>,csrf:<?=json_encode($_SESSION['csrf'])?>};
-const progress=document.querySelector('#case-progress');let busy=false;const dirty=new Set();
-const say=text=>{progress.textContent=text;};
-const lock=value=>{busy=value;document.querySelectorAll('button,select,input[type=checkbox]').forEach(b=>b.disabled=value);document.querySelectorAll('textarea,input:not([type=hidden]):not([type=checkbox])').forEach(e=>e.readOnly=value);};
-async function step(action,form){
- const data=form?new FormData(form):new FormData();
- // Selects are disabled while a request runs; include the editor's selected placement explicitly.
- if(action==='save_web' && document.querySelector('#news-scope'))data.set('news_scope',document.querySelector('#news-scope').value);
- for(const [k,v] of Object.entries({...state,action,response:'json'}))data.set(k,String(v));
- const res=await fetch('/case.php',{method:'POST',body:data,credentials:'same-origin'});
- let result;try{result=await res.json();}catch(e){throw new Error('Kontakten ble avbrutt eller innloggingen utløp. Last saken på nytt før du fortsetter. Ingen automatisk gjentakelse.');}
- if(!res.ok||!result.ok)throw new Error(result.error||'Handlingen kunne ikke fullføres.');
- state.revision=result.revision;document.querySelectorAll('input[name="revision"]').forEach(e=>e.value=state.revision);
- return result;
-}
-async function run(work){if(busy)return;lock(true);try{await work();busy=false;location.replace('/case.php?item='+encodeURIComponent(state.id));}catch(e){say(e.message+' Lagrede delresultater er bevart.');lock(false);document.querySelectorAll('[data-final] button').forEach(b=>b.disabled=true);}}
-document.querySelector('#prepare-all').addEventListener('click',()=>{
- if(dirty.size){say('Lagre rettelsene før du lager nye utkast.');return;}
- run(async()=>{say('1 av 2: Henter originalen, lager radiomanus og kontrollerer språk og kilder …');await step('prepare_radio');say('2 av 2: Lager nettsak og kontrollerer språk og kilder …');await step('prepare_web');});
-});
-const newsScope=document.querySelector('#news-scope');
-if(newsScope)newsScope.addEventListener('change',()=>{const form=document.querySelector('#web-editor');dirty.add(form);document.querySelectorAll('[data-final] button').forEach(b=>b.disabled=true);say('Nyhetskategorien er endret. Lagre og kontroller nettsaken før sluttgodkjenning.');});
-document.querySelectorAll('[data-save]').forEach(form=>{
- form.addEventListener('input',()=>{dirty.add(form);document.querySelectorAll('[data-final] button').forEach(b=>b.disabled=true);});
- form.addEventListener('submit',e=>{e.preventDefault();const kind=form.dataset.save;if([...dirty].some(f=>f!==form)){say('Du har rettelser i begge tekster. Bruk knappen nedenfor for å lagre og kontrollere begge.');document.querySelector('#save-both').hidden=false;return;}
- run(async()=>{say('Lagrer rettelser og kontrollerer mot originalkilden …');await step('save_'+kind,form);dirty.delete(form);await step('check_'+kind);});});
-});
-const saveBoth=document.createElement('button');saveBoth.id='save-both';saveBoth.type='button';saveBoth.hidden=true;saveBoth.textContent='Lagre og kontroller begge tekster';progress.after(saveBoth);
-saveBoth.addEventListener('click',()=>run(async()=>{for(const form of [...dirty]){const kind=form.dataset.save;say('Lagrer og kontrollerer '+(kind==='radio'?'radiomanus':'nettsak')+' …');await step('save_'+kind,form);dirty.delete(form);await step('check_'+kind);}}));
-document.querySelectorAll('[data-step]').forEach(form=>form.addEventListener('submit',e=>{e.preventDefault();if(dirty.size){say('Lagre rettelsene først.');return;}run(async()=>{say('Robåt arbeider med saken …');await step(form.dataset.step);});}));
-document.querySelectorAll('[data-final]').forEach(form=>form.addEventListener('submit',e=>{if(busy||dirty.size){e.preventDefault();say('Lagre og kontroller rettelsene før sluttgodkjenning.');}}));
-window.addEventListener('beforeunload',e=>{if(busy||dirty.size){e.preventDefault();e.returnValue='';}});
-<?php if($autoPrepare):?>document.querySelector('#prepare-all').click();<?php endif;?>
-})();
-</script><noscript><p>Automatisk klargjøring krever JavaScript. Bruk «Flere valg» for trinnvis kontroll. Lagrede rettelser må kontrolleres før godkjenning.</p></noscript><?php endif;?>
+<?php if($can):?><script id="case-controller" src="/assets/case.js?v=20261004-1" defer data-item="<?=escape($id)?>" data-revision="<?=(int)$item['revision']?>" data-csrf="<?=escape($_SESSION['csrf'])?>" data-auto-prepare="<?=$autoPrepare?'1':'0'?>"></script><noscript><p>Automatisk klargjøring krever JavaScript. Bruk «Flere valg» for trinnvis kontroll. Lagrede rettelser må kontrolleres før godkjenning.</p></noscript><?php endif;?>
 <?php endif;?></main></div></div></body></html>
