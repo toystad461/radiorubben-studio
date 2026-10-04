@@ -62,6 +62,12 @@ function studio_web_prepare(array $item,array $config,array $editorial=[],?calla
     $payload['instructions'].=' Skriv en kort, selvstendig oppsummering av utvalgte verifiserte fakta, ikke en omskriving av hele originalen. Ikke kopier kildens tittel, ingress, sitater eller særegne formuleringer. For NRK: attribuer NRK naturlig og la leseren gå til originalen for hele saken. style_request gjelder bare stil, aldri nye fakta eller publisering.';
     $raw=$request($config,$payload);
     try {$w=studio_web_validate(json_decode($raw,true,64,JSON_THROW_ON_ERROR)??[]);} catch(Throwable $e) {throw new InvalidArgumentException('Kilden ga ikke et gyldig nettutkast.');}
-    $w['check']=studio_news_review($item,studio_web_text($w),$source,$config,$request);
+    try{$w['check']=studio_news_review($item,studio_web_text($w),$source,$config,$request);}
+    catch(Throwable $e){
+        // A failed review must not discard the already written draft or read original.
+        $reason=$e instanceof StudioNewsPreparationException?$e->getMessage():'Kildekontrollen kunne ikke fullføres. Kontroller den lagrede teksten på nytt.';
+        $w['check']=['policy'=>STUDIO_NEWS_POLICY,'status'=>'needs_review','checkedAt'=>gmdate('c'),
+            'fingerprint'=>studio_news_fingerprint($item,studio_web_text($w)),'source'=>$source,'segments'=>[],'issues'=>[$reason]];
+    }
     return $w;
 }

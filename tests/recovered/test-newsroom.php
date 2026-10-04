@@ -34,6 +34,8 @@ try{
     studio_board_change(static function(&$b){$b['items'][0]['web']['check']['checkedAt']=gmdate('c',time()-3601);},$path);
     check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='rechecked','expired check is renewed without rewriting');
     $item=studio_case_get($item['id'],$path);check(studio_web_approval_hash($item)===$hash&&$calls===3,'renewed check preserves text and notification identity');
+    $failedReview=studio_web_prepare($item,$config,[],function($c,$p)use($request){return isset(json_decode($p['input'],true)['segments'])?'{}':$request($c,$p);},$fetch);
+    check($failedReview['body']!==''&&$failedReview['check']['status']==='needs_review'&&studio_news_original_read($item,$failedReview['check']),'failed review preserves draft and original without allowing approval');
     studio_board_update($item['id'],$item['revision'],'archive',[],$user,$path);
     check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='idle','rejected source cannot return via RSS');
     $next=$source;$next['id']='failure';$next['url']='https://www.nrk.no/vestland/next-1.12345679';
