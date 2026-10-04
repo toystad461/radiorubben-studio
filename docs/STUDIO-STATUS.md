@@ -1,11 +1,11 @@
 # Studio – felles status og arbeidsliste
 
-Oppdatert 04.10.2026 etter selektiv aktivering, API-kontroll og innlogget UI-kontroll.
+Oppdatert 05.10.2026 etter selektiv mobiloppdatering og autentisert API-kontroll.
 Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
 
-## Mobilflyt – 05.10.2026, under verifisering
+## Mobilflyt – aktivert 05.10.2026
 
 Arbeid på `fix/mobile-newsroom`, basert på fersk `feat/unified-newsroom`
 `871f4d91cc3894709a7084c6ce8a7f9a2c1938e4`. Kø og Studio-meny er foldet på
@@ -22,9 +22,21 @@ en autentisert, domeneavgrenset bildeendepunkt; CSP utvides ikke.
 Lokale tester på 375/390/800/1280 px dekker ingen sideskift, lesebekreftelse,
 ny bekreftelse per sak, bevarte endringer, konflikt og nettverksbrudd. Isolerte
 PHP-tester dekker køvalg og bilde-URLer samt fragment og eksisterende rollegater.
-Endelig CI, eksakt selektiv release og produksjonsbevis føres etter utrulling.
-Neste steg: publisere de avgrensede runtime-filene med før-/etter-hasher,
-privat backup og tilbakeføring. Ingen hel gren eller standardpakke skal lastes opp.
+Runtime: Studio `e977efaf9a0e2e51abc9ede9513cd7a37f04b988` (PR 25), WordPress
+`29e49e75b7890dd885050b4ad83d97ad266288fa` (PR 52, plugin 0.10.4).
+Selektiv release `dd6b775ee2f80365c3b55b123ae8f418c9a9eea1`, Actions
+37243206615, fullført med verifiserte før-/etter-hasher og privat backup.
+Studio CI 37243066275/37243068279 og WordPress CI 37243108895/37243209317
+var grønne. Postflight bekreftet at publisert sak 1091 og ventende rettelse var
+urørt. Fersk autentisert kørespons viser hovedbilde 813, endring tillatt og
+manuell godkjenning av rettelsen. Ingressen gjentas ikke i lesekopien.
+
+Nettleserkontrollen ble sendt til normal innlogging. Innlogget produksjonsvisning
+og fysisk iPhone er derfor ikke verifisert i denne leveransen; automatisk
+mobiltest og skjermbilde er fra isolerte fiktive saker. Ingen reell godkjenning
+eller test-e-post ble utført. Neste steg: redaktørens daglige bruk og eventuell
+justering av leseflyt på fysisk mobil. Manifest/tilbakeføring er dokumentert i
+web-repoets `MOBILE-NEWSROOM-RELEASE.md`.
 
 ## Aktiv nyhetsdesk – 04.10.2026
 
