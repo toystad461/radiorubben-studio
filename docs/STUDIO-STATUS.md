@@ -142,3 +142,12 @@ testet kodecommit `9795a3735c9d147e263f5deb66777c2103262275`.
 besto på native PHP 8.2 og 8.4: hele suiten, JavaScript, Composer-validering/audit
 og pakking. Denne etterfølgende oppdateringen endrer bare dokumentert status.
 PR #23 er åpen som draft og mergebar; ingen merge eller deploy er utført.
+
+
+## Produksjonsaktivering og reell prøve – 04.10.2026
+
+Etter brukerens «Aktiver» ble PR #22-avhengighetene og PR #23 aktivert selektivt på Uniweb. Endelig runtime-kilde er `f0cbc59f348978daf1532fed93ad8deee8b15979`, med grønn full [CI 37229833327](https://github.com/toystad461/radiorubben-studio/actions/runs/37229833327). Alle 11 endrede/opprettede runtime-filer er kontrollert mot ferske etter-hasher. Privat backup og før-hasher finnes. Ingen helgren-deploy eller merge.
+
+Live UI-test avdekket blokkering fra eksisterende CSP. Sakssiden er rettet til samme-origin JavaScript, CSS og bilde, uten å endre sikkerhetsheadere. Innlogget Studio viser fungerende feeder, bilde og kategorier, og lager både radio- og nettutkast fra originalkilden. Prøvesak: `37115a841ef21a07`. Kontrollmerknader krever redaksjonell gjennomgang; manuell sluttgodkjenning er bevart.
+
+**Gjenstående blokkering:** WordPress-kladdoverføringen feilet. Studios lesende tilkoblingskontroll bekrefter HTTP 401 / `incorrect_password`; den separate autentiserte WordPress-tilkoblingen finner ingen kladd med prøvens slug. Ingen ny levering ble forsøkt og ingen artikkel er publisert. Gyldig WordPress-applikasjonspassord, kontrollert avklaring av leveringsstatus og deretter en bekreftet kladdoverføring er neste nødvendige steg. Se [aktiveringsbevis, avvik og tilbakeføring](NEWS-ACTIVATION-20261004.md). Historiske «ikke aktivert»-avsnitt over beskriver tidligere leveranser.

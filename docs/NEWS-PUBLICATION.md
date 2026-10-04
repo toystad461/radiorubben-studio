@@ -50,7 +50,7 @@ riktig status; endret tekst krever ny kontroll. Originalkilden lenkes i teksten.
 Sakssiden gjenkjenner også eksisterende redigert NRK-sak ved endret feed-ID
 eller URL-tittel, via samme kildeidentitet som sendelisten. Manus bevares.
 
-## Kontroll og aktivering
+## Kontroll ved første utvikling
 
 Lokalt besto 33 nye nyhets-/publiseringskontroller, 10 eksisterende
 publiseringskontroller og åtte sakssidekontroller i PHP-WASM.
@@ -64,7 +64,7 @@ i testene. Ingen betalte AI-kall, e-poster eller ekte innlegg er brukt som test.
 Live RSS/originalhenting, innlogget Studio-UI og faktisk utkastoverføring er
 fortsatt egne integrasjonskontroller.
 
-Ikke produksjonsaktivert. Fire runtime-filer: `app/news-publication.php` (ny),
+Ved første utviklingsleveranse var løsningen ikke aktivert. Fire runtime-filer: `app/news-publication.php` (ny),
 `app/web-publish.php`, `app/case-workflow.php` og `public/case.php`.
 Disse og PR #22-avhengighetene må avstemmes mot ferske serverhasher før
 selektiv deploy, med privat backup og tilbakeføring etter `AGENTS.md` og
@@ -73,3 +73,9 @@ WordPress-tema, RR_News og eksisterende innlegg/mediefiler er uendret.
 
 OneDrive er fortsatt ønsket arkiv. Denne endringen bruker eksisterende privat
 Studio-sendeliste. Ingen OneDrive-overføring eller filreferanse er opprettet.
+
+## Aktivering 04.10.2026
+
+Selektivt aktivert sammen med PR #22-avhengighetene, etterfulgt av rettelse for eksisterende CSP. Sakssiden laster nå egne JavaScript-/CSS-filer og en lokal kopi av nyhetsbildet; sikkerhetsheaderne er uendret. Endelig runtime-kilde `f0cbc59f348978daf1532fed93ad8deee8b15979` har grønn full CI. Innlogget klargjøring av radio- og nettutkast er prøvd med faktisk kilde og AI-kontroll.
+
+WordPress-overføring er fortsatt blokkert: Studios tilkoblingskontroll gir HTTP 401 / `incorrect_password`. Ett kladdforsøk står uavklart; det er ikke gjentatt. Ingen publisering. Se [aktiveringsrapport](NEWS-ACTIVATION-20261004.md) for før/etter-hasher, backup, prøvesak, gjenstående steg og tilbakeføring.

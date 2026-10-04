@@ -27,12 +27,16 @@ Bygger på konsolidert Studio-kode i PR #19, låst til `049b42591e525055232503e4
 
 Runtime-endringer: `app/source-identity.php` (ny), `app/integrations/NewsDesk.php`, `app/board.php` og `public/newsdesk.php`. Sider som bruker `board.php` får kun den felles, rene identitetsfunksjonen som ny avhengighet. Ingen endring av `news-script.php`, innlogging, generering eller publiseringsport.
 
-## Verifisert og uprøvd
+## Verifisert og uprøvd ved utvikling 03.10.2026
 
 Testene bruker konstruert RSS uten kopiert NRK-innhold. De dekker de to eksakte URL-ene, ingen nasjonal feed, dubletter, ulike saker med lik tittel, endret URL, oppdateringer, delvis feil, cache, fremtidsdatoer, ekstern XML, lenkegrenser og bevaring av menneskelig redigering.
 
 Direkte lesing av NRKs sider/feeder gjennom søkeverktøyet ble blokkert 3. oktober 2026. Blokkeringen er ikke omgått. En vellykket, autorisert respons fra de faktiske feedene er derfor ikke bekreftet i dette arbeidet; syntetiske tester er ikke bevis for live RSS-innhold.
 
-Ikke produksjonsaktivert. Før selektiv aktivering må de fire berørte serverfilene/avhengighetene avstemmes mot ferske råbyte-hasher, Studio-deploytilgang bekreftes, og privat backup og tilbakeføring klargjøres. Ikke last opp hele PR-grenen eller standardpakken over aktivt Studio. Se `AGENTS.md` og `docs/STUDIO-DEPLOY.md`.
+Ved første utviklingsleveranse ikke produksjonsaktivert. Før selektiv aktivering må de fire berørte serverfilene/avhengighetene avstemmes mot ferske råbyte-hasher, Studio-deploytilgang bekreftes, og privat backup og tilbakeføring klargjøres. Ikke last opp hele PR-grenen eller standardpakken over aktivt Studio. Se `AGENTS.md` og `docs/STUDIO-DEPLOY.md`.
 
 OneDrive er fortsatt ønsket arkiv for ferdige manus, lyd og driftsdokumenter. Dette trinnet bruker Studio sin private kildecache; ingen OneDrive-overføring eller oppdiktet filkobling er lagt til.
+
+## Aktivert 04.10.2026
+
+De fire runtime-filene er selektivt aktivert sammen med nyhetspubliseringsprofilen. Innlogget Studio viste faktisk oppdaterte data fra både Toppsaker og Siste nytt, med samlet Vestland-seksjon. Bømlo kommune, trafikk, vær og eksisterende sendeliste er bevart. Dette er bevis fra autorisert Studio-UI og serverhenting, ikke en omgåelse av søkeverktøyets tidligere begrensning. Se [aktiveringsrapport](NEWS-ACTIVATION-20261004.md) for eksakt kilde, filer, CI, serverhasher og backup. Ingen offentlig artikkel er publisert.
