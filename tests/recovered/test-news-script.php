@@ -118,3 +118,8 @@ try {
 
 } finally { foreach (glob($clearDir . '/*') as $f) unlink($f); rmdir($clearDir); }
 echo "News script checks: $tests passed\n";
+
+$paragraphReview=static function($c,$payload){$input=json_decode($payload['input'],true);expect_news($input['source_paragraphs'][0]['index']===0,'source paragraphs have explicit identities');return json_encode(['segments'=>[['index'=>0,'verdict'=>'supported','evidence_indexes'=>[0],'reason'=>'Originalavsnittet støtter påstanden.']],'issues'=>[]]);};
+$indexed=studio_news_review($item,$sentence,['text'=>$sentence,'url'=>$item['sourceUrl']],$config,$paragraphReview);
+expect_news($indexed['status']==='passed'&&$indexed['segments'][0]['evidence']===[$sentence],'referenced evidence comes verbatim from server snapshot');
+rejects_news(fn()=>studio_news_review($item,$sentence,['text'=>$sentence,'url'=>$item['sourceUrl']],$config,static fn()=>json_encode(['segments'=>[['index'=>0,'verdict'=>'supported','evidence_indexes'=>[99],'reason'=>'Bad index']],'issues'=>[]])),'fabricated paragraph reference rejected');
