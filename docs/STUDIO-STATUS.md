@@ -227,3 +227,9 @@ avvist med HTTP 401. Forbindelsen er nå reparert, se aktiv status øverst. Eksi
 skal bevares. Samlet godkjenning er nå verifisert i den innloggede flaten.
 Ingen ekte sak skal publiseres som test, og tidligere uklar overføring skal
 ikke gjentas uten oppslag etter eksisterende WordPress-innlegg.
+
+Bekreftet ordinær bakgrunnskjøring 04.10.2026 kl. 21:59:09 UTC / 23:59:09 Oslo:
+`rrfr_newsroom_last_prepare` returnerte `state: prepared`. WordPress sin cron-test
+bekreftet fungerende oppstart (HTTP 200); `DISABLE_WP_CRON` er ikke satt.
+Dette er en faktisk planlagt klargjøring gjennom WordPress, i tillegg til
+manuell UI-kontroll. Ingen automatisk artikkelpublisering er aktivert.
