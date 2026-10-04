@@ -6,6 +6,10 @@ function studio_case_get(string $id,?string $path=null): array {
     foreach(studio_board_active(studio_board_read($path)) as $item) if($item['id']===$id) return $item;
     throw new InvalidArgumentException('Saken finnes ikke i den aktive listen.');
 }
+function studio_case_source_item(array $items,array $source): array {
+    foreach($items as $item) if(studio_board_has_source([$item],$source)) return $item;
+    throw new InvalidArgumentException('Kildesaken finnes ikke i den aktive listen.');
+}
 function studio_web_validate(array $w): array {
     $result=[];
     foreach(['title'=>180,'intro'=>500,'body'=>5000] as $field=>$limit) {
@@ -26,13 +30,20 @@ function studio_web_save(string $id,int $revision,string $action,array $data,arr
             $before=$w; unset($before['history']);
             if($action==='save' || $action==='generated') {
                 $w=array_replace($w,studio_web_validate($data));
+                if(empty($w['delivery']['id']) && studio_web_is_news($item)) {
+                    $scope=$action==='save' ? ($data['news_scope']??$w['publication']['scope']??null) : ($w['publication']['scope']??null);
+                    if($scope!==null && !is_string($scope)) throw new InvalidArgumentException('Ugyldig nyhetskategori.');
+                    $w['publication']=studio_news_publication($item,$scope);
+                }
                 $w['check']=$action==='generated' ? ($data['check']??[]) : [];
                 $w['approvedHash']=null;
             } elseif($action==='check') { $w['check']=$data['check']; $w['approvedHash']=null;
             } elseif($action==='invalidate') { $w['check']=[]; $w['approvedHash']=null;
             } elseif($action==='approve') {
+                if(!studio_web_presentation_ready($item)) throw new InvalidArgumentException('Lagre nettsaken med nyhetsbilde og kategori før godkjenning.');
                 if(($user['role']??'')!=='admin' || !studio_web_checked($item) || ($data['confirmed']??'')!=='1') throw new InvalidArgumentException('Administrator må lese og bekrefte en kildekontrollert nettsak.');
-                $w['approvedHash']=hash('sha256',studio_web_text($w)); $w['approvedBy']=$user['name']??'Administrator';
+                studio_news_publication_metadata($item);
+                $w['approvedHash']=studio_web_approval_hash($item); $w['approvedBy']=$user['name']??'Administrator';
             } else throw new InvalidArgumentException('Ukjent netthandling.');
             $w['history'][]=['action'=>$action,'at'=>gmdate('c'),'actor'=>$user['name']??'Medarbeider','before'=>$before];
             $item['web']=$w; $item['revision']++; $item['updatedAt']=gmdate('c'); return;

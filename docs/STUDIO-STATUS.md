@@ -109,3 +109,28 @@ og de 28 nye kontrollene i PHP-WASM. Testene bruker syntetiske RSS-data,
 ikke NRK-innhold. Live kildehenting, innlogget produksjons-UI og deploy er
 ikke utført. Ingen redaksjonelle data, brukerinnstillinger eller andre
 greners kode er endret.
+
+
+## Nyhetssaker til nett – 04.10.2026
+
+Avgrenset neste trinn bygger på PR #22-head
+`c96b27af7ab184f2e407fc5b3e2b83b68671ac11`, på egen gren
+`feat/news-publication-profile`. Sakssiden får forhåndsvisning av nyhetsbildet
+(media 1079), kategorivalg og korrekt leveringsstatus. Nye nyhetssaker bruker
+Nyheter (8), kommunesaker også Lokale Nyheter (27). Objektene er bekreftet med
+lesende WordPress-kall; ingen WordPress-innstillinger eller innlegg er endret.
+
+Fire runtime-filer: `app/news-publication.php` (ny), `app/web-publish.php`,
+`app/case-workflow.php` og `public/case.php`. Bildet/kategoriene følger første
+opprettelse; senere oppdatering bevarer WordPress-redaktørens valg. Godkjenning
+bindes til tekst, kildeattribusjon og nyhetsprofil. Gjenåpning fra en annen
+NRK-feed gjenbruker eksisterende redigert sak. Kilde-/språkkontroll og manuell
+sluttgodkjenning beholdes. Se [nyhetspublisering](NEWS-PUBLICATION.md).
+
+Lokalt besto 33 nye publiseringskontroller, åtte sakssidekontroller og 10
+regresjonskontroller i PHP-WASM, pluss JavaScript-simuleringer. Full native CI
+kjøres ved levering; testet kodecommit og resultater dokumenteres på PR-en.
+Ikke produksjonsaktivert. Neste steg er fersk serveravstemming av disse fire
+filene og PR #22-avhengighetene, så innlogget Studio-test og kontrollert ekte
+WordPress-kladd. Live originalhenting og ende-til-ende-overføring er uprøvd.
+Ingen artikkel, automatisk jobb, OneDrive-overføring, merge eller deploy er gjort.
