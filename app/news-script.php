@@ -161,7 +161,7 @@ function studio_news_review(array $item, string $script, array $source, array $c
         $valid=array_is_list($evidence)&&count($evidence)>0&&count($evidence)<=4;
         foreach($evidence as $quote)if(!is_string($quote)||strlen(trim($quote))<10||!str_contains($source['text'],$quote))$valid=false;
         $sourceName=parse_url($source['url']??'',PHP_URL_HOST)==='www.nrk.no'?'NRK':(parse_url($source['url']??'',PHP_URL_HOST)==='www.bomlo.kommune.no'?'Bømlo kommune':'');
-        if($sourceName!==''&&in_array(trim($segments[$i]),['Kilden er '.$sourceName.'.','Dette melder '.$sourceName.'.'],true)){$valid=true;$row['evidence']=$source['url'];}
+        if(studio_news_original_read($item,['source'=>$source])&&$sourceName!==''&&in_array(trim($segments[$i]),['Kilden er '.$sourceName.'.','Dette melder '.$sourceName.'.'],true)){$valid=true;$row['verdict']='supported';$row['evidence']=$source['url'];$row['reason']='Ren kildeattribusjon bekreftet mot validert originaladresse.';}
         if ($row['verdict'] === 'supported' && !$valid) {
             $row['verdict'] = 'unsupported'; $row['reason'] = 'Oppgitt kildebelegg finnes ikke ordrett i originalen.';
         }

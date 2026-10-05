@@ -50,7 +50,7 @@ function studio_newsroom_prepare(string $id,int $revision,array $user,array $con
         }
         studio_web_save($id,$revision+1,$recheck?'check':'generated',$result,$user,$path);
         // Generate only a missing radio draft; preserve existing human edits and approvals.
-        if(!$recheck&&trim((string)($item['script']??''))===''){
+        if(trim((string)($item['script']??''))===''){
             $radio=studio_news_prepare($item,$config,[],null,$request,$fetch,$source);
             studio_board_update($id,$revision+2,'generated',['script'=>$radio['script'],
                 'sourceCheck'=>$radio['check'],'generation'=>['model'=>$config['openai_model'],

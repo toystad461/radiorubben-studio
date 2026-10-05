@@ -39,6 +39,14 @@ try{
     check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='rechecked','expired check is renewed without rewriting');
     $item=studio_case_get($item['id'],$path);check(studio_web_approval_hash($item)===$hash&&$calls===5,'renewed check preserves text and notification identity');
     check($item['script']===$radioBefore,'web recheck preserves radio production');
+    // Legacy web-only items are completed without rewriting their saved web text.
+    studio_board_change(static function(&$b){$b['items'][0]['script']='';unset($b['items'][0]['sourceCheck']);},$path);
+    $legacy=studio_case_get($item['id'],$path);$legacyWeb=studio_web_text($legacy['web']);$beforeCalls=$calls;$beforeReads=$reads;
+    studio_newsroom_prepare($legacy['id'],$legacy['revision'],$user,$config,'',$path,$request,$fetch,true);
+    $item=studio_case_get($legacy['id'],$path);
+    check(studio_web_text($item['web'])===$legacyWeb&&$calls===$beforeCalls+3&&$reads===$beforeReads+1,'legacy backfill preserves web text and uses one original fetch');
+    check($item['script']!==''&&$item['sourceCheck']['source']===$item['web']['check']['source'],'legacy productions share refreshed original on the existing item');
+    check(!$item['verified']&&empty($item['web']['approval'])&&empty($item['web']['delivery']),'legacy backfill remains unapproved and unpublished');
     $failedReview=studio_web_prepare($item,$config,[],function($c,$p)use($request){return isset(json_decode($p['input'],true)['segments'])?'{}':$request($c,$p);},$fetch);
     check($failedReview['body']!==''&&$failedReview['check']['status']==='needs_review'&&studio_news_original_read($item,$failedReview['check']),'failed review preserves draft and original without allowing approval');
     studio_board_update($item['id'],$item['revision'],'archive',[],$user,$path);

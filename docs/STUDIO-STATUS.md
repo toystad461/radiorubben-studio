@@ -340,3 +340,8 @@ Autentisert WordPress-kø ble lest 05.10.2026. Reelle fotballsaker med manglende
 kvalitetskontroll har canApprove=false. Dette bekrefter købroen og sperren,
 ikke Studio-innlogging, RSS-generering eller offentlig publisering.
 Faktisk fullflyttest, ferske serverhasher og selektiv deploy gjenstår.
+
+
+## Neste RSS-rettelse: kildeattribusjon og eldre web-only saker
+
+Ren, separat kildeattribusjon kan bekreftes deterministisk mot validert originaladresse og intakt kildehash. Andre faktapåstander og alle redaksjonelle issues beholder kontrollkravene. Ved fornyet webkontroll klargjøres også et manglende radiomanus fra samme nyhentede original; eksisterende webtekst og eksisterende radiotekst bevares. Ingen automatisk godkjenning eller publisering. Endringen krever grønne PHP- og mobile tester samt ny selektiv serverkontroll før deployment. Live-backfill er ikke kjørt i denne endringen.
