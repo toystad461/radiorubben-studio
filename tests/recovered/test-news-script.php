@@ -123,3 +123,12 @@ $paragraphReview=static function($c,$payload){$input=json_decode($payload['input
 $indexed=studio_news_review($item,$sentence,['text'=>$sentence,'url'=>$item['sourceUrl']],$config,$paragraphReview);
 expect_news($indexed['status']==='passed'&&$indexed['segments'][0]['evidence']===[$sentence],'referenced evidence comes verbatim from server snapshot');
 rejects_news(fn()=>studio_news_review($item,$sentence,['text'=>$sentence,'url'=>$item['sourceUrl']],$config,static fn()=>json_encode(['segments'=>[['index'=>0,'verdict'=>'supported','evidence_indexes'=>[99],'reason'=>'Bad index']],'issues'=>[]])),'fabricated paragraph reference rejected');
+
+$metadataRejected=static fn()=>json_encode(['segments'=>[['index'=>0,'verdict'=>'unsupported','evidence_indexes'=>[],'reason'=>'Navnet står ikke i brødteksten.']],'issues'=>[]]);
+expect_news(studio_news_review($item,'Dette melder Bømlo kommune.',$source,$config,$metadataRejected)['status']==='passed','validated source address supports pure attribution despite model rejection');
+expect_news(studio_news_review($item,'Dette melder Bømlo kommune, og møtet er gratis.',$source,$config,$metadataRejected)['status']==='needs_review','compound factual claims still require textual evidence');
+expect_news(studio_news_review($item,'Dette melder NRK.',$source,$config,$metadataRejected)['status']==='needs_review','wrong source attribution cannot pass');
+$brokenSource=$source;$brokenSource['sha256']=str_repeat('0',64);
+expect_news(studio_news_review($item,'Dette melder Bømlo kommune.',$brokenSource,$config,$metadataRejected)['status']==='needs_review','tampered snapshot cannot authorize attribution');
+$metadataIssue=static fn()=>json_encode(['segments'=>[['index'=>0,'verdict'=>'unsupported','evidence_indexes'=>[],'reason'=>'Metadata']],'issues'=>['En annen konkret feil hindrer godkjenning.']]);
+expect_news(studio_news_review($item,'Dette melder Bømlo kommune.',$source,$config,$metadataIssue)['status']==='needs_review','metadata support never clears editorial issues');
