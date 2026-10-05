@@ -89,7 +89,7 @@ verify_home() {
 verify_home || { echo 'STOP: Existing web mode does not match the safe expected mode.' >&2; exit 1; }
 # Staging/backups remain private. Apply predictable modes to shipped code only;
 # never transfer the runner's owner/group or replace local secret configuration.
-flags=(-rlpt --itemize-changes --chmod=D755,F644)
+flags=(-rlpt --checksum --itemize-changes --chmod=D755,F644)
 [[ "$mode" == dry-run ]] && flags+=(--dry-run)
 if [[ "$mode" == dry-run ]]; then
   rsync "${flags[@]}" --exclude='/config/local.php' "$stage/unpacked/studio-private/" "$private/"

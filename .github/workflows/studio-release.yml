@@ -63,7 +63,7 @@ jobs:
             dist/release.json
   draft:
     needs: verify
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     runs-on: ubuntu-24.04
     permissions:
       contents: write
@@ -95,8 +95,8 @@ jobs:
             "dist/radiorubben-studio-$version-uniweb.zip.sha256" dist/release.json --clobber
           echo "## $tag is packaged as a draft; this does not mean the website is deployed." >> "$GITHUB_STEP_SUMMARY"
   deploy:
-    needs: draft
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: verify
+    if: github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-24.04
     environment: studio-production
     steps:
@@ -110,7 +110,6 @@ jobs:
       - name: Check Studio-specific deployment settings without exposing secrets
         id: settings
         env:
-          ENABLED: ${{ vars.STUDIO_DEPLOY_ENABLED }}
           DEPLOY_KEY: ${{ secrets.STUDIO_DEPLOY_SSH_KEY }}
           KNOWN_HOSTS: ${{ secrets.STUDIO_DEPLOY_KNOWN_HOSTS }}
           SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
@@ -126,14 +125,10 @@ jobs:
               ready=false
             fi
           done
-          if [[ "$ENABLED" != true ]]; then
-            echo '::warning::STUDIO_DEPLOY_ENABLED is not true. No website deployment.'
-            echo '- STUDIO_DEPLOY_ENABLED must be true after server settings are verified.' >> "$GITHUB_STEP_SUMMARY"
-            ready=false
-          fi
           echo "ready=$ready" >> "$GITHUB_OUTPUT"
           if [[ "$ready" == false ]]; then
-            echo '## Not deployed: release remains a draft. Website files and access controls are unchanged.' >> "$GITHUB_STEP_SUMMARY"
+            echo '::error::Missing SSH settings; preflight cannot run.'
+            exit 1
           fi
       - name: Configure verified SSH connection
         if: steps.settings.outputs.ready == 'true'

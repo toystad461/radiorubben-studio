@@ -223,3 +223,14 @@ Uniweb eksponerer `/run/webroots/r1417157` som symlink til
 samsvar før den bruker de kanoniske `studio-public`/`studio-private`-mappene.
 PHP realpath() brukes fordi separat realpath-program mangler på verten.
 Dette åpner ikke fullpakke-apply; samme sperre og krav om avstemming gjelder.
+
+
+### Manuell preflight uten release-endringer
+
+Actions → Studio release and guarded Uniweb deployment → Run workflow →
+main → dry-run bygger og tester den valgte committen og overfører pakken til
+privat staging. Deploy-jobben avhenger av verify, ikke draft. Den oppretter
+ikke en release ved manuell kjøring, krever ingen aktivering av apply, og
+endrer ikke nettstedets filer. Rsync sammenligner innhold med --checksum.
+Manglende tilkoblingsinnstillinger feiler jobben. Fullpakke-apply er fortsatt
+sperret. Behold STUDIO_DEPLOY_ENABLED=false og STUDIO_DEPLOY_AUTO_APPLY=false.
