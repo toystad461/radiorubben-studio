@@ -12,15 +12,19 @@ fi
 [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 2
 [[ "$digest" =~ ^[a-f0-9]{64}$ && "$run" =~ ^[a-zA-Z0-9-]+$ ]] || exit 2
 # Deliberately fixed Studio-only paths. Never copy to the WordPress root.
-base=/run/webroots/r1417157
+base=/customers/9/3/1/cptk37ymg/webroots/r1417157
+alias=/run/webroots/r1417157
 public="$base/studio-public"
 private="$base/studio-private"
 work="$HOME/.radiorubben-studio-deploy"
 stage="$work/staging/$run"
 url=https://studio.radiorubben.no
-for cmd in php curl rsync tar sha256sum flock realpath stat; do command -v "$cmd" >/dev/null; done
-for dir in "$public" "$private"; do
-  [[ -d "$dir" && ! -L "$dir" && "$(realpath "$dir")" == "$dir" ]] || {
+for cmd in php curl rsync tar sha256sum flock stat; do command -v "$cmd" >/dev/null; done
+[[ "$(php -r 'echo realpath($argv[1]);' "$alias")" == "$base" ]] || {
+  echo 'STOP: Studio alias target mismatch.' >&2; exit 1;
+}
+for dir in "$base" "$public" "$private"; do
+  [[ -d "$dir" && ! -L "$dir" && "$(php -r 'echo realpath($argv[1]);' "$dir")" == "$dir" ]] || {
     echo 'STOP: Studio document paths must be verified before deployment.' >&2; exit 1;
   }
 done
