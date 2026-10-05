@@ -26,6 +26,11 @@ remote="$STUDIO_SSH_USER@$STUDIO_SSH_HOST"
 stage=".radiorubben-studio-deploy/staging/$run"
 opts=(-o BatchMode=yes -o StrictHostKeyChecking=yes -o IdentitiesOnly=yes -o ConnectTimeout=15)
 ssh "${opts[@]}" "$remote" "umask 077; mkdir -p '$stage'"
-scp "${opts[@]}" "$archive" "$remote:$stage/release.zip"
-scp "${opts[@]}" "$root/scripts/deploy-studio-remote.sh" "$remote:$stage/deploy.sh"
+# Uniweb's SFTP proxy can return failure after successfully writing a file.
+# Stream over the verified SSH channel and verify both files before execution.
+ssh "${opts[@]}" "$remote" "umask 077; cat > '$stage/release.zip'" < "$archive"
+script_digest=$(sha256sum "$root/scripts/deploy-studio-remote.sh" | cut -d' ' -f1)
+ssh "${opts[@]}" "$remote" "umask 077; cat > '$stage/deploy.sh'" < "$root/scripts/deploy-studio-remote.sh"
+printf '%s  release.zip\n%s  deploy.sh\n' "$digest" "$script_digest" |
+  ssh "${opts[@]}" "$remote" "cd '$stage' && sha256sum -c -"
 ssh "${opts[@]}" "$remote" "bash '$stage/deploy.sh' '$mode' '$version' '$digest' '$run'"
