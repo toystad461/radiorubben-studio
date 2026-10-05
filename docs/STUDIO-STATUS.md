@@ -449,3 +449,20 @@ Et annet mål eller symlink for selve Studio-mappene avvises fortsatt.
 Fullpakke-apply og automatisk publisering er fortsatt sperret.
 Ingen runtime, hemmeligheter eller redaksjonelle data endres av rettelsen.
 Neste steg: grønn GitHub SSH-test og fersk filavstemming før selektiv utrulling.
+
+
+## GitHub-tilkobling bekreftet og ny preflight – 05.10.2026
+
+PR #35 er merget etter grønne PHP 8.2/8.4- og mobilkontroller. GitHub Actions
+37344110000 bekrefter SSH og serverforutsetninger fra GitHub til Uniweb.
+Release-opprettelsen stoppet separat på en eksisterende versjon/tag.
+Manuell dry-run avkobles derfor fra draft-jobben og trenger ikke at
+STUDIO_DEPLOY_ENABLED aktiveres. Den kan aldri kjøre apply. Manglende SSH-oppsett
+gir feil i stedet for en grønn, overhoppet preflight.
+
+Ferske kodehasher mot main-grunnlaget: 84 av 90 identiske, seks avvik.
+Avvik: app/bootstrap.php, app/views/head.php, app/views/sidebar.php,
+public/login.php, public/local/login.php og public/robot.php. De første fem
+gjelder logo/favikon; robot.php har ulike private innboksstier. Ingen kodefil
+er installert som del av kontrollen. Vendor, binære ressurser og privat
+konfigurasjon inngår ikke i denne 90-filers sammenligningen.
