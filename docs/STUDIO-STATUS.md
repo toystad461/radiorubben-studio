@@ -5,6 +5,36 @@ Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
 
+## RSS: selektivt publisert og ekte-data-test – 05.10.2026
+
+Studio PR #23, #24, #25 og #26 er merget. PHP 8.2/8.4 og mobiltester er grønne
+også på hovedgrenens sluttpunkt 66966cc3509bcf2c3af496e5e996513fedaac92b.
+Rettelsen i #26 er selektivt installert på Uniweb: app/news-script.php,
+app/case-workflow.php og app/newsroom.php. Kilde 0612c6c650ac7a8b5e6857ac6e3fca2ab0c516f4.
+Ingen helgren-deploy; øvrige aktive avvik og privat konfigurasjon er bevart.
+
+Deployment via web PR #54, release e145c19f0a12f4c5431e536bb7afb900a00765fe,
+[Actions 37299028081](https://github.com/toystad461/radiorubben-web/actions/runs/37299028081):
+artefakt og installasjon besto. Åtte ferske før-hasher ble avstemt, og alle
+tre etter-hasher er bekreftet. Privat backup og rollback står i web-repoets
+RSS-STUDIO-RELEASE.md og scripts/rss-studio-release.json.
+Uniweb-aliasstien er avstemt mot den observerte kanoniske app-stien; første
+stopp endret ingen kode.
+
+Testen brukte faktisk Bømlo RSS/original og aktiv Studio-konfigurasjon på
+en isolert privat sendeliste. Nettutkast og radiostikk ble laget på samme
+item.id, med identisk originaltekst, kildehash og hentetidspunkt.
+Nettkontroll: bestått. Radiokontroll: kjørt, men ikke klar-status.
+Begge utkast forble uten godkjenning; ingen WordPress-levering eller test-e-post.
+Aktiv sendeliste var byte-identisk før/etter. Eldre web-only-saker er ikke
+regenerert eller endret som del av denne utrullingen.
+
+Innlogget UI er ikke kontrollert i denne leveransen: nettlesertilgangen var
+utilgjengelig. Manuell sluttgodkjenning beholdes. Før faktisk publisering
+må Thomas lese teksten og kontrollrapporten. robot.php og den separate
+Robot-importen er fortsatt parallelle innganger, dokumentert i RSS-FLOW-AUDIT.md.
+Full garanti for alle historiske veier eller feilfrie fakta gis ikke.
+
 ## Mobilflyt – aktivert 05.10.2026
 
 Arbeid på `fix/mobile-newsroom`, basert på fersk `feat/unified-newsroom`
