@@ -466,3 +466,15 @@ public/login.php, public/local/login.php og public/robot.php. De første fem
 gjelder logo/favikon; robot.php har ulike private innboksstier. Ingen kodefil
 er installert som del av kontrollen. Vendor, binære ressurser og privat
 konfigurasjon inngår ikke i denne 90-filers sammenligningen.
+
+
+## Uniweb filtransport – 05.10.2026
+
+PR #36 er merget. Actions 37344569738 bestod kodekontrollene, men SFTP
+returnerte feilstatus etter at ZIP-filen var skrevet. Samme oppførsel ble
+bekreftet med en separat opplasting til privat staging. Transporten bruker
+nå SSH-stdin med umask 077 og SHA-256-kontroll av både pakke og skript før
+kjøring. Streng vertsverifikasjon beholdes.
+Den opprinnelige prøvepakken ble kontrollert via SSH og fullførte
+DRY-RUN OK; ingen nettstedfiler ble endret. Ny ende-til-ende GitHub-kjøring
+gjenstår etter merge. Fullpakke-apply forblir sperret.
