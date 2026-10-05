@@ -10,9 +10,10 @@ require dirname(__DIR__) . '/app/integrations/NewsDesk.php';
 require dirname(__DIR__) . '/app/weather.php';
 require dirname(__DIR__) . '/app/board.php';
 $feeds = newsdesk_all(dirname(__DIR__) . '/config');
+$sections = newsdesk_sections($feeds);
 $traffic = newsdesk_traffic(dirname(__DIR__) . '/config');
 $all = [];
-foreach ($feeds as $feed) foreach ($feed['items'] as $item) $all[$item['id']] = $item;
+foreach ($sections as $section) foreach ($section['items'] as $item) $all[$item['id']] = $item;
 foreach ($traffic['items'] as $item) $all[$item['id']] = $item;
 $canPrepare = studio_can($user, 'produce');
 function newsdesk_local_time(string $value): string
@@ -60,20 +61,22 @@ require dirname(__DIR__) . '/app/views/head.php';
   <?php if (isset($_SESSION['newsdesk_error'])): ?><p class="desk-empty" role="alert"><?= escape($_SESSION['newsdesk_error']) ?></p><?php unset($_SESSION['newsdesk_error']); endif; ?>
   <div class="desk-grid">
     <div class="desk-main">
-      <?php foreach (newsdesk_sources() as $sourceId=>$spec): $feed = $feeds[$sourceId]; ?>
+      <?php foreach ($sections as $sourceId=>$feed): ?>
       <section class="desk-panel" aria-labelledby="source-<?= escape($sourceId) ?>">
-        <div class="desk-panel-head"><div><p class="eyebrow"><?= $sourceId === 'bomlo' ? 'LOKALT' : 'NORGE' ?></p><h2 id="source-<?= escape($sourceId) ?>"><?= escape($spec['name']) ?></h2></div><span class="desk-state <?= escape($feed['status']) ?>"><?= match ($feed['status']) { 'updated'=>'Oppdatert', 'stale'=>'Eldre data', default=>'Utilgjengelig' } ?></span></div>
+        <div class="desk-panel-head"><div><p class="eyebrow"><?= escape($feed['region']) ?></p><h2 id="source-<?= escape($sourceId) ?>"><?= escape($feed['name']) ?></h2></div><span class="desk-state <?= escape($feed['status']) ?>"><?= match ($feed['status']) { 'updated'=>'Oppdatert', 'stale'=>'Eldre data', 'partial'=>'Delvis oppdatert', default=>'Utilgjengelig' } ?></span></div>
+        <?php if ($sourceId === 'nrk'): ?><p class="desk-meta">Toppsaker først, deretter siste nytt. Samme sak vises bare én gang.</p>
+        <?php foreach ($feed['feeds'] as $origin): ?><p class="desk-meta"><?= escape($origin['name']) ?>: <?= match ($origin['status']) { 'updated'=>'Oppdatert', 'stale'=>'Eldre data', default=>'Utilgjengelig' } ?><?php if ($origin['fetchedAt']): ?> · sist hentet <?= escape(newsdesk_local_time($origin['fetchedAt'])) ?><?php endif; ?></p><?php endforeach; ?><?php endif; ?>
         <?php if ($feed['fetchedAt']): ?><p class="desk-meta">Hentet <?= escape(newsdesk_local_time($feed['fetchedAt'])) ?> norsk tid · Kontroller originalkilden</p><?php endif; ?>
         <?php if (!$feed['items']): ?><p class="desk-empty">Ingen saker tilgjengelig fra denne kilden nå. Andre kilder vises fortsatt.</p><?php endif; ?>
         <div class="desk-stories">
         <?php foreach ($feed['items'] as $index=>$item): ?>
           <?php if ($index === 3): ?><details class="desk-more"><summary>Vis <?= count($feed['items']) - 3 ?> flere saker</summary><?php endif; ?>
           <article class="desk-story">
-            <p class="desk-meta"><?= escape($spec['name']) ?> · Publisert <?= escape(newsdesk_local_time($item['publishedAt'])) ?> norsk tid</p>
+            <p class="desk-meta"><?= escape($item['sourceName']) ?><?= !empty($item['isTopStory']) ? ' · Toppsak' : '' ?> · Publisert <?= escape(newsdesk_local_time($item['publishedAt'])) ?> norsk tid<?= ($item['feedStatus'] ?? '') === 'stale' ? ' · Eldre data' : '' ?></p>
             <h3><?= escape($item['title']) ?></h3>
             <?php if ($item['summary']): ?><details class="desk-description"><summary>Kort omtale</summary><p><?= escape($item['summary']) ?></p></details><?php endif; ?>
             <div class="desk-actions"><a href="<?= escape($item['url']) ?>" target="_blank" rel="noopener noreferrer">Les originalen ↗</a>
-            <?php if ($canPrepare && !isset($rundown[$item['id']])): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="add"><input type="hidden" name="id" value="<?= escape($item['id']) ?>"><button type="submit">Legg i sendeliste</button></form><?php endif; ?>
+            <?php if ($canPrepare && !studio_board_has_source($boardItems, $item)): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="add"><input type="hidden" name="id" value="<?= escape($item['id']) ?>"><button type="submit">Legg i sendeliste</button></form><?php endif; ?>
             </div>
           </article>
         <?php endforeach; ?>

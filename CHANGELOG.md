@@ -1,5 +1,14 @@
 # Endringslogg – Radio Rubben Studio
 
+## Under utvikling – NRK Vestland RSS
+
+- NRK Vestland Toppsaker og Siste nytt erstatter nasjonal NRK-feed i Nyhetsdesken.
+- Felles kildeoversikt med toppsakmerking, dublettvern på NRK-artikkel-ID og synlig status per feed.
+- Gamle sendepunkter gjenkjennes uten å overskrive manus, godkjenning eller historikk.
+- Cache skiller en gyldig tom feed fra tilgangsfeil. Ingen automatisk publisering.
+
+Se [RSS-grunnlag og aktiveringsstatus](docs/NRK-VESTLAND-RSS.md). Ikke produksjonsaktivert.
+
 ## 0.0.1 – 2026-09-24
 
 Første nummererte webrelease fra det eksisterende PHP-prosjektet.

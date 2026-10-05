@@ -78,3 +78,34 @@ innlogget nettlesergjennomgang er derfor fortsatt ikke utført. Ingen kode,
 konfigurasjon eller redaksjonelle data er endret på produksjonsserveren.
 Ingen merge eller deploy. Neste steg er innlogget UI-kontroll og avstemming av
 ferske serverfiler før eventuell publisering.
+
+## NRK Vestland RSS – 03.10.2026
+
+Ny hovedoppgave: RSS-utvikling med brukerens to NRK Vestland-feeder, Toppsaker
+og Siste nytt. Arbeidet bygger på PR #19-head
+`049b42591e525055232503e4710787ad09b62139`, på egen gren `feat/nrk-vestland-rss`.
+Render- og Entra-grenene er ikke endret.
+
+Fire runtime-filer: ny `app/source-identity.php`, `app/integrations/NewsDesk.php`,
+`app/board.php` og `public/newsdesk.php`. Felles Vestland-seksjon, toppsakmerking,
+identitet på tvers av feedene og vern av eksisterende manus/godkjenninger.
+Nasjonal NRK-feed erstattes; Bømlo kommune, trafikk og vær beholdes.
+Egne syntetiske tester dekker dubletter, kildefeil, cache og eksisterende sendepunkter.
+
+Ikke publisert. NRKs feedinnhold kunne ikke leses gjennom søkeverktøyet på grunn
+av tilgangsblokkering; ingen omgåelse er forsøkt. Neste steg før selektiv
+aktivering er fersk serveravstemming av berørte filer og bekreftet
+Studio-deploytilgang, etterfulgt av faktisk kilde- og innlogget UI-kontroll.
+Se [NRK Vestland RSS](NRK-VESTLAND-RSS.md) for avhengigheter og avgrensning.
+
+Leveranse: [PR #22](https://github.com/toystad461/radiorubben-studio/pull/22).
+Testet kode-head: `f39e10997205232b894ee4d51b7c00fdb69c6efd` (påfølgende commit
+oppdaterer bare denne statusen). Hele PHP-suiten, JavaScript-kontroller,
+Composer-validering/audit og pakking besto i
+[CI-kjøring 37156663637](https://github.com/toystad461/radiorubben-studio/actions/runs/37156663637)
+på PHP 8.2 og 8.4; pakking ble kjørt på 8.4. De 28 nye Vestland-kontrollene
+og alle seks nyhetsdesk-tilgangstestene besto. Lokalt besto også RSS-parseren
+og de 28 nye kontrollene i PHP-WASM. Testene bruker syntetiske RSS-data,
+ikke NRK-innhold. Live kildehenting, innlogget produksjons-UI og deploy er
+ikke utført. Ingen redaksjonelle data, brukerinnstillinger eller andre
+greners kode er endret.
