@@ -214,3 +214,12 @@ produksjonens filhasher eller selektiv deploy/rollback. Disse kreves fortsatt
 før utrulling. GitHub-pluginen kan ikke administrere secrets eller starte
 workflowen; kontoinnstillinger og første kjøring gjenstår. Ingen ny tilkobling
 eller produksjonsdeploy er utført i denne oppfølgingen.
+
+
+### Bekreftet katalogalias (05.10.2026)
+
+Uniweb eksponerer `/run/webroots/r1417157` som symlink til
+`/customers/9/3/1/cptk37ymg/webroots/r1417157`. Kjøring må bekrefte eksakt
+samsvar før den bruker de kanoniske `studio-public`/`studio-private`-mappene.
+PHP realpath() brukes fordi separat realpath-program mangler på verten.
+Dette åpner ikke fullpakke-apply; samme sperre og krav om avstemming gjelder.

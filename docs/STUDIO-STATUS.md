@@ -436,3 +436,16 @@ er lastet opp; fullpakke-apply forblir sperret i denne PR-en.
 ## GitHub SSH-test – 05.10.2026 kl. 18:42 Oslo
 
 PR #31 er merget som aa7af7732c20b83062406c2d8336899bfa04b500 etter Thomas sin godkjenning. Første SSH-test (Actions 37342869433) nådde serveren med streng vertsverifikasjon og nøkkelautentisering. Den stoppet på manglende CLI-verktøy realpath. Tilkoblingstesten bruker nå PHP realpath() for samme kanoniske stikontroll; ingen validering slås av. Nettstedfiler er ikke lastet opp. PR #31 inneholder kun driftsoppsett, tester og dokumentasjon, ingen runtime-endringer til Studio.
+
+
+## Uniweb-katalogalias – 05.10.2026
+
+Actions 37343319506 autentiserte over SSH, men avviste katalogaliaset
+`/run/webroots/r1417157`. Fersk SSH-kontroll bekrefter at dette er en
+serverstyrt symlink til `/customers/9/3/1/cptk37ymg/webroots/r1417157`.
+Tilkoblingskontroll og fullpakkens dry-run verifiserer nå det eksakte
+aliasmålet og de kanoniske Studio-katalogene med PHP realpath().
+Et annet mål eller symlink for selve Studio-mappene avvises fortsatt.
+Fullpakke-apply og automatisk publisering er fortsatt sperret.
+Ingen runtime, hemmeligheter eller redaksjonelle data endres av rettelsen.
+Neste steg: grønn GitHub SSH-test og fersk filavstemming før selektiv utrulling.
