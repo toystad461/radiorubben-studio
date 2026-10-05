@@ -1,5 +1,8 @@
 # Radio Rubben Studio – PHP-utgave
 
+> **Videre utvikling og gjeldende status:** Start i [Studio-status og arbeidsliste](docs/STUDIO-STATUS.md) og følg [Codex-reglene](AGENTS.md). Main og teksten nedenfor beskriver en eldre grunnversjon. Aktivt Uniweb-Studio har selektivt publiserte tillegg; standardpakken må ikke brukes som full erstatning før filgrunnlaget er avstemt.
+
+
 Norsk, responsivt kontrollsenter for `studio.radiorubben.no`, tilpasset vanlig PHP-webhotell. **Ingen Node.js, npm eller JavaScript-bygging kreves.** GitHub er fortsatt kode-master, og repoet skal være privat.
 
 ## Venteside

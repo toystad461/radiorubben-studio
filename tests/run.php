@@ -65,7 +65,7 @@ server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
  check(request('/assets/studio.css')[0]===200,'waiting page assets accessible');
 });
 server(['STUDIO_AUTH_MODE'=>'demo'],function(){
- [$code,$html]=request('/');check($code===200 && str_contains($html,'Demonstrasjon') && !str_contains($html,'integrations.map'),'demo dashboard rendered');
+ [$code,$html]=request('/');check($code===303 && str_contains($html,'Location: /login.php'),'anonymous demo redirects to login');
  check(request('/login.php')[0]===200,'login explanation');
  check(request('/robot.php')[0]===403,'demo cannot view robot inbox');
  check(request('/assets/studio.css')[0]===200,'stylesheet served');
@@ -73,7 +73,12 @@ server(['STUDIO_AUTH_MODE'=>'demo'],function(){
  check(request('/auth/callback.php?code=fake&state=fake')[0]===503,'demo rejects callback');
  check(request('/logout.php')[0]===405,'logout requires POST');
  check(request('/logout.php','POST','csrf=fake')[0]===403,'logout requires valid CSRF');
- foreach(['/config/example.php','/app/config.php','/composer.json','/.git/config'] as $path)check(request($path)[0]===404,'private file inaccessible: '.$path);
+ // PHP's development server may route a missing path through index.php.
+ foreach(['/config/example.php'=>'client_secret','/app/config.php'=>'function config_valid','/composer.json'=>'jumbojett','/.git/config'=>'[core]'] as $path=>$privateMarker) {
+  [$code,$response]=request($path);
+  $denied=$code===404 || ($code===303 && str_contains($response,'Location: /login.php'));
+  check($denied && !str_contains($response,$privateMarker),'private file inaccessible: '.$path.' (HTTP '.$code.')');
+ }
 });
 server(['STUDIO_AUTH_MODE'=>'entra','STUDIO_BASE_URL'=>'http://localhost:8080','ENTRA_TENANT_ID'=>$valid['tenant_id'],'ENTRA_CLIENT_ID'=>$valid['client_id'],'ENTRA_CLIENT_SECRET'=>'test-only'],function(){
  [$code,$html]=request('/');check($code===303 && str_contains($html,'Location: /login.php'),'configured dashboard requires session');
@@ -83,3 +88,13 @@ server(['STUDIO_AUTH_MODE'=>'entra','STUDIO_BASE_URL'=>'http://localhost:8080','
 });
 server(['STUDIO_AUTH_MODE'=>'entra','ENTRA_CLIENT_SECRET'=>''],function(){check(request('/')[0]===503,'partial configuration never falls back to demo');});
 echo "All tests passed. Real tenant login remains a deployment check.\n";
+
+foreach (glob(__DIR__.'/recovered/test-*.php') as $file) {
+    $modes = basename($file) === 'test-news-page.php' ? ['get','guest','method','observer','csrf','forged'] : [''];
+    foreach ($modes as $mode) {
+        passthru(escapeshellarg(PHP_BINARY).' '.escapeshellarg($file).' '.escapeshellarg($mode), $status);
+        check($status === 0, basename($file).' '.$mode);
+    }
+}
+
+require __DIR__.'/package.php';

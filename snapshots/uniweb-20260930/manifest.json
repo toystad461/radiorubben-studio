@@ -1,0 +1,2924 @@
+{
+  "schemaVersion": 1,
+  "capturedDate": "2026-09-30",
+  "timezone": "Europe/Oslo",
+  "method": "Uniweb File Manager private server copy, text-editor select-all/copy; UTF-8 text hashes, not independently verified server raw bytes",
+  "productionChanged": false,
+  "deployable": false,
+  "backup": "studio-private/reconciliation-backup-20260930-2002",
+  "references": [
+    {
+      "branch": "codex/azuracast-readonly-test",
+      "commit": "6b67d70f18298da8eea39c406dedeeba9e656a7c"
+    },
+    {
+      "branch": "codex/desken-v1",
+      "commit": "5b14d7f4977f732707d2196b03a3e79a5cb3a344"
+    },
+    {
+      "branch": "docs/studio-codex-workflow-20260930",
+      "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9"
+    },
+    {
+      "branch": "feat/robot-editorial-inbox",
+      "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d"
+    },
+    {
+      "branch": "feature/god-morgen-vestland-learning",
+      "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7"
+    },
+    {
+      "branch": "feature/nrk-rss-in-studio",
+      "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1"
+    },
+    {
+      "branch": "feature/robat-broadcast-template",
+      "commit": "ab7cf368563f377435f9b03f855eb9b10a784469"
+    },
+    {
+      "branch": "feature/robat-news-source-review",
+      "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d"
+    },
+    {
+      "branch": "feature/studio-control-center",
+      "commit": "f394cd9431268a76509e678d065c49383a0a6aba"
+    },
+    {
+      "branch": "feature/studio-control-flow",
+      "commit": "d753535963d9d1dbf20d104a8b23478547f75f36"
+    },
+    {
+      "branch": "feature/studio-intro-mail",
+      "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473"
+    },
+    {
+      "branch": "feature/studio-live-access-overlay",
+      "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a"
+    },
+    {
+      "branch": "feature/studio-local-users",
+      "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a"
+    },
+    {
+      "branch": "feature/studio-music-readiness",
+      "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4"
+    },
+    {
+      "branch": "feature/studio-newsdesk",
+      "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c"
+    },
+    {
+      "branch": "feature/studio-story-scripts",
+      "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced"
+    },
+    {
+      "branch": "feature/studio-user-admin",
+      "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b"
+    },
+    {
+      "branch": "feature/studio-weather-overview",
+      "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e"
+    },
+    {
+      "branch": "main",
+      "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe"
+    },
+    {
+      "branch": "release/v0.0.1",
+      "commit": "e9ee3e58fba5260e1cb2b9a02b9bef8f4516a4bd"
+    }
+  ],
+  "validation": {
+    "php82": 54,
+    "php84": 54,
+    "javascriptModules": 15
+  },
+  "files": [
+    {
+      "path": "app/board.php",
+      "sha256": "e35bb03c45db9df2aa858e04bbb0632e16fd2762acb784b80ba6753cfe213af8",
+      "gitSha": "85230e63b141fe027cc7f2980ef08df8753b9d8d",
+      "mainPath": "app/board.php",
+      "headPath": "overlays/uniweb/studio-private/app/board.php",
+      "main": "missing",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-private/app/board.php"
+    },
+    {
+      "path": "app/case-workflow.php",
+      "sha256": "169198608e182c0ae662945b00e78f67352d9a892a4c5ab4bdd4d96d238c24a7",
+      "gitSha": "1e471a6262b7742efd1af592ca1f2f43599799b2",
+      "mainPath": "app/case-workflow.php",
+      "headPath": "overlays/uniweb/studio-private/app/case-workflow.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-private/app/case-workflow.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/case-workflow.php"
+    },
+    {
+      "path": "app/editorial-memory.php",
+      "sha256": "d40b5dc3f30b397d84d7d98b087181255923a8db1574875e9e9a91e461d2fd2a",
+      "gitSha": "8efd1bd709062559c163af50c148f0d914165fd9",
+      "mainPath": "app/editorial-memory.php",
+      "headPath": "overlays/uniweb/studio-private/app/editorial-memory.php",
+      "main": "missing",
+      "head": "different",
+      "matches": [
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-private/app/editorial-memory.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/editorial-memory.php"
+    },
+    {
+      "path": "app/hue.php",
+      "sha256": "f2b031f5c1fd962b24f0ffee45bd32feefab66100ac359847699b9d4db879c53",
+      "gitSha": "057bf6c2ba8656c29b50c9f0df0f58d41a79a0c4",
+      "mainPath": "app/hue.php",
+      "headPath": "app/hue.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-private/app/hue.php"
+    },
+    {
+      "path": "app/music.php",
+      "sha256": "6c6a73daa73c587d1749f4f9bc433feea768e707afc2f830ae35eba5201e66f1",
+      "gitSha": "3f992254bf06606d55672efd8dec7681a8f11f5a",
+      "mainPath": "app/music.php",
+      "headPath": "app/music.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-private/app/music.php"
+    },
+    {
+      "path": "app/news-script.php",
+      "sha256": "ae621167693339d7a7a0111c2282d7330f752e585bf1bba2c6646993617d70f5",
+      "gitSha": "4462448e77c63e75ad5424abc05aa4358fd44c64",
+      "mainPath": "app/news-script.php",
+      "headPath": "overlays/uniweb/studio-private/app/news-script.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-private/app/news-script.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/news-script.php"
+    },
+    {
+      "path": "app/producer.php",
+      "sha256": "298e811f260be15ffdd3e80bd78dcd450c3d1a611f18af840e0a06aaf1c9c950",
+      "gitSha": "7fb76900eeeb31ee0dfa04cc3b6a2599d2549720",
+      "mainPath": "app/producer.php",
+      "headPath": "app/producer.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-private/app/producer.php"
+    },
+    {
+      "path": "app/users.php",
+      "sha256": "f682ad2f8e5dbcafc4107f324faaf64368a457aae1cdc0b2d3a25888ce84a372",
+      "gitSha": "f153ec2278912fedf2615085429e9824261e8cea",
+      "mainPath": "app/users.php",
+      "headPath": "app/users.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-private/app/users.php"
+    },
+    {
+      "path": "app/web-publish.php",
+      "sha256": "e24e2dd90151d0e1177ae5acb9789efdfcea44c5f96306d713fd74f0706e0ffa",
+      "gitSha": "2d2a8463c61cb1a41e6dd83e87834a322dd4ffa6",
+      "mainPath": "app/web-publish.php",
+      "headPath": "overlays/uniweb/studio-private/app/web-publish.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-private/app/web-publish.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/web-publish.php"
+    },
+    {
+      "path": "app/integrations/catalog.php",
+      "sha256": "75ffe3adc71c5d78d9395c70d7e03e21c4355d40762b3e99d60e9067796f5aa8",
+      "gitSha": "e79e0c2786b0449ca5edbf22c8111af24e4acf1f",
+      "mainPath": "app/integrations/catalog.php",
+      "headPath": "app/integrations/catalog.php",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "codex/azuracast-readonly-test",
+          "commit": "6b67d70f18298da8eea39c406dedeeba9e656a7c",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "codex/desken-v1",
+          "commit": "5b14d7f4977f732707d2196b03a3e79a5cb3a344",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/nrk-rss-in-studio",
+          "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-user-admin",
+          "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "release/v0.0.1",
+          "commit": "e9ee3e58fba5260e1cb2b9a02b9bef8f4516a4bd",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": "app/integrations/catalog.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "app/integrations/catalog.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/integrations/catalog.php"
+    },
+    {
+      "path": "app/integrations/MunicipalityRss.php",
+      "sha256": "bef9dcbda86811fc91ffc2b5138f84f31ee01f17fa865d75db68f8cc5c831604",
+      "gitSha": "d450952c10f4ea277feb12eb5c30bf7b85d99c2e",
+      "mainPath": "app/integrations/MunicipalityRss.php",
+      "headPath": "app/integrations/MunicipalityRss.php",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/nrk-rss-in-studio",
+          "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-user-admin",
+          "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": "app/integrations/MunicipalityRss.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "app/integrations/MunicipalityRss.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/integrations/MunicipalityRss.php"
+    },
+    {
+      "path": "app/integrations/NewsDesk.php",
+      "sha256": "fe1ea9e1fcf8e6235164d3df41aa36f5600a3301a70d90ec9d8b67217ed1d552",
+      "gitSha": "2fabf3493ec5ee54445d9ab9f43baa30a185df78",
+      "mainPath": "app/integrations/NewsDesk.php",
+      "headPath": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-private/app/integrations/NewsDesk.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/integrations/NewsDesk.php"
+    },
+    {
+      "path": "app/integrations/OneDrive.php",
+      "sha256": "e24d175dd40e81faf92324715fa62b2457acee3266f9f33047827c3349cee91e",
+      "gitSha": "acc72c6110c6c240f7db46ea09e2a4f4808d89f3",
+      "mainPath": "app/integrations/OneDrive.php",
+      "headPath": "app/integrations/OneDrive.php",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "codex/azuracast-readonly-test",
+          "commit": "6b67d70f18298da8eea39c406dedeeba9e656a7c",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "codex/desken-v1",
+          "commit": "5b14d7f4977f732707d2196b03a3e79a5cb3a344",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/nrk-rss-in-studio",
+          "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-user-admin",
+          "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "release/v0.0.1",
+          "commit": "e9ee3e58fba5260e1cb2b9a02b9bef8f4516a4bd",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": "app/integrations/OneDrive.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "app/integrations/OneDrive.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/integrations/OneDrive.php"
+    },
+    {
+      "path": "app/integrations/RobotInbox.php",
+      "sha256": "d6b032559a192432b0e6014a85cbeae3d5e87904770cd4bed6ea6c18fcbdb5f1",
+      "gitSha": "771055b963cc77e634c7898908f1ce98afac3265",
+      "mainPath": "app/integrations/RobotInbox.php",
+      "headPath": "app/integrations/RobotInbox.php",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-user-admin",
+          "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": "app/integrations/RobotInbox.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "app/integrations/RobotInbox.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/integrations/RobotInbox.php"
+    },
+    {
+      "path": "app/integrations/WordPress.php",
+      "sha256": "fea2e38ef9c79392723d80f3a453e1db2558ac2dc2ff9b19985d2cc8a648afbd",
+      "gitSha": "16ac96f8967e75e7f55c26c5376a6c2ef80ab69e",
+      "mainPath": "app/integrations/WordPress.php",
+      "headPath": "app/integrations/WordPress.php",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "codex/azuracast-readonly-test",
+          "commit": "6b67d70f18298da8eea39c406dedeeba9e656a7c",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "codex/desken-v1",
+          "commit": "5b14d7f4977f732707d2196b03a3e79a5cb3a344",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/nrk-rss-in-studio",
+          "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-user-admin",
+          "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "release/v0.0.1",
+          "commit": "e9ee3e58fba5260e1cb2b9a02b9bef8f4516a4bd",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": "app/integrations/WordPress.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "app/integrations/WordPress.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/integrations/WordPress.php"
+    },
+    {
+      "path": "app/views/account.php",
+      "sha256": "fb9281101972ca9b5d1365bbb92d08bbb1ca0b14acf45b2cdba55bd09416f78a",
+      "gitSha": "5d5fb1a32a3032c29c9d3c8e4b8491772ee2a846",
+      "mainPath": "app/views/account.php",
+      "headPath": "app/views/account.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-private/app/views/account.php"
+    },
+    {
+      "path": "app/views/head.php",
+      "sha256": "394a15a90b094e9ca769d8a0745095a0650fb9b8e8ab020a274ff1d62f0fbc1e",
+      "gitSha": "bc91ad94e7d102740eeec735201918b51ca1b73c",
+      "mainPath": "app/views/head.php",
+      "headPath": "overlays/uniweb/studio-private/app/views/head.php",
+      "main": "different",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-private/app/views/head.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/views/head.php"
+    },
+    {
+      "path": "app/views/head (2).php",
+      "sha256": "3d34c560fe350cf9425df729666a648e5d7b9df25b2b06c433540ba19d0e15ca",
+      "gitSha": "4017de4879fb428e9cb833c77ce996854ceac0d7",
+      "mainPath": "app/views/head (2).php",
+      "headPath": "app/views/head (2).php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [
+        {
+          "branch": "codex/azuracast-readonly-test",
+          "commit": "6b67d70f18298da8eea39c406dedeeba9e656a7c",
+          "path": "app/views/head.php"
+        },
+        {
+          "branch": "codex/desken-v1",
+          "commit": "5b14d7f4977f732707d2196b03a3e79a5cb3a344",
+          "path": "app/views/head.php"
+        },
+        {
+          "branch": "release/v0.0.1",
+          "commit": "e9ee3e58fba5260e1cb2b9a02b9bef8f4516a4bd",
+          "path": "app/views/head.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/views/head (2).php"
+    },
+    {
+      "path": "app/views/sidebar.php",
+      "sha256": "69ecf254292a9d6b35c2249ac8991b811364888321bbcb5366afd7096bdaf1d2",
+      "gitSha": "cd1c2d25bd285410f069f5b406f9614b1cd2d111",
+      "mainPath": "app/views/sidebar.php",
+      "headPath": "overlays/uniweb/studio-private/app/views/sidebar.php",
+      "main": "missing",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-private/app/views/sidebar.php"
+    },
+    {
+      "path": "app/auth/EntraClient.php",
+      "sha256": "7cdc60a23a4c6561e15ab75f386c83fed1800b2946bd1cfb61114e3dfaf74d31",
+      "gitSha": "3c2ba4b2581c4012f3a455e31cf97d8a27913ef5",
+      "mainPath": "app/auth/EntraClient.php",
+      "headPath": "app/auth/EntraClient.php",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "codex/azuracast-readonly-test",
+          "commit": "6b67d70f18298da8eea39c406dedeeba9e656a7c",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "codex/desken-v1",
+          "commit": "5b14d7f4977f732707d2196b03a3e79a5cb3a344",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/nrk-rss-in-studio",
+          "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "release/v0.0.1",
+          "commit": "e9ee3e58fba5260e1cb2b9a02b9bef8f4516a4bd",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": "app/auth/EntraClient.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "app/auth/EntraClient.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/auth/EntraClient.php"
+    },
+    {
+      "path": "app/auth/init.php",
+      "sha256": "27614e3af4e415cfbafd28b0b1187afc20eb7b353dcc30ceeac89dc888eb7c82",
+      "gitSha": "ee0ffe5384e136a6baf07fd0d4093d45883f18d8",
+      "mainPath": "app/auth/init.php",
+      "headPath": "app/auth/init.php",
+      "main": "different",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-private/app/auth/init.php"
+    },
+    {
+      "path": "app/auth/StudioLocalUsers.php",
+      "sha256": "e5e7bfd707a8338e2e4c82c917de9c2146e848cc65981e1c1f57fe3a760e3fdf",
+      "gitSha": "f140cb9b78082b701219c0b1eda8719fab87f2fa",
+      "mainPath": "app/auth/StudioLocalUsers.php",
+      "headPath": "overlays/uniweb/studio-private/app/auth/StudioLocalUsers.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-private/app/auth/StudioLocalUsers.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-private/app/auth/StudioLocalUsers.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-private/app/auth/StudioLocalUsers.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-private/app/auth/StudioLocalUsers.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-private/app/auth/StudioLocalUsers.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-private/app/auth/StudioLocalUsers.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-private/app/auth/StudioLocalUsers.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-private/app/auth/StudioLocalUsers.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/auth/StudioLocalUsers.php"
+    },
+    {
+      "path": "app/auth/VippsClient.php",
+      "sha256": "61fcf45f67eb1e94ebf53c45417e3a40703e9bbcccb55458d6371c43806dd46c",
+      "gitSha": "d3de8eff30957d7966cdfab005ce364b763e90e3",
+      "mainPath": "app/auth/VippsClient.php",
+      "headPath": "app/auth/VippsClient.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-private/app/auth/VippsClient.php"
+    },
+    {
+      "path": "app/bootstrap.php",
+      "sha256": "1489ea60be6dc9004617913e0bd8530b78d2d07b277e58d4b9e2edbff771d88a",
+      "gitSha": "790e6adbae352d449cec5c9483f51dadf8f897da",
+      "mainPath": "app/bootstrap.php",
+      "headPath": "overlays/uniweb/studio-private/app/bootstrap.php",
+      "main": "different",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-private/app/bootstrap.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/bootstrap.php"
+    },
+    {
+      "path": "app/config.php",
+      "sha256": "0dcf88d3b1ecf12db74a9d757d69edc834a128817d7de76b9dce05f9f3de30f7",
+      "gitSha": "3cfdafc436e3075008399a0aff19e6d35aa161fa",
+      "mainPath": "app/config.php",
+      "headPath": "app/config.php",
+      "main": "different",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-private/app/config.php"
+    },
+    {
+      "path": "app/helpers.php",
+      "sha256": "9e0289a0d7fa9490948e0127b3b47cdd9d2675e92abc52a05aa4ddb75d123ef2",
+      "gitSha": "110ace8652dc37181e08b0d14992ca131bd61dc9",
+      "mainPath": "app/helpers.php",
+      "headPath": "app/helpers.php",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "codex/azuracast-readonly-test",
+          "commit": "6b67d70f18298da8eea39c406dedeeba9e656a7c",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "codex/desken-v1",
+          "commit": "5b14d7f4977f732707d2196b03a3e79a5cb3a344",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/nrk-rss-in-studio",
+          "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-user-admin",
+          "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "release/v0.0.1",
+          "commit": "e9ee3e58fba5260e1cb2b9a02b9bef8f4516a4bd",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": "app/helpers.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "app/helpers.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/helpers.php"
+    },
+    {
+      "path": "app/intro-mail.php",
+      "sha256": "9b082b531cb55ee4dc8146b54f01cef836c270779099ce26ef192c65bf6f7c2e",
+      "gitSha": "44e8bf2ed19742227fffb458b5e686f2d4bf076e",
+      "mainPath": "app/intro-mail.php",
+      "headPath": "overlays/uniweb/studio-private/app/intro-mail.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-private/app/intro-mail.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-private/app/intro-mail.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-private/app/intro-mail.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-private/app/intro-mail.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-private/app/intro-mail.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-private/app/intro-mail.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-private/app/intro-mail.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-private/app/intro-mail.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/intro-mail.php"
+    },
+    {
+      "path": "app/music-plan.php",
+      "sha256": "7bbc9377dd2bba075ac6db0dbf62852c95a8fa652013649187ec89295f1520b1",
+      "gitSha": "ea9992397516092186002e09a63b104e542da991",
+      "mainPath": "app/music-plan.php",
+      "headPath": "app/music-plan.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-private/app/music-plan.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/app/music-plan.php"
+    },
+    {
+      "path": "app/story-script.php",
+      "sha256": "c577b5b33ead7a91e08ebdc58411aeafaecbd702ab75f136df57037936f6266c",
+      "gitSha": "0dffb74baad72dedde1d80a66b340b36d97ed688",
+      "mainPath": "app/story-script.php",
+      "headPath": "overlays/uniweb/studio-private/app/story-script.php",
+      "main": "missing",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-private/app/story-script.php"
+    },
+    {
+      "path": "app/weather.php",
+      "sha256": "227ba2ddf1c073edfd47777d769344e87d6c487da534b48351dccac511252737",
+      "gitSha": "20a3510afcaf4d17cf46136b554d401fa2667d3e",
+      "mainPath": "app/weather.php",
+      "headPath": "app/weather.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-private/app/weather.php"
+    },
+    {
+      "path": "public/.htaccess",
+      "sha256": "9853a10d848ba0e1c517b028953a212302dc59796661c6979152af3bf665abed",
+      "gitSha": "dc11d90f93068f5a368a29d26c5dc40ef47801b4",
+      "mainPath": "public/.htaccess",
+      "headPath": "public/.htaccess",
+      "main": "different",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-public/.htaccess"
+    },
+    {
+      "path": "public/ai-studio.php",
+      "sha256": "9253179777c483299a816e7c95b02e653a96742e7a35a44c32e6bf82c3757544",
+      "gitSha": "4fa1b0018291c55144c790b29672f028522959fd",
+      "mainPath": "public/ai-studio.php",
+      "headPath": "public/ai-studio.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/ai-studio.php"
+    },
+    {
+      "path": "public/case.php",
+      "sha256": "ef87658ad41cc55575dfc53c5f3319c7df8ed81d362cfcd935c566d72f690945",
+      "gitSha": "16ea3dcab098ef1109eb933822f5e9eab91309f8",
+      "mainPath": "public/case.php",
+      "headPath": "overlays/uniweb/studio-public/case.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/case.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/case.php"
+    },
+    {
+      "path": "public/control.php",
+      "sha256": "87e7eb92105072a9dfc02e14497ba873bba32375bef8348074a618865b5698ae",
+      "gitSha": "03fdd92865941f653a75b509cab1ce86873fd6eb",
+      "mainPath": "public/control.php",
+      "headPath": "overlays/uniweb/studio-public/control.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/control.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/control.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/control.php"
+    },
+    {
+      "path": "public/desk.php",
+      "sha256": "71fbd9626facbb1943b37131831ac1fa607b268209666aa1761eecaf6ed13c1e",
+      "gitSha": "fb2b14ec4b2bb8786061f2be6d97af2d4f2ca08a",
+      "mainPath": "public/desk.php",
+      "headPath": "overlays/uniweb/studio-public/desk.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/desk.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/desk.php"
+    },
+    {
+      "path": "public/hue-api.php",
+      "sha256": "dfd680e19a8174912826e2cfca23ab543fbdbeeac257247304319627b0c22bb3",
+      "gitSha": "df76c362a54755b49ba108ced85188507b462071",
+      "mainPath": "public/hue-api.php",
+      "headPath": "public/hue-api.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/hue-api.php"
+    },
+    {
+      "path": "public/index.php",
+      "sha256": "0a7c10d47874bfaec523da138b0fadb0285c73d84a90669ec4192483c95dd8d1",
+      "gitSha": "8ea0172d9717190859c78e0529e3558d6a1f9dc0",
+      "mainPath": "public/index.php",
+      "headPath": "overlays/uniweb/studio-public/index.php",
+      "main": "different",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/index.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/index.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/index.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/index.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/index.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/index.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/index.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/index.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/index.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/index.php"
+    },
+    {
+      "path": "public/learning.php",
+      "sha256": "b9ad942d9c97ce7b659941d15361f42b91d7069d1b5c548fbf88724a54fc5ac6",
+      "gitSha": "76a9c342c9062bcdb198fdabfa4ead34179b5f59",
+      "mainPath": "public/learning.php",
+      "headPath": "overlays/uniweb/studio-public/learning.php",
+      "main": "missing",
+      "head": "different",
+      "matches": [
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/learning.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/learning.php"
+    },
+    {
+      "path": "public/login.php",
+      "sha256": "709dd1d2b925483760c438986f5bbb30f35db85b9e3b88751b4e739a805156d6",
+      "gitSha": "fe2cfc23b5964d0a197a199cb4db4fbee11c282a",
+      "mainPath": "public/login.php",
+      "headPath": "overlays/uniweb/studio-public/login.php",
+      "main": "different",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/login.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/login.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/login.php"
+    },
+    {
+      "path": "public/logout.php",
+      "sha256": "4735e91b2882fd67be879e85f7ac325c5f6a38307eb3e3a874c1cb3e91b65934",
+      "gitSha": "4e3e69facd08eae33ea35b44f3922a623aad9f88",
+      "mainPath": "public/logout.php",
+      "headPath": "public/logout.php",
+      "main": "different",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-public/logout.php"
+    },
+    {
+      "path": "public/music-api.php",
+      "sha256": "633b9f1f4631f68ce5947105c6398714128a0ca1ca4832a27da6b4ba81b4cfa3",
+      "gitSha": "e7f08cde7b0c3200536e3fc3c50c75c86467f422",
+      "mainPath": "public/music-api.php",
+      "headPath": "public/music-api.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/music-api.php"
+    },
+    {
+      "path": "public/music-plan.php",
+      "sha256": "22e7e2ac99d03bfeb291ffe3369455e945a8945e29e01d1d2b6c2fa3f69ce71d",
+      "gitSha": "568f691aa5ef7d5f9350f97b515cba34d7bf5165",
+      "mainPath": "public/music-plan.php",
+      "headPath": "public/music-plan.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/music-plan.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/music-plan.php"
+    },
+    {
+      "path": "public/newsdesk.php",
+      "sha256": "e04148147c0f25ada4289436c12f87734fc992a7072167ff51c279451df7f1c8",
+      "gitSha": "438c1cbc4ff85321af5df084826bf1f67c7f81a4",
+      "mainPath": "public/newsdesk.php",
+      "headPath": "overlays/uniweb/studio-public/newsdesk.php",
+      "main": "missing",
+      "head": "different",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/newsdesk.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/newsdesk.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/newsdesk.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/newsdesk.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/newsdesk.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/newsdesk.php"
+    },
+    {
+      "path": "public/producer-api.php",
+      "sha256": "f84da7886251c02c590e0a86e3ffae4ff9f79c4660b67da5274411c3d8038d3b",
+      "gitSha": "2f182047a78329aafde29fec9cfa7fc9cff41e84",
+      "mainPath": "public/producer-api.php",
+      "headPath": "public/producer-api.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/producer-api.php"
+    },
+    {
+      "path": "public/robot.php",
+      "sha256": "555afacdb5405ecfc587dc3a09c1f57d57d8ce85e8599c711cd81b1f3bd90b39",
+      "gitSha": "8fc0437d39dfcf240702a62aa23f1ad7175e03d6",
+      "mainPath": "public/robot.php",
+      "headPath": "public/robot.php",
+      "main": "different",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-public/robot.php"
+    },
+    {
+      "path": "public/sending.php",
+      "sha256": "3565c382da2799024f62312166742da774ca832684ed2dbafbebb1b48903e462",
+      "gitSha": "0e271479e14a762a019102443cf50adfd221c89d",
+      "mainPath": "public/sending.php",
+      "headPath": "overlays/uniweb/studio-public/sending.php",
+      "main": "missing",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-public/sending.php"
+    },
+    {
+      "path": "public/users.php",
+      "sha256": "7db74cf2eea5845870956f11a954a12c15a04cfdb54846ed9f0a40f5ef7fbe28",
+      "gitSha": "ff3260b9c8e6dbfe634f3ba3650a2847e1917969",
+      "mainPath": "public/users.php",
+      "headPath": "overlays/uniweb/studio-public/users.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/users.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/users.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/users.php"
+    },
+    {
+      "path": "public/users.css",
+      "sha256": "60f4406a048beeaa98b9cd7fd417286ce3d3d21d6258738b80858af5fcb99a66",
+      "gitSha": "d1ea6d59eca9d87b38571cc917a337b9468a5c67",
+      "mainPath": "public/users.css",
+      "headPath": "overlays/uniweb/studio-public/users.css",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/users.css"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/users.css"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/users.css"
+    },
+    {
+      "path": "public/weather-api.php",
+      "sha256": "e69d9c2f9eb0b625c156bdde318f63181157afc20ff692da2c1998727d9ac3aa",
+      "gitSha": "54d5cc9d9d463d390ef42b791b337775b2bf7a85",
+      "mainPath": "public/weather-api.php",
+      "headPath": "public/weather-api.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/weather-api.php"
+    },
+    {
+      "path": "public/wordpress-check.php",
+      "sha256": "cbc696d58f1d312d8d3a6d0ab5884cb10dd70299c110cdc4434e19e8d407ad0a",
+      "gitSha": "7e671f748d5598613c1d0f733b855fa2785c0fb6",
+      "mainPath": "public/wordpress-check.php",
+      "headPath": "overlays/uniweb/studio-public/wordpress-check.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/wordpress-check.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/wordpress-check.php"
+    },
+    {
+      "path": "public/workspace.php",
+      "sha256": "ebd672a651c65c964431ec683be6f686512eee67bb5f39a606f9e8e98b12eb1c",
+      "gitSha": "9aa121c8563ecb631c8f9c41fbc880a540f92337",
+      "mainPath": "public/workspace.php",
+      "headPath": "public/workspace.php",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/workspace.php"
+    },
+    {
+      "path": "public/assets/control.css",
+      "sha256": "630775f91748d289cc6e60fd565d39c7137b5b48a50ca06b1f33cef9cfebf564",
+      "gitSha": "c0f28db3c505057db7eaa98f23a409a4d1f6f7d3",
+      "mainPath": "public/assets/control.css",
+      "headPath": "overlays/uniweb/studio-public/assets/control.css",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/assets/control.css"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/assets/control.css"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/assets/control.css"
+    },
+    {
+      "path": "public/assets/music-check.mjs",
+      "sha256": "dd1273008f187cef20100d70c07514a69ec6e46623c27ef30b95e420674c8a01",
+      "gitSha": "cdbea14e2d3d1e147bdbf234557a7fed7158735f",
+      "mainPath": "public/assets/music-check.mjs",
+      "headPath": "public/assets/music-check.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/assets/music-check.mjs"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/assets/music-check.mjs"
+    },
+    {
+      "path": "public/assets/music-check.css",
+      "sha256": "0b9f1b086639f1c931445e1cee0cda61fadd9221aa333bfb77be8a217774b986",
+      "gitSha": "245c5e2a066cc2feeb3c11b3d155351c923a2390",
+      "mainPath": "public/assets/music-check.css",
+      "headPath": "public/assets/music-check.css",
+      "main": "missing",
+      "head": "missing",
+      "matches": [
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/assets/music-check.css"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/assets/music-check.css"
+    },
+    {
+      "path": "public/assets/newsdesk.css",
+      "sha256": "9976e124ca05e8656aec9dd98fc1e4ef3035e217a10a5c1b1527746d415e2b54",
+      "gitSha": "da752fb6ab2c3542b02e35aedf7346da5231aca7",
+      "mainPath": "public/assets/newsdesk.css",
+      "headPath": "overlays/uniweb/studio-public/assets/newsdesk.css",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/assets/newsdesk.css"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/assets/newsdesk.css"
+    },
+    {
+      "path": "public/assets/robot.css",
+      "sha256": "f2739e5d25f27b076e74526f171f9f7ce7a674ef2617f71666ddcf634a7f7731",
+      "gitSha": "21cbfbc27efeee8ff1df08d6f098818be310156a",
+      "mainPath": "public/assets/robot.css",
+      "headPath": "public/assets/robot.css",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/nrk-rss-in-studio",
+          "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-user-admin",
+          "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": "public/assets/robot.css"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "public/assets/robot.css"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/assets/robot.css"
+    },
+    {
+      "path": "public/assets/studio.css",
+      "sha256": "920290f3f1117a9bf2023fb3772bce80c2246aec31fd38746dcdf8ac598169af",
+      "gitSha": "3d85846fb643bbbcc048a2e992f84dc1281d0917",
+      "mainPath": "public/assets/studio.css",
+      "headPath": "public/assets/studio.css",
+      "main": "different",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-public/assets/studio.css"
+    },
+    {
+      "path": "public/assets/theme-bridge.css",
+      "sha256": "d150ffb7cfe62f9a588caed4eac0bd652e31915fc27de2fa691a0a4e9b0159bc",
+      "gitSha": "8ecad8ebc16e09596d39a1f9991474f36e44da44",
+      "mainPath": "public/assets/theme-bridge.css",
+      "headPath": "overlays/uniweb/studio-public/assets/theme-bridge.css",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/assets/theme-bridge.css"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/assets/theme-bridge.css"
+    },
+    {
+      "path": "public/assets/ai-studio/app.mjs",
+      "sha256": "3002c1a635c84aa64276216e975042da71bab756fe3371a5f35b8358810eb173",
+      "gitSha": "4898213c94b3d101ec3954bceb54d03e9d98e0ba",
+      "mainPath": "public/assets/ai-studio/app.mjs",
+      "headPath": "public/assets/ai-studio/app.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/app.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/studio.css",
+      "sha256": "8a440fa005b3a4eef42952eddf9a4f17f8f0be23f80068c4fe43d9a69b1a0fd5",
+      "gitSha": "8781c2b7fea62ef86a416ec4171242109cd29a91",
+      "mainPath": "public/assets/ai-studio/studio.css",
+      "headPath": "public/assets/ai-studio/studio.css",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/studio.css"
+    },
+    {
+      "path": "public/assets/ai-studio/services/events.mjs",
+      "sha256": "f2ddd05fdcb6758e6992da33770891f02aa2798b93b37fbe41fe52dc52f6be52",
+      "gitSha": "d180b95be522563e974bb44bd589c98def63c253",
+      "mainPath": "public/assets/ai-studio/services/events.mjs",
+      "headPath": "public/assets/ai-studio/services/events.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/events.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/fader.mjs",
+      "sha256": "fb9dfb7111a56917e51fa982fbddf4ba448fdb794cb671e791f2072f057ce20a",
+      "gitSha": "be4af1ab99d1980d7bcdcdbaf00995e51f8f6cbf",
+      "mainPath": "public/assets/ai-studio/services/fader.mjs",
+      "headPath": "public/assets/ai-studio/services/fader.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/fader.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/feedback.mjs",
+      "sha256": "f521a63f3993f4a1a0af7ecf4740a66aacb50911096f276b9ef226b1aecbfc5e",
+      "gitSha": "303481f7e3c5572c491239ad65e82b1fe35cfdf7",
+      "mainPath": "public/assets/ai-studio/services/feedback.mjs",
+      "headPath": "public/assets/ai-studio/services/feedback.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/feedback.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/hue.mjs",
+      "sha256": "fde3fa2fbd7a3543009fddfd5fee32ee755654dfd6a2816c02be8a00cd47d4e9",
+      "gitSha": "a35a017b8c504fbc8ba6744dd46c4a45a84c82ce",
+      "mainPath": "public/assets/ai-studio/services/hue.mjs",
+      "headPath": "public/assets/ai-studio/services/hue.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/hue.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/mapping.mjs",
+      "sha256": "7424c4fc7407d2f56cf99bc0e9617ee02f9d6a8cd6ff355008c42a8c60e5621a",
+      "gitSha": "8129dbd93292916a883eaa12afb5c628a6f4c913",
+      "mainPath": "public/assets/ai-studio/services/mapping.mjs",
+      "headPath": "public/assets/ai-studio/services/mapping.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/mapping.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/midi.mjs",
+      "sha256": "2e452a9f3f6ada92110fc7dd172aa99cff188b3eaa360cb2aa2ad882ef4874b2",
+      "gitSha": "18129d5e7c7effbda227451dcb1d83342327d25f",
+      "mainPath": "public/assets/ai-studio/services/midi.mjs",
+      "headPath": "public/assets/ai-studio/services/midi.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/midi.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/music.mjs",
+      "sha256": "81292a4249ee7c53debf4129a794e64ca6e87b858e150de550121688be37ca04",
+      "gitSha": "0f09e4587b1be4393a6f42b2545bdbae095673d0",
+      "mainPath": "public/assets/ai-studio/services/music.mjs",
+      "headPath": "public/assets/ai-studio/services/music.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/music.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/producer.mjs",
+      "sha256": "64346501b6b5c62dc7aa92c599730f1bf2285e27b731f3e6a4b2ef7abc3d918b",
+      "gitSha": "43b23ecdbd442600320504d2d0cd20466927956c",
+      "mainPath": "public/assets/ai-studio/services/producer.mjs",
+      "headPath": "public/assets/ai-studio/services/producer.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/producer.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/review.mjs",
+      "sha256": "87502373262692cfc3e3043cebea61c223cf643947474bcf4b0ce06271fd0790",
+      "gitSha": "fdb8198f80b0c5209c9c09fef88f540c8e432ef0",
+      "mainPath": "public/assets/ai-studio/services/review.mjs",
+      "headPath": "public/assets/ai-studio/services/review.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/review.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/rodecaster.mjs",
+      "sha256": "868151e5d70b007047cef36b5712861bafc9670790398d9d8cea0020fd1dd050",
+      "gitSha": "4fca2af10a624ceacf27dc78ed3efa567e7009d5",
+      "mainPath": "public/assets/ai-studio/services/rodecaster.mjs",
+      "headPath": "public/assets/ai-studio/services/rodecaster.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/rodecaster.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/rotation.mjs",
+      "sha256": "d01ef1bf5620fed2a64183feb31be74b061c2d327c6d428628b7c6246e285c6b",
+      "gitSha": "e7b9193b1e50a02fd76840b2fcf9ef1c6b4c49b2",
+      "mainPath": "public/assets/ai-studio/services/rotation.mjs",
+      "headPath": "public/assets/ai-studio/services/rotation.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/rotation.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/status.mjs",
+      "sha256": "2aa61f351b345256938c70bf8dc3a0242306669e03fc7fcf1e4c2c5be75208e3",
+      "gitSha": "0338e5b9dfc1d808e9157601fc12b62dc22b8a45",
+      "mainPath": "public/assets/ai-studio/services/status.mjs",
+      "headPath": "public/assets/ai-studio/services/status.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/status.mjs"
+    },
+    {
+      "path": "public/assets/ai-studio/services/weather.mjs",
+      "sha256": "e98a8dc6cf03a3b0569d1cf09fd92d778d8851c9d3fc53f33bdfbc1043e3a3ea",
+      "gitSha": "c73bdb057f90c7c38ff62048f8c0b315c83ed86b",
+      "mainPath": "public/assets/ai-studio/services/weather.mjs",
+      "headPath": "public/assets/ai-studio/services/weather.mjs",
+      "main": "missing",
+      "head": "missing",
+      "matches": [],
+      "anyBranch": "missing",
+      "snapshotPath": "source/studio-public/assets/ai-studio/services/weather.mjs"
+    },
+    {
+      "path": "public/auth/callback.php",
+      "sha256": "5cde385640daf48ff5fe5af587795923fd1579d3ed19b6bb21b2c466e3074a5f",
+      "gitSha": "5d6206af58a009156204247894df59ada24cf174",
+      "mainPath": "public/auth/callback.php",
+      "headPath": "overlays/uniweb/studio-public/auth/callback.php",
+      "main": "different",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/auth/callback.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/auth/callback.php"
+    },
+    {
+      "path": "public/auth/start.php",
+      "sha256": "0b5311f592343e87478b9685280cab86ed3fc9b22d3c65025cc3b415f5f41704",
+      "gitSha": "fc1ef102ca219d532664c8656e1c3e4608c569b1",
+      "mainPath": "public/auth/start.php",
+      "headPath": "public/auth/start.php",
+      "main": "different",
+      "head": "different",
+      "matches": [],
+      "anyBranch": "different",
+      "snapshotPath": "source/studio-public/auth/start.php"
+    },
+    {
+      "path": "public/local/admin-panel.php",
+      "sha256": "7174f7fb4afebbd28aa0430f5658e7b8e76c0fea16d5154fa1e3e766c21f4e17",
+      "gitSha": "0c6811b5f91ca145da63c1f5d1341fe1157d24db",
+      "mainPath": "public/local/admin-panel.php",
+      "headPath": "overlays/uniweb/studio-public/local/admin-panel.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/local/admin-panel.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/local/admin-panel.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/local/admin-panel.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/local/admin-panel.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/local/admin-panel.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/local/admin-panel.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/local/admin-panel.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/local/admin-panel.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/local/admin-panel.php"
+    },
+    {
+      "path": "public/local/change-password.php",
+      "sha256": "9bc020f040b998378469f93c82477c4388208fae902dfdbc92316b0a715b0c7c",
+      "gitSha": "cd061a6e100644ce9a23a1832a7c70fa68385b15",
+      "mainPath": "public/local/change-password.php",
+      "headPath": "overlays/uniweb/studio-public/local/change-password.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/local/change-password.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/local/change-password.php"
+    },
+    {
+      "path": "public/local/login.php",
+      "sha256": "b1b8b596998e74f8a86e86353af4ca6a408044a768a8e1995d244084548a8d97",
+      "gitSha": "d8beba437ebe27a3cde901fcbe56c28ba8e022ea",
+      "mainPath": "public/local/login.php",
+      "headPath": "overlays/uniweb/studio-public/local/login.php",
+      "main": "missing",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "overlays/uniweb/studio-public/local/login.php"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-public/local/login.php"
+    },
+    {
+      "path": "private-root/.htaccess",
+      "sha256": "d340691cced427d4db6d48059851926da936398fb086bfb4b026a8a5dd27e172",
+      "gitSha": "5974c100ee284855d3150abe4ef6d7819e563e66",
+      "mainPath": ".htaccess",
+      "headPath": ".htaccess",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "codex/azuracast-readonly-test",
+          "commit": "6b67d70f18298da8eea39c406dedeeba9e656a7c",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "codex/desken-v1",
+          "commit": "5b14d7f4977f732707d2196b03a3e79a5cb3a344",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/nrk-rss-in-studio",
+          "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-user-admin",
+          "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "release/v0.0.1",
+          "commit": "e9ee3e58fba5260e1cb2b9a02b9bef8f4516a4bd",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": ".htaccess"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": ".htaccess"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/.htaccess"
+    },
+    {
+      "path": "private-root/composer.json",
+      "sha256": "10129045b5f7a03abf9ef52e85603e64d279de463798aa9d2a5175349d24d617",
+      "gitSha": "4956278973ec0f89662d96a9f19c457367313c27",
+      "mainPath": "composer.json",
+      "headPath": "composer.json",
+      "main": "identical",
+      "head": "identical",
+      "matches": [
+        {
+          "branch": "codex/azuracast-readonly-test",
+          "commit": "6b67d70f18298da8eea39c406dedeeba9e656a7c",
+          "path": "composer.json"
+        },
+        {
+          "branch": "codex/desken-v1",
+          "commit": "5b14d7f4977f732707d2196b03a3e79a5cb3a344",
+          "path": "composer.json"
+        },
+        {
+          "branch": "docs/studio-codex-workflow-20260930",
+          "commit": "385b4562561c9eeffba9862b4ccfdd8a53d555d9",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feat/robot-editorial-inbox",
+          "commit": "1c3c0056f7c05e9e13d5ae5306369dd1655b5c2d",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/god-morgen-vestland-learning",
+          "commit": "7f72fbf7a9e0e33b488c74d8c0251021f9bbffd7",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/nrk-rss-in-studio",
+          "commit": "3a3e94766b7b5220bde6c0565b686e30420c86e1",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/robat-broadcast-template",
+          "commit": "ab7cf368563f377435f9b03f855eb9b10a784469",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-control-center",
+          "commit": "f394cd9431268a76509e678d065c49383a0a6aba",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-control-flow",
+          "commit": "d753535963d9d1dbf20d104a8b23478547f75f36",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-intro-mail",
+          "commit": "e0d3b8fad6a9e7edfa86bb2ca7bcbbf381364473",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-live-access-overlay",
+          "commit": "5783d6ae95e54ac1b7a96bb126b13eb121bc2c4a",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-local-users",
+          "commit": "b3d6ea6d30c9fd99f4c9feaff3f01af896df278a",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-music-readiness",
+          "commit": "86f3e3a9a53c1c63d6c1f7c3b5cac7b19986ecc4",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-newsdesk",
+          "commit": "a345af561bd2bfbc733cbe2b023ba708c2ee2c5c",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-story-scripts",
+          "commit": "8f9f6ddb57d6751097080750b2246e8ced2a1ced",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-user-admin",
+          "commit": "727dbcad81e5d1cd7c679d4e08d61cbba8e3cd7b",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/studio-weather-overview",
+          "commit": "9b19cdfb4d9d6f83b8c5fe831c1cf9ad15123c7e",
+          "path": "composer.json"
+        },
+        {
+          "branch": "release/v0.0.1",
+          "commit": "e9ee3e58fba5260e1cb2b9a02b9bef8f4516a4bd",
+          "path": "composer.json"
+        },
+        {
+          "branch": "main",
+          "commit": "5b87408b0e413770e1486029a18e0edabfcf0ebe",
+          "path": "composer.json"
+        },
+        {
+          "branch": "feature/robat-news-source-review",
+          "commit": "4fe4eb110b66752e281e4e23f460bf9a4d72df9d",
+          "path": "composer.json"
+        }
+      ],
+      "anyBranch": "identical",
+      "snapshotPath": "source/studio-private/composer.json"
+    }
+  ]
+}

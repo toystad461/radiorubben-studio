@@ -4,6 +4,8 @@ ini_set('display_errors', '0');
 ini_set('log_errors', '1');
 require __DIR__ . '/config.php';
 require __DIR__ . '/helpers.php';
+require_once __DIR__ . '/users.php';
+require_once __DIR__ . '/auth/StudioLocalUsers.php';
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
@@ -28,7 +30,7 @@ if ($siteMode !== 'app') {
 <body>
 <main id="main" class="login-wrap">
 <section class="login-card" aria-labelledby="waiting-title">
-<img class="login-logo" src="/assets/radio-rubben-logo.png" alt="Radio Rubben" width="2172" height="724">
+<img class="login-logo" src="/assets/radio-rubben-logo.png" alt="Radio Rubben" width="2400" height="1073">
 <p class="eyebrow">RADIO RUBBEN / STUDIO</p>
 <p class="hero-label"><span class="station-dot" aria-hidden="true"></span> VI GJØR KLART</p>
 <h1 id="waiting-title">God radio starter her.</h1>
@@ -48,7 +50,7 @@ if (!config_valid($config)) {
     exit('Studio er ikke ferdig konfigurert. Kontakt administrator.');
 }
 $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-if ($config['auth_mode'] === 'entra' && str_starts_with($config['base_url'], 'https://') && !$https) {
+if ($config['auth_mode'] !== 'demo' && str_starts_with($config['base_url'], 'https://') && !$https) {
     http_response_code(503);
     exit('Studio krever HTTPS.');
 }
@@ -61,13 +63,43 @@ $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 function current_user(): ?array
 {
     global $config;
-    if ($config['auth_mode'] !== 'entra') {
+    if ($config['auth_mode'] === 'demo') {
         unset($_SESSION['user'], $_SESSION['expires']);
         return null;
     }
     if (!isset($_SESSION['user'], $_SESSION['expires']) || $_SESSION['expires'] <= time()) {
         unset($_SESSION['user'], $_SESSION['expires']);
         return null;
+    }
+    $provider = $_SESSION['user']['provider'] ?? 'entra';
+    if ($provider !== $config['auth_mode'] && !($provider === 'local' && $config['auth_mode'] === 'entra' && ($config['local_users_enabled'] ?? false) === true)) {
+        unset($_SESSION['user'], $_SESSION['expires']);
+        return null;
+    }
+    if ($provider === 'local') {
+        $sessionUser = $_SESSION['user'];
+        $record = is_string($sessionUser['id'] ?? null) ? studio_local_user_by_id($sessionUser['id']) : null;
+        if (!$record || !$record['enabled'] || ($sessionUser['version'] ?? null) !== $record['version']) {
+            unset($_SESSION['user'], $_SESSION['expires']);
+            return null;
+        }
+        $user = ['provider'=>'local', 'id'=>$record['id'], 'name'=>$record['name'],
+            'email'=>$record['email'], 'role'=>$record['role'], 'version'=>$record['version'],
+            'mustChange'=>$record['mustChange']];
+        if ($record['mustChange'] && !in_array(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), ['/local/change-password.php', '/logout.php'], true)) redirect('/local/change-password.php');
+        return $user;
+    }
+    if ($provider === 'entra') {
+        // Role comes from the verified OID claim, never a stored session role.
+        $_SESSION['user']['role'] = studio_entra_is_admin($_SESSION['user']) ? 'admin' : 'observer';
+    }
+    if ($config['auth_mode'] === 'vipps') {
+        $role = studio_access_role($config, (string)($_SESSION['user']['phone'] ?? ''));
+        if ($role === null) {
+            unset($_SESSION['user'], $_SESSION['expires']);
+            return null;
+        }
+        $_SESSION['user']['role'] = $role;
     }
     return $_SESSION['user'];
 }

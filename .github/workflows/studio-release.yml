@@ -42,6 +42,10 @@ jobs:
           composer test
           bash -n scripts/deploy-studio.sh
           bash -n scripts/deploy-studio-remote.sh
+      - name: Check Studio JavaScript and automatic case preparation
+        run: |
+          find public -name '*.mjs' -exec node --check {} \;
+          node tests/recovered/test-case-flow.mjs
       - name: Build versioned release using the existing packager
         run: |
           php scripts/build-release.php "$GITHUB_SHA"

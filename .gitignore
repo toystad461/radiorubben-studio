@@ -11,3 +11,7 @@
 
 /config/robot-inbox.json
 /config/robot-news.json
+
+# Runtime settings, credentials, editorial data and caches stay private.
+/config/*
+!/config/example.php

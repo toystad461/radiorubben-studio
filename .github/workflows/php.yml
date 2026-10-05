@@ -20,6 +20,10 @@ jobs:
       - run: composer install --no-dev --prefer-dist --no-interaction
       - run: composer validate --strict
       - run: composer audit
+      - name: Check Studio JavaScript and automatic case preparation
+        run: |
+          find public -name '*.mjs' -exec node --check {} \;
+          node tests/recovered/test-case-flow.mjs
       - run: composer test
       - if: matrix.php == '8.4'
         run: php scripts/package.php
