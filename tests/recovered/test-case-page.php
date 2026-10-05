@@ -22,7 +22,7 @@ $item=['id'=>'1234567890abcdef','originId'=>'old-feed-id','title'=>'Opprinnelig 
     'script'=>'Redigert radiomanus.','notes'=>'','status'=>'draft','revision'=>1,
     'web'=>['title'=>'Redigert nettsak','intro'=>'Kort ingress.','body'=>'Lagret artikkeltekst.']];
 if($mode!=='legacy')$item['web']['publication']=studio_news_publication($item);
-$item['web']['check']=['status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,studio_web_text($item['web']))];
+$item['web']['check']=['source'=>['url'=>$item['sourceUrl'],'text'=>str_repeat('Et kontrollert kildebelegg. ',8),'sha256'=>hash('sha256',str_repeat('Et kontrollert kildebelegg. ',8)),'fetchedAt'=>gmdate('c')],'status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,studio_web_text($item['web']))];
 if($mode==='published')$item['web']['delivery']=['id'=>123,'state'=>'confirmed','status'=>'publish','hash'=>studio_web_approval_hash($item),'link'=>'https://www.radiorubben.no/test/'];
 $path=$tmp.'/config/sending-board.json';file_put_contents($path,json_encode(['items'=>[$item]]));
 $_SESSION=['csrf'=>'fixture'];$_GET=['item'=>$item['id']];$_POST=[];
