@@ -5,6 +5,36 @@ Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
 
+## Guardrail-oppfølging etter PR #25 – 05.10.2026
+
+Første kartlegging viste PR #25 på `fix/mobile-newsroom` mot
+`feat/unified-newsroom`, head `2330214ff7335d2f497965e5cbc8f979610c488d`,
+konfliktfri draft og grønn PHP 8.2/8.4/mobil-CI 37243345398.
+Under arbeidet ble PR-en retargetet og merget eksternt kl. 12:14:19 Oslo:
+slutt-head `4d8ac6e4e477b0477592244c94598e74f6510815`,
+merge `e434969bc5f62ff1b1eb4af4a3bc3d47c0d1e886`.
+Ingen merge ble utført av denne oppgaven. GitHub avviste et ikke-fast-forward
+oppdateringsforsøk; eksisterende historie ble bevart uten force-push.
+
+Denne separate oppfølgingen bygger på fersk main
+`19bbb18d7e3250406e2de5dada7e5194c40818e9`. Kun release-workflow,
+deploysperrer, isolert sperretest og dokumentasjon endres.
+Fullpakke-apply stoppes før transport eller serveroperasjoner, også ved direkte
+skriptkjøring. Automatisk apply er fjernet; release-workflow tilbyr bare
+dry-run og tester alle PR-baser. Ny CI kjøres på oppfølgingsgrenen.
+
+Mobilruntime, RSS-rettelser, programregister, nyhetsmanus og konsolidert
+godkjenningsflate er urørt. Render PR #21 og dens separat dokumenterte status
+beholdes; ingen Render-tjeneste er endret eller verifisert her.
+Tidligere mobil/RSS-aktivering er kun lest som GitHub-historikk.
+Ingen ferske serverhasher eller innlogget produksjons-UI er kontrollert her.
+Ingen Uniweb/Render-deploy, secretendring, artikkelpublisering eller e-post.
+
+Neste steg: review og grønne kontroller på oppfølgings-PR-en, fersk
+produksjonsavstemming, nytt selektivt manifest og Thomas sin eksplisitte
+godkjenning før en ny utrulling. Se [preflight og rollback](STUDIO-DEPLOY.md).
+Eksakt oppfølgingshead og endelig CI-status dokumenteres i PR-beskrivelsen.
+
 ## RSS: selektivt publisert og ekte-data-test – 05.10.2026
 
 Studio PR #23, #24, #25 og #26 er merget. PHP 8.2/8.4 og mobiltester er grønne
