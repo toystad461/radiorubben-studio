@@ -478,3 +478,19 @@ kjøring. Streng vertsverifikasjon beholdes.
 Den opprinnelige prøvepakken ble kontrollert via SSH og fullførte
 DRY-RUN OK; ingen nettstedfiler ble endret. Ny ende-til-ende GitHub-kjøring
 gjenstår etter merge. Fullpakke-apply forblir sperret.
+
+
+## Automatisk publisering autorisert – 05.10.2026
+
+Thomas ba eksplisitt «aktiver automatisk publisering» etter grønn SSH-
+prøvekjøring 37345265396. Ny selektiv publisering erstatter ikke fullpakke-
+sperren. Baseline er 489 kode-/avhengighetsfiler med ferske produksjonshasher
+mot pakke e2e3bad750c7355feaf5b2fc7a6f48b26e949207. Kjente forskjeller
+bevares frem til de aktuelle kildefilene faktisk endres i GitHub.
+
+Implementert: main-trigger, PHP- og mobilgate, nyeste-main-kontroll,
+kontrollsummer, privat backup/manifest, felles serverlås, atomiske filbytter,
+selektive slettinger og rollback ved feil. Runtime-data og konfigurasjon er
+utenfor filsettet. Tester dekker bootstrap, drift, symlinker, rettigheter,
+oppdatering/tillegg/sletting, bevaring av privat data og rollback.
+GitHub CI og aktivering av miljøvariabel/produksjonsstatus gjenstår etter PR.
