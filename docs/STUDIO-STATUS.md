@@ -432,3 +432,7 @@ Statuskonflikten løses ved å beholde både RSS-journalen og SSH-notatet.
 Neste steg er review/merge av PR #31 og manuell SSH-tilkoblingstest fra
 main. Første GitHub-tilkobling er ennå ikke kjørt. Ingen produksjonsfiler
 er lastet opp; fullpakke-apply forblir sperret i denne PR-en.
+
+## GitHub SSH-test – 05.10.2026 kl. 18:42 Oslo
+
+PR #31 er merget som aa7af7732c20b83062406c2d8336899bfa04b500 etter Thomas sin godkjenning. Første SSH-test (Actions 37342869433) nådde serveren med streng vertsverifikasjon og nøkkelautentisering. Den stoppet på manglende CLI-verktøy realpath. Tilkoblingstesten bruker nå PHP realpath() for samme kanoniske stikontroll; ingen validering slås av. Nettstedfiler er ikke lastet opp. PR #31 inneholder kun driftsoppsett, tester og dokumentasjon, ingen runtime-endringer til Studio.
