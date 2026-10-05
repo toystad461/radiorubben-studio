@@ -24,6 +24,8 @@ jobs:
         run: |
           find public \( -name '*.mjs' -o -name '*.js' \) -exec node --check {} \;
           node tests/recovered/test-case-flow.mjs
+      - name: Check full-package deployment stop before any server access
+        run: bash tests/test-deploy-block.sh
       - run: composer test
       - if: matrix.php == '8.4'
         run: php scripts/package.php

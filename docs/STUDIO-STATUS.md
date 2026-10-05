@@ -5,6 +5,36 @@ Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
 
+## Guardrail-oppfølging etter PR #25 – 05.10.2026
+
+Første kartlegging viste PR #25 på `fix/mobile-newsroom` mot
+`feat/unified-newsroom`, head `2330214ff7335d2f497965e5cbc8f979610c488d`,
+konfliktfri draft og grønn PHP 8.2/8.4/mobil-CI 37243345398.
+Under arbeidet ble PR-en retargetet og merget eksternt kl. 12:14:19 Oslo:
+slutt-head `4d8ac6e4e477b0477592244c94598e74f6510815`,
+merge `e434969bc5f62ff1b1eb4af4a3bc3d47c0d1e886`.
+Ingen merge ble utført av denne oppgaven. GitHub avviste et ikke-fast-forward
+oppdateringsforsøk; eksisterende historie ble bevart uten force-push.
+
+Denne separate oppfølgingen bygger på fersk main
+`19bbb18d7e3250406e2de5dada7e5194c40818e9`. Kun release-workflow,
+deploysperrer, isolert sperretest og dokumentasjon endres.
+Fullpakke-apply stoppes før transport eller serveroperasjoner, også ved direkte
+skriptkjøring. Automatisk apply er fjernet; release-workflow tilbyr bare
+dry-run og tester alle PR-baser. Ny CI kjøres på oppfølgingsgrenen.
+
+Mobilruntime, RSS-rettelser, programregister, nyhetsmanus og konsolidert
+godkjenningsflate er urørt. Render PR #21 og dens separat dokumenterte status
+beholdes; ingen Render-tjeneste er endret eller verifisert her.
+Tidligere mobil/RSS-aktivering er kun lest som GitHub-historikk.
+Ingen ferske serverhasher eller innlogget produksjons-UI er kontrollert her.
+Ingen Uniweb/Render-deploy, secretendring, artikkelpublisering eller e-post.
+
+Neste steg: review og grønne kontroller på oppfølgings-PR-en, fersk
+produksjonsavstemming, nytt selektivt manifest og Thomas sin eksplisitte
+godkjenning før en ny utrulling. Se [preflight og rollback](STUDIO-DEPLOY.md).
+Eksakt oppfølgingshead og endelig CI-status dokumenteres i PR-beskrivelsen.
+
 ## RSS: selektivt publisert og ekte-data-test – 05.10.2026
 
 Studio PR #23, #24, #25 og #26 er merget. PHP 8.2/8.4 og mobiltester er grønne
@@ -346,6 +376,28 @@ Faktisk fullflyttest, ferske serverhasher og selektiv deploy gjenstår.
 
 Ren, separat kildeattribusjon kan bekreftes deterministisk mot validert originaladresse og intakt kildehash. Andre faktapåstander og alle redaksjonelle issues beholder kontrollkravene. Ved fornyet webkontroll klargjøres også et manglende radiomanus fra samme nyhentede original; eksisterende webtekst og eksisterende radiotekst bevares. Ingen automatisk godkjenning eller publisering. Endringen krever grønne PHP- og mobile tester samt ny selektiv serverkontroll før deployment. Live-backfill er ikke kjørt i denne endringen.
 
+## SSH-oppsett – 05.10.2026
+
+PR #31 inkluderer nå en separat, manuelt startet `studio-ssh-check.yml`.
+Den bruker miljøet `studio-production`, kjører bare fra main og er uavhengig
+av release/tag og `STUDIO_DEPLOY_ENABLED`. Den kontrollerer nøkkel, kjent vert,
+SSH, eksisterende Studio-mapper og PHP/verktøy uten opplasting eller skrivetest.
+Den leser ikke lokal konfigurasjon, brukere eller redaksjonelle data.
+
+Oppsett gjenstår: bekreft Studio-konto og SSH-vertsfingeravtrykk i Uniweb,
+installer en dedikert offentlig nøkkel og lagre privatnøkkelen direkte som
+`STUDIO_DEPLOY_SSH_KEY` i GitHub-miljøet. Legg verifiserte vertsnøkler i
+`STUDIO_DEPLOY_KNOWN_HOSTS`, og sett `STUDIO_SSH_HOST` og `STUDIO_SSH_USER`.
+Ikke kopier WordPress-kontoens verdier uten å bekrefte tilgang til Studio.
+Hold `STUDIO_DEPLOY_ENABLED=false` under oppsettet. Kontroller miljøregler
+og reviewer før manuell kjøring. Nøkler skal aldri legges i chat eller Git.
+
+Workflowen må gjennomgås og merges før den kan startes fra Actions.
+En grønn tilkoblingstest verifiserer ikke skriveadgang, domenets webroot,
+produksjonens filhasher eller selektiv deploy/rollback. Disse kreves fortsatt
+før utrulling. GitHub-pluginen kan ikke administrere secrets eller starte
+workflowen; kontoinnstillinger og første kjøring gjenstår. Ingen ny tilkobling
+eller produksjonsdeploy er utført i denne oppfølgingen.
 
 ## RSS-oppfølging ferdig deployet 2026-10-05
 
@@ -356,3 +408,27 @@ Sluttkontroll https://github.com/toystad461/radiorubben-web/actions/runs/3730262
 Redaksjonelle avvik: De to eldre netttekstene har udokumenterte påstander om blant annet personskader, brannvesen, myndighetsoppfølging og rasets konsekvenser. Ett eldre radioutkast krever også gjennomgang. Disse må korrigeres og kontrolleres før Thomas godkjenner. Den isolerte testen av Bømlo-saken om frivillighet fullførte begge kontroller; radio bestod, mens en webpåstand om prosjektets mål ble flagget. Testen endret ikke aktiv kjøreplan. Fungerende flyt er ikke en garanti for feilfri AI-tekst.
 
 Detaljert dokumentasjon, sikkerhetskopier, stoppede forsøk og resterende arbeid: https://github.com/toystad461/radiorubben-web/blob/codex/rss-studio-release-20261005/RSS-STUDIO-RELEASE.md . Autentisert nettleserkontroll og pensjonering av robot.php/navigasjonen gjenstår. Ingen offentlig side, plugin, tema, legitimasjon eller publiseringsrettighet ble endret av denne oppfølgingen.
+
+
+## SSH-oppsett verifisert i kontrollpanel – 05.10.2026 kl. 16:08 Oslo
+
+Denne oppdateringen erstatter gjenstående konto-/secretoppsett i SSH-notatet over.
+Thomas valgte Uniweb-konto 79007. Kontrollpanelet bekrefter vert
+`ssh.cptk37ymg.service.one` og bruker `cptk37ymg_w1417156`.
+Filbehandleren viser Studio-mappene under r1417157. Thomas sin lokale
+SSH-test bekrefter PHP CLI 8.4.26, rsync og begge Studio-mappene.
+En dedikert Ed25519-nøkkel ble opprettet lokalt av Thomas og installert
+med `restrict`; BatchMode-test svarte «SSH-nøkkel fungerer». Dette begrenser
+videresending/PTY, men avgrenser ikke nøkkelen til bare Studio-filer.
+GitHub-miljøet studio-production viser begge secrets registrert:
+STUDIO_DEPLOY_SSH_KEY og STUDIO_DEPLOY_KNOWN_HOSTS. Verdiene er ikke lest.
+Known-hosts ble kopiert fra Mac-ens eksisterende vertsregister; uavhengig
+bekreftelse av vertsfingeravtrykket er ikke dokumentert her.
+STUDIO_DEPLOY_ENABLED og STUDIO_DEPLOY_AUTO_APPLY er begge false.
+Miljøet viser No restriction for deploygrener og ingen reviewer-regel.
+
+PR #31 oppdateres mot main ae67af071ec01d64ddedbfcf02a6fb9a01effd48.
+Statuskonflikten løses ved å beholde både RSS-journalen og SSH-notatet.
+Neste steg er review/merge av PR #31 og manuell SSH-tilkoblingstest fra
+main. Første GitHub-tilkobling er ennå ikke kjørt. Ingen produksjonsfiler
+er lastet opp; fullpakke-apply forblir sperret i denne PR-en.

@@ -3,6 +3,12 @@ set -Eeuo pipefail
 # Run only on a trusted runner/local machine with a verified SSH known_hosts file.
 mode=${1:-dry-run}
 [[ "$mode" == dry-run || "$mode" == apply ]] || { echo 'Expected dry-run or apply' >&2; exit 2; }
+# Full-package deployment is unsafe while live Studio differs from GitHub.
+# No environment variable or confirmation token may bypass reconciliation.
+if [[ "$mode" == apply ]]; then
+  echo 'STOP: Full-package apply is blocked. See docs/STUDIO-DEPLOY.md; reconcile a selective manifest and obtain Thomas approval.' >&2
+  exit 1
+fi
 : "${STUDIO_SSH_HOST:?Set STUDIO_SSH_HOST}"
 : "${STUDIO_SSH_USER:?Set STUDIO_SSH_USER}"
 [[ "$STUDIO_SSH_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]+$ ]] || exit 2

@@ -3,6 +3,12 @@ set -Eeuo pipefail
 umask 077
 mode=${1:?}; version=${2:?}; digest=${3:?}; run=${4:?}
 [[ "$mode" == dry-run || "$mode" == apply ]] || exit 2
+# Full-package deployment is unsafe while live Studio differs from GitHub.
+# No environment variable or confirmation token may bypass reconciliation.
+if [[ "$mode" == apply ]]; then
+  echo 'STOP: Full-package apply is blocked. See docs/STUDIO-DEPLOY.md; reconcile a selective manifest and obtain Thomas approval.' >&2
+  exit 1
+fi
 [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 2
 [[ "$digest" =~ ^[a-f0-9]{64}$ && "$run" =~ ^[a-zA-Z0-9-]+$ ]] || exit 2
 # Deliberately fixed Studio-only paths. Never copy to the WordPress root.

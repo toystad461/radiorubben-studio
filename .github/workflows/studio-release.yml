@@ -4,18 +4,17 @@ on:
     branches: [main, 'release/**']
     paths: ['VERSION', 'docs/releases/**', 'scripts/*release*', 'scripts/*studio*.sh', '.github/workflows/studio-release.yml']
   pull_request:
-    branches: [main]
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Kontroll eller publisering av versjonen i VERSION'
+        description: 'Preflight only; full-package apply is blocked pending reconciliation'
         type: choice
-        options: [dry-run, apply]
+        options: [dry-run]
         default: dry-run
 permissions:
   contents: read
 concurrency:
-  group: studio-release-${{ github.ref }}
+  group: studio-release
   cancel-in-progress: false
 jobs:
   verify:
@@ -42,9 +41,10 @@ jobs:
           composer test
           bash -n scripts/deploy-studio.sh
           bash -n scripts/deploy-studio-remote.sh
+          bash tests/test-deploy-block.sh
       - name: Check Studio JavaScript and automatic case preparation
         run: |
-          find public -name '*.mjs' -exec node --check {} \;
+          find public \( -name '*.mjs' -o -name '*.js' \) -exec node --check {} \;
           node tests/recovered/test-case-flow.mjs
       - name: Build versioned release using the existing packager
         run: |
@@ -99,8 +99,6 @@ jobs:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     environment: studio-production
-    outputs:
-      applied: ${{ steps.ship.outputs.applied }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -147,13 +145,12 @@ jobs:
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
           printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
-      - name: Dry-run or apply to Studio directories only
+      - name: Preflight Studio directories without applying the package
         id: ship
         if: steps.settings.outputs.ready == 'true'
         env:
           EVENT: ${{ github.event_name }}
           REQUESTED_MODE: ${{ inputs.mode }}
-          AUTO_APPLY: ${{ vars.STUDIO_DEPLOY_AUTO_APPLY }}
           STUDIO_SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
           STUDIO_SSH_USER: ${{ vars.STUDIO_SSH_USER }}
         run: |
@@ -161,33 +158,11 @@ jobs:
           mode=dry-run
           if [[ "$EVENT" == workflow_dispatch ]]; then
             mode="$REQUESTED_MODE"
-          elif [[ "$AUTO_APPLY" == true ]]; then
-            mode=apply
           fi
-          # An apply always repeats every preflight immediately before writing.
+          [[ "$mode" == dry-run ]] || { echo 'Full-package apply is blocked.' >&2; exit 1; }
+          # This workflow cannot publish live files.
           bash scripts/deploy-studio.sh "$mode"
-          if [[ "$mode" == apply ]]; then
-            echo 'applied=true' >> "$GITHUB_OUTPUT"
-            echo '## Studio package deployed and HTTP-checked. Existing site/auth mode is preserved.' >> "$GITHUB_STEP_SUMMARY"
-          else
-            echo '## Dry-run only: website files unchanged; release remains a draft.' >> "$GITHUB_STEP_SUMMARY"
-          fi
+          echo '## Dry-run only: website files unchanged; release remains a draft.' >> "$GITHUB_STEP_SUMMARY"
       - name: Remove SSH key
         if: always()
         run: rm -f ~/.ssh/id_ed25519
-  publish:
-    needs: deploy
-    if: needs.deploy.outputs.applied == 'true'
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - name: Publish release only after successful website deployment
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          version=$(tr -d '\r\n' < VERSION)
-          gh release edit "v$version" --draft=false
