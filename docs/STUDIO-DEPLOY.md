@@ -191,3 +191,26 @@ for å tilfredsstille en publiseringstest.
 OneDrive: eventuelle langsiktige backupkopier og godkjenningsnotater kan legges
 under Radio Rubben / IT & Utstyr / Backup. Denne workflowen kopierer ikke til
 OneDrive og skal ikke omtales som en OneDrive-backup.
+
+## SSH-oppsett – 05.10.2026
+
+PR #31 inkluderer nå en separat, manuelt startet `studio-ssh-check.yml`.
+Den bruker miljøet `studio-production`, kjører bare fra main og er uavhengig
+av release/tag og `STUDIO_DEPLOY_ENABLED`. Den kontrollerer nøkkel, kjent vert,
+SSH, eksisterende Studio-mapper og PHP/verktøy uten opplasting eller skrivetest.
+Den leser ikke lokal konfigurasjon, brukere eller redaksjonelle data.
+
+Oppsett gjenstår: bekreft Studio-konto og SSH-vertsfingeravtrykk i Uniweb,
+installer en dedikert offentlig nøkkel og lagre privatnøkkelen direkte som
+`STUDIO_DEPLOY_SSH_KEY` i GitHub-miljøet. Legg verifiserte vertsnøkler i
+`STUDIO_DEPLOY_KNOWN_HOSTS`, og sett `STUDIO_SSH_HOST` og `STUDIO_SSH_USER`.
+Ikke kopier WordPress-kontoens verdier uten å bekrefte tilgang til Studio.
+Hold `STUDIO_DEPLOY_ENABLED=false` under oppsettet. Kontroller miljøregler
+og reviewer før manuell kjøring. Nøkler skal aldri legges i chat eller Git.
+
+Workflowen må gjennomgås og merges før den kan startes fra Actions.
+En grønn tilkoblingstest verifiserer ikke skriveadgang, domenets webroot,
+produksjonens filhasher eller selektiv deploy/rollback. Disse kreves fortsatt
+før utrulling. GitHub-pluginen kan ikke administrere secrets eller starte
+workflowen; kontoinnstillinger og første kjøring gjenstår. Ingen ny tilkobling
+eller produksjonsdeploy er utført i denne oppfølgingen.
