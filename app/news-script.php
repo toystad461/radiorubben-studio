@@ -137,12 +137,12 @@ function studio_news_review(array $item, string $script, array $source, array $c
     $payload['instructions'].=' Returner nøyaktig '.count($segments).' segmenter, med index fra 0 til '.(count($segments)-1).', inkludert overskrift og ingress. Ikke slå sammen eller hopp over segmenter, heller ikke ren kildeattribusjon. source_paragraphs inneholder nummererte, urørte avsnitt fra originalen. Oppgi evidence_indexes som en liste med inntil fire heltallsindekser til disse avsnittene. Alle påstander i segmentet må ha dekning i disse avsnittene. Returner [] ved manglende dekning. Ikke skriv eller oversett kildeutdrag; serveren henter avsnittene med indeksene du oppgir. issues skal bare inneholde konkrete feil som hindrer godkjenning, aldri ros eller valgfrie stilforslag. Hvis ingen slike feil finnes, returner issues: []. Ren kildeattribusjon som «Kilden er NRK.» kan støttes av source.url, men alle øvrige påstander krever belegg i teksten.';
     $payload['text']=['format'=>['type'=>'json_schema','name'=>'news_source_review','strict'=>true,
         'schema'=>['type'=>'object','properties'=>[
-            'segments'=>['type'=>'array','items'=>['type'=>'object','properties'=>[
-                'index'=>['type'=>'integer'],'verdict'=>['type'=>'string','enum'=>['supported','unsupported','uncertain']],
-                'evidence_indexes'=>['type'=>'array','items'=>['type'=>'integer']],
+            'segments'=>['type'=>'array','minItems'=>count($segments),'maxItems'=>count($segments),'items'=>['type'=>'object','properties'=>[
+                'index'=>['type'=>'integer','minimum'=>0,'maximum'=>count($segments)-1],'verdict'=>['type'=>'string','enum'=>['supported','unsupported','uncertain']],
+                'evidence_indexes'=>['type'=>'array','maxItems'=>4,'items'=>['type'=>'integer','minimum'=>0,'maximum'=>count($paragraphs)-1]],
                 'reason'=>['type'=>'string']],
                 'required'=>['index','verdict','evidence_indexes','reason'],'additionalProperties'=>false]],
-            'issues'=>['type'=>'array','items'=>['type'=>'string']]],
+            'issues'=>['type'=>'array','maxItems'=>20,'items'=>['type'=>'string']]],
             'required'=>['segments','issues'],'additionalProperties'=>false]]];
     $raw = $request($config, $payload);
     if (!is_string($raw) || strlen($raw) > 40000) throw new StudioNewsPreparationException('Kildekontrollen ga ugyldig svar.');
