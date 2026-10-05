@@ -151,3 +151,27 @@ Etter brukerens «Aktiver» ble PR #22-avhengighetene og PR #23 aktivert selekti
 Live UI-test avdekket blokkering fra eksisterende CSP. Sakssiden er rettet til samme-origin JavaScript, CSS og bilde, uten å endre sikkerhetsheadere. Innlogget Studio viser fungerende feeder, bilde og kategorier, og lager både radio- og nettutkast fra originalkilden. Prøvesak: `37115a841ef21a07`. Kontrollmerknader krever redaksjonell gjennomgang; manuell sluttgodkjenning er bevart.
 
 **Gjenstående blokkering:** WordPress-kladdoverføringen feilet. Studios lesende tilkoblingskontroll bekrefter HTTP 401 / `incorrect_password`; den separate autentiserte WordPress-tilkoblingen finner ingen kladd med prøvens slug. Ingen ny levering ble forsøkt og ingen artikkel er publisert. Gyldig WordPress-applikasjonspassord, kontrollert avklaring av leveringsstatus og deretter en bekreftet kladdoverføring er neste nødvendige steg. Se [aktiveringsbevis, avvik og tilbakeføring](NEWS-ACTIVATION-20261004.md). Historiske «ikke aktivert»-avsnitt over beskriver tidligere leveranser.
+
+## Konsolidering startet – 05.10.2026
+
+Brukeren har bestilt å begynne å integrere PR-er og teste med ekte data.
+PR #19 er merget til main som a1a17da5c39648fe73813ae67f41843e4b27daf7,
+og PR #22 som 53fb663f288aec9ab4770bd5a8b5f668e52e06d6. Eksakte head-er
+før merge var henholdsvis 049b42591e525055232503e4710787ad09b62139 og
+c96b27af7ab184f2e407fc5b3e2b83b68671ac11. Begge hadde grønne PHP 8.2/8.4-kontroller.
+Etter #19-mergen besto hovedgrenens PHP/JavaScript/pakke-kjøring 37289463910.
+Release-kjøring 37289464018 besto verifisering, men stoppet i draft-jobben:
+eksisterende v0.0.2 tilhører en annen commit og ble ikke overskrevet.
+Deploy og publish ble hoppet over. Ingen serverfiler ble endret.
+
+Isolert Robot-test på fem ekte Bømlo RSS-saker bekreftet fem førstegangsregistreringer,
+null nye ved gjentakelse, fem eksporterte saker og felles event-ID-er. Dette er
+ikke bevis for artikkelgenerering, kildekontroll, sluttgodkjenning eller WordPress-levering.
+Ingen ekte sak ble godkjent eller publisert i denne testen.
+
+PR #23 er retargetert til main som neste integreringstrinn; #24 og #25 følger
+i avhengighetsrekkefølge etter ny gjennomgang. Historiske alternative grener og
+main-auditen i #26 skal ikke massemerges. Ny release må få eget versjonsnummer
+etter konsolidering. SSH-nøkkel/known-hosts manglet i siste deploy-forhåndskontroll;
+fersk serveravstemming, backup og tilbakeføring kreves før produksjonsdeploy.
+Denne oppdateringen endrer bare dokumentasjon.
