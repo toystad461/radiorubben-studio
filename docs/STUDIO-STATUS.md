@@ -398,3 +398,37 @@ produksjonens filhasher eller selektiv deploy/rollback. Disse kreves fortsatt
 før utrulling. GitHub-pluginen kan ikke administrere secrets eller starte
 workflowen; kontoinnstillinger og første kjøring gjenstår. Ingen ny tilkobling
 eller produksjonsdeploy er utført i denne oppfølgingen.
+
+## RSS-oppfølging ferdig deployet 2026-10-05
+
+PR 28, 29, 30 og 32 er slått sammen etter grønne PHP 8.2/8.4- og mobiltester. Kildeattribusjon, bokmål og strengt format med begrensede avsnittsreferanser er rettet. Selektiv deployment med privat sikkerhetskopi og utfylling av to eldre web-only saker lykkes i https://github.com/toystad461/radiorubben-web/actions/runs/37302374295 . Netttekst og sak-ID er bevart; begge produksjoner deler samme nyhentede originalgrunnlag.
+
+Sluttkontroll https://github.com/toystad461/radiorubben-web/actions/runs/37302620846 viser tre aktive RSS-saker med begge produksjoner og null web-only. Den tredje kom gjennom ordinær automatisk worker og bestod både web- og radiokontroll. Alle tre er fortsatt uten manuell godkjenning og WordPress-leveranse.
+
+Redaksjonelle avvik: De to eldre netttekstene har udokumenterte påstander om blant annet personskader, brannvesen, myndighetsoppfølging og rasets konsekvenser. Ett eldre radioutkast krever også gjennomgang. Disse må korrigeres og kontrolleres før Thomas godkjenner. Den isolerte testen av Bømlo-saken om frivillighet fullførte begge kontroller; radio bestod, mens en webpåstand om prosjektets mål ble flagget. Testen endret ikke aktiv kjøreplan. Fungerende flyt er ikke en garanti for feilfri AI-tekst.
+
+Detaljert dokumentasjon, sikkerhetskopier, stoppede forsøk og resterende arbeid: https://github.com/toystad461/radiorubben-web/blob/codex/rss-studio-release-20261005/RSS-STUDIO-RELEASE.md . Autentisert nettleserkontroll og pensjonering av robot.php/navigasjonen gjenstår. Ingen offentlig side, plugin, tema, legitimasjon eller publiseringsrettighet ble endret av denne oppfølgingen.
+
+
+## SSH-oppsett verifisert i kontrollpanel – 05.10.2026 kl. 16:08 Oslo
+
+Denne oppdateringen erstatter gjenstående konto-/secretoppsett i SSH-notatet over.
+Thomas valgte Uniweb-konto 79007. Kontrollpanelet bekrefter vert
+`ssh.cptk37ymg.service.one` og bruker `cptk37ymg_w1417156`.
+Filbehandleren viser Studio-mappene under r1417157. Thomas sin lokale
+SSH-test bekrefter PHP CLI 8.4.26, rsync og begge Studio-mappene.
+En dedikert Ed25519-nøkkel ble opprettet lokalt av Thomas og installert
+med `restrict`; BatchMode-test svarte «SSH-nøkkel fungerer». Dette begrenser
+videresending/PTY, men avgrenser ikke nøkkelen til bare Studio-filer.
+GitHub-miljøet studio-production viser begge secrets registrert:
+STUDIO_DEPLOY_SSH_KEY og STUDIO_DEPLOY_KNOWN_HOSTS. Verdiene er ikke lest.
+Known-hosts ble kopiert fra Mac-ens eksisterende vertsregister; uavhengig
+bekreftelse av vertsfingeravtrykket er ikke dokumentert her.
+STUDIO_DEPLOY_ENABLED og STUDIO_DEPLOY_AUTO_APPLY er begge false.
+Miljøet viser No restriction for deploygrener og ingen reviewer-regel.
+
+PR #31 oppdateres mot main ae67af071ec01d64ddedbfcf02a6fb9a01effd48.
+Statuskonflikten løses ved å beholde både RSS-journalen og SSH-notatet.
+Neste steg er review/merge av PR #31 og manuell SSH-tilkoblingstest fra
+main. Første GitHub-tilkobling er ennå ikke kjørt. Ingen produksjonsfiler
+er lastet opp; fullpakke-apply forblir sperret i denne PR-en.
