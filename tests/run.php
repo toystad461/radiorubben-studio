@@ -90,7 +90,11 @@ server(['STUDIO_AUTH_MODE'=>'entra','ENTRA_CLIENT_SECRET'=>''],function(){check(
 echo "All tests passed. Real tenant login remains a deployment check.\n";
 
 foreach (glob(__DIR__.'/recovered/test-*.php') as $file) {
-    $modes = basename($file) === 'test-news-page.php' ? ['get','guest','method','observer','csrf','forged'] : [''];
+    $modes = match(basename($file)) {
+        'test-news-page.php' => ['get','guest','method','observer','csrf','forged'],
+        'test-case-page.php' => ['get','legacy','published','guest','csrf','observer','open','save'],
+        default => [''],
+    };
     foreach ($modes as $mode) {
         passthru(escapeshellarg(PHP_BINARY).' '.escapeshellarg($file).' '.escapeshellarg($mode), $status);
         check($status === 0, basename($file).' '.$mode);

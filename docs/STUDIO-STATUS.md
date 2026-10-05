@@ -109,3 +109,69 @@ og de 28 nye kontrollene i PHP-WASM. Testene bruker syntetiske RSS-data,
 ikke NRK-innhold. Live kildehenting, innlogget produksjons-UI og deploy er
 ikke utført. Ingen redaksjonelle data, brukerinnstillinger eller andre
 greners kode er endret.
+
+
+## Nyhetssaker til nett – 04.10.2026
+
+Avgrenset neste trinn bygger på PR #22-head
+`c96b27af7ab184f2e407fc5b3e2b83b68671ac11`, på egen gren
+`feat/news-publication-profile`. Sakssiden får forhåndsvisning av nyhetsbildet
+(media 1079), kategorivalg og korrekt leveringsstatus. Nye nyhetssaker bruker
+Nyheter (8), kommunesaker også Lokale Nyheter (27). Objektene er bekreftet med
+lesende WordPress-kall; ingen WordPress-innstillinger eller innlegg er endret.
+
+Fire runtime-filer: `app/news-publication.php` (ny), `app/web-publish.php`,
+`app/case-workflow.php` og `public/case.php`. Bildet/kategoriene følger første
+opprettelse; senere oppdatering bevarer WordPress-redaktørens valg. Godkjenning
+bindes til tekst, kildeattribusjon og nyhetsprofil. Gjenåpning fra en annen
+NRK-feed gjenbruker eksisterende redigert sak. Kilde-/språkkontroll og manuell
+sluttgodkjenning beholdes. Se [nyhetspublisering](NEWS-PUBLICATION.md).
+
+Lokalt besto 33 nye publiseringskontroller, åtte sakssidekontroller og 10
+regresjonskontroller i PHP-WASM, pluss JavaScript-simuleringer. Full native CI
+kjøres ved levering; testet kodecommit og resultater dokumenteres på PR-en.
+Ikke produksjonsaktivert. Neste steg er fersk serveravstemming av disse fire
+filene og PR #22-avhengighetene, så innlogget Studio-test og kontrollert ekte
+WordPress-kladd. Live originalhenting og ende-til-ende-overføring er uprøvd.
+Ingen artikkel, automatisk jobb, OneDrive-overføring, merge eller deploy er gjort.
+
+
+Verifisering: [PR #23](https://github.com/toystad461/radiorubben-studio/pull/23),
+testet kodecommit `9795a3735c9d147e263f5deb66777c2103262275`.
+[CI 37220266577](https://github.com/toystad461/radiorubben-studio/actions/runs/37220266577)
+besto på native PHP 8.2 og 8.4: hele suiten, JavaScript, Composer-validering/audit
+og pakking. Denne etterfølgende oppdateringen endrer bare dokumentert status.
+PR #23 er åpen som draft og mergebar; ingen merge eller deploy er utført.
+
+
+## Produksjonsaktivering og reell prøve – 04.10.2026
+
+Etter brukerens «Aktiver» ble PR #22-avhengighetene og PR #23 aktivert selektivt på Uniweb. Endelig runtime-kilde er `f0cbc59f348978daf1532fed93ad8deee8b15979`, med grønn full [CI 37229833327](https://github.com/toystad461/radiorubben-studio/actions/runs/37229833327). Alle 11 endrede/opprettede runtime-filer er kontrollert mot ferske etter-hasher. Privat backup og før-hasher finnes. Ingen helgren-deploy eller merge.
+
+Live UI-test avdekket blokkering fra eksisterende CSP. Sakssiden er rettet til samme-origin JavaScript, CSS og bilde, uten å endre sikkerhetsheadere. Innlogget Studio viser fungerende feeder, bilde og kategorier, og lager både radio- og nettutkast fra originalkilden. Prøvesak: `37115a841ef21a07`. Kontrollmerknader krever redaksjonell gjennomgang; manuell sluttgodkjenning er bevart.
+
+**Gjenstående blokkering:** WordPress-kladdoverføringen feilet. Studios lesende tilkoblingskontroll bekrefter HTTP 401 / `incorrect_password`; den separate autentiserte WordPress-tilkoblingen finner ingen kladd med prøvens slug. Ingen ny levering ble forsøkt og ingen artikkel er publisert. Gyldig WordPress-applikasjonspassord, kontrollert avklaring av leveringsstatus og deretter en bekreftet kladdoverføring er neste nødvendige steg. Se [aktiveringsbevis, avvik og tilbakeføring](NEWS-ACTIVATION-20261004.md). Historiske «ikke aktivert»-avsnitt over beskriver tidligere leveranser.
+
+## Konsolidering startet – 05.10.2026
+
+Brukeren har bestilt å begynne å integrere PR-er og teste med ekte data.
+PR #19 er merget til main som a1a17da5c39648fe73813ae67f41843e4b27daf7,
+og PR #22 som 53fb663f288aec9ab4770bd5a8b5f668e52e06d6. Eksakte head-er
+før merge var henholdsvis 049b42591e525055232503e4710787ad09b62139 og
+c96b27af7ab184f2e407fc5b3e2b83b68671ac11. Begge hadde grønne PHP 8.2/8.4-kontroller.
+Etter #19-mergen besto hovedgrenens PHP/JavaScript/pakke-kjøring 37289463910.
+Release-kjøring 37289464018 besto verifisering, men stoppet i draft-jobben:
+eksisterende v0.0.2 tilhører en annen commit og ble ikke overskrevet.
+Deploy og publish ble hoppet over. Ingen serverfiler ble endret.
+
+Isolert Robot-test på fem ekte Bømlo RSS-saker bekreftet fem førstegangsregistreringer,
+null nye ved gjentakelse, fem eksporterte saker og felles event-ID-er. Dette er
+ikke bevis for artikkelgenerering, kildekontroll, sluttgodkjenning eller WordPress-levering.
+Ingen ekte sak ble godkjent eller publisert i denne testen.
+
+PR #23 er retargetert til main som neste integreringstrinn; #24 og #25 følger
+i avhengighetsrekkefølge etter ny gjennomgang. Historiske alternative grener og
+main-auditen i #26 skal ikke massemerges. Ny release må få eget versjonsnummer
+etter konsolidering. SSH-nøkkel/known-hosts manglet i siste deploy-forhåndskontroll;
+fersk serveravstemming, backup og tilbakeføring kreves før produksjonsdeploy.
+Denne oppdateringen endrer bare dokumentasjon.
