@@ -51,9 +51,10 @@ function studio_web_save(string $id,int $revision,string $action,array $data,arr
         throw new InvalidArgumentException('Saken finnes ikke.');
     },$path);
 }
-function studio_web_prepare(array $item,array $config,array $editorial=[],?callable $request=null,?callable $fetch=null): array {
+function studio_web_prepare(array $item,array $config,array $editorial=[],?callable $request=null,?callable $fetch=null,?array $source=null): array {
     if(empty($config['openai_api_key']) || empty($config['openai_model'])) throw new InvalidArgumentException('Manusgeneratoren er ikke konfigurert.');
-    $source=studio_news_source($item,$fetch); $request??='producer_request';
+    if($source!==null&&!studio_news_original_read($item,['source'=>$source]))throw new StudioNewsPreparationException('Felles originalgrunnlag er ugyldig.');
+    $source??=studio_news_source($item,$fetch); $request??='producer_request';
     $context=['source'=>$source,'editorial'=>$editorial];
     if(!empty($item['revisionRequest']))$context['style_request']=$item['revisionRequest'];
     $payload=['model'=>$config['openai_model'],'store'=>false,'max_output_tokens'=>1800,

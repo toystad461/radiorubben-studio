@@ -10,6 +10,7 @@ $source=['id'=>'fixture','title'=>'RSS er bare en pekepinn','sourceName'=>'NRK',
 $fetch=function($url)use(&$reads,$text){$reads++;return '<html><head><link rel="canonical" href="'.$url.'"></head><body><article><p>'.$text.'</p></article></body></html>';};
 $request=function($c,$payload)use(&$calls,$text){$calls++;$input=json_decode($payload['input'],true);
     check(($input['source']['text']??'')===$text,'model sees fetched original, never RSS summary');
+    if(str_starts_with($payload['instructions'],'Skriv ett nyhetsmanus'))return 'Kommunen inviterer innbyggerne til et åpent møte om trafikksikkerhet.';
     if(!isset($input['segments']))return json_encode(['title'=>'Åpent møte på biblioteket','intro'=>'Kommunen inviterer til et åpent møte.','body'=>"Møtet handler om trafikksikkerhet.\nDette melder NRK."]);
     $segments=[];foreach($input['segments'] as $i=>$segment)$segments[]=['index'=>$i,'verdict'=>'supported','evidence'=>[$text],'reason'=>'Belegg i originalen.'];
     return json_encode(['segments'=>$segments,'issues'=>[]]);
@@ -20,10 +21,13 @@ try{
     $feed=[['status'=>'updated','items'=>[$source,$source+['summary'=>'Kort omtale']]]];
     check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='prepared','new story is prepared');
     $item=studio_board_active(studio_board_read($path))[0];$card=studio_newsroom_card($item);
-    check(count(studio_board_read($path)['items'])===1&&$calls===2&&$reads===1,'one source read and separate writing/review passes');
+    check(count(studio_board_read($path)['items'])===1&&$calls===4&&$reads===1,'one source read and separate web/radio writing and review passes');
     check($card['status']==='ready'&&$card['originalRead']&&!isset($item['web']['delivery']),'ready story stays local, no publication');
+    check($item['script']!==''&&$item['status']==='draft'&&!$item['verified'],'radio production is visible but never auto-approved');
+    check($item['sourceCheck']['source']===$item['web']['check']['source'],'radio and web share the exact original snapshot on one item');
+    $radioBefore=$item['script'];
     $hash=studio_web_approval_hash($item);
-    check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='idle'&&$calls===2,'duplicate feed does not spend or rewrite');
+    check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='idle'&&$calls===4,'duplicate feed does not spend or rewrite');
     $tampered=$item;$tampered['web']['check']['source']['text'].='Changed';
     check(!studio_newsroom_card($tampered)['canApprove'],'tampered original snapshot blocks readiness');
     $missing=$item;unset($missing['web']['check']['source']);check(studio_newsroom_card($missing)['status']==='attention','RSS-only evidence is not ready');
@@ -33,7 +37,8 @@ try{
     reject(fn()=>studio_news_source($item,fn()=>'<link rel="canonical" href="https://www.nrk.no/vestland/other-1.99999999"><article><p>'.$text.'</p></article>'),'wrong NRK original is rejected');
     studio_board_change(static function(&$b){$b['items'][0]['web']['check']['checkedAt']=gmdate('c',time()-3601);},$path);
     check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='rechecked','expired check is renewed without rewriting');
-    $item=studio_case_get($item['id'],$path);check(studio_web_approval_hash($item)===$hash&&$calls===3,'renewed check preserves text and notification identity');
+    $item=studio_case_get($item['id'],$path);check(studio_web_approval_hash($item)===$hash&&$calls===5,'renewed check preserves text and notification identity');
+    check($item['script']===$radioBefore,'web recheck preserves radio production');
     $failedReview=studio_web_prepare($item,$config,[],function($c,$p)use($request){return isset(json_decode($p['input'],true)['segments'])?'{}':$request($c,$p);},$fetch);
     check($failedReview['body']!==''&&$failedReview['check']['status']==='needs_review'&&studio_news_original_read($item,$failedReview['check']),'failed review preserves draft and original without allowing approval');
     studio_board_update($item['id'],$item['revision'],'archive',[],$user,$path);
@@ -42,4 +47,16 @@ try{
     reject(fn()=>studio_newsroom_tick([['status'=>'updated','items'=>[$next]]],$config,$path,$request,fn()=>throw new StudioNewsPreparationException('Originalen er utilgjengelig.')),'unreadable source stops writing');
     $failed=studio_board_active(studio_board_read($path))[0];check(studio_newsroom_card($failed)['status']==='attention'&&isset($failed['newsroom']['automaticDay']),'failed preparation visible and counts toward daily cap');
     check(studio_newsroom_tick([['status'=>'updated','items'=>[$next]]],$config,$path,$request,$fetch)['state']==='idle','failed automatic jobs do not retry paid generation');
+    $partial=$source;$partial['id']='partial';$partial['url']='https://www.nrk.no/vestland/partial-1.12345680';
+    $radioFails=function($c,$p)use($request){
+        if(str_starts_with($p['instructions'],'Skriv ett nyhetsmanus'))throw new StudioNewsPreparationException('Radiogeneratoren sviktet.');
+        return $request($c,$p);
+    };
+    reject(fn()=>studio_newsroom_tick([['status'=>'updated','items'=>[$partial]]],$config,$path,$radioFails,$fetch),'radio failure is visible without blind retry');
+    $partialItem=studio_case_source_item(studio_board_active(studio_board_read($path)),$partial);
+    check(!empty($partialItem['web']['body'])&&$partialItem['newsroom']['state']==='failed'&&!isset($partialItem['web']['delivery']),'radio failure preserves web draft without publication');
+    studio_board_update($partialItem['id'],$partialItem['revision'],'save',['title'=>$partialItem['title'],'script'=>'Redaktørens eget radiomanus.','notes'=>'Bevar.','program'=>$partialItem['program']],$user,$path);
+    $edited=studio_case_get($partialItem['id'],$path);
+    studio_newsroom_prepare($edited['id'],$edited['revision'],$user,$config,'Kortere netttekst',$path,$radioFails,$fetch);
+    check(studio_case_get($edited['id'],$path)['script']==='Redaktørens eget radiomanus.','web revision never overwrites human radio script');
 }finally{foreach(glob($dir.'/*')as$f)unlink($f);rmdir($dir);}

@@ -290,3 +290,23 @@ main-auditen i #26 skal ikke massemerges. Ny release må få eget versjonsnummer
 etter konsolidering. SSH-nøkkel/known-hosts manglet i siste deploy-forhåndskontroll;
 fersk serveravstemming, backup og tilbakeføring kreves før produksjonsdeploy.
 Denne oppdateringen endrer bare dokumentasjon.
+
+## RSS: to produksjoner fra samme original – 05.10.2026
+
+PR #23, #24 og #25 er merget til main i denne rekkefølgen. Nyhetsdesk og mobilflyt
+har grønne PHP 8.2/8.4-kontroller; mobiltesten dekker 375/390/800/1280 px.
+Sluttpunkt etter #25: e434969bc5f62ff1b1eb4af4a3bc3d47c0d1e886.
+Ingen av disse mergene er bevis for en ny serverdeployment.
+
+Kodegjennomgangen fant at studio_newsroom_prepare bare laget nettutkast.
+PR #26 er derfor avstemt mot det konsoliderte grunnlaget og erstatter sin
+tidligere patch mot gammel main. Den henter originalen én gang og lager web
+og manglende radio-stikk med samme kildeobjekt på samme sak. Begge har separat
+språk-/kildekontroll; ingen får automatisk sluttgodkjenning. Eksisterende
+radiotekst bevares ved nettendringer. Radiofeil bevarer nettutkastet og viser
+avvik; neste automatiske kjøring skal ikke gjenta betalt generering.
+
+Autentisert WordPress-kø ble lest 05.10.2026. Reelle fotballsaker med manglende
+kvalitetskontroll har canApprove=false. Dette bekrefter købroen og sperren,
+ikke Studio-innlogging, RSS-generering eller offentlig publisering.
+Faktisk fullflyttest, ferske serverhasher og selektiv deploy gjenstår.

@@ -176,14 +176,16 @@ function studio_news_review(array $item, string $script, array $source, array $c
 }
 
 function studio_news_prepare(array $item, array $config, array $editorial = [], ?string $existingScript = null,
-    ?callable $request = null, ?callable $fetch = null): array
+    ?callable $request = null, ?callable $fetch = null, ?array $source = null): array
 {
     if (trim((string)($config['openai_api_key'] ?? '')) === '' || trim((string)($config['openai_model'] ?? '')) === '')
         throw new StudioNewsPreparationException('Manusgeneratoren er ikke konfigurert.');
     if ($editorial && ($editorial['program'] ?? '') !== ($item['program'] ?? ''))
         throw new InvalidArgumentException('Programprofilen tilhører ikke dette punktet.');
     $request ??= 'producer_request';
-    $source = studio_news_source($item, $fetch);
+    if ($source !== null && !studio_news_original_read($item, ['source'=>$source]))
+        throw new StudioNewsPreparationException('Felles originalgrunnlag er ugyldig.');
+    $source ??= studio_news_source($item, $fetch);
     $script = $existingScript;
     if ($script === null) {
         $script = trim($request($config, ['model'=>$config['openai_model'], 'store'=>false, 'max_output_tokens'=>700,
