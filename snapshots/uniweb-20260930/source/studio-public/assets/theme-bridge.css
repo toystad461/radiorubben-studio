@@ -1,0 +1,58 @@
+/* Shared Radio Rubben One tokens, adapted for the internal Studio layout.
+   Source: radiorubben-web/assets/css/theme.css. Keep changes scoped to
+   presentation; live indicators remain red. */
+:root {
+  --ink: #f7fafc;
+  --muted: #a9bbcb;
+  --brand: #129de4;
+  --signal: #58c9ff;
+  --line: rgba(88, 201, 255, .18);
+  --paper: #06111f;
+  --panel: #0d2135;
+  --rr-red: #ff3447;
+}
+body {
+  background: linear-gradient(180deg, #02070d 0%, var(--paper) 30%, #03101d 100%);
+}
+.sidebar {
+  background: #0b1929;
+}
+.nav-item.active {
+  color: var(--signal);
+  background: rgba(18, 157, 228, .12);
+}
+.nav-item:hover {
+  color: var(--signal);
+}
+.button, .button.light {
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), #267cf0);
+  color: #fff;
+}
+.button:hover, .button.light:hover {
+  background: linear-gradient(90deg, #1587c2, #226ad0);
+}
+.button.secondary {
+  background: transparent;
+  border: 1px solid var(--brand);
+  color: var(--ink);
+}
+.button.secondary:hover {
+  background: rgba(18, 157, 228, .12);
+}
+.login-card, .users-panel {
+  border-color: var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+}
+.hero {
+  background: radial-gradient(circle at 18% 33%, rgba(18, 157, 228, .23), transparent 35%),
+              linear-gradient(145deg, #0b1929, #06111f);
+}
+.station-dot, .rr-live-dot {
+  background: var(--rr-red);
+}
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 3px;
+}
