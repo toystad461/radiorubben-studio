@@ -1,6 +1,16 @@
 # RSS-flyten – kodekontroll 5. oktober 2026
 
-## Konklusjon
+## Deployment-kontroll 5. oktober 2026 – viktig avgrensning
+
+Denne rapporten beskriver **main**, ikke hele aktivt Uniweb-Studio. Ved deployment-forberedelse ble [PR #19](https://github.com/toystad461/radiorubben-studio/pull/19) funnet med konsolidert produksjonsgrunnlag på commit `049b42591e525055232503e4710787ad09b62139`. Dens kildeinnsamling dokumenterer nyere manus-, kildekontroll- og nettpubliseringsmoduler på serveren. Påstandene nedenfor om manglende funksjonalitet må derfor ikke brukes som konklusjon om hele produksjonen.
+
+**Ikke merge/deploy denne PR-en som produksjonsrettelse før avstemming mot ferske serverfiler og PR #19.** main eller en full standardpakke kan overskrive nyere aktive funksjoner. Første audit undersøkte ikke dette produksjonsgrunnlaget; denne begrensningen korrigeres her.
+
+Deployment-forberedelse ble startet med eksisterende workflow på main, `mode=dry-run`: [kjøring 37286799867](https://github.com/toystad461/radiorubben-studio/actions/runs/37286799867). PHP 8.2/8.4-kontrollene og pakking bestod. Serverkontrollen/utrullingen ble hoppet over fordi `STUDIO_DEPLOY_SSH_KEY` og `STUDIO_DEPLOY_KNOWN_HOSTS` mangler og `STUDIO_DEPLOY_ENABLED=false`. Ingen nettstedfiler ble endret. Eksisterende v0.0.2-releaseutkast ble gjenoppbygget av workflowen for uendret main.
+
+En isolert test med ekte Bømlo-RSS svarte HTTP 200 og aksepterte 5 saker. Robåtens parser, merge og eksport bevarte ID-er; gjentatt import ga 0 nye saker. Testen brukte private lokale testfiler, uten overføring til Studio eller publisering. Kontrollstatus forble `unverified`. Dette verifiserer RSS → hendelse → eksport; ikke innlogget Studio, AI-kontroller eller WordPress.
+
+## Konklusjon for kontrollert main
 
 Målflyten er ikke implementert ende-til-ende. Det som finnes er RSS-innlesing, lagring av kildehendelser og visning av kildekort. Det finnes ingen ferdig webartikkel eller Studio-produksjon fra denne kjeden.
 
