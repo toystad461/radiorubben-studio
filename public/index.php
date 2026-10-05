@@ -8,6 +8,12 @@ require dirname(__DIR__) . '/app/bootstrap.php';
 $user = current_user();
 $ready = $config['auth_mode'] === 'entra';
 if ($ready && !$user) redirect('/login.php');
+$productionItems = [];
+if ($ready && $user) {
+    require dirname(__DIR__) . '/app/integrations/RobotInbox.php';
+    $productionItems = robot_production_items(dirname(__DIR__) . '/config');
+    $extraStylesheet = '/assets/robot.css';
+}
 $integrations = require dirname(__DIR__) . '/app/integrations/catalog.php';
 require dirname(__DIR__) . '/app/views/head.php';
 ?>
@@ -23,7 +29,7 @@ require dirname(__DIR__) . '/app/views/head.php';
             <?= icon('LayoutDashboard', 18) ?>
             Oversikt
           </a>
-          <?php if ($user): ?><a href="/robot.php" class="nav-item"><?= icon('FileText', 18) ?> Redaksjonell innboks</a><?php endif; ?>
+          <?php if ($user): ?><a href="#produksjon" class="nav-item"><?= icon('FileText', 18) ?> Redaksjonell innboks</a><?php endif; ?>
           <a href="#integrasjoner" class="nav-item">
             <?= icon('SlidersHorizontal', 18) ?>
             Integrasjoner
@@ -91,6 +97,7 @@ require dirname(__DIR__) . '/app/views/head.php';
               <span class="frequency">RADIO RUBBEN — NÆR DEG</span>
             </div>
           </section>
+          <?php if ($ready && $user) require dirname(__DIR__) . '/app/views/production-inbox.php'; ?>
           <section id="integrasjoner" class="section">
             <div class="section-heading">
               <div>

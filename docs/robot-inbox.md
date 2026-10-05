@@ -1,11 +1,13 @@
 # RR Robot i Studio
 
-Når Studio er aktivert med `site_mode=app` og Microsoft Entra-innlogging, finnes en intern, skrivebeskyttet visning på `/robot.php`. Den er stengt i demo-modus og mens ventesiden er aktiv.
+Når Studio er aktivert med `site_mode=app` og Microsoft Entra-innlogging, vises kildeinnboksen i oversikten på `/#produksjon`. Den vises ikke i demo eller på ventesiden. `/robot.php` er en kompatibilitetsadresse som sender innloggede brukere til samme oversikt.
 
-RR Robot eksporterer formatversjon 1 med `npm run export:studio -- /sikker/sti/robot-inbox.json snapshots/kamp.json`. Overfør filen til `studio-private/config/robot-inbox.json`, utenfor webrot. Ikke legg den i Git eller `studio-public`. Eksporten er en lokal filoverføring, ikke en løpende API-kobling. Gjenta overføringen når nye kontrollerte snapshots finnes. Studio validerer skjemaet, viser maksimalt 100 utkast og gjør ingen publisering.
+Studio leser formatversjon 1 fra `studio-private/config/robot-news.json` og `robot-inbox.json`, utenfor webrot. Eksportene valideres og saker med samme `event.id` vises én gang; nyhetseksporten har prioritet. Ingen nettverkskall eller direkte RSS-henting skjer ved sidevisning. Manglende, ugyldig eller tom eksport gir tom innboks.
 
-Bømlo kommunes RSS-saker eksporteres separat med `npm run export:bomlo -- data/bomlo-news.json privat/robot-news.json`. Overfør filen til `studio-private/config/robot-news.json`. Kommunesakene vises som kildekort med lenke til originalen. Beskrivelsen er hentet fra RSS og er ikke en Radio Rubben-artikkel.
+Bømlo kommunes RSS-saker eksporteres med `npm run export:bomlo -- data/bomlo-news.json privat/robot-news.json`. Filen må fortsatt overføres separat til Studio. Dette er ingen løpende API-kobling eller planlagt bakgrunnsjobb.
 
-Hvis den private eksportfilen ennå ikke finnes, henter den innloggede Studio-siden den offentlige kommunale RSS-strømmen direkte ved sidevisning. Dette er en midlertidig lesevisning uten lagring, dublettstatus eller automatisert publisering. Ved nettverksfeil vises en tom innboks; PHP på webserveren må ha curl og SimpleXML. Når eksportfilen er på plass, brukes den i stedet.
+Kommunesakene er **kildekort**, med RSS-tittel og sammendrag, status `unverified` og lenke til originalen. De er ikke genererte Radio Rubben-artikler eller speakerstikk. Den tidligere PHP-leseren i `MunicipalityRss.php` brukes bare av parser-testene og er ikke koblet til noen offentlig inngang.
 
-NFF-siden tillater ikke automatiserte roboter. Bruk kontrollerte snapshots inntil avtalt API-tilgang fra fotballdata.no kan implementeres og testes. Ingen API-nøkkel eller responsformat antas her.
+Webartikkelgenerering, uthenting av originalartikkel, språkvask, kvalitetskontroll, faktakontroll, kanalproduksjoner og Thomas sin godkjenning er ikke implementert. WordPress-kontrakten er et grensesnitt uten implementasjon. Se `docs/RSS-FLOW-AUDIT.md` for avvik og nødvendige neste steg.
+
+NFF-siden tillater ikke automatiserte roboter. Bruk kontrollerte snapshots inntil avtalt API-tilgang fra fotballdata.no kan implementeres og testes.

@@ -32,3 +32,18 @@ function robot_inbox_items(string $path): array
     }
     return $items;
 }
+
+/** Read only persisted Robot exports; a page view must not create a second RSS path.
+ * @return array<int, array{event:array, draft:array}>
+ */
+function robot_production_items(string $configDirectory): array
+{
+    $byId = [];
+    foreach (['robot-news.json', 'robot-inbox.json'] as $filename) {
+        foreach (robot_inbox_items($configDirectory . '/' . $filename) as $item) {
+            $id = $item['event']['id'];
+            if (!isset($byId[$id])) $byId[$id] = $item;
+        }
+    }
+    return array_values($byId);
+}
