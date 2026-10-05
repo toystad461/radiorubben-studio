@@ -44,12 +44,12 @@ jobs:
             -o ForwardAgent=no -o ClearAllForwardings=yes \
             "$SSH_USER@$SSH_HOST" 'bash --noprofile --norc -se' <<'REMOTE'
           set -Eeuo pipefail
-          for tool in php curl rsync tar sha256sum flock realpath stat; do
+          for tool in php curl rsync tar sha256sum flock stat; do
             command -v "$tool" >/dev/null || { echo "Missing server tool: $tool"; exit 1; }
           done
           base=/run/webroots/r1417157
           for dir in "$base" "$base/studio-public" "$base/studio-private"; do
-            [[ -d "$dir" && ! -L "$dir" && "$(realpath -e "$dir")" == "$dir" ]] || {
+            [[ -d "$dir" && ! -L "$dir" && "$(php -r '$p=realpath($argv[1]); if ($p===false) exit(1); echo $p;' "$dir")" == "$dir" ]] || {
               echo 'Studio directory verification failed'; exit 1;
             }
             [[ -r "$dir" && -x "$dir" ]] || { echo 'Studio directory inaccessible'; exit 1; }
