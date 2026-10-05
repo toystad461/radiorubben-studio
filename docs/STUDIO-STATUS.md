@@ -494,3 +494,21 @@ selektive slettinger og rollback ved feil. Runtime-data og konfigurasjon er
 utenfor filsettet. Tester dekker bootstrap, drift, symlinker, rettigheter,
 oppdatering/tillegg/sletting, bevaring av privat data og rollback.
 GitHub CI og aktivering av miljøvariabel/produksjonsstatus gjenstår etter PR.
+
+
+## Automatisk publisering aktiv og verifisert – 05.10.2026
+
+PR #38 er merget som 84aa03050e739f28bf81ceae18124f6294407912.
+STUDIO_DEPLOY_AUTO_APPLY=true i studio-production. Push utløste Actions
+37346998632 automatisk; PHP 8.2/8.4, mobil og deploy besto. Serverens
+selective-state.json bekrefter denne committen og kjøring 37346998632-1.
+Alle 489 registrerte filhasher er kontrollert mot faktisk produksjon, uten
+avvik. Kun vendor/composer/installed.php ble oppdatert (byggets kilde-ID).
+De kjente forskjellene i logo, favikon og robot.php er bevart.
+
+Privat sikkerhetskopi og før-/ettermanifest finnes på serveren i
+~/.radiorubben-studio-deploy/backups/selective-37346998632-1/.
+HTTPS-/innloggingskontroll besto. Ingen manuelt innhold, konfigurasjon,
+WordPress eller redaksjonell publisering ble endret. Fremtidige endringer
+til main publiseres etter de samme kontrollene; direkte kodeendringer på
+serveren stopper automatikken for avstemming. Fullpakke-apply er sperret.
