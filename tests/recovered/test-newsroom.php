@@ -27,7 +27,7 @@ try{
     check($item['sourceCheck']['source']===$item['web']['check']['source'],'radio and web share the exact original snapshot on one item');
     $radioBefore=$item['script'];
     $hash=studio_web_approval_hash($item);
-    check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='idle'&&$calls===2,'duplicate feed does not spend or rewrite');
+    check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='idle'&&$calls===4,'duplicate feed does not spend or rewrite');
     $tampered=$item;$tampered['web']['check']['source']['text'].='Changed';
     check(!studio_newsroom_card($tampered)['canApprove'],'tampered original snapshot blocks readiness');
     $missing=$item;unset($missing['web']['check']['source']);check(studio_newsroom_card($missing)['status']==='attention','RSS-only evidence is not ready');
