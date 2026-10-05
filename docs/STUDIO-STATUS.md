@@ -345,3 +345,14 @@ Faktisk fullflyttest, ferske serverhasher og selektiv deploy gjenstår.
 ## Neste RSS-rettelse: kildeattribusjon og eldre web-only saker
 
 Ren, separat kildeattribusjon kan bekreftes deterministisk mot validert originaladresse og intakt kildehash. Andre faktapåstander og alle redaksjonelle issues beholder kontrollkravene. Ved fornyet webkontroll klargjøres også et manglende radiomanus fra samme nyhentede original; eksisterende webtekst og eksisterende radiotekst bevares. Ingen automatisk godkjenning eller publisering. Endringen krever grønne PHP- og mobile tester samt ny selektiv serverkontroll før deployment. Live-backfill er ikke kjørt i denne endringen.
+
+
+## RSS-oppfølging ferdig deployet 2026-10-05
+
+PR 28, 29, 30 og 32 er slått sammen etter grønne PHP 8.2/8.4- og mobiltester. Kildeattribusjon, bokmål og strengt format med begrensede avsnittsreferanser er rettet. Selektiv deployment med privat sikkerhetskopi og utfylling av to eldre web-only saker lykkes i https://github.com/toystad461/radiorubben-web/actions/runs/37302374295 . Netttekst og sak-ID er bevart; begge produksjoner deler samme nyhentede originalgrunnlag.
+
+Sluttkontroll https://github.com/toystad461/radiorubben-web/actions/runs/37302620846 viser tre aktive RSS-saker med begge produksjoner og null web-only. Den tredje kom gjennom ordinær automatisk worker og bestod både web- og radiokontroll. Alle tre er fortsatt uten manuell godkjenning og WordPress-leveranse.
+
+Redaksjonelle avvik: De to eldre netttekstene har udokumenterte påstander om blant annet personskader, brannvesen, myndighetsoppfølging og rasets konsekvenser. Ett eldre radioutkast krever også gjennomgang. Disse må korrigeres og kontrolleres før Thomas godkjenner. Den isolerte testen av Bømlo-saken om frivillighet fullførte begge kontroller; radio bestod, mens en webpåstand om prosjektets mål ble flagget. Testen endret ikke aktiv kjøreplan. Fungerende flyt er ikke en garanti for feilfri AI-tekst.
+
+Detaljert dokumentasjon, sikkerhetskopier, stoppede forsøk og resterende arbeid: https://github.com/toystad461/radiorubben-web/blob/codex/rss-studio-release-20261005/RSS-STUDIO-RELEASE.md . Autentisert nettleserkontroll og pensjonering av robot.php/navigasjonen gjenstår. Ingen offentlig side, plugin, tema, legitimasjon eller publiseringsrettighet ble endret av denne oppfølgingen.
