@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/news-publication.php';
 
 /** Credentials stay outside the public tree and are never sent to the browser. */
 function studio_wp_config(): array {
@@ -39,13 +40,15 @@ function studio_web_text(array $web): string {
 }
 function studio_web_checked(array $item): bool {
     $w=$item['web']??[];
-    return studio_news_check_current(array_replace($item,['script'=>studio_web_text($w),'sourceCheck'=>$w['check']??[]]));
+    return studio_news_original_read($item,$w['check']??[]) && studio_news_check_current(array_replace($item,['script'=>studio_web_text($w),'sourceCheck'=>$w['check']??[]]));
 }
 function studio_web_html(array $item): string {
     $esc=static fn($s)=>htmlspecialchars($s,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');
     $w=$item['web']; $html='';
     foreach (preg_split('/\R\s*\R/u',trim($w['body'])) as $p) $html.='<p>'.nl2br($esc($p)).'</p>';
-    return '<p><strong>'.$esc($w['intro']).'</strong></p>'.$html.'<p>Kilde: <a href="'.$esc($item['sourceUrl']).'">'.$esc($item['sourceName']).'</a></p>';
+    $nrk=parse_url($item['sourceUrl']??'',PHP_URL_HOST)==='www.nrk.no';
+    $label=$nrk?'Les hele saken hos NRK':'Les mer hos '.$item['sourceName'];
+    return '<p><strong>'.$esc($w['intro']).'</strong></p>'.$html.'<p>Basert på opplysninger fra '.($nrk?'NRK':$esc($item['sourceName'])).'. <a href="'.$esc($item['sourceUrl']).'" rel="noopener">'.$esc($label).'</a></p>';
 }
 /** Reserve durably before network I/O. An unknown outcome is never retried automatically. */
 function studio_web_publish(string $id,int $revision,string $status,array $user,array $config,?callable $request=null,?string $path=null): array {
@@ -57,8 +60,10 @@ function studio_web_publish(string $id,int $revision,string $status,array $user,
             if ($item['revision']!==$revision) throw new InvalidArgumentException('Saken er endret. Last siden på nytt.');
             if (in_array($w['delivery']['state']??'', ['pending','unknown'],true)) throw new InvalidArgumentException('Forrige overføring er uavklart. Kontroller WordPress før ny overføring.');
             if (empty($w['title']) || empty($w['intro']) || empty($w['body'])) throw new InvalidArgumentException('Lagre en komplett nettsak først.');
-            if ($status==='publish' && (!studio_web_checked($item) || ($w['approvedHash']??'')!==hash('sha256',studio_web_text($w)))) throw new InvalidArgumentException('Nettsaken må kildekontrolleres og godkjennes før publisering.');
-            $hash=hash('sha256',studio_web_text($w));
+            if (!studio_web_presentation_ready($item)) throw new InvalidArgumentException('Lagre nettsaken med nyhetsbilde og kategori før overføring.');
+            studio_news_publication_metadata($item);
+            if ($status==='publish' && (!studio_web_checked($item) || ($w['approvedHash']??'')!==studio_web_approval_hash($item))) throw new InvalidArgumentException('Nettsaken må kildekontrolleres og godkjennes før publisering.');
+            $hash=studio_web_approval_hash($item);
             if (($w['delivery']['hash']??'')===$hash && ($w['delivery']['status']??'')===$status && ($w['delivery']['state']??'')==='confirmed') return ['done'=>$w['delivery']];
             // Do not unpublish an already published post through the draft action.
             if (($w['delivery']['status']??'')==='publish' && $status==='draft') throw new InvalidArgumentException('Saken er publisert. Bruk publisering for å oppdatere den.');
@@ -74,7 +79,10 @@ function studio_web_publish(string $id,int $revision,string $status,array $user,
     $request??='studio_wp_request'; $item=$reserved['item']; $postId=$reserved['postId'];
     $payload=['title'=>$item['web']['title'],'excerpt'=>$item['web']['intro'],'content'=>studio_web_html($item),'status'=>$status];
     if(!$postId) $payload['slug']='studio-'.$id;
-    if(!empty($config['category_id'])) $payload['categories']=[(int)$config['category_id']];
+    // Assign the news image/categories only on creation. Keep WordPress editor choices on updates.
+    $newsMetadata=studio_news_publication_metadata($item);
+    if(!$postId && $newsMetadata) $payload=array_merge($payload,$newsMetadata);
+    elseif(!$newsMetadata && !studio_web_is_news($item) && !empty($config['category_id'])) $payload['categories']=[(int)$config['category_id']];
     try {
         $result=$request($config,'POST','/posts'.($postId?'/'.$postId:''),$payload);
         if (!is_int($result['id']??null) || $result['id']<1 || ($result['status']??'')!==$status || ($postId && $result['id']!==$postId)) throw new RuntimeException('WordPress-lagringen er ikke bekreftet.');

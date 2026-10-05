@@ -1,111 +1,93 @@
 <?php
 declare(strict_types=1);
-require dirname(__DIR__) . '/app/bootstrap.php';
-$user = current_user();
-if (!$user) redirect('/login.php');
-if ($_SERVER['REQUEST_METHOD'] !== 'GET' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405); header('Allow: GET, POST'); exit;
+require dirname(__DIR__).'/app/bootstrap.php';
+$user=current_user();if(!$user)redirect('/login.php');
+if(!in_array($_SERVER['REQUEST_METHOD'],['GET','POST'],true)){http_response_code(405);header('Allow: GET, POST');exit;}
+require_once dirname(__DIR__).'/app/newsroom.php';
+require_once dirname(__DIR__).'/app/newsroom-view.php';
+require_once dirname(__DIR__).'/app/newsroom-wordpress.php';
+require_once dirname(__DIR__).'/app/integrations/NewsDesk.php';
+require_once dirname(__DIR__).'/app/producer.php';
+$can=studio_can($user,'produce');$admin=($user['role']??'')==='admin';$error=null;$notice=null;
+$selected=(string)($_POST['item']??$_GET['item']??'');
+$advance=false;$wpAfterDecision=null;
+$fragment=($_SERVER['REQUEST_METHOD']==='POST'?($_POST['response']??'')==='json':($_GET['view']??'')==='fragment');
+if($_SERVER['REQUEST_METHOD']==='GET'&&isset($_SESSION['newsroom_notice'])){$notice=$_SESSION['newsroom_notice'];unset($_SESSION['newsroom_notice']);}
+$feeds=newsdesk_all(dirname(__DIR__).'/config');$sections=newsdesk_sections($feeds);
+$sources=[];foreach($sections as $section)foreach($section['items'] as $source)$sources[$source['id']]=$source;
+$board=studio_board_read();
+if($can&&is_array($_SESSION['newsdesk_rundown']??null)){
+    foreach($_SESSION['newsdesk_rundown'] as $source)if(is_array($source)&&isset($source['id']))studio_board_add_source($source,$user);
+    unset($_SESSION['newsdesk_rundown']);$board=studio_board_read();
 }
-require dirname(__DIR__) . '/app/integrations/NewsDesk.php';
-require dirname(__DIR__) . '/app/weather.php';
-require dirname(__DIR__) . '/app/board.php';
-$feeds = newsdesk_all(dirname(__DIR__) . '/config');
-$traffic = newsdesk_traffic(dirname(__DIR__) . '/config');
-$all = [];
-foreach ($feeds as $feed) foreach ($feed['items'] as $item) $all[$item['id']] = $item;
-foreach ($traffic['items'] as $item) $all[$item['id']] = $item;
-$canPrepare = studio_can($user, 'produce');
-function newsdesk_local_time(string $value): string
-{
-    return (new DateTimeImmutable($value))->setTimezone(new DateTimeZone('Europe/Oslo'))->format('d.m.Y H:i');
+if($_SERVER['REQUEST_METHOD']==='POST'){
+    if(!$can||!is_string($_POST['csrf']??null)||!hash_equals($_SESSION['csrf'],$_POST['csrf'])){http_response_code(403);exit('Ingen tilgang. Last siden på nytt.');}
+    try{
+        $action=(string)($_POST['action']??'');$revision=(int)($_POST['revision']??0);
+        if($action==='settings'){
+            if(!$admin)throw new InvalidArgumentException('Bare administrator kan endre automatisk klargjøring.');
+            $enabled=($_POST['enabled']??'')==='1';
+            studio_board_change(static function(array &$b)use($enabled){$b['newsroomSettings']=['enabled'=>$enabled,'activatedAt'=>gmdate('c'),'dailyLimit'=>8];});
+            $notice=$enabled?'Automatisk klargjøring er slått på. Du godkjenner publisering.':'Automatisk klargjøring er satt på pause.';
+        }elseif($action==='open_source'){
+            $source=$sources[(string)($_POST['source']??'')]??null;if(!$source)throw new InvalidArgumentException('Saken er ikke lenger i RSS-innboksen.');
+            if(studio_board_has_source($board['items'],$source)){
+                $item=studio_case_source_item($board['items'],$source);
+                if($item['status']==='archived')throw new InvalidArgumentException('Denne saken er allerede forkastet eller arkivert.');
+            }else{studio_board_add_source($source,$user);$item=studio_case_source_item(studio_board_active(studio_board_read()),$source);}
+            $selected='studio:'.$item['id'];
+            if(empty($item['web']['body']))studio_newsroom_prepare($item['id'],$item['revision'],$user,$config);
+        }elseif(preg_match('/^wp:([1-9][0-9]*)$/D',$selected,$match)){
+            if(!$admin)throw new InvalidArgumentException('Bare administrator kan behandle WordPress-saker.');
+            if(!in_array($action,['approve','reject','revise'],true))throw new InvalidArgumentException('Ukjent handling.');
+            if($action==='approve'&&($_POST['confirmed']??'')!=='1')throw new InvalidArgumentException('Bekreft at du har lest saken.');
+            $wpAfterDecision=studio_newsroom_wp('POST',['id'=>(int)$match[1],'token'=>(string)($_POST['token']??''),'operation'=>$action,'comment'=>(string)($_POST['comment']??''),'editorial_facts'=>(string)($_POST['editorial_facts']??''),'actor'=>$user['name']??'Studio-redaktør']);
+            $advance=in_array($action,['approve','reject'],true);
+            $notice=$action==='approve'?'Godkjenningen er lagret og saken er publisert.':($action==='reject'?'Forslaget er forkastet.':'Saken er bearbeidet og krever ny godkjenning.');
+        }elseif(preg_match('/^studio:([a-f0-9]{16})$/D',$selected,$match)){
+            $id=$match[1];$item=studio_case_get($id);
+            if($item['revision']!==$revision)throw new InvalidArgumentException('Saken er endret. Last siden på nytt og les siste versjon.');
+            if($action==='approve'){
+                if(!$admin||($_POST['confirmed']??'')!=='1')throw new InvalidArgumentException('Administrator må lese og bekrefte saken.');
+                studio_web_save($id,$revision,'approve',['confirmed'=>'1'],$user);
+                studio_web_publish($id,$revision+1,'publish',$user,studio_wp_config());$notice='Saken er publisert på radiorubben.no.';$advance=true;
+            }elseif($action==='reject'){
+                if(in_array($item['web']['delivery']['state']??'',['pending','unknown'],true)||($item['web']['delivery']['status']??'')==='publish')throw new InvalidArgumentException('Publisering må avklares før saken kan forkastes.');
+                studio_board_update($id,$revision,'archive',[],$user);$notice='Saken er forkastet og historikken er bevart.';$advance=true;
+            }elseif($action==='revise'){
+                $comment=trim((string)($_POST['comment']??''));if($comment==='')throw new InvalidArgumentException('Skriv hva du ønsker endret.');
+                studio_newsroom_prepare($id,$revision,$user,$config,$comment);$notice='Nytt utkast og ny kontroll er klare.';
+            }elseif($action==='prepare'||$action==='check')studio_newsroom_prepare($id,$revision,$user,$config,'',null,null,null,$action==='check');
+            elseif($action==='save'){
+                studio_web_save($id,$revision,'save',$_POST,$user);
+                studio_newsroom_prepare($id,$revision+1,$user,$config,'',null,null,null,true);$notice='Rettelsene er lagret og kontrollert.';
+            }else throw new InvalidArgumentException('Ukjent handling.');
+        }else throw new InvalidArgumentException('Velg en gyldig sak.');
+    }catch(InvalidArgumentException $e){$error=$e->getMessage();}
+    catch(Throwable $e){$error='Handlingen kunne ikke bekreftes. Last siden på nytt før et nytt forsøk.';error_log('Studio newsroom operation failed.');}
+    $board=studio_board_read();
 }
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_GET['export'] ?? null) === '1') redirect('/sending.php?export=1');
-// Carry over selections made in the previous session-only desk once.
-if ($canPrepare && is_array($_SESSION['newsdesk_rundown'] ?? null)) {
-    try {
-        foreach ($_SESSION['newsdesk_rundown'] as $oldId=>$oldItem) {
-            if (isset($all[$oldId])) studio_board_add_source($all[$oldId], $user);
-            elseif (is_array($oldItem) && ($oldItem['id'] ?? null) === $oldId) studio_board_add_source($oldItem, $user);
-        }
-        unset($_SESSION['newsdesk_rundown']);
-    } catch (Throwable $e) { error_log('Newsdesk migration failed: ' . $e->getMessage()); }
-}
-try { $boardItems = studio_board_active(studio_board_read()); }
-catch (Throwable $e) { error_log('Newsdesk board read failed: ' . $e->getMessage()); $boardItems = []; $boardUnavailable = true; }
-$rundown = [];
-foreach ($boardItems as $item) if ($item['originId']) $rundown[$item['originId']] = $item;
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf'], $_POST['csrf'])) {
-        http_response_code(403); exit('Ugyldig forespørsel. Last siden på nytt.');
-    }
-    if (!$canPrepare) { http_response_code(403); exit('Rollen kan bare lese nyhetsdesken.'); }
-    $action = is_string($_POST['action'] ?? null) ? $_POST['action'] : '';
-    $id = is_string($_POST['id'] ?? null) ? $_POST['id'] : '';
-    if ($action === 'add' && isset($all[$id])) {
-        try { studio_board_add_source($all[$id], $user); }
-        catch (Throwable $e) { error_log('Newsdesk add failed: ' . $e->getMessage()); $_SESSION['newsdesk_error'] = 'Kunne ikke legge til saken. Kontroller sendelisten.'; }
-    }
-    redirect('/newsdesk.php');
-}
-try { $weather = studio_weather(); } catch (Throwable $e) { $weather = null; }
-$extraStylesheet = '/assets/newsdesk.css?v=3';
-require dirname(__DIR__) . '/app/views/head.php';
+$settings=studio_newsroom_settings($board);$cards=[];$studioItems=[];
+foreach(studio_board_active($board) as $item)if(studio_web_is_news($item)){$key='studio:'.$item['id'];$cards[$key]=studio_newsroom_card($item);$studioItems[$key]=$item;}
+$wpError=null;$wpStatus=[];
+try{$wpStatus=$wpAfterDecision??studio_newsroom_wp();foreach($wpStatus['items'] as $card)$cards['wp:'.$card['id']]=$card;}
+catch(Throwable $e){$wpError=$e instanceof InvalidArgumentException?$e->getMessage():'WordPress-køen er utilgjengelig.';}
+$labels=['ready'=>'Til godkjenning','attention'=>'Trenger avklaring','working'=>'Under arbeid','published'=>'Publisert'];$counts=array_fill_keys(array_keys($labels),0);
+foreach($cards as $card)if(isset($counts[$card['status']]))$counts[$card['status']]++;
+$selection=studio_newsroom_selection($cards,$selected,(string)($_POST['filter']??$_GET['filter']??''),$advance&&!$error);
+extract($selection);
+foreach($cards as &$row){if(!empty($row['image']['url'])&&studio_newsroom_image_url($row['image']['url'])){$imageKey=hash('sha256',$row['image']['url']);$_SESSION['newsroom_images'][$imageKey]=$row['image']['url'];$row['image']['previewUrl']='/newsdesk-image.php?key='.$imageKey;}}unset($row);
+$_SESSION['newsroom_images']=array_slice($_SESSION['newsroom_images']??[], -150, null, true);
+$card=$cards[$selected]??null;$item=$studioItems[$selected]??null;
+function newsroom_fields(string $key,array $card):void{global $filter;?><input type="hidden" name="filter" value="<?=escape($filter)?>"><input type="hidden" name="csrf" value="<?=escape($_SESSION['csrf'])?>"><input type="hidden" name="item" value="<?=escape($key)?>"><input type="hidden" name="revision" value="<?=(int)($card['revision']??0)?>"><input type="hidden" name="token" value="<?=escape($card['token']??'')?>"><?php }
+function newsroom_time(?string $value):string{try{return $value?(new DateTimeImmutable($value))->setTimezone(new DateTimeZone('Europe/Oslo'))->format('d.m. H:i'):'Ikke kontrollert';}catch(Throwable $e){return 'Ukjent tidspunkt';}}
+$keys=array_keys($visible);$position=array_search($selected,$keys,true);$nextKey=$position!==false?($keys[$position+1]??''):'';
+ob_start();require dirname(__DIR__).'/app/views/newsroom.php';$html=ob_get_clean();
+$url=studio_newsroom_url($selected,$filter);
+if($fragment){header('Content-Type: application/json; charset=utf-8');header('Cache-Control: no-store');if($error)http_response_code(409);echo json_encode(['ok'=>!$error,'error'=>$error,'html'=>$html,'url'=>$url,'advance'=>$advance&&!$error,'selected'=>$selected,'notice'=>$notice],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);exit;}
+if($_SERVER['REQUEST_METHOD']==='POST'&&!$error){$_SESSION['newsroom_notice']=$notice;redirect($url);}
+$extraStylesheet='/assets/newsroom.css?v=20261005-mobile-1';require dirname(__DIR__).'/app/views/head.php';
 ?>
-<div class="shell">
-<?php $activePage = 'newsdesk'; require dirname(__DIR__) . '/app/views/sidebar.php'; ?>
-<div class="workspace">
-<header class="topbar"><span>Arbeidsrom / <strong>Nyhetsdesk</strong></span><span>Kilder til sending</span><?php require dirname(__DIR__) . '/app/views/account.php'; ?></header>
-<main id="main" class="newsdesk">
-  <div class="heading-row"><div><p class="eyebrow">RADIO RUBBEN / REDAKSJON</p><h1>Nyhetsdesk</h1><p class="intro">Finn saker til sendingen. Åpne originalen og kontroller fakta før du leser noe på lufta.</p></div><a class="desk-refresh" href="/newsdesk.php">Oppdater visning</a></div>
-  <?php if (isset($_SESSION['newsdesk_error'])): ?><p class="desk-empty" role="alert"><?= escape($_SESSION['newsdesk_error']) ?></p><?php unset($_SESSION['newsdesk_error']); endif; ?>
-  <div class="desk-grid">
-    <div class="desk-main">
-      <?php foreach (newsdesk_sources() as $sourceId=>$spec): $feed = $feeds[$sourceId]; ?>
-      <section class="desk-panel" aria-labelledby="source-<?= escape($sourceId) ?>">
-        <div class="desk-panel-head"><div><p class="eyebrow"><?= $sourceId === 'bomlo' ? 'LOKALT' : 'NORGE' ?></p><h2 id="source-<?= escape($sourceId) ?>"><?= escape($spec['name']) ?></h2></div><span class="desk-state <?= escape($feed['status']) ?>"><?= match ($feed['status']) { 'updated'=>'Oppdatert', 'stale'=>'Eldre data', default=>'Utilgjengelig' } ?></span></div>
-        <?php if ($feed['fetchedAt']): ?><p class="desk-meta">Hentet <?= escape(newsdesk_local_time($feed['fetchedAt'])) ?> norsk tid · Kontroller originalkilden</p><?php endif; ?>
-        <?php if (!$feed['items']): ?><p class="desk-empty">Ingen saker tilgjengelig fra denne kilden nå. Andre kilder vises fortsatt.</p><?php endif; ?>
-        <div class="desk-stories">
-        <?php foreach ($feed['items'] as $index=>$item): ?>
-          <?php if ($index === 3): ?><details class="desk-more"><summary>Vis <?= count($feed['items']) - 3 ?> flere saker</summary><?php endif; ?>
-          <article class="desk-story">
-            <p class="desk-meta"><?= escape($spec['name']) ?> · Publisert <?= escape(newsdesk_local_time($item['publishedAt'])) ?> norsk tid</p>
-            <h3><?= escape($item['title']) ?></h3>
-            <?php if ($item['summary']): ?><details class="desk-description"><summary>Kort omtale</summary><p><?= escape($item['summary']) ?></p></details><?php endif; ?>
-            <div class="desk-actions"><a href="<?= escape($item['url']) ?>" target="_blank" rel="noopener noreferrer">Les originalen ↗</a>
-            <?php if ($canPrepare && !isset($rundown[$item['id']])): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="add"><input type="hidden" name="id" value="<?= escape($item['id']) ?>"><button type="submit">Legg i sendeliste</button></form><?php endif; ?>
-            </div>
-          </article>
-        <?php endforeach; ?>
-        <?php if (count($feed['items']) > 3): ?></details><?php endif; ?>
-        </div>
-      </section>
-      <?php endforeach; ?>
-    </div>
-    <aside class="desk-side" aria-label="Sendeforberedelse">
-      <section class="desk-panel" aria-labelledby="traffic-title"><div class="desk-panel-head"><div><p class="eyebrow">STATENS VEGVESEN / SUNNHORDLAND</p><h2 id="traffic-title">Trafikk</h2></div><span class="desk-state <?= escape($traffic['status']) ?>"><?= match ($traffic['status']) { 'updated'=>'Oppdatert', 'stale'=>'Eldre data', default=>'Utilgjengelig' } ?></span></div>
-      <?php if ($traffic['fetchedAt']): ?><p class="desk-meta">Hentet <?= escape(newsdesk_local_time($traffic['fetchedAt'])) ?> norsk tid · WFS/GeoJSON</p><?php endif; ?>
-      <?php if ($traffic['status'] === 'unavailable'): ?><p>Trafikkmeldinger kunne ikke hentes nå. Kontroller Vegvesen trafikk direkte.</p>
-      <?php elseif (!$traffic['items']): ?><p>Ingen registrerte hendelser i valgt område akkurat nå.</p>
-      <?php else: ?><div class="desk-stories">
-      <?php foreach ($traffic['items'] as $index=>$item): ?>
-      <?php if ($index === 3): ?><details class="desk-more"><summary>Vis <?= count($traffic['items']) - 3 ?> flere meldinger</summary><?php endif; ?>
-      <article class="desk-story"><p class="desk-meta">Oppdatert <?= escape(newsdesk_local_time($item['publishedAt'])) ?> norsk tid</p><h3><?= escape($item['title']) ?></h3><details class="desk-description"><summary>Les trafikkmeldingen</summary><p><?= escape($item['summary']) ?></p></details><div class="desk-actions"><?php if ($canPrepare && !isset($rundown[$item['id']])): ?><form method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="add"><input type="hidden" name="id" value="<?= escape($item['id']) ?>"><button type="submit">Legg i sendeliste</button></form><?php endif; ?></div></article>
-      <?php endforeach; ?>
-      <?php if (count($traffic['items']) > 3): ?></details><?php endif; ?>
-      </div><?php endif; ?>
-      <p class="desk-meta">Meldingene kan gjelde planlagt arbeid. Kontroller tid og status i originalkilden før sending.</p><a href="https://www.vegvesen.no/trafikk/" target="_blank" rel="noopener noreferrer">Åpne Vegvesen trafikk ↗</a></section>
-      <div class="desk-tools">
-      <section class="desk-panel"><p class="eyebrow">BØMLO / BREMNES</p><h2>Vær</h2>
-      <?php if ($weather): ?><p class="desk-weather"><?= escape((string)$weather['temperature']) ?>°</p><p>Prognose: <?= escape(str_replace('_', ' ', (string)$weather['symbol'])) ?></p><p class="desk-meta">MET Norge · prognosetid <?= escape((string)$weather['time']) ?></p><a href="https://www.met.no/" target="_blank" rel="noopener noreferrer">Kilde: MET Norge ↗</a>
-      <?php else: ?><p>Værprognosen er utilgjengelig. Ikke bruk gamle tall som dagens vær.</p><?php endif; ?>
-      </section>
-      <section class="desk-panel" aria-labelledby="rundown-title"><p class="eyebrow">FELLES ARBEID</p><h2 id="rundown-title">Sendeliste <span class="desk-count"><?= count($boardItems) ?>/30</span></h2><p class="desk-meta">Lagret for medarbeiderne. Manus og kildekontroll gjøres i Sending. Ingen sak sendes automatisk.</p>
-      <?php if (isset($boardUnavailable)): ?><p class="desk-empty">Sendelisten er utilgjengelig akkurat nå.</p><?php elseif (!$boardItems): ?><p class="desk-empty">Velg saker fra kildene eller opprett et eget punkt.</p><?php endif; ?>
-      <ol class="desk-rundown"><?php foreach (array_slice($boardItems, 0, 5) as $item): ?><li><strong><?= escape($item['title']) ?></strong><span class="desk-meta"><?= escape($item['sourceName']) ?> · <?= $item['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span><a href="/sending.php?item=<?= escape($item['id']) ?>">Åpne i Sending ↗</a></li><?php endforeach; ?></ol>
-      <p><a href="/sending.php">Åpne hele sendelisten ↗</a></p>
-      </section>
-      </div>
-    </aside>
-  </div>
-</main></div></div></body></html>
+<div class="shell newsroom-shell"><?php $activePage='newsdesk';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace">
+<header class="topbar"><span>Radio Rubben / <strong>Nyhetsdesk</strong></span><details class="nr-site-menu"><summary>Studio-meny</summary><nav><a href="/control.php">Kontrollsenter</a><a href="/sending.php">Sendeliste</a><a href="/robot.php">Artikkelutkast</a></nav><?php require dirname(__DIR__).'/app/views/account.php';?></details></header>
+<?php echo $html; ?></div></div><p id="newsroom-progress" role="status" aria-live="polite" hidden></p><script src="/assets/newsroom.js?v=20261005-mobile-1" defer></script></body></html>

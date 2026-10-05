@@ -1,8 +1,8 @@
-# Entra – klargjøring for test, 01.10.2026
+# Entra – klargjøring for test, 05.10.2026
 
 ## Grunnlag og avgrensning
-Bygger på konsolidert Studio i PR #19, commit f7ce90ce393a625ba4b9ffc4cf494457dbb04244.
-Denne testendringen skal sammenlignes mot PR #19, ikke lastes opp som en hel gren.
+Oppdatert mot main 66966cc3509bcf2c3af496e5e996513fedaac92b. PR #19 er nå merget.
+PR #20 sammenlignes nå mot main; eksisterende Studio- og mobilfunksjoner bevares.
 Ingen produksjon, Entra-innstilling, gjesteinvitasjon eller temafil er endret.
 Eksisterende OIDC-klient bruker tenant-spesifikk innlogging, PKCE, state, nonce
 og bibliotekets tokenvalidering. Entra-koden finnes allerede.
@@ -37,7 +37,7 @@ Kontroller derfor Entra-eiertilgangen separat før noen overgang.
    Det beviser ikke gyldig secret, app-tildeling, eksisterende reservekonto eller webserveroppsett.
 7. Aktiver site_mode=app kun på testkopien etter forhåndskontroll.
 
-## Manuell testprotokoll – alle punkter er uprøvd
+## Manuell testprotokoll for isolert testmiljø – fortsatt uprøvd
 | Test | Forventet |
 | --- | --- |
 | Tildelt intern bruker | Innlogging; observer med mindre eksisterende eier-OID matcher |
@@ -59,8 +59,23 @@ Ved feil stenges testkopien med site_mode=coming-soon; produksjon berøres ikke.
 ## Videreføring
 Før produksjon: avstem ferske serverhasher, test OIDC mot riktig tenant,
 bekreft eiertilgang og reservevei, og følg STUDIO-DEPLOY.md.
-Testpakken er ikke en godkjenning av hele PR #19 for publisering.
+Testpakken er ikke en godkjenning av en full produksjonsutrulling.
 
 Kilder:
 - https://learn.microsoft.com/en-us/entra/identity-platform/single-and-multi-tenant-apps
 - https://learn.microsoft.com/en-us/entra/external-id/what-is-b2b
+
+## Verifisert fremdrift 05.10.2026
+Hovedgrenens STUDIO-STATUS dokumenterer at Thomas sin Microsoft-innlogging ble
+brukt til live Studio-kontroll 04.10. Dette er eksisterende produksjonsbevis,
+ikke en test av B2B-gjester eller en ny testapp. Eksisterende appregistrering
+skal kartlegges før noen ber om å opprette eller erstatte produksjonsinnlogging.
+
+Render-list_workspaces returnerte kun to Zinus-tilknyttede arbeidsområder.
+Radio Rubbens valgte arbeidsområde er ikke tilgjengelig gjennom denne forbindelsen.
+Ingen av de andre arbeidsområdene er valgt eller endret. Koble Render-pluginen
+til Radio Rubben-kontoen før testvert opprettes eller hemmeligheter konfigureres.
+
+Neste steg: bekreft Radio Rubben-arbeidsområdet, avstem Render PR #21 mot dagens
+main, opprett isolert testvert fra avstemt kode og konfigurer separat testapp privat.
+Gjesteinvitasjon krever navngitt mottaker og egen bestilling. Ingen invitasjon sendt.

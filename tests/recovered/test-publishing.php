@@ -15,7 +15,7 @@ try{
  studio_web_publish($id,2,'draft',$admin,$c,$req,$path);
  $item=studio_case_get($id,$path);studio_web_publish($id,$item['revision'],'draft',$admin,$c,$req,$path);
  check($calls===1,'duplicate draft does not send again');
- $review=['policy'=>STUDIO_NEWS_POLICY,'status'=>'passed','checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,studio_web_text($w))];
+ $review=['source'=>['url'=>$item['sourceUrl'],'text'=>str_repeat('Et kontrollert kildebelegg. ',8),'sha256'=>hash('sha256',str_repeat('Et kontrollert kildebelegg. ',8)),'fetchedAt'=>gmdate('c')],'policy'=>STUDIO_NEWS_POLICY,'status'=>'passed','checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,studio_web_text($w))];
  studio_web_save($id,$item['revision'],'check',['check'=>$review],$admin,$path);
  $item=studio_case_get($id,$path);studio_web_save($id,$item['revision'],'approve',['confirmed'=>'1'],$admin,$path);
  $item=studio_case_get($id,$path);$seen='';$publish=function($c,$m,$r,$p)use(&$seen){$seen=$r;return ['id'=>123,'status'=>'publish','link'=>'https://www.radiorubben.no/test/'];};
