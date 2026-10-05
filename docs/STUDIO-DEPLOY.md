@@ -1,3 +1,44 @@
+# Automatisk Studio-publisering – gjeldende fra 05.10.2026
+
+Thomas har uttrykkelig bedt om å aktivere automatisk publisering. Dette
+avsnittet erstatter de historiske manuelle godkjenningskravene nedenfor.
+Push/merge til main publiserer endret kode når STUDIO_DEPLOY_AUTO_APPLY=true.
+PHP 8.2/8.4, kildekontrolltester, mobiltest og pakkevalidering må bestå først.
+Manuell Run workflow tilbyr dry-run eller publish. Hovedgrenen kontrolleres
+på nytt før publisering, slik at en foreldet kjøring hoppes over.
+
+Den gamle fullpakke-apply er fortsatt sperret. Den nye selektive mekanismen
+bruker scripts/studio-deploy-baseline.json: kodehasher avstemt mot produksjon
+og pakke fra e2e3bad750c7355feaf5b2fc7a6f48b26e949207. Ved første kjøring
+bevares eksisterende forskjeller der GitHub-koden ikke er endret. Deretter
+publiseres bare endringer fra sist installerte kildeversjon. Alle registrerte
+produksjonshasher kontrolleres før skriving; direkte serverendringer stopper
+utrullingen. Nye kodefiler krever at målfilen ikke allerede finnes.
+
+Omfang: app-PHP, public-kode/bilder, vendor, composer.json/lock og .htaccess.
+Konfigurasjon, manus, brukere, cache, historikk, WordPress og DNS inngår ikke.
+Ingen full kopiering eller rsync --delete brukes. Hver fil byttes atomisk;
+hele filsettet er ikke én atomisk operasjon. Slettede kodefiler håndteres
+selektivt og sikkerhetskopieres. Kodefilenes eksisterende rettigheter beholdes.
+
+Privat serverstatus: ~/.radiorubben-studio-deploy/selective-state.json med
+commit, kjøring og før-/ettergrunnlag. Privat backup og eksakt filmanifest:
+~/.radiorubben-studio-deploy/backups/selective-<run>-<attempt>/.
+Lås deles med den eksisterende publiseringskontrollen. Ved kontrollfeil
+rulles skrevne filer tilbake; status flyttes først etter SHA-256- og HTTPS-
+kontroll. Ved samtidig ekstern endring stoppes rollback for å bevare den.
+Ved prosessdrap må manifestet brukes til manuell tilbakeføring av bare de
+berørte kodefilene, med kontroll av etter-hash før gjenoppretting. Ingen
+runtime-data skal gjenopprettes fra en eldre fullbackup.
+
+GitHub Actions sin oppsummering viser eksakt publisert commit, antall filer
+og backupsti. Jobben lager ingen betalte AI-jobber eller redaksjonell
+publisering. Stans automatikk med STUDIO_DEPLOY_AUTO_APPLY=false i miljøet
+studio-production. Manuell publish er fortsatt en eksplisitt handling.
+Vanlige bygg lagres som Actions-artefakter; samme versjonstag omskrives ikke.
+
+## Historisk dokumentasjon (erstattet der den strider med avsnittet over)
+
 # Studio: GitHub → kontroller → v0.0.1 → studio.radiorubben.no
 
 ## Gjeldende gate for PR #25 – 05.10.2026
