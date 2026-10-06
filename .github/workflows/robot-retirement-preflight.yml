@@ -1,4 +1,4 @@
-name: Read active Robot page and Studio navigation
+name: Check legacy exports and active case routing before retirement
 on:
   push:
     branches: ['fix/retire-robot-page']
