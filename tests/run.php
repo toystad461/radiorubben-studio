@@ -67,7 +67,8 @@ server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
 server(['STUDIO_AUTH_MODE'=>'demo'],function(){
  [$code,$html]=request('/');check($code===303 && str_contains($html,'Location: /login.php'),'anonymous demo redirects to login');
  check(request('/login.php')[0]===200,'login explanation');
- check(request('/robot.php')[0]===403,'demo cannot view robot inbox');
+ [$legacyCode,$legacyHtml]=request('/robot.php');
+ check(in_array($legacyCode,[303,404],true)&&!str_contains($legacyHtml,'Redaksjonell innboks'),'removed robot page cannot expose legacy inbox in the development server');
  check(request('/assets/studio.css')[0]===200,'stylesheet served');
  check(request('/auth/start.php')[0]===503,'demo cannot initiate auth');
  check(request('/auth/callback.php?code=fake&state=fake')[0]===503,'demo rejects callback');
