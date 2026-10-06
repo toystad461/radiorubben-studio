@@ -7,7 +7,8 @@ if (!$user) redirect('/login.php');
 require_once dirname(__DIR__) . '/app/board.php';
 require dirname(__DIR__) . '/app/integrations/NewsDesk.php';
 require dirname(__DIR__) . '/app/weather.php';
-require_once dirname(__DIR__) . '/app/web-publish.php';
+require_once dirname(__DIR__) . '/app/newsroom.php';
+require_once dirname(__DIR__) . '/app/producer.php';
 $canPrepare = studio_can($user, 'produce');
 if (!in_array($_SERVER['REQUEST_METHOD'], ['GET', 'POST'], true)) { http_response_code(405); header('Allow: GET, POST'); exit; }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -25,6 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new InvalidArgumentException('Avklar nettoverføringen før du forkaster saken.');
             $_SESSION['control_undo'] = studio_board_clear((string)($_POST['snapshot'] ?? ''), $user, null, [$id]);
             $_SESSION['control_message'] = 'Saken er forkastet fra arbeidslisten. Manus og historikk er bevart.';
+         } elseif ($action === 'prepare') {
+            studio_newsroom_prepare($id, (int)($_POST['revision'] ?? 0), $user, $config);
+            $_SESSION['control_message'] = 'Robåt har klargjort valgt bruksområde og kjørt kildekontroll. Les forslaget før godkjenning.';
         } elseif ($action === 'channel') {
             studio_board_update($id, (int)($_POST['revision'] ?? 0), 'channel', $_POST, $user);
             $_SESSION['control_message'] = 'Bruksområdet er lagret. Saken må sluttgodkjennes på nytt.';
@@ -103,6 +107,10 @@ require dirname(__DIR__) . '/app/views/head.php';
           <?php foreach (['radio'=>'Radiomateriale', 'web'=>'Nettmateriale', 'both'=>'Radio og nett'] as $value=>$label): ?><option value="<?= $value ?>" <?= $channel === $value ? 'selected' : '' ?>><?= $label ?></option><?php endforeach; ?>
         </select><button name="action" value="channel">Lagre bruksområde</button>
       </form><?php else: ?><p>Bruksområde: <?= ['radio'=>'Radiomateriale', 'web'=>'Nettmateriale', 'both'=>'Radio og nett'][$channel] ?></p><?php endif; ?>
+      <?php if ($canPrepare && !empty($selected['originId']) && studio_news_allowed_url((string)$selected['sourceUrl'])): ?><form method="post" class="editor-form"><?php control_fields($selected); ?><button name="action" value="prepare">Robåt: klargjør og kontroller</button><p class="control-muted">Lagre bruksområdet først. Henter originalen og lager manglende forslag for valgt kanal. Eksisterende radiomanus beholdes og kontrolleres.</p></form><?php endif; ?>
+      <?php if (parse_url((string)$selected['sourceUrl'], PHP_URL_HOST) === 'www.nrk.no'): ?><p class="dashboard-source-credit">Basert på opplysninger fra NRK. <a href="<?= escape($selected['sourceUrl']) ?>" target="_blank" rel="noopener noreferrer">Les hele saken hos NRK ↗</a></p><?php endif; ?>
+      <?php if ($channel !== 'web' && trim((string)$selected['script']) !== ''): ?><details open class="dashboard-proposal"><summary>Forslag til radiomanus</summary><?php foreach (studio_news_reading_paragraphs($selected['script']) as $paragraph): ?><p><?= escape($paragraph) ?></p><?php endforeach; ?></details><?php endif; ?>
+      <?php if ($channel !== 'radio' && !empty($selected['web']['body'])): ?><details open class="dashboard-proposal"><summary>Forslag til nettsak</summary><h3><?= escape($selected['web']['title'] ?? '') ?></h3><p><strong><?= escape($selected['web']['intro'] ?? '') ?></strong></p><?php foreach (studio_news_reading_paragraphs($selected['web']['body']) as $paragraph): ?><p><?= escape($paragraph) ?></p><?php endforeach; ?></details><?php endif; ?>
       <div class="dashboard-treatment-actions">
       <?php if ($channel !== 'web'): ?><p>Radio: <?= $selected['status'] === 'ready' ? 'Godkjent til sending' : 'Utkast – må kontrolleres og godkjennes' ?></p><a class="control-link" href="/case.php?item=<?= escape($selected['id']) ?>#radio-material">Behandle radiomanus ↗</a><?php endif; ?>
       <?php if ($channel !== 'radio'): ?><p>Nett: <?= escape(studio_web_status_label($selected)) ?></p><a class="control-link" href="/case.php?item=<?= escape($selected['id']) ?>#web-material">Behandle nettsak ↗</a><?php endif; ?>

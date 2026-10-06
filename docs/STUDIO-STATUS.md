@@ -15,6 +15,12 @@ CSRF, rolle og ferskt listesnapshot; manus/historikk beholdes og kan gjenopprett
 Endret bruksområde krever ny godkjenning. Nettvalget sperrer radio-klarstatus,
 radiovalget sperrer WordPress-levering. Eksisterende utkast bevares.
 Eldre saker beholder begge bruksområder til et eksplisitt valg gjøres.
+Robåt fra Nyhetsdesk er også tilgjengelig direkte i høyre behandlingskolonne.
+Valgt bruksområde styrer hvilke utkast som klargjøres; begge bruker ett originalgrunnlag.
+Forslag vises som sammenhengende lesetekst med naturlige avsnitt uten å endre
+lagret tekst eller kontrollfingeravtrykk. NRK krediteres før nettteksten og lenkes
+til originalen; radiogeneratoren legger kildeomtalen først. Se [NRK-kreditering](NRK-CREDITING.md)
+for verifiserte regler og avgrensningen mot en særskilt RSS-avtale.
 Ingen artikkel godkjennes eller publiseres av dette arbeidet. Ingen produksjonsdeploy.
 Selektiv aktivering etter review og grønne kontroller gjenstår; ekte innlogget
 produksjonsflyt og redaksjonell godkjenning utføres ikke i testen.

@@ -138,3 +138,7 @@
 .dashboard-treatment-actions { margin-top: 18px; }
 .dashboard-treatment-actions .control-link { white-space: normal; }
 .control-page a:focus-visible, .control-page button:focus-visible, .control-page select:focus-visible { outline: 2px solid #7fd4ff; outline-offset: 3px; }
+
+.dashboard-proposal { margin: 18px 0; line-height: 1.65; }
+.dashboard-proposal summary { color: #7fd4ff; cursor: pointer; font-weight: 700; }
+.dashboard-source-credit { border-left: 3px solid #7fd4ff; padding-left: 12px; margin-top: 18px; }
