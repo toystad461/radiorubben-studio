@@ -1,0 +1,48 @@
+name: Read active Robot page and Studio navigation
+on:
+  push:
+    branches: ['fix/retire-robot-page']
+    paths: ['.github/workflows/robot-retirement-preflight.yml']
+permissions:
+  contents: read
+concurrency:
+  group: studio-release
+  cancel-in-progress: false
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: studio-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read reviewed code and deployment state without editing production
+        env:
+          DEPLOY_KEY: ${{ secrets.STUDIO_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STUDIO_DEPLOY_KNOWN_HOSTS }}
+          SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
+          SSH_USER: ${{ vars.STUDIO_SSH_USER }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          for setting in DEPLOY_KEY KNOWN_HOSTS SSH_HOST SSH_USER; do
+            [[ -n "${!setting}" ]] || { echo "::error::Missing $setting"; exit 1; }
+          done
+          [[ "$SSH_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]] || exit 1
+          [[ "$SSH_USER" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]] || exit 1
+          ssh_dir=$(mktemp -d)
+          trap 'rm -rf -- "$ssh_dir"' EXIT
+          chmod 700 "$ssh_dir"
+          umask 077
+          printf '%s\n' "$DEPLOY_KEY" > "$ssh_dir/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$ssh_dir/known_hosts"
+          unset DEPLOY_KEY KNOWN_HOSTS
+          ssh-keygen -y -P '' -f "$ssh_dir/key" >/dev/null
+          ssh-keygen -F "$SSH_HOST" -f "$ssh_dir/known_hosts" >/dev/null
+          php -l scripts/robot-retirement-inspect.php
+          timeout 120 ssh -F /dev/null -T -p 22 -i "$ssh_dir/key" \
+            -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o "UserKnownHostsFile=$ssh_dir/known_hosts" -o GlobalKnownHostsFile=/dev/null \
+            -o ConnectTimeout=15 -o ForwardAgent=no -o ClearAllForwardings=yes \
+            "$SSH_USER@$SSH_HOST" 'php -d display_errors=stderr' < scripts/robot-retirement-inspect.php
