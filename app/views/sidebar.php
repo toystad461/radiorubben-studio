@@ -15,7 +15,7 @@ $menuGroups = [
  'Redaksjon' => [
   ['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],
   ['articles','/robot.php','FileText','Artikkelutkast',''],
-  ['sending','/sending.php','FileText','Sendeliste',''],
+  ['sending','/sending.php','FileText','Radioliste',''],
   ['social','/workspace.php?section=social','Cloud','Sosiale medier',''],
  ],
  'Studio og lyd' => [

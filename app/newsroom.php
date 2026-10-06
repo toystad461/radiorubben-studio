@@ -20,6 +20,7 @@ function studio_newsroom_card(array $item): array {
         if(!studio_web_presentation_ready($item))$reasons[]='Bilde og kategorier må lagres.';
         if(!empty($item['newsroom']['error']))$reasons[]=$item['newsroom']['error'];
         $status=$reasons?'attention':'ready';
+        if (studio_board_channel($item) === 'radio') { $status='attention'; $reasons[]='Valgt som radiomateriale. Behandle radiomanuset i Kontrollsenter.'; }
         if(($item['newsroom']['state']??'')==='working'){
             if((strtotime($item['newsroom']['startedAt']??'')?:0)>time()-300){$status='working';$reasons=['Robåt leser originalen og klargjør saken.'];}
             else{$status='attention';$reasons=['Klargjøringen ble avbrutt. Kontroller saken før et nytt forsøk.'];}

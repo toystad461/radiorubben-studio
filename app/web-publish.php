@@ -57,6 +57,7 @@ function studio_web_publish(string $id,int $revision,string $status,array $user,
     $reserved=studio_board_change(static function(array &$board) use($id,$revision,$status,$user): array {
         foreach($board['items'] as &$item) if($item['id']===$id && $item['status']!=='archived') {
             $w=$item['web']??[];
+            if (studio_board_channel($item) === 'radio') throw new InvalidArgumentException('Saken er valgt som radiomateriale. Velg nett før overføring.');
             if ($item['revision']!==$revision) throw new InvalidArgumentException('Saken er endret. Last siden på nytt.');
             if (in_array($w['delivery']['state']??'', ['pending','unknown'],true)) throw new InvalidArgumentException('Forrige overføring er uavklart. Kontroller WordPress før ny overføring.');
             if (empty($w['title']) || empty($w['intro']) || empty($w['body'])) throw new InvalidArgumentException('Lagre en komplett nettsak først.');

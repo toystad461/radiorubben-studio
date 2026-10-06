@@ -5,6 +5,20 @@ Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
 
+## Kontrollsenter: sak til venstre, behandling til høyre – 06.10.2026
+
+Avgrenset gren fra main b73d6646e69723c79521f81ee6d7ef68d0ee4445.
+Kontrollsenteret viser «Saker til behandling», alle aktive saker og markert valg.
+Høyre kolonne viser kilden, lagret bruksområde (radio/nett/begge), status og
+lenker til eksisterende manus/nettredigering. Forkasting krever bekreftelse,
+CSRF, rolle og ferskt listesnapshot; manus/historikk beholdes og kan gjenopprettes.
+Endret bruksområde krever ny godkjenning. Nettvalget sperrer radio-klarstatus,
+radiovalget sperrer WordPress-levering. Eksisterende utkast bevares.
+Eldre saker beholder begge bruksområder til et eksplisitt valg gjøres.
+Ingen artikkel godkjennes eller publiseres av dette arbeidet. Ingen produksjonsdeploy.
+Selektiv aktivering etter review og grønne kontroller gjenstår; ekte innlogget
+produksjonsflyt og redaksjonell godkjenning utføres ikke i testen.
+
 ## Guardrail-oppfølging etter PR #25 – 05.10.2026
 
 Første kartlegging viste PR #25 på `fix/mobile-newsroom` mot
