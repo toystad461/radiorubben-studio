@@ -19,7 +19,7 @@ Studio følger disse prinsippene med:
 Nettsiden [NRK.no hjelp](https://info.nrk.no/nyheter/) forklarer deling av artikkelens URL.
 Den gir ikke i seg selv tillatelse til full gjenpublisering. NRKs opphavsrettsside
 kunne ikke leses gjennom søkeverktøyet. En særskilt RSS-/syndikeringsavtale eller
-andre merketøyvilkår er ikke dokumentert i dette repoet; full avtalemessig etterlevelse
+andre merkingsvilkår er ikke dokumentert i dette repoet; full avtalemessig etterlevelse
 kan derfor ikke bekreftes her. Ingen merkevarelogo eller formulering som antyder
 samarbeid med NRK er innført.
 
