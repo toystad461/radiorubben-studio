@@ -16,7 +16,8 @@ for ($i=0; $i<$zip->numFiles; $i++) {
     foreach ($matches[1] as $path) if ($zip->locateName('studio-private/'.$path) === false) throw new RuntimeException('Missing dependency: '.$path);
 }
 if ($publicCount < 24 || $zip->locateName('studio-public/assets/radio-rubben-logo.png') === false) throw new RuntimeException('Incomplete runtime package');
-$robot = $zip->getFromName('studio-public/robot.php');
-if (!str_contains($robot, "'/studio-private/config/robot-news.json'") || !str_contains($robot, "'/studio-private/config/robot-inbox.json'")) throw new RuntimeException('Robot feeds must use private config');
+if ($zip->locateName('studio-public/robot.php') !== false) throw new RuntimeException('Retired Robot page must not ship');
+$redirects = $zip->getFromName('studio-public/.htaccess');
+if (!is_string($redirects) || !str_contains($redirects, 'RedirectMatch 302 ^/robot\\.php$ /newsdesk.php')) throw new RuntimeException('Old Robot bookmarks must reach authenticated newsroom');
 $zip->close();
 echo "Package structure, private paths and data exclusions OK\n";
