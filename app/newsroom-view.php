@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/news-script.php';
 
 function studio_newsroom_url(string $selected='',string $filter='all'): string {
     $query=['filter'=>$filter];if($selected!=='')$query['item']=$selected;

@@ -20,6 +20,7 @@ function studio_newsroom_card(array $item): array {
         if(!studio_web_presentation_ready($item))$reasons[]='Bilde og kategorier må lagres.';
         if(!empty($item['newsroom']['error']))$reasons[]=$item['newsroom']['error'];
         $status=$reasons?'attention':'ready';
+        if (studio_board_channel($item) === 'radio') { $status='attention'; $reasons[]='Valgt som radiomateriale. Behandle radiomanuset i Kontrollsenter.'; }
         if(($item['newsroom']['state']??'')==='working'){
             if((strtotime($item['newsroom']['startedAt']??'')?:0)>time()-300){$status='working';$reasons=['Robåt leser originalen og klargjør saken.'];}
             else{$status='attention';$reasons=['Klargjøringen ble avbrutt. Kontroller saken før et nytt forsøk.'];}
@@ -43,17 +44,20 @@ function studio_newsroom_prepare(string $id,int $revision,array $user,array $con
     studio_board_change(static function(array &$b)use($id,$token,$comment,$revision){foreach($b['items'] as &$i)if($i['id']===$id){if($i['revision']!==$revision+1)throw new InvalidArgumentException('Saken ble endret.');$i['newsroom']=['state'=>'working','token'=>$token,'startedAt'=>gmdate('c'),'request'=>$comment];return;}},$path);
     try{
         $item['revisionRequest']=$comment;
-        if($recheck){$source=studio_news_source($item,$fetch);$result=['check'=>studio_news_review($item,studio_web_text($item['web']),$source,$config,$request??'producer_request')];}
-        else {
-            $source=studio_news_source($item,$fetch);
-            $result=studio_web_prepare($item,$config,[],$request,$fetch,$source);
+        $channel=studio_board_channel($item); $nextRevision=$revision+1;
+        $source=studio_news_source($item,$fetch);
+        if($channel!=='radio'){
+            if($recheck)$result=['check'=>studio_news_review($item,studio_web_text($item['web']),$source,$config,$request??'producer_request')];
+            else $result=studio_web_prepare($item,$config,[],$request,$fetch,$source);
+            studio_web_save($id,$nextRevision,$recheck?'check':'generated',$result,$user,$path);
+            $nextRevision++;
         }
-        studio_web_save($id,$revision+1,$recheck?'check':'generated',$result,$user,$path);
-        // Generate only a missing radio draft; preserve existing human edits and approvals.
-        if(trim((string)($item['script']??''))===''){
-            $radio=studio_news_prepare($item,$config,[],null,$request,$fetch,$source);
-            studio_board_update($id,$revision+2,'generated',['script'=>$radio['script'],
-                'sourceCheck'=>$radio['check'],'generation'=>['model'=>$config['openai_model'],
+        // Both uses share one original; existing radio edits are never rewritten.
+        if($channel!=='web' && (trim((string)($item['script']??''))==='' || $channel==='radio')){
+            $existing=trim((string)($item['script']??''))===''?null:(string)$item['script'];
+            $radio=studio_news_prepare($item,$config,[],$existing,$request,$fetch,$source);
+            studio_board_update($id,$nextRevision,$existing===null?'generated':'source_checked',
+                ['script'=>$radio['script'],'sourceCheck'=>$radio['check'],'generation'=>['model'=>$config['openai_model'],
                 'sourceSha256'=>$source['sha256']]],$user,$path);
         }
         studio_board_change(static function(array &$b)use($id,$token){foreach($b['items'] as &$i)if($i['id']===$id&&($i['newsroom']['token']??'')===$token){$i['newsroom']['state']='prepared';$i['newsroom']['finishedAt']=gmdate('c');return;}},$path);

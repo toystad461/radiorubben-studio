@@ -55,7 +55,7 @@ try {
     $legacy = $a[0];$legacy['id'] = hash('sha256','nrk:'.$url);$legacy['url'] = $url.'?utm_source=legacy';
     studio_board_add_source($legacy,$user,$path);$board = studio_board_read($path);
     $id = $board['items'][0]['id'];
-    studio_board_update($id,1,'save',['title'=>'Min redigerte tittel','script'=>'Menneskelig manus.','notes'=>'Behold notatet.','verified'=>'1'],$user,$path);
+    studio_board_update($id,1,'save',['title'=>'Min redigerte tittel','script'=>'Dette melder NRK. Menneskelig manus.','notes'=>'Behold notatet.','verified'=>'1'],$user,$path);
     studio_board_update($id,2,'ready',[],$user,$path);$before = studio_board_read($path)['items'][0];
     studio_board_add_source($b[0],$user,$path);studio_board_add_source($c[0],$user,$path);
     $after = studio_board_read($path);

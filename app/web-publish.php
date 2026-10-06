@@ -45,10 +45,10 @@ function studio_web_checked(array $item): bool {
 function studio_web_html(array $item): string {
     $esc=static fn($s)=>htmlspecialchars($s,ENT_QUOTES|ENT_SUBSTITUTE,'UTF-8');
     $w=$item['web']; $html='';
-    foreach (preg_split('/\R\s*\R/u',trim($w['body'])) as $p) $html.='<p>'.nl2br($esc($p)).'</p>';
+    foreach (studio_news_reading_paragraphs($w['body']) as $p) $html.='<p>'.$esc($p).'</p>';
     $nrk=parse_url($item['sourceUrl']??'',PHP_URL_HOST)==='www.nrk.no';
     $label=$nrk?'Les hele saken hos NRK':'Les mer hos '.$item['sourceName'];
-    return '<p><strong>'.$esc($w['intro']).'</strong></p>'.$html.'<p>Basert på opplysninger fra '.($nrk?'NRK':$esc($item['sourceName'])).'. <a href="'.$esc($item['sourceUrl']).'" rel="noopener">'.$esc($label).'</a></p>';
+    return '<p>Basert på opplysninger fra '.($nrk?'NRK':$esc($item['sourceName'])).'. <a href="'.$esc($item['sourceUrl']).'" rel="noopener">'.$esc($label).'</a></p><p><strong>'.$esc($w['intro']).'</strong></p>'.$html;
 }
 /** Reserve durably before network I/O. An unknown outcome is never retried automatically. */
 function studio_web_publish(string $id,int $revision,string $status,array $user,array $config,?callable $request=null,?string $path=null): array {
@@ -57,6 +57,7 @@ function studio_web_publish(string $id,int $revision,string $status,array $user,
     $reserved=studio_board_change(static function(array &$board) use($id,$revision,$status,$user): array {
         foreach($board['items'] as &$item) if($item['id']===$id && $item['status']!=='archived') {
             $w=$item['web']??[];
+            if (studio_board_channel($item) === 'radio') throw new InvalidArgumentException('Saken er valgt som radiomateriale. Velg nett før overføring.');
             if ($item['revision']!==$revision) throw new InvalidArgumentException('Saken er endret. Last siden på nytt.');
             if (in_array($w['delivery']['state']??'', ['pending','unknown'],true)) throw new InvalidArgumentException('Forrige overføring er uavklart. Kontroller WordPress før ny overføring.');
             if (empty($w['title']) || empty($w['intro']) || empty($w['body'])) throw new InvalidArgumentException('Lagre en komplett nettsak først.');

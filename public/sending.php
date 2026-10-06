@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 try { $board = studio_board_read(); }
 catch (Throwable $e) { error_log('Studio sending read failed: ' . $e->getMessage()); $board = ['items'=>[]]; $readError = true; }
-$items = studio_board_active($board);
+$items = array_values(array_filter(studio_board_active($board), static fn($item) => studio_board_channel($item) !== 'web'));
 $selectedId = is_string($_GET['item'] ?? null) ? $_GET['item'] : '';
 $selected = null;
 foreach ($items as $item) if ($item['id'] === $selectedId) $selected = $item;

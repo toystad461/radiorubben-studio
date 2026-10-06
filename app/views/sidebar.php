@@ -1,6 +1,6 @@
       <aside class="sidebar">
         <a href="/" class="brand">
-          <img src="/assets/radio-rubben-logo.png" alt="Radio Rubben" width="2400" height="1073">
+          <img src="/assets/radio-rubben-logo.png" alt="Radio Rubben" width="2172" height="724">
           <small>STUDIO / ARBEIDSROM</small>
         </a>
         <?php if (($activePage ?? "") === "ai-studio"): ?>
@@ -15,7 +15,7 @@ $menuGroups = [
  'Redaksjon' => [
   ['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],
   ['articles','/robot.php','FileText','Artikkelutkast',''],
-  ['sending','/sending.php','FileText','Sendeliste',''],
+  ['sending','/sending.php','FileText','Radioliste',''],
   ['social','/workspace.php?section=social','Cloud','Sosiale medier',''],
  ],
  'Studio og lyd' => [
