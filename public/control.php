@@ -4,7 +4,7 @@ require dirname(__DIR__) . '/app/bootstrap.php';
 $user = current_user();
 if (!$user) redirect('/login.php');
 
-require dirname(__DIR__) . '/app/board.php';
+require_once dirname(__DIR__) . '/app/board.php';
 require dirname(__DIR__) . '/app/integrations/NewsDesk.php';
 require dirname(__DIR__) . '/app/weather.php';
 require_once dirname(__DIR__) . '/app/web-publish.php';
