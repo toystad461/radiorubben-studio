@@ -1,10 +1,39 @@
 # Studio – felles status og arbeidsliste
 
-Oppdatert 05.10.2026 etter selektiv mobiloppdatering og autentisert API-kontroll.
+Oppdatert 07.10.2026 etter aktivering av #40 og oppfølging av artikkelkontroll.
 Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
 
+
+
+## Artikkelretting og læringsregler – 07.10.2026
+
+PR #40 er merget som 959fb5cbe46e29762ce24e623cdac1754a4fcc9a og
+selektivt deployet i Actions 37543203059. PHP 8.2/8.4, mobiltester,
+pakke og deploy besto. 13 filer ble endret; produksjonshasher og HTTPS
+ble bekreftet. Privat backup: selective-37543203059-1. Innlogget Studio
+viser det nye kontrollsenteret og Radioliste.
+
+Ved redigering av et faktisk utkast ble CRLF-avsnitt fra nettleserskjemaet
+tolket som tomme kontrollsegmenter. Kildekontrollen deler nå på alle
+linjeskift og hopper bare over blanke segmenter. Alle reelle påstander,
+kildebelegg, tekstfingeravtrykk og manuell godkjenning beholder kravene.
+Regresjonstesten dekker LF, CRLF, mellomrom på blank linje, CR og
+at manglende kontroll av en faktisk påstand fortsatt avvises.
+
+Læringen er lagt inn som faste skriveråd i nettgeneratoren: bevar
+meldt/skal ha-forbehold; ikke utled umiddelbar utrykning fra at politiet
+er på stedet; ikke finn på videre oppfølging; ikke gjør «ingen skadde
+funnet/meldt» om til «ingen skadet». Korte kilder gir korte saker.
+Dette er eksplisitte generatorregler, ikke automatisk modelltrening.
+Kontrollkravene er ikke svekket og det utføres ingen automatisk publisering.
+
+Seks publiserte Studio-artikler får naturlige avsnitt via WordPress-
+revisjoner. Ordlyd og metadata kontrolleres mot førversjonen.
+Det korrigerte utkastet skal kontrolleres på nytt etter utrulling og
+bli liggende til Thomas sin godkjenning. Endelig CI-, deploy- og
+innholdskontroll føres i oppfølgings-PR-en ved levering.
 
 ## Aktivering av PR #40 – 07.10.2026
 
