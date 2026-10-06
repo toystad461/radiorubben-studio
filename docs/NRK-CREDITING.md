@@ -9,7 +9,8 @@ Studio følger disse prinsippene med:
 - Synlig «Basert på opplysninger fra NRK» og «Les hele saken hos NRK» før nettteksten,
   både i forhåndsvisning og WordPress-levering.
 - Radiogeneratoren instrueres til å starte med «Dette melder NRK», slik at kilden
-  blir med i opplesningen. Redaktøren må kontrollere dette før sluttgodkjenning.
+  blir med i opplesningen. Godkjenning til radio sperres uten NRK-omtale innenfor de første 300 tegnene.
+  Redaktøren må i tillegg kontrollere at omtalen faktisk krediterer kilden.
 - Egne korte bokmålsoppsummeringer av verifiserte opplysninger, ikke gjenpublisering
   av hele artikkelen. Originaltekst og kontrollbelegg bevares urørt.
 - Radio Rubbens illustrasjon merkes som KI-generert og viser ikke hendelsen.

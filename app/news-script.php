@@ -15,6 +15,13 @@ function studio_news_reading_paragraphs(string $text): array
     return array_values(array_filter(array_map(static fn($p) => trim(preg_replace('/\\s*\\R\\s*/u', ' ', $p) ?? $p), $parts ?: []), static fn($p) => $p !== ''));
 }
 
+/** Radio credit must be in the spoken manuscript, not only interface metadata. */
+function studio_news_radio_credit(array $item): bool
+{
+    return parse_url((string)($item['sourceUrl'] ?? ''), PHP_URL_HOST) !== 'www.nrk.no'
+        || preg_match('/\\A.{0,300}\\bNRK\\b/us', (string)($item['script'] ?? '')) === 1;
+}
+
 function studio_news_allowed_url(string $url): bool
 {
     $p = parse_url($url);
