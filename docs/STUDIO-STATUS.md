@@ -5,6 +5,25 @@ Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
 
+
+## Aktivering av PR #40 – 07.10.2026
+
+Thomas har uttrykkelig bedt om å utføre #40 og om mulig rette allerede
+publiserte artikler. PR-ens funksjoner og avsnittsretting aktiveres via den
+etablerte selektive main-pipelinen, med nye tester etter denne oppfølgingen.
+Før merge ble logoavviket i sidebar avstemt: main med dimensjoner 2172×724
+matcher nøyaktig den registrerte produksjonshashen
+69ecf254292a9d6b35c2249ac8991b811364888321bbcb5366afd7096bdaf1d2.
+Disse dimensjonene bevares i #40. Eksisterende kildegrunnlag, godkjenninger,
+privat konfigurasjon og innhold skal bevares av utrullingen.
+
+Seks publiserte Studio-saker er identifisert med setningsvise brudd:
+1244, 1243, 1242, 1241, 1109 og 1107. Formateringen kan rettes separat via
+WordPress sine innholdsrevisjoner, uten å endre ordlyd, ingress, bilder,
+kategorier eller kildelenker. Nye naturlige avsnitt velges etter tema.
+Siste head, grønne tester, deployresultat og verifiserte innholdsendringer
+føres i PR #40 ved levering. Dette notatet alene er ikke et deploybevis.
+
 ## Kontrollsenter: sak til venstre, behandling til høyre – 06.10.2026
 
 Avgrenset gren fra main b73d6646e69723c79521f81ee6d7ef68d0ee4445.
