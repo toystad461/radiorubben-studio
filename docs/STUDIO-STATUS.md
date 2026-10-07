@@ -1,5 +1,32 @@
 # Studio – felles status og arbeidsliste
 
+## Værmanus og DATEX – 07.10.2026
+
+Læringssiden får en tretrinns arbeidsflyt med valg av rettet manus, konkrete
+regelforslag og administratorgodkjenning. Forslag, aktive regler og historikk
+vises separat. Før/etter-eksempler vises side om side; programprofilen viser
+det faktiske regelgrunnlaget til neste radiomanus i Sending. Ingen automatisk
+modelltrening eller videreføring til nettartikler/vær påstås. Roller, kildekrav,
+versjoner og manuell godkjenning beholdes. UI testes på mobil og desktop.
+
+Etter Thomas sin bestilling rydder NRK-/kommune-innboksen bort kildesaker
+48 timer etter kildens publiseringstid, også fra varm eller feilet RSS-cache.
+En ny henting gir aldri gamle saker ny frist. Saker som er tatt til behandling,
+manus og historikk slettes ikke. Trafikkens aktive meldinger berøres ikke.
+48 timer er valgt som startgrense og er forklart ved innboksen.
+
+Værfeltet lenker til et kort, redigerbart MET-manus for Bømlo, Stord og
+Haugesund. Samme generator kobles til eksisterende Nyhetsdesk-jobb etter :55
+med timevis idempotens, bevaring av ferske manuelle redigeringer og historikk.
+Rolle/CSRF/revisjon, utløp og utdatert værgrunnlag kontrolleres. Ingen lyd,
+automatisk godkjenning eller redaksjonell publisering inngår.
+DATEX-tilgang er testet: HTTP 200 og gyldig landsdekkende XML. Dagens offentlige
+trafikkilde beholdes inntil lokal DATEX-filtrering og privat serveroppsett er
+implementert. Se [funksjon og begrensninger](WEATHER-SCRIPT.md).
+Tester, PR og faktisk utrulling føres etter verifisering; dette er ikke deploybevis.
+Spillerregelen (bare dagens faktiske kamphendelser, full kampkontekst og ingen
+statistikknyheter) gjenstår i Fotballrobotens separate produksjonsgren 0.10.5.
+
 ## Nummerert Versjon 0 – 07.10.2026
 
 Thomas har bestilt nummerering i Git og publisering til studio.radiorubben.no.
