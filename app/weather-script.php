@@ -13,7 +13,8 @@ function studio_weather_script_text(array $places): string {
         $degrees=$temperature===1?'grad':'grader';
         $symbol=preg_replace('/_(day|night|polarday)$/','',(string)($p['symbol']??''));
         $description=['clearsky'=>'klarvær','fair'=>'lettskyet vær','partlycloudy'=>'delvis skyet vær','cloudy'=>'skyet vær','fog'=>'tåke','rain'=>'regn','lightrain'=>'lett regn','heavyrain'=>'kraftig regn','snow'=>'snø','lightsnow'=>'lett snø','heavysnow'=>'kraftig snø','sleet'=>'sludd','rainshowers'=>'regnbyger','lightrainshowers'=>'lette regnbyger','heavyrainshowers'=>'kraftige regnbyger'][$symbol]??null;
-        $sentences[]='På '.$p['place'].' er det meldt '.($description?$description.' og ':'').'rundt '.$temperature.' '.$degrees.'.';
+        $place=['Bømlo · Bremnes'=>'På Bømlo, ved Bremnes','Stord · Leirvik'=>'På Stord, ved Leirvik','Haugesund'=>'I Haugesund'][$p['place']]??$p['place'];
+        $sentences[]=$place.' er det meldt '.($description?$description.' og ':'').'rundt '.$temperature.' '.$degrees.'.';
     }
     return implode(' ',$sentences);
 }
