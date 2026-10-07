@@ -4,6 +4,11 @@ Første versjon for partnerarbeidet i Radio Rubben. Egen gren fra main
 `81c1423c69d596531018e24d5475f5ad84b28b9c` (07.10.2026), uavhengig av
 den åpne iPhone-PR-en #47 og de eldre Render-/programgrenene.
 
+**Førende krav:** CRM-et skal tilpasses Radio Rubbens partnerarbeid.
+Se [produktkrav og videre leveranser](CRM-RADIO-RUBBEN.md). Denne PR-en
+dekker kontaktgrunnlaget; strukturerte avtaler, kampanjer, produksjonsstatus
+og fornyelser er ennå ikke implementert.
+
 ## Bruk
 
 Administrator åpner **Samarbeid / CRM** i Studio-menyen (`/crm.php`).
@@ -60,12 +65,14 @@ test og kjøres derfor i eksisterende PHP 8.2/8.4-CI. Mobiljobben tester
 liste, kort og nytt skjema på 320, 390, 800 og 1280 piksler.
 
 Lokalt besto 78 domenekontroller og 14 isolerte rutemoduser på PHP 8.5.10
-(WASM). Nettleseren kunne ikke startes i dette miljøet, så mobilkontrollen
-må bekreftes i CI. Fysisk iPhone og ekte Microsoft-innlogging er ikke testet.
+(WASM). GitHub-kjøring 37686489844 besto PHP 8.2/8.4 og mobiljobben,
+inkludert CRM-layoutkontrollen, på runtime-commit
+`fdc0a38b83f5262f0049a38df07c098e913002ff`. Senere produktkrav er
+dokumentasjonsendringer. Fysisk iPhone og ekte Microsoft-innlogging er ikke testet.
 
 Berørte runtime-filer: `app/crm.php`, `app/crm-candidates.php`,
 `app/views/sidebar.php`, `public/crm.php`, `public/assets/crm.css`.
-Tillegg: to tester, composer-skript og dokumentasjon. Eksisterende bootstrap,
+Tillegg: tre testfiler, composer-skript og dokumentasjon. Eksisterende bootstrap,
 auth, konfigurasjon, redaksjon, deployskript og iPhone-gren er uendret.
 
 Dette er kode og testgrunnlag, ikke produksjonsaktivering. Før autorisert

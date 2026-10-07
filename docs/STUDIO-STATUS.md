@@ -1,5 +1,20 @@
 # Studio – felles status og arbeidsliste
 
+## CRM – krav om tilpasning til Radio Rubben, 07.10.2026
+
+Thomas presiserer at CRM-et må være tilpasset Radio Rubben. Dette er lagt inn
+som førende produktkrav i [CRM-RADIO-RUBBEN.md](CRM-RADIO-RUBBEN.md) og
+arbeidsreglene. PR #48 gir kontaktgrunnlaget. Avtaler, kampanjer, oppfølging
+av manus/lyd/godkjenning, faktisk levering og fornyelse gjenstår.
+Neste utviklingsleveranse er strukturerte samarbeidsmuligheter/avtaler per
+bedrift og oversikt over neste handling; bruk dokumentets akseptansekriterier.
+Teams-varsling kommer etter at denne arbeidsflyten er på plass.
+
+Runtime-commit fdc0a38b83f5262f0049a38df07c098e913002ff besto PHP 8.2/8.4
+og CRM-mobilkontrollen i Actions 37686489844. Denne presiseringen endrer
+bare dokumentasjon og arbeidsregler; ingen nye runtime-tester er nødvendig.
+Ingen produksjonsdeploy eller Microsoft-integrasjon er utført.
+
 ## Samarbeid / CRM – første kodeversjon 07.10.2026
 
 Egen avgrenset gren fra main 81c1423, uavhengig av iPhone-PR #47. Ny
@@ -12,8 +27,8 @@ Eksisterende redaksjon og publiseringsflyt er urørt.
 Microsoft-forslag: Studio som CRM, Teams Workflows for samlevarsler,
 OneDrive for filer, OneNote som valgfri notatbok senere. Dette er beskrevet
 i [CRM.md](CRM.md), men integrasjon, tidsstyring og varsling er ikke aktivert.
-Tester og fersk CI-status dokumenteres i PR-en. Neste steg er gjennomgang,
-avklaring av ønsket Microsoft-konto og separat autorisert selektiv utrulling.
+Tester og fersk CI-status dokumenteres i PR-en. Videre prioritering er
+presisert i CRM-kravene over; Microsoft-konto avklares før integrasjon.
 Ingen merge eller produksjonsdeploy er utført i denne oppgaven.
 
 ## Værmanus og DATEX – 07.10.2026
