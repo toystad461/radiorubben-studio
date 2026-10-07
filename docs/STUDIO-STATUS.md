@@ -2,6 +2,13 @@
 
 ## Værmanus og DATEX – 07.10.2026
 
+Læringssiden får en tretrinns arbeidsflyt med valg av rettet manus, konkrete
+regelforslag og administratorgodkjenning. Forslag, aktive regler og historikk
+vises separat. Før/etter-eksempler vises side om side; programprofilen viser
+det faktiske regelgrunnlaget til neste radiomanus i Sending. Ingen automatisk
+modelltrening eller videreføring til nettartikler/vær påstås. Roller, kildekrav,
+versjoner og manuell godkjenning beholdes. UI testes på mobil og desktop.
+
 Etter Thomas sin bestilling rydder NRK-/kommune-innboksen bort kildesaker
 48 timer etter kildens publiseringstid, også fra varm eller feilet RSS-cache.
 En ny henting gir aldri gamle saker ny frist. Saker som er tatt til behandling,

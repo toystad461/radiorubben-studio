@@ -143,3 +143,19 @@
 .dashboard-proposal summary { color: #7fd4ff; cursor: pointer; font-weight: 700; }
 .dashboard-source-credit { border-left: 3px solid #7fd4ff; padding-left: 12px; margin-top: 18px; }
 .control-page textarea { display: block; box-sizing: border-box; width: 100%; max-width: 900px; padding: 14px; margin: 10px 0; font: inherit; line-height: 1.6; color: #fff; background: #071728; border: 1px solid #456179; border-radius: 9px; }
+.learning-page { max-width: 1600px; }
+.learning-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; list-style: none; padding: 0; margin: 24px 0; }
+.learning-steps li { display: grid; gap: 8px; padding: 16px; border-left: 3px solid #7fd4ff; background: #091a2a; border-radius: 8px; }
+.learning-steps span { color: #a9bbcb; line-height: 1.5; }
+.learning-profile { margin-bottom: 20px; }
+.learning-profile summary { cursor: pointer; color: #7fd4ff; font-weight: 700; }
+.learning-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 20px; }
+.learning-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.learning-tabs a { border: 1px solid #456179; border-radius: 999px; padding: 9px 14px; text-decoration: none; }
+.learning-tabs a[aria-current="page"] { color: #071728; background: #7fd4ff; font-weight: 700; }
+.learning-comparison { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.learning-comparison > div { min-width: 0; padding: 12px; border: 1px solid #345; border-radius: 8px; }
+.learning-page p { line-height: 1.6; overflow-wrap: anywhere; }
+.learning-page select { box-sizing: border-box; width: 100%; margin: 10px 0; padding: 12px; border: 1px solid #456179; border-radius: 8px; background: #071728; color: #fff; font: inherit; }
+@media (max-width: 1000px) { .learning-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 600px) { .learning-steps, .learning-comparison { grid-template-columns: minmax(0, 1fr); } .learning-page .control-heading { align-items: start; flex-direction: column; } }
