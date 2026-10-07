@@ -1,5 +1,16 @@
 # Studio – felles status og arbeidsliste
 
+## Nummerert Versjon 0 – 07.10.2026
+
+Thomas har bestilt nummerering i Git og publisering til studio.radiorubben.no.
+Versjon 0 bruker VERSION 0.1.0 og Git-tag v0.1.0, et nytt samlet startpunkt etter
+eldre 0.0.x-utkast. Se [releasebeskrivelse](releases/0.1.0.md).
+Selektiv deploy inkluderer nå bare den eksakte offentlige release.json blant
+JSON-filer. Den viser versjon og source-commit; HTTPS-readback må matche pakken,
+ellers tilbakeføres endringen. Øvrige data-/config-JSON-filer er fortsatt utelatt.
+CI, eksakt mergecommit og deploybevis registreres på release-PR og GitHub-release
+etter verifisering. Ingen redaksjonell publisering følger kodeutrullingen.
+
 ## Gjeldende PR-status og Versjon 0 – 07.10.2026
 
 Alle 19 åpne PR-er er gjennomgått mot fersk main og dagens konsoliderte runtime.
@@ -15,7 +26,7 @@ Fem gyldige restoppgaver beholdes som drafts: #2 AzuraCast-test, #13 programregi
 #15 sendemal, #16 femstedsvær og #21 Render-staging. Manglende funksjoner er
 ikke markert som levert. Historiske deploy-/PR-notater under er journal, ikke
 gjeldende åpne-PR-status. Se [full PR-gjennomgang](PR-AUDIT-20261007.md).
-Versjon 0 er arbeidsbaseline; VERSION og eksisterende release-drafts endres ikke.
+Dette avsnittet dokumenterer PR-oppryddingen før nummereringen i avsnittet over.
 
 Oppdatert 07.10.2026 etter aktivering av #40 og oppfølging av artikkelkontroll.
 Eier: Thomas Magne Sellevold-Øystad.

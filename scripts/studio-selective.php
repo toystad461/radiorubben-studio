@@ -5,7 +5,7 @@ declare(strict_types=1);
 function studioManaged(string $p): bool {
     return !str_contains($p, '..') && !str_contains($p, '\\')
         && !preg_match('~(^|/)(config|cache|data|backups?|\.git)(/|$)~i', $p)
-        && (bool)preg_match('~^(studio-public/(?:[a-zA-Z0-9_./-]+\.(?:php|css|js|mjs|png|svg|ico)|\.htaccess)|studio-private/(?:app/[a-zA-Z0-9_./-]+\.php|vendor/[a-zA-Z0-9_./-]+|composer\.(?:json|lock)|\.htaccess))$~D', $p);
+        && (bool)preg_match('~^(studio-public/(?:[a-zA-Z0-9_./-]+\.(?:php|css|js|mjs|png|svg|ico)|\.htaccess|release\.json)|studio-private/(?:app/[a-zA-Z0-9_./-]+\.php|vendor/[a-zA-Z0-9_./-]+|composer\.(?:json|lock)|\.htaccess))$~D', $p);
 }
 function studioPath(string $root, string $p): string {
     if (!studioManaged($p)) throw new RuntimeException('Unmanaged path: '.$p);
@@ -123,5 +123,13 @@ if (realpath($_SERVER['SCRIPT_FILENAME']??'')===__FILE__) {
         if($response===false || $status!==303 || !preg_match('/^location: \/login\.php\s*$/mi',$response)) throw new RuntimeException('HTTPS/login health check failed');
     };
     $health();
-    echo json_encode(studioPublish($root,$stage.'/unpacked',$work,$baseline,$commit,$run,$health),JSON_UNESCAPED_SLASHES)."\n";
+    $releaseHealth=static function() use ($health,$release):void {
+        $health();
+        $ch=curl_init('https://studio.radiorubben.no/release.json?commit='.$release['commit']);
+        curl_setopt_array($ch,[CURLOPT_RETURNTRANSFER=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_TIMEOUT=>25]);
+        $response=curl_exec($ch);$status=curl_getinfo($ch,CURLINFO_RESPONSE_CODE);
+        $published=$response===false?null:json_decode($response,true);
+        if($status!==200 || !is_array($published) || $published!==$release) throw new RuntimeException('HTTPS release manifest mismatch');
+    };
+    echo json_encode(studioPublish($root,$stage.'/unpacked',$work,$baseline,$commit,$run,$releaseHealth),JSON_UNESCAPED_SLASHES)."\n";
 }
