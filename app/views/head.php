@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="RR Studio">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="stylesheet" href="/assets/private-app.css?v=1">
+<link rel="stylesheet" href="/assets/private-app.css?v=20261007-layout2">
 <script src="/assets/private-app.js?v=1" defer></script>
 <?php endif; ?></head><body<?= $rrPrivateApp ? ' class="rr-private-app"' : '' ?>>
 <a class="skip-link" href="#main">Hopp til innhold</a>

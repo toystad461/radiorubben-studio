@@ -1,7 +1,7 @@
 .rr-private-app { color-scheme: dark; }
 .rr-app-nav { display:none; }
-.rr-mobile-home { max-width:720px; margin:auto; padding:32px 24px 40px; color:#f6f5f7; }
-.rr-mobile-brand { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.rr-mobile-home { overflow-wrap:anywhere; max-width:720px; margin:auto; padding:32px 24px 40px; color:#f6f5f7; }
+.rr-mobile-brand { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:20px; }
 .rr-mobile-brand img { width:174px; max-width:60%; height:auto; }
 .rr-private-badge { display:inline-flex; align-items:center; gap:5px; color:#dedbe2; font-size:12px; border:1px solid #41404b; border-radius:99px; padding:7px 10px; }
 .rr-mobile-intro { margin:32px 0 24px; }
@@ -30,6 +30,7 @@
 .rr-mobile-grid span { font-size:12px; color:#c1bdc9; line-height:1.5; }
 .rr-file-note { display:flex; gap:14px; margin-top:24px; padding:18px; border:1px dashed #45424f; border-radius:14px; }
 .rr-file-note>svg { flex-shrink:0; margin-top:2px; color:#bcb4cb; }
+.rr-file-note > div { min-width:0; }
 .rr-file-note h2 { font-size:15px; margin:0 0 8px; }
 .rr-file-note p,.rr-install-help p { color:#c1bdc9; font-size:13px; line-height:1.65; margin:0; }
 .rr-install-help { margin-top:20px; }
@@ -41,7 +42,7 @@
 .rr-private-app .rr-network-message { position:sticky; top:0; z-index:90; margin:0; padding:12px 18px; background:#4a341e; color:#fff6e9; font-size:14px; line-height:1.5; }
 .rr-private-app .rr-network-message[hidden] { display:none; }
 .rr-private-app a:focus-visible,.rr-private-app button:focus-visible,.rr-install-help summary:focus-visible { outline:3px solid #ffa4af; outline-offset:4px; }
-@media (max-width:760px) {
+@media (max-width:760px), (max-width:1000px) and (pointer:coarse) and (hover:none) {
  .rr-private-app { padding-bottom:calc(88px + env(safe-area-inset-bottom,0px)); padding-left:env(safe-area-inset-left,0px); padding-right:env(safe-area-inset-right,0px); }
  .rr-mobile-home { padding:calc(24px + env(safe-area-inset-top,0px)) 20px 16px; }
  .rr-private-app .rr-app-nav { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); position:fixed; bottom:0; left:0; right:0; padding:8px max(12px,env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px)); background:#141319; border-top:1px solid #36333e; z-index:80; }
@@ -50,3 +51,29 @@
  .rr-private-app input:not([type="checkbox"]):not([type="radio"]),.rr-private-app textarea,.rr-private-app select { font-size:16px; }
 }
 @media (max-width:340px) { .rr-mobile-home { padding-left:14px; padding-right:14px; } .rr-mobile-grid { gap:9px; } .rr-mobile-grid a { padding:14px 11px; } }
+
+/* Private app only: allow intrinsic form widths and large text to reflow.
+   Do not hide overflow: every label and action must remain reachable. */
+@media (max-width:760px), (max-width:1000px) and (pointer:coarse) and (hover:none) {
+ .rr-private-app .workspace,
+ .rr-private-app .control-page,
+ .rr-private-app .case-toolbar > *,
+ .rr-private-app .control-page form { min-width:0; max-width:100%; }
+ .rr-private-app .control-page { width:100%; overflow-wrap:anywhere; }
+ .rr-private-app .case-toolbar form { flex:1 1 280px; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:center; }
+ .rr-private-app .case-toolbar label { grid-column:1 / -1; }
+ .rr-private-app .case-toolbar #case-picker { min-width:0; width:100%; max-width:100%; }
+ .rr-private-app .control-page button,
+ .rr-private-app .control-page select,
+ .rr-private-app .control-page summary { min-height:44px; }
+ .rr-private-app .control-page button { max-width:100%; white-space:normal; overflow-wrap:anywhere; }
+ .rr-private-app .control-page summary { padding:10px 0; }
+ .rr-private-app .control-link,
+ .rr-private-app .dashboard-primary-link,
+ .rr-private-app .panel-top > a { max-width:100%; white-space:normal; }
+ .rr-private-app .dashboard-heading-actions { flex-wrap:wrap; }
+ .rr-private-app .dashboard-heading-actions > * { min-width:0; }
+ .rr-private-app .dashboard-air-state { white-space:normal; }
+ .rr-private-app .rr-primary-action svg,
+ .rr-private-app .rr-private-badge svg { flex-shrink:0; }
+}
