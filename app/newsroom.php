@@ -74,13 +74,14 @@ function studio_newsroom_settings(array $board): array {
 
 /** One new story per invocation; feed identity includes archived/rejected stories. */
 function studio_newsroom_tick(array $feeds,array $config,?string $path=null,?callable $request=null,?callable $fetch=null): array {
+    $productionPath=$path===null;
     $path??=studio_board_path();$lock=fopen($path.'.newsroom.lock','c');
     if(!$lock||!flock($lock,LOCK_EX|LOCK_NB))return ['state'=>'busy'];
     chmod($path.'.newsroom.lock',0600);
     try{
         $board=studio_board_read($path);$settings=studio_newsroom_settings($board);
         if(!$settings['enabled'])return ['state'=>'paused'];
-        if($path===null){
+        if($productionPath){
             require_once __DIR__.'/weather-script.php';
             try{studio_weather_script_tick();}catch(Throwable $e){error_log('Studio weather preparation unavailable.');}
         }
