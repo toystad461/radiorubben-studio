@@ -59,9 +59,11 @@ function server(array $env, callable $test): void {
  } finally {fclose($pipes[0]);proc_terminate($proc);proc_close($proc);unlink($log);}
 }
 server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
- foreach(['/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/robot.php', '/?preview=1'] as $path){
+ foreach(['/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/?preview=1'] as $path){
   [$code,$html]=request($path);check($code===503 && str_contains($html,'Vi klargjør det nye arbeidsrommet') && !str_contains($html,'Åpne demonstrasjonen') && !str_contains($html,'Set-Cookie:'),'waiting page blocks entry: '.$path);
  }
+ [$legacyCode,$legacyHtml]=request('/robot.php');
+ check(in_array($legacyCode,[404,503],true) && !str_contains($legacyHtml,'Redaksjonell innboks') && !str_contains($legacyHtml,'Set-Cookie:'),'removed robot page stays inaccessible in waiting mode');
  check(request('/assets/studio.css')[0]===200,'waiting page assets accessible');
 });
 server(['STUDIO_AUTH_MODE'=>'demo'],function(){

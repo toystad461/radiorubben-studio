@@ -46,12 +46,18 @@ function studio_board_active(array $board): array
     $items = array_values(array_filter($board['items'] ?? [], static fn($item) => is_array($item) && ($item['status'] ?? '') !== 'archived'));
     // Expiry must also affect exports and consumers of the rundown, not only the badge.
     foreach ($items as &$item) {
-        if (($item['status'] ?? '') === 'ready' && isset($item['sourceCheck']) && !studio_news_check_current($item)) {
+        if (($item['status'] ?? '') === 'ready' && ((isset($item['sourceCheck']) && !studio_news_check_current($item)) || !studio_news_radio_credit($item))) {
             $item['status'] = 'draft'; $item['approvedBy'] = null;
         }
     }
     unset($item);
     return $items;
+}
+
+/** Legacy items retain both editorial uses until an editor chooses. */
+function studio_board_channel(array $item): string
+{
+    return in_array($item['channel'] ?? '', ['radio', 'web', 'both'], true) ? $item['channel'] : 'both';
 }
 
 function studio_board_length(string $value): int
@@ -118,7 +124,20 @@ function studio_board_update(string $id, int $revision, string $action, array $i
             // Old items remain unassigned until a person chooses their program.
             $before = $item;
             unset($before['history']);
-            if ($action === 'save') {
+            if ($action === 'channel') {
+                if (!in_array($user['role'] ?? '', ['admin', 'producer', 'presenter'], true))
+                    throw new InvalidArgumentException('Ingen skrivetilgang.');
+                $channel = $input['channel'] ?? '';
+                if (!is_string($channel) || !in_array($channel, ['radio', 'web', 'both'], true))
+                    throw new InvalidArgumentException('Velg radio, nett eller begge.');
+                if (in_array($item['web']['delivery']['state'] ?? '', ['pending', 'unknown'], true))
+                    throw new InvalidArgumentException('Avklar nettoverføringen før du endrer bruksområdet.');
+                if (($item['web']['delivery']['status'] ?? '') === 'publish' && $channel === 'radio')
+                    throw new InvalidArgumentException('Saken er allerede publisert på nett. Kanalvalg trekker den ikke tilbake.');
+                $item['channel'] = $channel;
+                $item['status'] = 'draft'; $item['verified'] = false; $item['approvedBy'] = null;
+                $item['web']['approvedHash'] = null;
+            } elseif ($action === 'save') {
                 $program = (string)($input['program'] ?? $item['program'] ?? '');
                 if (!in_array($program, ['', 'god-morgen-vestland'], true))
                     throw new InvalidArgumentException('Velg et gyldig program.');
@@ -150,6 +169,8 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                 $item['verified'] = false;
                 $item['status'] = 'draft'; $item['approvedBy'] = null;
             } elseif ($action === 'ready') {
+                if (!studio_news_radio_credit($item)) throw new InvalidArgumentException('NRK må krediteres tidlig i radiomanuset før godkjenning.');
+                if (studio_board_channel($item) === 'web') throw new InvalidArgumentException('Velg radiomateriale før godkjenning til sending.');
                 if (isset($item['sourceCheck']) && !studio_news_check_current($item))
                     throw new InvalidArgumentException('Kjør kildekontroll på nytt. Manuset er endret, kontrollen har avvik eller den er eldre enn én time.');
                 if (trim((string)($item['script'] ?? '')) === '' || empty($item['verified']))
