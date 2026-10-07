@@ -8,7 +8,8 @@ Alle 19 åpne PR-er er gjennomgått mot fersk main og dagens konsoliderte runtim
 37613113851 (seks endrede filer med privat backup). Robot-adressen gir nå
 HTTP 302 til Nyhetsdesk. Radioliste og dagens logo er bevart.
 #20 er avstemt, testet og merget som 68660b1; kun testverktøy/dokumentasjon,
-ingen auth-runtime. Reell B2B-innlogging er fortsatt uprøvd.
+ingen auth-runtime. Selektiv produksjonskjøring 37613465313 bekrefter samme
+commit, to endrede filer og privat backup. Reell B2B-innlogging er fortsatt uprøvd.
 
 Fem gyldige restoppgaver beholdes som drafts: #2 AzuraCast-test, #13 programregister,
 #15 sendemal, #16 femstedsvær og #21 Render-staging. Manglende funksjoner er
