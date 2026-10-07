@@ -59,15 +59,18 @@ function server(array $env, callable $test): void {
  } finally {fclose($pipes[0]);proc_terminate($proc);proc_close($proc);unlink($log);}
 }
 server(['STUDIO_SITE_MODE'=>'coming-soon'],function(){
- foreach(['/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/robot.php', '/?preview=1'] as $path){
+ foreach(['/', '/index.php', '/login.php', '/auth/start.php', '/auth/callback.php?code=fake', '/logout.php', '/?preview=1'] as $path){
   [$code,$html]=request($path);check($code===503 && str_contains($html,'Vi klargjør det nye arbeidsrommet') && !str_contains($html,'Åpne demonstrasjonen') && !str_contains($html,'Set-Cookie:'),'waiting page blocks entry: '.$path);
  }
+ [$legacyCode,$legacyHtml]=request('/robot.php');
+ check(in_array($legacyCode,[404,503],true) && !str_contains($legacyHtml,'Redaksjonell innboks') && !str_contains($legacyHtml,'Set-Cookie:'),'removed robot page stays inaccessible in waiting mode');
  check(request('/assets/studio.css')[0]===200,'waiting page assets accessible');
 });
 server(['STUDIO_AUTH_MODE'=>'demo'],function(){
  [$code,$html]=request('/');check($code===303 && str_contains($html,'Location: /login.php'),'anonymous demo redirects to login');
  check(request('/login.php')[0]===200,'login explanation');
- check(request('/robot.php')[0]===403,'demo cannot view robot inbox');
+ [$legacyCode,$legacyHtml]=request('/robot.php');
+ check(in_array($legacyCode,[303,404],true)&&!str_contains($legacyHtml,'Redaksjonell innboks'),'removed robot page cannot expose legacy inbox in the development server');
  check(request('/assets/studio.css')[0]===200,'stylesheet served');
  check(request('/auth/start.php')[0]===503,'demo cannot initiate auth');
  check(request('/auth/callback.php?code=fake&state=fake')[0]===503,'demo rejects callback');

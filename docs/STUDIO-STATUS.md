@@ -580,3 +580,12 @@ HTTPS-/innloggingskontroll besto. Ingen manuelt innhold, konfigurasjon,
 WordPress eller redaksjonell publisering ble endret. Fremtidige endringer
 til main publiseres etter de samme kontrollene; direkte kodeendringer på
 serveren stopper automatikken for avstemming. Fullpakke-apply er sperret.
+
+
+## Robot-siden pensjoneres – 06.10.2026
+
+Avgrenset oppgave: fjern offentlig robot.php og gamle Artikkelutkast-lenker fra hovedmeny, mobilmeny og kontrollsenter. Apache videresender gamle bokmerker med HTTP 302 til den autentiserte Nyhetsdesk. RSS hentes bare gjennom eksisterende NewsDesk, og fotballsaker behandles i den samlede WordPress-køen. Eksportparsere og private data bevares.
+
+Fersk produksjonsavstemming: Actions 37464303567 og 37464726711; selektiv serverstatus b73d6646e69723c79521f81ee6d7ef68d0ee4445 / 37434976731-1. Ingen robot-news.json eller robot-inbox.json finnes i de to kontrollerte gamle/private konfigurasjonsområdene. De aktive sidebar-dimensjonene 2172×724 bevares i Git-endringen; main-varianten 2400×1073 skal ikke overskrive den nåværende logoen.
+
+Innlogget Studio er åpnet med eksisterende Microsoft-konto. Før endring er Nyhetsdesk og kontrollsenter sett i nettleseren. Godkjenningsknapper er ikke brukt. Endringen går via PR, grønne PHP-/mobiltester og den eksisterende, autoriserte selektive main-deployen med driftkontroll og privat backup. Endelig server-/visuelt resultat dokumenteres etter utrulling.
