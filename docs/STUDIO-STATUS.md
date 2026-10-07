@@ -1,9 +1,137 @@
 # Studio – felles status og arbeidsliste
 
-Oppdatert 05.10.2026 etter selektiv mobiloppdatering og autentisert API-kontroll.
+Oppdatert 07.10.2026 etter aktivering av #40 og oppfølging av artikkelkontroll.
 Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
 
+
+
+
+## Artikkelretting og læringsregler – 07.10.2026
+
+PR #40 er merget som 959fb5cbe46e29762ce24e623cdac1754a4fcc9a og
+selektivt deployet i Actions 37543203059. PHP 8.2/8.4, mobiltester,
+pakke og deploy besto. 13 filer ble endret; produksjonshasher og HTTPS
+ble bekreftet. Privat backup: selective-37543203059-1. Innlogget Studio
+viser det nye kontrollsenteret og Radioliste.
+
+Ved redigering av et faktisk utkast ble CRLF-avsnitt fra nettleserskjemaet
+tolket som tomme kontrollsegmenter. Kildekontrollen deler nå på alle
+linjeskift og hopper bare over blanke segmenter. Alle reelle påstander,
+kildebelegg, tekstfingeravtrykk og manuell godkjenning beholder kravene.
+Regresjonstesten dekker LF, CRLF, mellomrom på blank linje, CR og
+at manglende kontroll av en faktisk påstand fortsatt avvises.
+
+Læringen er lagt inn som faste skriveråd i nettgeneratoren: bevar
+meldt/skal ha-forbehold; ikke utled umiddelbar utrykning fra at politiet
+er på stedet; ikke finn på videre oppfølging; ikke gjør «ingen skadde
+funnet/meldt» om til «ingen skadet». Korte kilder gir korte saker.
+Dette er eksplisitte generatorregler, ikke automatisk modelltrening.
+Kontrollkravene er ikke svekket og det utføres ingen automatisk publisering.
+
+Seks publiserte Studio-artikler får naturlige avsnitt via WordPress-
+revisjoner. Ordlyd og metadata kontrolleres mot førversjonen.
+Det korrigerte utkastet skal kontrolleres på nytt etter utrulling og
+bli liggende til Thomas sin godkjenning. Endelig CI-, deploy- og
+innholdskontroll føres i oppfølgings-PR-en ved levering.
+
+## Aktivering av PR #40 – 07.10.2026
+
+Thomas har uttrykkelig bedt om å utføre #40 og om mulig rette allerede
+publiserte artikler. PR-ens funksjoner og avsnittsretting aktiveres via den
+etablerte selektive main-pipelinen, med nye tester etter denne oppfølgingen.
+Før merge ble logoavviket i sidebar avstemt: main med dimensjoner 2172×724
+matcher nøyaktig den registrerte produksjonshashen
+69ecf254292a9d6b35c2249ac8991b811364888321bbcb5366afd7096bdaf1d2.
+Disse dimensjonene bevares i #40. Eksisterende kildegrunnlag, godkjenninger,
+privat konfigurasjon og innhold skal bevares av utrullingen.
+
+Seks publiserte Studio-saker er identifisert med setningsvise brudd:
+1244, 1243, 1242, 1241, 1109 og 1107. Formateringen kan rettes separat via
+WordPress sine innholdsrevisjoner, uten å endre ordlyd, ingress, bilder,
+kategorier eller kildelenker. Nye naturlige avsnitt velges etter tema.
+Siste head, grønne tester, deployresultat og verifiserte innholdsendringer
+føres i PR #40 ved levering. Dette notatet alene er ikke et deploybevis.
+
+## Kontrollsenter: sak til venstre, behandling til høyre – 06.10.2026
+
+Avgrenset gren fra main b73d6646e69723c79521f81ee6d7ef68d0ee4445.
+Kontrollsenteret viser «Saker til behandling», alle aktive saker og markert valg.
+Høyre kolonne viser kilden, lagret bruksområde (radio/nett/begge), status og
+lenker til eksisterende manus/nettredigering. Forkasting krever bekreftelse,
+CSRF, rolle og ferskt listesnapshot; manus/historikk beholdes og kan gjenopprettes.
+Endret bruksområde krever ny godkjenning. Nettvalget sperrer radio-klarstatus,
+radiovalget sperrer WordPress-levering. Eksisterende utkast bevares.
+Eldre saker beholder begge bruksområder til et eksplisitt valg gjøres.
+Robåt fra Nyhetsdesk er også tilgjengelig direkte i høyre behandlingskolonne.
+Valgt bruksområde styrer hvilke utkast som klargjøres; begge bruker ett originalgrunnlag.
+Forslag vises som sammenhengende lesetekst med naturlige avsnitt uten å endre
+lagret tekst eller kontrollfingeravtrykk. NRK krediteres før nettteksten og lenkes
+til originalen; radiogeneratoren legger kildeomtalen først. Se [NRK-kreditering](NRK-CREDITING.md)
+for verifiserte regler og avgrensningen mot en særskilt RSS-avtale.
+Ingen artikkel godkjennes eller publiseres av dette arbeidet. Ingen produksjonsdeploy.
+Selektiv aktivering etter review og grønne kontroller gjenstår; ekte innlogget
+produksjonsflyt og redaksjonell godkjenning utføres ikke i testen.
+
+## Guardrail-oppfølging etter PR #25 – 05.10.2026
+
+Første kartlegging viste PR #25 på `fix/mobile-newsroom` mot
+`feat/unified-newsroom`, head `2330214ff7335d2f497965e5cbc8f979610c488d`,
+konfliktfri draft og grønn PHP 8.2/8.4/mobil-CI 37243345398.
+Under arbeidet ble PR-en retargetet og merget eksternt kl. 12:14:19 Oslo:
+slutt-head `4d8ac6e4e477b0477592244c94598e74f6510815`,
+merge `e434969bc5f62ff1b1eb4af4a3bc3d47c0d1e886`.
+Ingen merge ble utført av denne oppgaven. GitHub avviste et ikke-fast-forward
+oppdateringsforsøk; eksisterende historie ble bevart uten force-push.
+
+Denne separate oppfølgingen bygger på fersk main
+`19bbb18d7e3250406e2de5dada7e5194c40818e9`. Kun release-workflow,
+deploysperrer, isolert sperretest og dokumentasjon endres.
+Fullpakke-apply stoppes før transport eller serveroperasjoner, også ved direkte
+skriptkjøring. Automatisk apply er fjernet; release-workflow tilbyr bare
+dry-run og tester alle PR-baser. Ny CI kjøres på oppfølgingsgrenen.
+
+Mobilruntime, RSS-rettelser, programregister, nyhetsmanus og konsolidert
+godkjenningsflate er urørt. Render PR #21 og dens separat dokumenterte status
+beholdes; ingen Render-tjeneste er endret eller verifisert her.
+Tidligere mobil/RSS-aktivering er kun lest som GitHub-historikk.
+Ingen ferske serverhasher eller innlogget produksjons-UI er kontrollert her.
+Ingen Uniweb/Render-deploy, secretendring, artikkelpublisering eller e-post.
+
+Neste steg: review og grønne kontroller på oppfølgings-PR-en, fersk
+produksjonsavstemming, nytt selektivt manifest og Thomas sin eksplisitte
+godkjenning før en ny utrulling. Se [preflight og rollback](STUDIO-DEPLOY.md).
+Eksakt oppfølgingshead og endelig CI-status dokumenteres i PR-beskrivelsen.
+
+## RSS: selektivt publisert og ekte-data-test – 05.10.2026
+
+Studio PR #23, #24, #25 og #26 er merget. PHP 8.2/8.4 og mobiltester er grønne
+også på hovedgrenens sluttpunkt 66966cc3509bcf2c3af496e5e996513fedaac92b.
+Rettelsen i #26 er selektivt installert på Uniweb: app/news-script.php,
+app/case-workflow.php og app/newsroom.php. Kilde 0612c6c650ac7a8b5e6857ac6e3fca2ab0c516f4.
+Ingen helgren-deploy; øvrige aktive avvik og privat konfigurasjon er bevart.
+
+Deployment via web PR #54, release e145c19f0a12f4c5431e536bb7afb900a00765fe,
+[Actions 37299028081](https://github.com/toystad461/radiorubben-web/actions/runs/37299028081):
+artefakt og installasjon besto. Åtte ferske før-hasher ble avstemt, og alle
+tre etter-hasher er bekreftet. Privat backup og rollback står i web-repoets
+RSS-STUDIO-RELEASE.md og scripts/rss-studio-release.json.
+Uniweb-aliasstien er avstemt mot den observerte kanoniske app-stien; første
+stopp endret ingen kode.
+
+Testen brukte faktisk Bømlo RSS/original og aktiv Studio-konfigurasjon på
+en isolert privat sendeliste. Nettutkast og radiostikk ble laget på samme
+item.id, med identisk originaltekst, kildehash og hentetidspunkt.
+Nettkontroll: bestått. Radiokontroll: kjørt, men ikke klar-status.
+Begge utkast forble uten godkjenning; ingen WordPress-levering eller test-e-post.
+Aktiv sendeliste var byte-identisk før/etter. Eldre web-only-saker er ikke
+regenerert eller endret som del av denne utrullingen.
+
+Innlogget UI er ikke kontrollert i denne leveransen: nettlesertilgangen var
+utilgjengelig. Manuell sluttgodkjenning beholdes. Før faktisk publisering
+må Thomas lese teksten og kontrollrapporten. robot.php og den separate
+Robot-importen er fortsatt parallelle innganger, dokumentert i RSS-FLOW-AUDIT.md.
+Full garanti for alle historiske veier eller feilfrie fakta gis ikke.
 
 ## Mobilflyt – aktivert 05.10.2026
 
@@ -320,3 +448,153 @@ Render-forbindelsen viser kun Zinus-arbeidsområder, ikke Radio Rubben. Brukeren
 må koble til Radio Rubben-kontoen før isolert testvert kan etableres der.
 Ingen produksjonsendring, Entra-endring, invitasjon eller Render-deploy er gjort.
 Se ENTRA-TEST.md for oppdatert protokoll og gjeldende observatørbegrensning.
+
+## Neste RSS-rettelse: kildeattribusjon og eldre web-only saker
+
+Ren, separat kildeattribusjon kan bekreftes deterministisk mot validert originaladresse og intakt kildehash. Andre faktapåstander og alle redaksjonelle issues beholder kontrollkravene. Ved fornyet webkontroll klargjøres også et manglende radiomanus fra samme nyhentede original; eksisterende webtekst og eksisterende radiotekst bevares. Ingen automatisk godkjenning eller publisering. Endringen krever grønne PHP- og mobile tester samt ny selektiv serverkontroll før deployment. Live-backfill er ikke kjørt i denne endringen.
+
+## SSH-oppsett – 05.10.2026
+
+PR #31 inkluderer nå en separat, manuelt startet `studio-ssh-check.yml`.
+Den bruker miljøet `studio-production`, kjører bare fra main og er uavhengig
+av release/tag og `STUDIO_DEPLOY_ENABLED`. Den kontrollerer nøkkel, kjent vert,
+SSH, eksisterende Studio-mapper og PHP/verktøy uten opplasting eller skrivetest.
+Den leser ikke lokal konfigurasjon, brukere eller redaksjonelle data.
+
+Oppsett gjenstår: bekreft Studio-konto og SSH-vertsfingeravtrykk i Uniweb,
+installer en dedikert offentlig nøkkel og lagre privatnøkkelen direkte som
+`STUDIO_DEPLOY_SSH_KEY` i GitHub-miljøet. Legg verifiserte vertsnøkler i
+`STUDIO_DEPLOY_KNOWN_HOSTS`, og sett `STUDIO_SSH_HOST` og `STUDIO_SSH_USER`.
+Ikke kopier WordPress-kontoens verdier uten å bekrefte tilgang til Studio.
+Hold `STUDIO_DEPLOY_ENABLED=false` under oppsettet. Kontroller miljøregler
+og reviewer før manuell kjøring. Nøkler skal aldri legges i chat eller Git.
+
+Workflowen må gjennomgås og merges før den kan startes fra Actions.
+En grønn tilkoblingstest verifiserer ikke skriveadgang, domenets webroot,
+produksjonens filhasher eller selektiv deploy/rollback. Disse kreves fortsatt
+før utrulling. GitHub-pluginen kan ikke administrere secrets eller starte
+workflowen; kontoinnstillinger og første kjøring gjenstår. Ingen ny tilkobling
+eller produksjonsdeploy er utført i denne oppfølgingen.
+
+## RSS-oppfølging ferdig deployet 2026-10-05
+
+PR 28, 29, 30 og 32 er slått sammen etter grønne PHP 8.2/8.4- og mobiltester. Kildeattribusjon, bokmål og strengt format med begrensede avsnittsreferanser er rettet. Selektiv deployment med privat sikkerhetskopi og utfylling av to eldre web-only saker lykkes i https://github.com/toystad461/radiorubben-web/actions/runs/37302374295 . Netttekst og sak-ID er bevart; begge produksjoner deler samme nyhentede originalgrunnlag.
+
+Sluttkontroll https://github.com/toystad461/radiorubben-web/actions/runs/37302620846 viser tre aktive RSS-saker med begge produksjoner og null web-only. Den tredje kom gjennom ordinær automatisk worker og bestod både web- og radiokontroll. Alle tre er fortsatt uten manuell godkjenning og WordPress-leveranse.
+
+Redaksjonelle avvik: De to eldre netttekstene har udokumenterte påstander om blant annet personskader, brannvesen, myndighetsoppfølging og rasets konsekvenser. Ett eldre radioutkast krever også gjennomgang. Disse må korrigeres og kontrolleres før Thomas godkjenner. Den isolerte testen av Bømlo-saken om frivillighet fullførte begge kontroller; radio bestod, mens en webpåstand om prosjektets mål ble flagget. Testen endret ikke aktiv kjøreplan. Fungerende flyt er ikke en garanti for feilfri AI-tekst.
+
+Detaljert dokumentasjon, sikkerhetskopier, stoppede forsøk og resterende arbeid: https://github.com/toystad461/radiorubben-web/blob/codex/rss-studio-release-20261005/RSS-STUDIO-RELEASE.md . Autentisert nettleserkontroll og pensjonering av robot.php/navigasjonen gjenstår. Ingen offentlig side, plugin, tema, legitimasjon eller publiseringsrettighet ble endret av denne oppfølgingen.
+
+
+## SSH-oppsett verifisert i kontrollpanel – 05.10.2026 kl. 16:08 Oslo
+
+Denne oppdateringen erstatter gjenstående konto-/secretoppsett i SSH-notatet over.
+Thomas valgte Uniweb-konto 79007. Kontrollpanelet bekrefter vert
+`ssh.cptk37ymg.service.one` og bruker `cptk37ymg_w1417156`.
+Filbehandleren viser Studio-mappene under r1417157. Thomas sin lokale
+SSH-test bekrefter PHP CLI 8.4.26, rsync og begge Studio-mappene.
+En dedikert Ed25519-nøkkel ble opprettet lokalt av Thomas og installert
+med `restrict`; BatchMode-test svarte «SSH-nøkkel fungerer». Dette begrenser
+videresending/PTY, men avgrenser ikke nøkkelen til bare Studio-filer.
+GitHub-miljøet studio-production viser begge secrets registrert:
+STUDIO_DEPLOY_SSH_KEY og STUDIO_DEPLOY_KNOWN_HOSTS. Verdiene er ikke lest.
+Known-hosts ble kopiert fra Mac-ens eksisterende vertsregister; uavhengig
+bekreftelse av vertsfingeravtrykket er ikke dokumentert her.
+STUDIO_DEPLOY_ENABLED og STUDIO_DEPLOY_AUTO_APPLY er begge false.
+Miljøet viser No restriction for deploygrener og ingen reviewer-regel.
+
+PR #31 oppdateres mot main ae67af071ec01d64ddedbfcf02a6fb9a01effd48.
+Statuskonflikten løses ved å beholde både RSS-journalen og SSH-notatet.
+Neste steg er review/merge av PR #31 og manuell SSH-tilkoblingstest fra
+main. Første GitHub-tilkobling er ennå ikke kjørt. Ingen produksjonsfiler
+er lastet opp; fullpakke-apply forblir sperret i denne PR-en.
+
+## GitHub SSH-test – 05.10.2026 kl. 18:42 Oslo
+
+PR #31 er merget som aa7af7732c20b83062406c2d8336899bfa04b500 etter Thomas sin godkjenning. Første SSH-test (Actions 37342869433) nådde serveren med streng vertsverifikasjon og nøkkelautentisering. Den stoppet på manglende CLI-verktøy realpath. Tilkoblingstesten bruker nå PHP realpath() for samme kanoniske stikontroll; ingen validering slås av. Nettstedfiler er ikke lastet opp. PR #31 inneholder kun driftsoppsett, tester og dokumentasjon, ingen runtime-endringer til Studio.
+
+
+## Uniweb-katalogalias – 05.10.2026
+
+Actions 37343319506 autentiserte over SSH, men avviste katalogaliaset
+`/run/webroots/r1417157`. Fersk SSH-kontroll bekrefter at dette er en
+serverstyrt symlink til `/customers/9/3/1/cptk37ymg/webroots/r1417157`.
+Tilkoblingskontroll og fullpakkens dry-run verifiserer nå det eksakte
+aliasmålet og de kanoniske Studio-katalogene med PHP realpath().
+Et annet mål eller symlink for selve Studio-mappene avvises fortsatt.
+Fullpakke-apply og automatisk publisering er fortsatt sperret.
+Ingen runtime, hemmeligheter eller redaksjonelle data endres av rettelsen.
+Neste steg: grønn GitHub SSH-test og fersk filavstemming før selektiv utrulling.
+
+
+## GitHub-tilkobling bekreftet og ny preflight – 05.10.2026
+
+PR #35 er merget etter grønne PHP 8.2/8.4- og mobilkontroller. GitHub Actions
+37344110000 bekrefter SSH og serverforutsetninger fra GitHub til Uniweb.
+Release-opprettelsen stoppet separat på en eksisterende versjon/tag.
+Manuell dry-run avkobles derfor fra draft-jobben og trenger ikke at
+STUDIO_DEPLOY_ENABLED aktiveres. Den kan aldri kjøre apply. Manglende SSH-oppsett
+gir feil i stedet for en grønn, overhoppet preflight.
+
+Ferske kodehasher mot main-grunnlaget: 84 av 90 identiske, seks avvik.
+Avvik: app/bootstrap.php, app/views/head.php, app/views/sidebar.php,
+public/login.php, public/local/login.php og public/robot.php. De første fem
+gjelder logo/favikon; robot.php har ulike private innboksstier. Ingen kodefil
+er installert som del av kontrollen. Vendor, binære ressurser og privat
+konfigurasjon inngår ikke i denne 90-filers sammenligningen.
+
+
+## Uniweb filtransport – 05.10.2026
+
+PR #36 er merget. Actions 37344569738 bestod kodekontrollene, men SFTP
+returnerte feilstatus etter at ZIP-filen var skrevet. Samme oppførsel ble
+bekreftet med en separat opplasting til privat staging. Transporten bruker
+nå SSH-stdin med umask 077 og SHA-256-kontroll av både pakke og skript før
+kjøring. Streng vertsverifikasjon beholdes.
+Den opprinnelige prøvepakken ble kontrollert via SSH og fullførte
+DRY-RUN OK; ingen nettstedfiler ble endret. Ny ende-til-ende GitHub-kjøring
+gjenstår etter merge. Fullpakke-apply forblir sperret.
+
+
+## Automatisk publisering autorisert – 05.10.2026
+
+Thomas ba eksplisitt «aktiver automatisk publisering» etter grønn SSH-
+prøvekjøring 37345265396. Ny selektiv publisering erstatter ikke fullpakke-
+sperren. Baseline er 489 kode-/avhengighetsfiler med ferske produksjonshasher
+mot pakke e2e3bad750c7355feaf5b2fc7a6f48b26e949207. Kjente forskjeller
+bevares frem til de aktuelle kildefilene faktisk endres i GitHub.
+
+Implementert: main-trigger, PHP- og mobilgate, nyeste-main-kontroll,
+kontrollsummer, privat backup/manifest, felles serverlås, atomiske filbytter,
+selektive slettinger og rollback ved feil. Runtime-data og konfigurasjon er
+utenfor filsettet. Tester dekker bootstrap, drift, symlinker, rettigheter,
+oppdatering/tillegg/sletting, bevaring av privat data og rollback.
+GitHub CI og aktivering av miljøvariabel/produksjonsstatus gjenstår etter PR.
+
+
+## Automatisk publisering aktiv og verifisert – 05.10.2026
+
+PR #38 er merget som 84aa03050e739f28bf81ceae18124f6294407912.
+STUDIO_DEPLOY_AUTO_APPLY=true i studio-production. Push utløste Actions
+37346998632 automatisk; PHP 8.2/8.4, mobil og deploy besto. Serverens
+selective-state.json bekrefter denne committen og kjøring 37346998632-1.
+Alle 489 registrerte filhasher er kontrollert mot faktisk produksjon, uten
+avvik. Kun vendor/composer/installed.php ble oppdatert (byggets kilde-ID).
+De kjente forskjellene i logo, favikon og robot.php er bevart.
+
+Privat sikkerhetskopi og før-/ettermanifest finnes på serveren i
+~/.radiorubben-studio-deploy/backups/selective-37346998632-1/.
+HTTPS-/innloggingskontroll besto. Ingen manuelt innhold, konfigurasjon,
+WordPress eller redaksjonell publisering ble endret. Fremtidige endringer
+til main publiseres etter de samme kontrollene; direkte kodeendringer på
+serveren stopper automatikken for avstemming. Fullpakke-apply er sperret.
+
+
+## Robot-siden pensjoneres – 06.10.2026
+
+Avgrenset oppgave: fjern offentlig robot.php og gamle Artikkelutkast-lenker fra hovedmeny, mobilmeny og kontrollsenter. Apache videresender gamle bokmerker med HTTP 302 til den autentiserte Nyhetsdesk. RSS hentes bare gjennom eksisterende NewsDesk, og fotballsaker behandles i den samlede WordPress-køen. Eksportparsere og private data bevares.
+
+Fersk produksjonsavstemming: Actions 37464303567 og 37464726711; selektiv serverstatus b73d6646e69723c79521f81ee6d7ef68d0ee4445 / 37434976731-1. Ingen robot-news.json eller robot-inbox.json finnes i de to kontrollerte gamle/private konfigurasjonsområdene. De aktive sidebar-dimensjonene 2172×724 bevares i Git-endringen; main-varianten 2400×1073 skal ikke overskrive den nåværende logoen.
+
+Innlogget Studio er åpnet med eksisterende Microsoft-konto. Før endring er Nyhetsdesk og kontrollsenter sett i nettleseren. Godkjenningsknapper er ikke brukt. Endringen går via PR, grønne PHP-/mobiltester og den eksisterende, autoriserte selektive main-deployen med driftkontroll og privat backup. Endelig server-/visuelt resultat dokumenteres etter utrulling.

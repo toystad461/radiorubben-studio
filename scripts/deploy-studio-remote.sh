@@ -3,18 +3,28 @@ set -Eeuo pipefail
 umask 077
 mode=${1:?}; version=${2:?}; digest=${3:?}; run=${4:?}
 [[ "$mode" == dry-run || "$mode" == apply ]] || exit 2
+# Full-package deployment is unsafe while live Studio differs from GitHub.
+# No environment variable or confirmation token may bypass reconciliation.
+if [[ "$mode" == apply ]]; then
+  echo 'STOP: Full-package apply is blocked. See docs/STUDIO-DEPLOY.md; reconcile a selective manifest and obtain Thomas approval.' >&2
+  exit 1
+fi
 [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 2
 [[ "$digest" =~ ^[a-f0-9]{64}$ && "$run" =~ ^[a-zA-Z0-9-]+$ ]] || exit 2
 # Deliberately fixed Studio-only paths. Never copy to the WordPress root.
-base=/run/webroots/r1417157
+base=/customers/9/3/1/cptk37ymg/webroots/r1417157
+alias=/run/webroots/r1417157
 public="$base/studio-public"
 private="$base/studio-private"
 work="$HOME/.radiorubben-studio-deploy"
 stage="$work/staging/$run"
 url=https://studio.radiorubben.no
-for cmd in php curl rsync tar sha256sum flock realpath stat; do command -v "$cmd" >/dev/null; done
-for dir in "$public" "$private"; do
-  [[ -d "$dir" && ! -L "$dir" && "$(realpath "$dir")" == "$dir" ]] || {
+for cmd in php curl rsync tar sha256sum flock stat; do command -v "$cmd" >/dev/null; done
+[[ "$(php -r 'echo realpath($argv[1]);' "$alias")" == "$base" ]] || {
+  echo 'STOP: Studio alias target mismatch.' >&2; exit 1;
+}
+for dir in "$base" "$public" "$private"; do
+  [[ -d "$dir" && ! -L "$dir" && "$(php -r 'echo realpath($argv[1]);' "$dir")" == "$dir" ]] || {
     echo 'STOP: Studio document paths must be verified before deployment.' >&2; exit 1;
   }
 done
@@ -79,7 +89,7 @@ verify_home() {
 verify_home || { echo 'STOP: Existing web mode does not match the safe expected mode.' >&2; exit 1; }
 # Staging/backups remain private. Apply predictable modes to shipped code only;
 # never transfer the runner's owner/group or replace local secret configuration.
-flags=(-rlpt --itemize-changes --chmod=D755,F644)
+flags=(-rlpt --checksum --itemize-changes --chmod=D755,F644)
 [[ "$mode" == dry-run ]] && flags+=(--dry-run)
 if [[ "$mode" == dry-run ]]; then
   rsync "${flags[@]}" --exclude='/config/local.php' "$stage/unpacked/studio-private/" "$private/"

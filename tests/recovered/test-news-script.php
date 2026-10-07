@@ -119,7 +119,35 @@ try {
 } finally { foreach (glob($clearDir . '/*') as $f) unlink($f); rmdir($clearDir); }
 echo "News script checks: $tests passed\n";
 
-$paragraphReview=static function($c,$payload){$input=json_decode($payload['input'],true);expect_news($input['source_paragraphs'][0]['index']===0,'source paragraphs have explicit identities');return json_encode(['segments'=>[['index'=>0,'verdict'=>'supported','evidence_indexes'=>[0],'reason'=>'Originalavsnittet støtter påstanden.']],'issues'=>[]]);};
+$paragraphReview=static function($c,$payload){expect_news($payload['text']['format']['schema']['properties']['segments']['items']['properties']['evidence_indexes']['maxItems']===4,'schema enforces server evidence reference limit');expect_news(($payload['text']['format']['strict']??false)===true&&$payload['text']['format']['schema']['properties']['issues']['items']['type']==='string','review requires structured string issues without relaxing validation');$input=json_decode($payload['input'],true);expect_news($input['source_paragraphs'][0]['index']===0,'source paragraphs have explicit identities');return json_encode(['segments'=>[['index'=>0,'verdict'=>'supported','evidence_indexes'=>[0],'reason'=>'Originalavsnittet støtter påstanden.']],'issues'=>[]]);};
 $indexed=studio_news_review($item,$sentence,['text'=>$sentence,'url'=>$item['sourceUrl']],$config,$paragraphReview);
 expect_news($indexed['status']==='passed'&&$indexed['segments'][0]['evidence']===[$sentence],'referenced evidence comes verbatim from server snapshot');
 rejects_news(fn()=>studio_news_review($item,$sentence,['text'=>$sentence,'url'=>$item['sourceUrl']],$config,static fn()=>json_encode(['segments'=>[['index'=>0,'verdict'=>'supported','evidence_indexes'=>[99],'reason'=>'Bad index']],'issues'=>[]])),'fabricated paragraph reference rejected');
+
+$metadataRejected=static fn()=>json_encode(['segments'=>[['index'=>0,'verdict'=>'unsupported','evidence_indexes'=>[],'reason'=>'Navnet står ikke i brødteksten.']],'issues'=>[]]);
+expect_news(studio_news_review($item,'Dette melder Bømlo kommune.',$source,$config,$metadataRejected)['status']==='passed','validated source address supports pure attribution despite model rejection');
+expect_news(studio_news_review($item,'Dette melder Bømlo kommune, og møtet er gratis.',$source,$config,$metadataRejected)['status']==='needs_review','compound factual claims still require textual evidence');
+expect_news(studio_news_review($item,'Dette melder NRK.',$source,$config,$metadataRejected)['status']==='needs_review','wrong source attribution cannot pass');
+$brokenSource=$source;$brokenSource['sha256']=str_repeat('0',64);
+expect_news(studio_news_review($item,'Dette melder Bømlo kommune.',$brokenSource,$config,$metadataRejected)['status']==='needs_review','tampered snapshot cannot authorize attribution');
+$metadataIssue=static fn()=>json_encode(['segments'=>[['index'=>0,'verdict'=>'unsupported','evidence_indexes'=>[],'reason'=>'Metadata']],'issues'=>['En annen konkret feil hindrer godkjenning.']]);
+expect_news(studio_news_review($item,'Dette melder Bømlo kommune.',$source,$config,$metadataIssue)['status']==='needs_review','metadata support never clears editorial issues');
+
+
+// Real edit forms use CRLF; whitespace-only paragraph separators must not become claims.
+$reviewLines = [$sentence, 'Møtet skal vere i kommunestyresalen.', 'Påmelding er ikkje nødvendig.'];
+foreach (["\n\n", "\r\n\r\n", "\r\n \t\r\n", "\r\r"] as $separator) {
+    $reviewText = implode($separator, $reviewLines);
+    $reviewRequest = static function ($c, $payload) use ($reviewLines): string {
+        $input = json_decode($payload['input'], true);
+        expect_news(array_column($input['segments'], 'text') === $reviewLines, 'all nonempty claims retained in order across paragraph formats');
+        expect_news(array_column($input['segments'], 'index') === [0, 1, 2], 'claim indexes remain contiguous');
+        expect_news($payload['text']['format']['schema']['properties']['segments']['minItems'] === 3, 'schema covers exactly the real claims');
+        return json_encode(['segments'=>array_map(static fn($i)=>['index'=>$i, 'verdict'=>'supported', 'evidence_indexes'=>[1], 'reason'=>'Dekning i originalen.'], [0, 1, 2]), 'issues'=>[]]);
+    };
+    $paragraphResult = studio_news_review($item, $reviewText, $source, $config, $reviewRequest);
+    expect_news($paragraphResult['status'] === 'passed', 'paragraph breaks do not invent empty claims');
+    expect_news($paragraphResult['fingerprint'] === studio_news_fingerprint($item, $reviewText), 'fingerprint still binds unmodified stored text');
+    rejects_news(fn()=>studio_news_review($item, $reviewText, $source, $config, static fn()=>json_encode(['segments'=>[['index'=>0, 'verdict'=>'supported', 'evidence_indexes'=>[1], 'reason'=>'Bare første påstand.']], 'issues'=>[]])), 'missing real claims still fail after whitespace normalization');
+}
+echo "News paragraph review checks: $tests total passed\n";

@@ -4,3 +4,6 @@ Require all granted
 
 # Native ES modules for AI Studio.
 AddType application/javascript .mjs
+
+# Retired Robot inbox: keep old bookmarks on the authenticated newsroom.
+RedirectMatch 302 ^/robot\.php$ /newsdesk.php

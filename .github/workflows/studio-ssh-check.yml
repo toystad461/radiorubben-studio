@@ -1,0 +1,64 @@
+name: Studio Uniweb SSH connection check
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: studio-release
+  cancel-in-progress: false
+jobs:
+  check:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: studio-production
+    steps:
+      - name: Verify SSH access and server prerequisites without uploading files
+        env:
+          DEPLOY_KEY: ${{ secrets.STUDIO_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STUDIO_DEPLOY_KNOWN_HOSTS }}
+          SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
+          SSH_USER: ${{ vars.STUDIO_SSH_USER }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          for setting in DEPLOY_KEY KNOWN_HOSTS SSH_HOST SSH_USER; do
+            [[ -n "${!setting}" ]] || { echo "::error::Missing $setting"; exit 1; }
+          done
+          [[ "$SSH_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]] || exit 1
+          [[ "$SSH_USER" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]] || exit 1
+          ssh_dir=$(mktemp -d)
+          trap 'rm -rf -- "$ssh_dir"' EXIT
+          chmod 700 "$ssh_dir"
+          umask 077
+          printf '%s\n' "$DEPLOY_KEY" > "$ssh_dir/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$ssh_dir/known_hosts"
+          unset DEPLOY_KEY KNOWN_HOSTS
+          ssh-keygen -y -P '' -f "$ssh_dir/key" >/dev/null
+          ssh-keygen -F "$SSH_HOST" -f "$ssh_dir/known_hosts" >/dev/null
+          timeout 120 ssh -F /dev/null -T -p 22 -i "$ssh_dir/key" \
+            -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o "UserKnownHostsFile=$ssh_dir/known_hosts" -o GlobalKnownHostsFile=/dev/null \
+            -o ConnectTimeout=15 -o ConnectionAttempts=1 \
+            -o ServerAliveInterval=15 -o ServerAliveCountMax=2 \
+            -o ForwardAgent=no -o ClearAllForwardings=yes \
+            "$SSH_USER@$SSH_HOST" 'bash --noprofile --norc -se' <<'REMOTE'
+          set -Eeuo pipefail
+          for tool in php curl rsync tar sha256sum flock stat; do
+            command -v "$tool" >/dev/null || { echo "Missing server tool: $tool"; exit 1; }
+          done
+          base=/customers/9/3/1/cptk37ymg/webroots/r1417157
+          alias=/run/webroots/r1417157
+          [[ "$(php -r 'echo realpath($argv[1]);' "$alias")" == "$base" ]] || {
+            echo "Studio alias target mismatch"; exit 1;
+          }
+          for dir in "$base" "$base/studio-public" "$base/studio-private"; do
+            [[ -d "$dir" && ! -L "$dir" && "$(php -r '$p=realpath($argv[1]); if ($p===false) exit(1); echo $p;' "$dir")" == "$dir" ]] || {
+              echo 'Studio directory verification failed'; exit 1;
+            }
+            [[ -r "$dir" && -x "$dir" ]] || { echo 'Studio directory inaccessible'; exit 1; }
+          done
+          php -r 'if (PHP_VERSION_ID < 80200) {fwrite(STDERR, "PHP CLI 8.2+ required\n"); exit(1);} foreach (["curl","json","openssl","session","zip"] as $ext) {if (!extension_loaded($ext)) {fwrite(STDERR, "Missing PHP extension: ".$ext."\n"); exit(1);}} echo "PHP prerequisites OK\n";'
+          echo 'SSH connection and Studio directory checks passed. No files uploaded.'
+          REMOTE
+          echo 'SSH connection and prerequisites passed. No deployment or write-permission test performed.' >> "$GITHUB_STEP_SUMMARY"

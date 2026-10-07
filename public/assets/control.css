@@ -129,3 +129,16 @@
 .article-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
 .article-actions button:first-child { background: #1478ad; }
 @media (max-width: 900px) { .article-layout { grid-template-columns: 1fr; } }
+
+/* Editorial selection keeps the chosen story and next steps together. */
+.dashboard-rundown .control-rundown { max-height: 520px; overflow-y: auto; }
+.control-dashboard .control-rundown li.selected { background: rgba(88,201,255,.13); border-radius: 8px; }
+.dashboard-treatment { scroll-margin-top: 20px; }
+.dashboard-treatment select { width: 100%; color: #fff; background: #071728; border: 1px solid #456179; border-radius: 9px; padding: 10px; font: inherit; }
+.dashboard-treatment-actions { margin-top: 18px; }
+.dashboard-treatment-actions .control-link { white-space: normal; }
+.control-page a:focus-visible, .control-page button:focus-visible, .control-page select:focus-visible { outline: 2px solid #7fd4ff; outline-offset: 3px; }
+
+.dashboard-proposal { margin: 18px 0; line-height: 1.65; }
+.dashboard-proposal summary { color: #7fd4ff; cursor: pointer; font-weight: 700; }
+.dashboard-source-credit { border-left: 3px solid #7fd4ff; padding-left: 12px; margin-top: 18px; }
