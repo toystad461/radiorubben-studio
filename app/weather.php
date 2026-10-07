@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
-function studio_weather(): array {
-    $lat=round((float)(getenv('STUDIO_WEATHER_LAT') ?: '59.793'),4);
-    $lon=round((float)(getenv('STUDIO_WEATHER_LON') ?: '5.172'),4);
+function studio_weather(?array $place = null): array {
+    $lat=round((float)($place['lat'] ?? (getenv('STUDIO_WEATHER_LAT') ?: '59.793')),4);
+    $lon=round((float)($place['lon'] ?? (getenv('STUDIO_WEATHER_LON') ?: '5.172')),4);
     if(abs($lat)>90 || abs($lon)>180) throw new RuntimeException('Ugyldig værsted.');
     $file=sys_get_temp_dir().'/rubben-weather-'.hash('sha256',__DIR__."$lat,$lon").'.json';
     $handle=fopen($file,'c+');if(!$handle || !flock($handle,LOCK_EX))throw new RuntimeException('Værdata er utilgjengelige.');
@@ -23,7 +23,7 @@ function studio_weather(): array {
             rewind($handle);ftruncate($handle,0);fwrite($handle,json_encode($cache));
         }
         if($cache['failed']??false)throw new RuntimeException('Været kunne ikke oppdateres.');
-        return studio_weather_summary($cache['data']??[],time())+['place'=>getenv('STUDIO_WEATHER_NAME')?:'Bømlo · Bremnes'];
+        return studio_weather_summary($cache['data']??[],time())+['place'=>$place['name'] ?? (getenv('STUDIO_WEATHER_NAME')?:'Bømlo · Bremnes')];
     } finally {flock($handle,LOCK_UN);fclose($handle);}
 }
 function studio_weather_summary(array $data,int $now): array {
@@ -31,5 +31,7 @@ function studio_weather_summary(array $data,int $now): array {
     foreach($data['properties']['timeseries']??[] as $row){$time=strtotime($row['time']??'');if($time===false)continue;$diff=abs($time-$now);if($diff<$distance){$best=$row;$distance=$diff;}}
     $temp=$best['data']['instant']['details']['air_temperature']??null;
     if($distance>5400 || !is_numeric($temp))throw new RuntimeException('Ingen fersk værprognose.');
+    $updated=strtotime($data['properties']['meta']['updated_at']??'');
+    if($updated===false || $updated>$now+300 || $updated<$now-21600)throw new RuntimeException('Værgrunnlaget er for gammelt.');
     return ['temperature'=>(float)$temp,'symbol'=>$best['data']['next_1_hours']['summary']['symbol_code']??$best['data']['next_6_hours']['summary']['symbol_code']??'unknown','time'=>$best['time'],'updated'=>$data['properties']['meta']['updated_at']??null];
 }

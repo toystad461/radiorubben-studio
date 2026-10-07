@@ -1,5 +1,19 @@
 # Studio – felles status og arbeidsliste
 
+## Værmanus og DATEX – 07.10.2026
+
+Værfeltet lenker til et kort, redigerbart MET-manus for Bømlo, Stord og
+Haugesund. Samme generator kobles til eksisterende Nyhetsdesk-jobb etter :55
+med timevis idempotens, bevaring av ferske manuelle redigeringer og historikk.
+Rolle/CSRF/revisjon, utløp og utdatert værgrunnlag kontrolleres. Ingen lyd,
+automatisk godkjenning eller redaksjonell publisering inngår.
+DATEX-tilgang er testet: HTTP 200 og gyldig landsdekkende XML. Dagens offentlige
+trafikkilde beholdes inntil lokal DATEX-filtrering og privat serveroppsett er
+implementert. Se [funksjon og begrensninger](WEATHER-SCRIPT.md).
+Tester, PR og faktisk utrulling føres etter verifisering; dette er ikke deploybevis.
+Spillerregelen (bare dagens faktiske kamphendelser, full kampkontekst og ingen
+statistikknyheter) gjenstår i Fotballrobotens separate produksjonsgren 0.10.5.
+
 ## Nummerert Versjon 0 – 07.10.2026
 
 Thomas har bestilt nummerering i Git og publisering til studio.radiorubben.no.

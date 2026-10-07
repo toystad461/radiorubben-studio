@@ -80,6 +80,10 @@ function studio_newsroom_tick(array $feeds,array $config,?string $path=null,?cal
     try{
         $board=studio_board_read($path);$settings=studio_newsroom_settings($board);
         if(!$settings['enabled'])return ['state'=>'paused'];
+        if($path===null){
+            require_once __DIR__.'/weather-script.php';
+            try{studio_weather_script_tick();}catch(Throwable $e){error_log('Studio weather preparation unavailable.');}
+        }
         $user=['role'=>'producer','name'=>'Robåt – automatisk klargjøring'];$today=(new DateTimeImmutable('now',new DateTimeZone('Europe/Oslo')))->format('Y-m-d');
         $count=0;foreach($board['items'] as $i)if(($i['newsroom']['automaticDay']??'')===$today)$count++;
         $active=studio_board_active($board);

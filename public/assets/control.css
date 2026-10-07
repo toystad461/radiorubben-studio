@@ -142,3 +142,4 @@
 .dashboard-proposal { margin: 18px 0; line-height: 1.65; }
 .dashboard-proposal summary { color: #7fd4ff; cursor: pointer; font-weight: 700; }
 .dashboard-source-credit { border-left: 3px solid #7fd4ff; padding-left: 12px; margin-top: 18px; }
+.control-page textarea { display: block; box-sizing: border-box; width: 100%; max-width: 900px; padding: 14px; margin: 10px 0; font: inherit; line-height: 1.6; color: #fff; background: #071728; border: 1px solid #456179; border-radius: 9px; }
