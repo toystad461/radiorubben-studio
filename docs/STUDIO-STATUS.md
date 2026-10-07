@@ -1,5 +1,21 @@
 # Studio – felles status og arbeidsliste
 
+## Samarbeid / CRM – første kodeversjon 07.10.2026
+
+Egen avgrenset gren fra main 81c1423, uavhengig av iPhone-PR #47. Ny
+administratorflate på `/crm.php` med bedriftskort, status, kontaktlogg,
+oppfølgingsdato og OneDrive-lenke. Privat, atomisk register med historikk,
+CSRF og revisjonssperre. Fem offentlige kandidater kan legges til manuelt;
+tidligere kontakt er uttrykkelig uavklart. Ingen kunder kontaktes automatisk.
+Eksisterende redaksjon og publiseringsflyt er urørt.
+
+Microsoft-forslag: Studio som CRM, Teams Workflows for samlevarsler,
+OneDrive for filer, OneNote som valgfri notatbok senere. Dette er beskrevet
+i [CRM.md](CRM.md), men integrasjon, tidsstyring og varsling er ikke aktivert.
+Tester og fersk CI-status dokumenteres i PR-en. Neste steg er gjennomgang,
+avklaring av ønsket Microsoft-konto og separat autorisert selektiv utrulling.
+Ingen merge eller produksjonsdeploy er utført i denne oppgaven.
+
 ## Værmanus og DATEX – 07.10.2026
 
 Læringssiden får en tretrinns arbeidsflyt med valg av rettet manus, konkrete
