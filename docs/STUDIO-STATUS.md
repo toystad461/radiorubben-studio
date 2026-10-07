@@ -8,6 +8,13 @@ arbeidsreglene. PR #48 gir kontaktgrunnlaget. Avtaler, kampanjer, oppfølging
 av manus/lyd/godkjenning, faktisk levering og fornyelse gjenstår.
 Neste utviklingsleveranse er strukturerte samarbeidsmuligheter/avtaler per
 bedrift og oversikt over neste handling; bruk dokumentets akseptansekriterier.
+Thomas har deretter foreslått automatisk klargjøring av første kontakt:
+nettsøk, faste maler, 15–20 sekunders reklameforslag, programsamarbeid og
+TTS-demo lagret i Studio før eventuell utsending. [CRM-OUTREACH.md](CRM-OUTREACH.md)
+beskriver dette, med foreslått 20-leads-pilot innenfor ønsket om 10–20 manuelle
+godkjenninger. Automatisk sending krever et eget senere aktiveringsvalg;
+den slås ikke på av pilottelleren. Neste steg etter avtalemodellen er
+klargjørings- og godkjenningsflaten. Integrasjoner er ikke implementert.
 Teams-varsling kommer etter at denne arbeidsflyten er på plass.
 
 Runtime-commit fdc0a38b83f5262f0049a38df07c098e913002ff besto PHP 8.2/8.4

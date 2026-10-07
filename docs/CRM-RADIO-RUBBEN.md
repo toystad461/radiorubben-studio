@@ -5,6 +5,11 @@ tilpasset Radio Rubben. Konkretiseringen nedenfor styrer videre utvikling;
 den beskriver ikke funksjoner som allerede finnes. Gjeldende kodeomfang
 og teststatus står i [CRM.md](CRM.md) og PR #48.
 
+Thomas har også foreslått en flyt fra nye leads til nettsøk, kontaktmal,
+15–20 sekunders reklameforslag, programsamarbeid, TTS og kundedemo.
+De første 10–20 skal godkjennes manuelt før eventuell automatisk utsending.
+Se [førstekontakt og lyddemo](CRM-OUTREACH.md) for konkretisert flyt og pilot.
+
 ## Arbeidshverdagen CRM-et skal støtte
 
 Thomas skal kunne åpne Studio på telefonen og se hvem han bør kontakte,
@@ -29,6 +34,7 @@ dagens priser, lyttertall eller tekniske integrasjonsforutsetninger.
 | Reklame og sponsorleveranser | Manus, lyd, kundegodkjenning, ønsket sendeflate og leveringsbelegg | Gjenstår |
 | Oversikt og fornyelse | Hva må følges opp, hva mangler før oppstart, og hvilke avtaler nærmer seg slutten | Forfalte kontaktoppfølginger finnes; kampanje- og fornyelsesoversikt gjenstår |
 | Microsoft-støtte | Studio som hovedregister, Teams-varsler og lenker til OneDrive-filer | OneDrive-lenke finnes; varsling og filoverføring er ikke implementert |
+| Førstekontakt med demo | Godkjente maler, kildebelagt bedriftsnotat, reklameforslag, programsamarbeid og TTS-demo | Foreslått av Thomas; ikke implementert. Manuell pilot før eventuell automatikk |
 
 ## Bedrift, samarbeid og sending må kunne følges hver for seg
 
@@ -109,9 +115,12 @@ Bruk fiktive bedrifter og avtaler i tester; offentlige kandidater er ikke kunder
 
 1. Bygg videre på kontaktgrunnlaget med flere samarbeidsmuligheter/avtaler
    per bedrift, tydelig neste handling og håndtering av utsatt/avslått kontakt.
-2. Legg til Radio Rubben-leveranser: manus, lyd, versjonsgodkjenning,
+2. Bygg klargjøring av første kontakt og demo etter [CRM-OUTREACH.md](CRM-OUTREACH.md),
+   med kilder, maler, TTS og manuell godkjenning. Gjennomfør piloten før
+   automatisk utsending vurderes og eventuelt aktiveres av Thomas.
+3. Utvid til avtalte leveranser: manus, lyd, versjonsgodkjenning,
    avtalt sendeflate og dokumentert levering, deretter fornyelsesoversikt.
-3. Koble til Teams og eventuelle produksjonssystemer når arbeidsflyt,
+4. Koble til Teams og eventuelle produksjonssystemer når arbeidsflyt,
    datakilder og Radio Rubbens konto/tilganger er avklart.
 
 Behold eksisterende PHP-arkitektur og en avgrenset PR per leveranse.

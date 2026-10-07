@@ -55,3 +55,6 @@ Les docs/CRM-RADIO-RUBBEN.md før videre CRM-utvikling. Kontaktregisteret er
 første grunnlag; videre arbeid skal støtte lokale partnerrelasjoner, konkrete
 reklame-/sponsoravtaler, leveranser og fornyelse. Skill avtalt, godkjent,
 planlagt og faktisk sendt. Ikke presenter planlagte funksjoner som levert.
+Ved klargjøring av leads og utsending, les også docs/CRM-OUTREACH.md.
+Thomas ønsker manuell godkjenning av de første 10–20 før eventuell
+automatikk. Pilottelleren skal aldri alene aktivere kundesending.

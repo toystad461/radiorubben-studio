@@ -8,6 +8,9 @@ den åpne iPhone-PR-en #47 og de eldre Render-/programgrenene.
 Se [produktkrav og videre leveranser](CRM-RADIO-RUBBEN.md). Denne PR-en
 dekker kontaktgrunnlaget; strukturerte avtaler, kampanjer, produksjonsstatus
 og fornyelser er ennå ikke implementert.
+Thomas sitt forslag om maler, nettsøk og 15–20 sekunders TTS-demo før
+førstekontakt er konkretisert i [CRM-OUTREACH.md](CRM-OUTREACH.md).
+Kundekontakt og lydproduksjon er fortsatt ikke aktivert i CRM-et.
 
 ## Bruk
 
