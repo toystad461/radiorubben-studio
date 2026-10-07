@@ -1,5 +1,22 @@
 # Studio – felles status og arbeidsliste
 
+## Gjeldende PR-status og Versjon 0 – 07.10.2026
+
+Alle 19 åpne PR-er er gjennomgått mot fersk main og dagens konsoliderte runtime.
+12 erstattede/foreldede PR-er er lukket uten merge: #3, #5–12, #14, #17 og #18.
+#41 er rettet, testet, merget og selektivt publisert som 173e0a2 i Actions
+37613113851 (seks endrede filer med privat backup). Robot-adressen gir nå
+HTTP 302 til Nyhetsdesk. Radioliste og dagens logo er bevart.
+#20 er avstemt, testet og merget som 68660b1; kun testverktøy/dokumentasjon,
+ingen auth-runtime. Selektiv produksjonskjøring 37613465313 bekrefter samme
+commit, to endrede filer og privat backup. Reell B2B-innlogging er fortsatt uprøvd.
+
+Fem gyldige restoppgaver beholdes som drafts: #2 AzuraCast-test, #13 programregister,
+#15 sendemal, #16 femstedsvær og #21 Render-staging. Manglende funksjoner er
+ikke markert som levert. Historiske deploy-/PR-notater under er journal, ikke
+gjeldende åpne-PR-status. Se [full PR-gjennomgang](PR-AUDIT-20261007.md).
+Versjon 0 er arbeidsbaseline; VERSION og eksisterende release-drafts endres ikke.
+
 Oppdatert 07.10.2026 etter aktivering av #40 og oppfølging av artikkelkontroll.
 Eier: Thomas Magne Sellevold-Øystad.
 Repo: https://github.com/toystad461/radiorubben-studio
