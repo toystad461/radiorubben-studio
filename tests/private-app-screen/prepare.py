@@ -38,8 +38,10 @@ os.chmod(R/'session-fixture.json',0o600)
 env=os.environ.copy()
 for key in list(env):
  if key.startswith(('ENTRA_','STUDIO_','VIPPS_','OPENAI_')):del env[key]
+# Disable the cURL entry point too so availability checks select the offline path.
+# Keeping curl_init enabled but curl_exec disabled causes HTTP 500 with ext-curl.
 log=open(R/'php-server.log','w')
-p=subprocess.Popen(['php','-d',f'session.save_path={run}/sessions','-d','allow_url_fopen=0','-d','opcache.enable=0','-d','disable_functions=curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client','-S',f'127.0.0.1:{port}','-t',str(run/'public')],env=env,stdout=log,stderr=log)
+p=subprocess.Popen(['php','-d',f'session.save_path={run}/sessions','-d','allow_url_fopen=0','-d','opcache.enable=0','-d','disable_functions=curl_init,curl_exec,curl_multi_exec,fsockopen,pfsockopen,stream_socket_client','-S',f'127.0.0.1:{port}','-t',str(run/'public')],env=env,stdout=log,stderr=log)
 (R/'server.pid').write_text(str(p.pid))
 # Record original runtime hashes, independent of synthetic config and sessions.
 hashes={str(p.relative_to(run)):hashlib.sha256(p.read_bytes()).hexdigest() for sub in ['app','public'] for p in (run/sub).rglob('*') if p.is_file()}
