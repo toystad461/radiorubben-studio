@@ -6,6 +6,7 @@ require __DIR__ . '/config.php';
 require __DIR__ . '/helpers.php';
 require_once __DIR__ . '/users.php';
 require_once __DIR__ . '/auth/StudioLocalUsers.php';
+require_once __DIR__ . '/private-app.php';
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
@@ -45,7 +46,7 @@ if ($siteMode !== 'app') {
 <?php
     exit;
 }
-if (!config_valid($config)) {
+if (!config_valid($config) || studio_private_app_mode($config) === 'invalid') {
     http_response_code(503);
     exit('Studio er ikke ferdig konfigurert. Kontakt administrator.');
 }
@@ -87,7 +88,7 @@ function current_user(): ?array
             'email'=>$record['email'], 'role'=>$record['role'], 'version'=>$record['version'],
             'mustChange'=>$record['mustChange']];
         if ($record['mustChange'] && !in_array(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH), ['/local/change-password.php', '/logout.php'], true)) redirect('/local/change-password.php');
-        return $user;
+        return studio_private_app_filter_user($config, $user);
     }
     if ($provider === 'entra') {
         // Role comes from the verified OID claim, never a stored session role.
@@ -101,5 +102,5 @@ function current_user(): ?array
         }
         $_SESSION['user']['role'] = $role;
     }
-    return $_SESSION['user'];
+    return studio_private_app_filter_user($config, $_SESSION['user']);
 }
