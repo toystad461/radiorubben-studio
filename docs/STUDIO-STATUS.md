@@ -23,7 +23,20 @@ automatisk godkjenning eller redaksjonell publisering inngår.
 DATEX-tilgang er testet: HTTP 200 og gyldig landsdekkende XML. Dagens offentlige
 trafikkilde beholdes inntil lokal DATEX-filtrering og privat serveroppsett er
 implementert. Se [funksjon og begrensninger](WEATHER-SCRIPT.md).
-Tester, PR og faktisk utrulling føres etter verifisering; dette er ikke deploybevis.
+PR #45 er merget som 9626d1b55a0873b691018f6c8dceac87263bfc5a.
+PHP 8.2/8.4 og mobiltestene besto på eksakt PR-head og mergecommit.
+Selektiv deploy 37621471558 fullførte 07.10 kl. 14:32 Europe/Oslo:
+11 endrede filer, verifiserte serverhasher og privat backup
+selective-37621471558-1. Offentlig release.json bekreftet samme commit.
+Innlogget kontroll bekreftet den nye læringssiden med to bevarte aktive regler,
+ingen forslag og ingen tilgjengelige rettede manus. Innkommet viste 36 ferske
+kildesaker etter opprydding; behandlingskøen og publiserte artikler ble ikke
+endret av RSS-oppryddingen. Manuell værgenerering kl. 14:32 laget et faktisk
+utkast fra MET for alle tre steder og lagret det med kilde- og prognosetider.
+Eksisterende WordPress-femminuttersjobb og automatisk klargjøring er aktive.
+Første faktiske timeutkast etter :55 er ennå ikke observert; idempotens,
+utløp og bevaring av redigering er testet deterministisk. Ingen lyd eller
+nyhetspublisering ble utført under kontrollen.
 Spillerregelen (bare dagens faktiske kamphendelser, full kampkontekst og ingen
 statistikknyheter) gjenstår i Fotballrobotens separate produksjonsgren 0.10.5.
 
