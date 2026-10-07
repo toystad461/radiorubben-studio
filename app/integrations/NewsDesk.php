@@ -2,6 +2,17 @@
 declare(strict_types=1);
 require_once dirname(__DIR__) . '/source-identity.php';
 
+/** Expire RSS pointers by source publication time, never by a cache refresh. */
+function newsdesk_recent_sources(array $items, ?int $now = null): array
+{
+    $now ??= time();
+    return array_values(array_filter($items, static function($item) use ($now): bool {
+        if (!is_array($item)) return false;
+        $at = is_string($item['publishedAt'] ?? null) ? strtotime($item['publishedAt']) : false;
+        return $at !== false && $at > $now - 172800 && $at <= $now + 300;
+    }));
+}
+
 /** Fixed, server-side sources. Never accept a feed URL from a request. */
 function newsdesk_sources(): array
 {
@@ -134,6 +145,16 @@ function newsdesk_feed(string $source, array $spec, string $cacheDir, ?callable 
             ftruncate($handle, 0);
             fwrite($handle, json_encode($cache, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE));
             fflush($handle);
+        }
+        // Also prune warm and failed caches; expired pointers must not return after an outage.
+        if (isset($cache['items']) && is_array($cache['items'])) {
+            $recent = newsdesk_recent_sources($cache['items'], $now);
+            if ($recent !== $cache['items']) {
+                $cache['items'] = $recent;
+                rewind($handle); ftruncate($handle, 0);
+                fwrite($handle, json_encode($cache, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE));
+                fflush($handle);
+            }
         }
         $age = $now - (int)($cache['checkedAt'] ?? 0);
         $freshAge = $now - (int)(strtotime((string)($cache['fetchedAt'] ?? '')) ?: 0);

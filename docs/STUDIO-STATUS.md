@@ -2,6 +2,12 @@
 
 ## Værmanus og DATEX – 07.10.2026
 
+Etter Thomas sin bestilling rydder NRK-/kommune-innboksen bort kildesaker
+48 timer etter kildens publiseringstid, også fra varm eller feilet RSS-cache.
+En ny henting gir aldri gamle saker ny frist. Saker som er tatt til behandling,
+manus og historikk slettes ikke. Trafikkens aktive meldinger berøres ikke.
+48 timer er valgt som startgrense og er forklart ved innboksen.
+
 Værfeltet lenker til et kort, redigerbart MET-manus for Bømlo, Stord og
 Haugesund. Samme generator kobles til eksisterende Nyhetsdesk-jobb etter :55
 med timevis idempotens, bevaring av ferske manuelle redigeringer og historikk.
