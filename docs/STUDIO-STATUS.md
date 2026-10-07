@@ -439,6 +439,15 @@ kvalitetskontroll har canApprove=false. Dette bekrefter købroen og sperren,
 ikke Studio-innlogging, RSS-generering eller offentlig publisering.
 Faktisk fullflyttest, ferske serverhasher og selektiv deploy gjenstår.
 
+## Entra-test – 05.10.2026
+PR #20 oppdatert mot main 66966cc3509bcf2c3af496e5e996513fedaac92b og retargetert til main
+etter at PR #19 ble merget. Nye nyhetsdesk-/mobilfiler bevares fra hovedgrenen.
+Testene kjøres sammen med dagens suite; ny CI dokumenteres på PR #20.
+Eksisterende Microsoft-innlogging er dokumentert brukt 04.10; B2B-test gjenstår.
+Render-forbindelsen viser kun Zinus-arbeidsområder, ikke Radio Rubben. Brukeren
+må koble til Radio Rubben-kontoen før isolert testvert kan etableres der.
+Ingen produksjonsendring, Entra-endring, invitasjon eller Render-deploy er gjort.
+Se ENTRA-TEST.md for oppdatert protokoll og gjeldende observatørbegrensning.
 
 ## Neste RSS-rettelse: kildeattribusjon og eldre web-only saker
 
