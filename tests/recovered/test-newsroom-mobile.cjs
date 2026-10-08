@@ -2,7 +2,9 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'../..');
 const render=mode=>execFileSync(process.env.PHP_BIN||'php',[path.join(root,'tests/fixtures/mobile-newsroom.php'),mode||''],{encoding:'utf8'});
-const initial=render(),next=render('next');
+const initial=render(),next=render('next'),rejected=render('rejected');
+assert.ok(!render('published').includes('nr-reject-button'),'Published story cannot be rejected');
+assert.ok(!render('observer').includes('nr-reject-button'),'Observer cannot reject');
 (async()=>{
  const browser=await chromium.launch(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN,args:['--no-sandbox','--disable-dev-shm-usage','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']}:{});
  try{
@@ -15,12 +17,15 @@ const initial=render(),next=render('next');
     if(url.pathname==='/fixture-image.svg')return route.fulfill({contentType:'image/svg+xml',body:'<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540"><rect width="960" height="540" fill="#182235"/><text x="480" y="275" text-anchor="middle" fill="white" font-size="60" font-family="sans-serif">RADIO RUBBEN</text></svg>'});
     if(url.pathname==='/newsdesk.php'){
      if(request.method()==='POST'){
-      posts++;assert.match(request.postData(),/name="confirmed"\r\n\r\n1/);assert.match(request.postData(),/fixture-token/);assert.match(request.postData(),/fixture-csrf/);
+      posts++;const isReject=/name="action"\r\n\r\nreject/.test(request.postData());
+      if(!isReject)assert.match(request.postData(),/name="confirmed"\r\n\r\n1/);
+      else assert.ok(!/name="action"\r\n\r\napprove/.test(request.postData()),'Reject submits its own form');
+      assert.match(request.postData(),/fixture-token/);assert.match(request.postData(),/fixture-csrf/);
       if(networkFail)return route.abort();
       if(fail)return route.fulfill({status:409,json:{ok:false,error:'Saken er endret. Kontroller status.'}});
-      active=next;
+      active=isReject?rejected:next;
      }else if(!url.searchParams.has('view')){documents++;return route.fulfill({contentType:'text/html',body:initial});}
-     return route.fulfill({json:{ok:true,html:active,url:'/newsdesk.php?filter=ready&item=wp%3A2',selected:'wp:2',advance:true}});
+     return route.fulfill({json:{ok:true,html:active,url:active===rejected?'/newsdesk.php?filter=ready':'/newsdesk.php?filter=ready&item=wp%3A2',selected:active===rejected?'':'wp:2',advance:true}});
     }
     return route.fulfill({status:404,body:''});
    });
@@ -30,6 +35,8 @@ const initial=render(),next=render('next');
    assert.equal(geometry.queue,width>800,'Queue responds to mobile width');
    if(width<=800){assert.equal(geometry.sidebar,'none');assert.ok(geometry.title<400,'Article starts above the fold');assert.ok(geometry.dock<=844&&geometry.dock>800,'Approval dock stays in viewport');}
    const primary=page.locator('.nr-approve .nr-primary');assert.equal(await primary.isDisabled(),true,'Explicit read confirmation required');
+   assert.equal(await page.locator('.nr-reject-shortcut button').isVisible(),true,'Reject is visible beside the story');
+   assert.equal(await page.locator('.nr-dock>.nr-reject-button').isVisible(),true,'Reject is visible in the action dock');
    await page.locator('[data-open-changes]').click();assert.equal(await page.locator('#nr-changes').getAttribute('open'),'');
    await page.locator('[name=comment]').fill('Gjør ingressen kortere');
    if(width<=800)assert.equal(await page.locator('.nr-dock').isVisible(),false,'Keyboard editing hides action dock');
@@ -40,6 +47,10 @@ const initial=render(),next=render('next');
    networkFail=false;page.once('dialog',dialog=>dialog.accept());await page.locator('[data-newsroom-reload]').click();await page.waitForFunction(()=>document.querySelector('#newsroom-progress').hidden);
    await page.locator('[name=confirmed]').check();await primary.click();await page.locator('.nr-title').filter({hasText:'Neste eksempelsak'}).waitFor();
    assert.equal(documents,1,'Actions replace fragment without a page reload');assert.equal(posts,3);assert.equal(await page.locator('[name=confirmed]').isChecked(),false,'Next story requires fresh approval');assert.equal(await primary.isDisabled(),true);
+   fail=true;await page.locator('.nr-dock>.nr-reject-button').click();await page.locator('#newsroom-progress').filter({hasText:'Saken er endret'}).waitFor();
+   assert.equal(await page.locator('.nr-title').textContent(),'Neste eksempelsak er klar','Conflict keeps the proposal visible');
+   fail=false;await page.locator('.nr-dock>.nr-reject-button').click();await page.locator('.nr-notice').filter({hasText:'Forslaget er forkastet'}).waitFor();
+   assert.equal(await page.locator('.nr-title').count(),0,'Rejected proposal leaves the queue');assert.equal(posts,5);assert.equal(documents,1,'Reject does not reload the page');
    assert.deepEqual(errors,[]);
    if(width===390){await page.goto('http://fixture.test/newsdesk.php');await page.screenshot({path:process.env.MOBILE_SCREENSHOT||'/tmp/newsroom-mobile.png',fullPage:false});}
    await page.close();console.log('PASS mobile desk '+width+'px: one-page approval, rewrite, conflict and network recovery');

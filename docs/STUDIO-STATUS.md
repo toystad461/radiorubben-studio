@@ -1,5 +1,16 @@
 # Studio – felles status og arbeidsliste
 
+## Tydelig forkasting i Nyhetsdesk – 08.10.2026
+
+Thomas har bedt om tydeligere og enklere forkasting av robotforslag.
+«Forkast forslag» flyttes fra skjult «Flere valg» til en synlig knapp under
+sakens overskrift og i handlingsfeltet, også på mobil. Samme eksisterende
+POST-handling, rolle, CSRF og revisjon/token brukes. Historikk beholdes og
+neste sak åpnes med eksisterende køflyt. Publiserte artikler får ikke
+forkastingsknapp. WordPress-forkasting vises bare for administrator.
+Ingen faktiske forslag forkastes som del av utrulling eller testing.
+Tester og selektiv utrulling dokumenteres på leverings-PR etter kontroll.
+
 ## Værmanus og DATEX – 07.10.2026
 
 Læringssiden får en tretrinns arbeidsflyt med valg av rettet manus, konkrete
