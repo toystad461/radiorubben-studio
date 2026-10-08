@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-10-08",
+  "repository": "toystad461/radiorubben-studio",
+  "status": "documented-release-with-live-drift-not-freshly-inventoried",
+  "runtime_source_commit": "1aff7adeb2b90c9576265c70f06bab141a1519a0",
+  "base_tree": "beada7e758612cb3144ac301df20338ec97c0aaf",
+  "changes_in_this_branch": "documentation-only",
+  "new_production_deployment_authorized": false,
+  "fresh_server_inventory_performed": false,
+  "coordinating_web_pull_request": 67,
+  "release_evidence": {
+    "run_id": 37739713565,
+    "job_id": 113187636289,
+    "source_commit": "1aff7adeb2b90c9576265c70f06bab141a1519a0",
+    "reported_changed_files": 4,
+    "finished_at": "2026-10-08T08:50:49+02:00",
+    "backup_id": "selective-37739713565-1",
+    "artifact_id": 11533017112,
+    "artifact_sha256_from_job_log": "dfd6019231f8aad6220a9d81cffcc21e4394f9725cd33339998cc54edbe18758"
+  },
+  "important_distinctions": ["artifact digest is not whole-production hash", "full-package dry-run is not actual deployment", "source hash can differ from preserved live hash", "repository fallback baseline is not necessarily latest server state"],
+  "historical_preflight_differences_to_recheck": ["app/bootstrap.php", "app/views/head.php", "login.php", "local/login.php", "assets/radio-rubben-logo.png"],
+  "excluded_new_features": [47, 48, 51],
+  "render_migration_included": false,
+  "private_data_or_credentials_copied": false,
+  "main_merge_performed": false,
+  "deployment_workflows_changed": false
+}
