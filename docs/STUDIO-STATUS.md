@@ -13,7 +13,9 @@ Ingen private produksjonsregler endres eller aktiveres av kodeendringen.
 Base er main 1aff7adeb2b90c9576265c70f06bab141a1519a0. PR #51 for
 Nyhetsdesk-kommentarer og videre bruk av læring er en separat avhengighet;
 denne endringen gjelder dagens God morgen Vestland-manus i Sending.
-Leveres som avgrenset PR med PHP- og mobiltester. Ingen produksjonsdeploy.
+PR #53: kodehead 3c4bf75. PHP 8.2/8.4 og mobil/desktop-testene besto
+i Actions 37778353718 og 37778353772. Ingen produksjonsdeploy eller
+aktivering av private regler. Dokumentasjonsoppfølging endrer ingen runtime.
 Neste steg etter godkjent kode: kontrollere instrukslisten i Studio og
 godkjenne ønskede regler individuelt før de brukes i nye manus.
 
