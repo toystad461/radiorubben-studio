@@ -863,3 +863,27 @@ godkjenning er uendret. Neste steg er versjonert manusforbedring med separat
 kontroll av eventuell omskriving og sammenligning mot samme faktagrunnlag.
 Kun dokumentasjon er endret; ingen runtime-endring, TTS-kall, ny stemme eller
 deploy. Dokumentasjonsdiff kontrollert; runtime-tester er ikke nødvendige.
+
+
+## Nyhetsdesk: kanalvalg og neste handling – 08.10.2026
+
+På samme utviklingsbranch utvides eksisterende inntak med Radio, Nett eller
+Radio og nett. Valget lagres ved opprettelse i samme board; forberedelsen
+bruker eksisterende kanalstyrte generator og separate kontroller. Åpning av
+en eksisterende sak endrer ikke kanalvalg, manus eller godkjenninger.
+
+Sakslisten og leseflaten viser status per kanal. Radiosaker får radiomanus,
+relevant kildegrunnlag og lenke til neste handling i eksisterende saksside,
+uten nettartikkelens redigerings-/publiseringsknapper. Manusgodkjenning merkes
+uttrykkelig som separat fra lydgodkjenning. Kanalendring skjer fortsatt på
+sakssiden gjennom eksisterende revisjons- og godkjenningssperrer.
+
+Validering: full lokal PHP-/pakketest består. Kanaltester dekker inntak,
+ugyldig valg/rolle, gjenåpning uten endring, riktig antall mock-kall, felles
+kildegrunnlag og ingen falsk manusgodkjenning etter tekstendring, utløpt
+kontroll eller manglende godkjenner. Nye mobiltester dekker radio/begge ved
+375, 390 og 1280 piksler, kanalvalg og fravær av nettgodkjenning for radio.
+Ingen ekte saker eller eksterne genereringstjenester er brukt.
+
+Status: implementert for gjennomgang; ikke deployet til Studio. Aktiv pilot
+beholder forrige kodeversjon. Ingen merge eller ny produksjonsutrulling.

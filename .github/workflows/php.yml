@@ -49,6 +49,7 @@ jobs:
       - run: npm install --no-save --package-lock=false playwright@1.62.1
       - run: npx playwright install --with-deps chromium
       - run: node tests/recovered/test-newsroom-mobile.cjs
+      - run: node tests/recovered/test-newsroom-channel-mobile.cjs
       - run: node tests/recovered/test-learning-mobile.cjs
       - run: node tests/recovered/test-audio-mobile.cjs
       - run: node tests/recovered/test-bulletin-mobile.cjs

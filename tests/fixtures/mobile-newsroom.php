@@ -2,6 +2,7 @@
 $_SESSION=['csrf'=>'fixture'];
 // Isolated visual fixture: no authentication, network, database, email or real story mutations.
 require dirname(__DIR__,2).'/app/newsroom-view.php';
+function newsroom_time($v){return $v?:'Ikke kontrollert';}
 function escape($v){return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');}
 function newsroom_fields($key,$card){echo '<input type="hidden" name="item" value="'.escape($key).'"><input type="hidden" name="token" value="fixture-token"><input type="hidden" name="csrf" value="fixture-csrf">';}
 $second=($argv[1]??'')==='next';$selected=$second?'wp:2':'wp:1';$filter='ready';$admin=$can=true;$error=$notice=$wpError=null;$item=null;$settings=['enabled'=>true];$wpStatus=[];$sources=[];$board=['items'=>[]];
@@ -12,6 +13,12 @@ $mode=$argv[1]??'';
 if($mode==='rejected'){$card=null;$cards=$visible=[];$selected='';$nextKey='';$counts=array_fill_keys(array_keys($counts),0);$notice='Forslaget er forkastet. Historikken er bevart.';}
 if($mode==='published')$card['status']='published';
 if($mode==='observer')$admin=$can=false;
+if(in_array($mode,['radio','both'],true)){
+ require_once dirname(__DIR__,2).'/app/newsroom.php';
+ $item=['id'=>'1234567890abcdef','originId'=>'fixture','title'=>'Eksempelsak for radio og nett','sourceName'=>'NRK','sourceUrl'=>'https://www.nrk.no/vestland/test-1.12345678','revision'=>1,'channel'=>$mode,'status'=>'draft','script'=>'Et radiomanus til kontroll.'];
+ $card=studio_newsroom_card($item);$counts=['ready'=>0,'attention'=>1,'working'=>0,'published'=>0];$selected='studio:'.$item['id'];$cards=$visible=[$selected=>$card];$nextKey='';$board=['items'=>[$item]];
+ $sources=[['id'=>'incoming','title'=>'Ny eksempelsak','sourceName'=>'NRK','url'=>'https://www.nrk.no/vestland/test-1.87654321','summary'=>'Kildeomtale','publishedAt'=>gmdate('c')]];
+}
 $extraStylesheet='/assets/newsroom.css';require dirname(__DIR__,2).'/app/views/head.php';
 ?>
 <div class="shell newsroom-shell"><aside class="sidebar">Studio-meny</aside><div class="workspace"><header class="topbar"><span>Radio Rubben / <strong>Nyhetsdesk</strong></span><details class="nr-site-menu"><summary>Studio-meny</summary><nav><a href="/control.php">Kontrollsenter</a></nav></details></header>

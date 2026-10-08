@@ -121,14 +121,15 @@ function studio_board_has_source(array $items, array $source): bool
     return false;
 }
 
-function studio_board_add_source(array $source, array $user, ?string $path = null): void
+function studio_board_add_source(array $source, array $user, ?string $path = null, string $channel = 'both'): void
 {
-    studio_board_change(static function (array &$board) use ($source, $user): void {
+    if (!in_array($channel, ['radio','web','both'], true)) throw new InvalidArgumentException('Velg Radio, Nett eller Begge.');
+    studio_board_change(static function (array &$board) use ($source, $user, $channel): void {
         if (studio_board_has_source(studio_board_active($board), $source)) return;
         if (count(studio_board_active($board)) >= 30) throw new InvalidArgumentException('Sendelisten har plass til 30 aktive punkter. Arkiver et punkt først.');
         if (!is_string($source['id'] ?? null) || !is_string($source['title'] ?? null)) throw new InvalidArgumentException('Ugyldig kildesak.');
         $board['items'][] = [
-            'id'=>bin2hex(random_bytes(8)), 'originId'=>$source['id'],
+            'id'=>bin2hex(random_bytes(8)), 'originId'=>$source['id'], 'channel'=>$channel,
             'title'=>$source['title'], 'sourceName'=>$source['sourceName'] ?? 'Kilde',
             'sourceUrl'=>$source['url'] ?? '', 'sourceAt'=>$source['publishedAt'] ?? null,
             'capturedAt'=>$source['fetchedAt'] ?? gmdate('c'), 'summary'=>$source['summary'] ?? '',
