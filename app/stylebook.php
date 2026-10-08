@@ -4,6 +4,7 @@ declare(strict_types=1);
 /** Reviewed code, never editable through learning or source input. */
 const RR_STYLEBOOK_VERSION = '1.0.0';
 const RR_JOURNALIST_VERSION = '2.0.0';
+const RR_AI_POLICY_VERSION = '1.0.0';
 
 function rr_stylebook_rules(): array
 {
@@ -42,7 +43,8 @@ function rr_review_instructions(): string
 /** Trace what actually ran; these are responsibilities, not seven model calls. */
 function rr_generation_record(array $source, array $config, array $editorial, string $channel): array
 {
-    return ['journalistVersion'=>RR_JOURNALIST_VERSION, 'stylebookVersion'=>RR_STYLEBOOK_VERSION,
+    return ['aiPolicyVersion'=>RR_AI_POLICY_VERSION,
+        'journalistVersion'=>RR_JOURNALIST_VERSION, 'stylebookVersion'=>RR_STYLEBOOK_VERSION,
         'stylebookSha256'=>hash('sha256', json_encode(rr_stylebook_rules(), JSON_THROW_ON_ERROR)),
         'channel'=>$channel, 'model'=>(string)($config['openai_model'] ?? ''), 'generatedAt'=>gmdate('c'),
         'sourceSha256'=>$source['sha256'], 'sourceUrl'=>$source['url'], 'sourceFetchedAt'=>$source['fetchedAt'],

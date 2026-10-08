@@ -50,6 +50,11 @@ function studio_web_approval_hash(array $item): string
     if (!empty($w['generation']['aiAssisted'])) {
         $payload['version']='web-approval-3'; $payload['aiAssisted']=true;
     }
+    // New policy-aware drafts bind provenance as well as the visible text.
+    // Do not rewrite delivered hashes for earlier drafts without this field.
+    if (array_key_exists('aiPolicyVersion', $w['generation'] ?? [])) {
+        $payload['version']='web-approval-4'; $payload['generation']=$w['generation'];
+    }
     return hash('sha256', json_encode($payload, JSON_THROW_ON_ERROR));
 }
 

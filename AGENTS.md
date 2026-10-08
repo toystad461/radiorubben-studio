@@ -48,3 +48,15 @@ Bruk verifiserte eksisterende mapper/filreferanser; ikke konstruer lenker.
 Skill lokal eksport fra faktisk overføring. Ikke påstå synk uten implementert
 og testet integrasjon. Første TTS-spor er ElevenLabs etter brukerens prioritering.
 Lydproduksjon, playout og publisering er separate handlinger med synlig status.
+
+## Radio Rubbens AI-policy
+Les og følg [AI-erklæring v1.0](docs/AI-POLICY.md) før endringer i generering,
+kildekontroll, godkjenning, publisering, lyd, bilder eller læring. Bevar strengere
+eksisterende regler. Se [implementeringsstatus](docs/AI-POLICY-IMPLEMENTATION.md)
+for faktiske sperrer og gjenstående arbeid; ikke forveksle planlagt med aktivt.
+Nye eller endrede redaksjonelle flyter skal ha målrettede negative tester for
+manglende menneskelig godkjenning og endrede kilder/innhold/metadata.
+Syntetisk tale og AI-bilder krever egen merking og sporbarhet etter policyen.
+Rettelser kan gi versjonerte, separat godkjente læringsforslag, aldri automatisk
+faktagrunnlag eller svakere kontroll. Ikke deploy, publiser eller merge til en
+automatisk deploygren uten eksplisitt godkjenning. Bevar annet pågående arbeid.

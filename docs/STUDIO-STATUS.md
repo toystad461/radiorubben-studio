@@ -705,3 +705,14 @@ Stylebook 1.0.0 og sju RR-ansvarsområder integreres i eksisterende RSS-nett/rad
 Automatiske tester dekker sperrer, etiske issues, læring, versjoner, kontrollutløp, endret tekst og historiske leveringshasher. To tidligere publiserte artikler er sammenlignet med nye redaksjonelle eksempler fra offentlige originalutdrag; dette er ikke live modellmåling. Privat kildeuttrekk ble avvist av automatisk sikkerhetskontroll og ble ikke utført. Se arkitektur, stylebook og sammenligning i `docs/ai-journalist/`.
 
 Ikke deployet. Ikke merge til main uten ny godkjenning: main har automatisk selektiv deploy. PR #53 overlapper læringsflaten og må avstemmes senere. WordPress-fotballgeneratoren, vær, lyd og Render er uendret. Endelig test-/CI-status og eksakt head føres i leveransens PR. Neste steg er review, avstemming av avhengigheter og målt modellprøve før eventuell godkjent utrulling.
+
+
+## AI-erklæring v1.0 – separat PR, 08.10.2026
+
+`policy/ai-v1` bygger på AI-journalist #55 (`1a2cfb8`). Felles policy og
+utviklingsinstruksjoner er lagt til. Ny generering får policyversjon; nettets
+godkjenning bindes til genereringsmetadata. Negative integrasjonstester dekker
+manglende menneskelig godkjenning og endret proveniens før WordPress-transport.
+Se `docs/AI-POLICY-IMPLEMENTATION.md` for base, overlapp, tester og begrensninger.
+Neste steg er gjennomgang og avstemming mot #55s pågående lydarbeid; full
+mediemetadata/lydgodkjenning og produksjonsutrulling inngår ikke. Ingen merge/deploy.
