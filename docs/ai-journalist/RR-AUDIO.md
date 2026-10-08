@@ -68,3 +68,17 @@ Eier kjører `python3 scripts/store-elevenlabs-key.py` i sin egen Terminal fra d
 `load_config` kan lese denne private filen; en eksplisitt nøkkel i privat `local.php` eller `ELEVENLABS_API_KEY` har prioritet. Lesing av filen krever at den ikke er en symlink og ikke er lesbar av gruppe/andre. Serverplassering må senere gjøres separat i faktisk privat config-mappe etter avklaring; lokal lagring er ikke bevis på serverkonfigurasjon.
 
 Den godkjente prøveprofilen er kjørt gjennom faktisk FFmpeg med syntetisk lyd, inkludert omforming fra 24 kHz rålyd til 44,1 kHz WAV og 192 kbps MP3. Ingen påstand om at oppsampling gjenskaper manglende lydinformasjon. Målrettede tester dekker global stemmetilgang, fortsatt tilbakekallings-/rettighetssperre, avslag på ukjent program og privat nøkkellagring. Egen stemmegenerering er fortsatt uprøvd.
+
+## Oppdatert testutrulling – 08.10.2026
+
+Eier har nå autorisert Studio-testing med ekte saker. Eleven v4 med
+`azrGjm6gYkR15bxb9cVv` er prøvd med ekte API og hørt av eier. Fiktiv morgensending
+ble laget separat og er ikke en faktakilde eller en planlagt sending.
+Tidligere formuleringer om uprøvd TTS beskriver opprinnelig implementeringsstatus.
+
+Uniwebs faktiske PHP-web-runtime sperrer `proc_open`. Første Studio-test gir derfor
+manus, godkjenningssperrer, TTS og privat rålyd-avspilling. Ingen automatisk
+normalisering aktiveres på dette webhotellet. Den lokalt brukte to-pass-behandlingen
+er ikke integrert i produksjon. Testmodus sperrer sendeliste og sendefilnedlasting.
+En egnet lydarbeider med samme lagrings-/godkjenningskontrakt er en videre avhengighet.
+Privat `config/audio-local.php` styrer aktivering/budsjett uten endring av innlogging.

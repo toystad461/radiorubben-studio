@@ -12,6 +12,7 @@ return [
     'openai_model' => '',
     'rr_audio' => [
         'enabled' => false,
+        'test_only' => true, // Preview only; no rundown/send-file access.
         'api_key' => '', // private elevenlabs.key, local.php or ELEVENLABS_API_KEY; never browser input
         'model_id' => 'eleven_v4',
         'ffmpeg_binary' => '', // Verified absolute server path, not browser input.

@@ -9,6 +9,7 @@ function rr_audio_processing_profile(array $p):array {
 }
 /** Bounded native process, argv array: no shell, no network inputs, no provider secrets. */
 function rr_audio_ffmpeg(array $args,string $binary):string {
+    if(!function_exists('proc_open'))throw new InvalidArgumentException('Automatisk lydbehandling er ikke tilgjengelig på denne serveren.');
     if(!str_starts_with($binary,'/')||!is_executable($binary))throw new InvalidArgumentException('FFmpeg er ikke verifisert på denne serveren.');
     $p=proc_open(array_merge([$binary,'-nostdin','-hide_banner','-nostats','-threads','1'], $args),[0=>['pipe','r'],1=>['pipe','w'],2=>['pipe','w']],$pipes);
     if(!is_resource($p))throw new RuntimeException('Lydbehandlingen kunne ikke startes.');
@@ -68,12 +69,14 @@ function rr_audio_approve_or_queue(string $id,int $revision,string $profile,stri
             $a['approval']=['hash'=>rr_audio_hash([$a['master']??[],$a['send']??[],$a['token']??'']),'actor'=>$user['name']??'Medarbeider','at'=>gmdate('c')];
             if(!rr_audio_ready($i,$v,$b,$config,$path))throw new InvalidArgumentException('Lydfilen, kildekontrollen eller lydprofilen er ikke godkjennbar.');
         }elseif($action==='enqueue'){
+            if(!empty($config['test_only']))throw new InvalidArgumentException('RR Audio er i testmodus. Lyd kan ikke legges i sendelisten.');
             if(!rr_audio_ready($i,$v,$b,$config,$path))throw new InvalidArgumentException('Både manus og aktuell lyd må sluttgodkjennes først.');
             $i['audioQueue']=['profile'=>$profile,'token'=>$a['token'],'sendHash'=>$a['send']['sha256'],'actor'=>$user['name']??'Medarbeider','at'=>gmdate('c')];
         }else throw new InvalidArgumentException('Ukjent lydhandling.');$i['revision']++;return;
     }throw new InvalidArgumentException('Saken finnes ikke.');},$path);
 }
 function rr_audio_queued(array $item,array $board,array $config,?string $path=null):?array {
+    if(!empty($config['test_only']))return null;
     $q=$item['audioQueue']??[];$v=$item['audioScripts'][$q['profile']??'']??[];$a=$v['audio']??[];
     return $q&&($q['token']??'')===($a['token']??'')&&($q['sendHash']??'')===($a['send']['sha256']??'')&&rr_audio_ready($item,$v,$board,$config,$path)?$q:null;
 }

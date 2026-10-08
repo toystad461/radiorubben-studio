@@ -764,3 +764,26 @@ ukjent modell, modellbytte og sperret sendeliste. TTS for Studio er fortsatt av,
 dagsbudsjett 0. Ingen produksjonsdeploy, publisering eller endring i sendelisten.
 
 Full lokal PHP-testpakke og pakkekontroll besto etter modellbyttet.
+
+## Autorisert Studio-test med ekte saker – 08.10.2026
+
+Eier ba om publisering i Studio for testing av ekte saker etter v4-høreprøven.
+Fersk audit kl. 17:31 UTC: 491 produksjonsfiler, ingen drift, manifest `1aff7ad`.
+Aktiv web-runtime er PHP 8.2.34 CGI/FastCGI, curl/mbstring tilgjengelig,
+300 sekunders tidsgrense. `proc_open` er deaktivert i web-runtime, selv om
+CLI har funksjonen. Ingen FFmpeg i serverens PATH. En midlertidig tokenbeskyttet
+runtimekontroll ble fjernet etter målingen.
+
+Avgrenset utrulling: samme Sak og kildekontroll, radiomanus, manuell
+manusgodkjenning, Eleven v4 og privat rålyd-forhåndslytting. `test_only=true`
+sperrer både enqueue-POST og sendefiltilgang, også for tidligere godkjent lyd.
+UI forklarer teststatus og manglende automatisk lydbehandling. Ingen ny
+lydarbeider, radio.co-overføring, ekte artikkelpublisering eller lydgodkjenning.
+Privat `config/audio-local.php` kan konfigurere Audio uten å skrive om eksisterende
+autentisering eller hemmeligheter i local.php. Planlagt tegnbudsjett: 3000 per døgn.
+Den lokale ElevenLabs-nøkkelen skal overføres kryptert til privat fil med modus 600.
+
+Full lokal PHP-/pakketest og RR Audio-mobilkontroll (375/390/1280) består.
+Produksjonstilpasset head.php uten favicon beholdes med ny CSS-versjon.
+Selektiv utrulling bruker eksisterende hash-/backup-/rollbackmekanisme.
+Eksakt commit, filplan, CI og faktisk etterkontroll føres ved fullført utrulling.

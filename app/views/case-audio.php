@@ -1,7 +1,10 @@
 <?php
 $audioConfig=$config['rr_audio']??[];$audioBoard=studio_board_read();
+$audioProcessingAvailable=function_exists('proc_open')&&!empty($audioConfig['ffmpeg_binary'])&&is_executable($audioConfig['ffmpeg_binary']);
 ?>
 <section class="control-panel" id="audio-material"><h2>RR Audio</h2>
+<?php if(!empty($audioConfig['test_only'])):?><p><strong>Testmodus</strong> – lag manus og lytt til prøver. Lyd kan ikke legges i sendelisten.</p><?php endif;?>
+<?php if(!$audioProcessingAvailable):?><p>Automatisk lydbehandling er ikke tilgjengelig her ennå. Generert lyd kan forhåndslyttes, men er ikke en ferdig sendefil.</p><?php endif;?>
 <p>Selvstendige radiomanus fra sakens kontrollerte originalgrunnlag. KI-generert stemme krever egen gjennomlytting og sluttgodkjenning.</p>
 <?php if(empty($audioConfig['enabled'])):?><p>Talegenerering er deaktivert. Manus og uttaleordbok kan klargjøres.</p><?php endif;?>
 <?php if($can):?><form method="post" class="editor-form"><?php case_fields($item);?><label>Manusprofil<select name="profile"><?php foreach(rr_audio_profiles()as$key=>$p):?><option value="<?=escape($key)?>"><?=escape($p['name'])?></option><?php endforeach;?></select></label><button name="action" value="audio_generate_script">Lag separat radiomanus</button></form><?php endif;?>
@@ -19,9 +22,9 @@ $audioConfig=$config['rr_audio']??[];$audioBoard=studio_board_read();
 <?php if(!empty($a['error'])):?><p><?=escape($a['error'])?></p><?php endif;?>
 <?php foreach($a['qa']['issues']??[]as$issue):?><p><?=escape($issue)?></p><?php endforeach;?>
 <?php if(isset($a['measurements'])):?><p>Varighet: <?=number_format($a['measurements']['duration'],1,',','')?> sekunder.</p><?php endif;?>
-<?php if($can&&isset($a['raw'])&&rr_audio_current($item,$v,$audioBoard,$audioConfig)):?><form method="post"><?php case_fields($item);?><input type="hidden" name="profile" value="<?=escape($key)?>"><button name="action" value="audio_process">Behandle og kontroller lyd</button><p>Bruker lagret lyd uten ny TTS-kostnad.</p></form><?php endif;?>
+<?php if($can&&$audioProcessingAvailable&&isset($a['raw'])&&rr_audio_current($item,$v,$audioBoard,$audioConfig)):?><form method="post"><?php case_fields($item);?><input type="hidden" name="profile" value="<?=escape($key)?>"><button name="action" value="audio_process">Behandle og kontroller lyd</button><p>Bruker lagret lyd uten ny TTS-kostnad.</p></form><?php endif;?>
 <?php if($can&&!empty($a['qa']['passed'])&&rr_audio_current($item,$v,$audioBoard,$audioConfig)):?><form method="post"><?php case_fields($item);?><input type="hidden" name="profile" value="<?=escape($key)?>"><label><input type="checkbox" name="confirmed" value="1" required> Jeg har lyttet gjennom lyden og kontrollert innhold, uttale og lydkvalitet</label><button name="action" value="audio_approve_audio">Sluttgodkjenn lyd</button></form><?php endif;?>
-<?php if(rr_audio_ready($item,$v,$audioBoard,$audioConfig)):?><p>Lyd sluttgodkjent.</p><?php if($can):?><form method="post"><?php case_fields($item);?><input type="hidden" name="profile" value="<?=escape($key)?>"><button name="action" value="audio_enqueue">Legg godkjent lyd i sendelisten</button></form><?php endif;endif;?>
+<?php if(rr_audio_ready($item,$v,$audioBoard,$audioConfig)):?><p>Lyd sluttgodkjent.</p><?php if($can&&empty($audioConfig['test_only'])):?><form method="post"><?php case_fields($item);?><input type="hidden" name="profile" value="<?=escape($key)?>"><button name="action" value="audio_enqueue">Legg godkjent lyd i sendelisten</button></form><?php endif;endif;?>
 <?php if($admin&&in_array($a['status']??'', ['unknown','generating'],true)):?><form method="post" class="editor-form"><?php case_fields($item);?><input type="hidden" name="profile" value="<?=escape($key)?>"><label>Resultat av kontroll i ElevenLabs<input name="resolution" minlength="10" maxlength="500" required></label><label><input type="checkbox" name="confirmed" value="1" required> Jeg har avklart forespørselen og eventuell belastning hos leverandøren</label><button name="action" value="audio_resolve">Registrer avklaring</button></form><?php endif;?></details>
 <?php endforeach;?>
 <details><summary>Uttaleordbok · versjon <?=(int)rr_pronunciation_context($audioBoard)['version']?></summary><p>Uttaler må foreslås og godkjennes manuelt. En aktiv endring krever ny lyd og gjennomlytting.</p>

@@ -43,6 +43,8 @@ try {
     audio_reject(fn()=>$approve('enqueue'),'QA is not human audio approval');$approve('approve_audio');$approve('enqueue');
     $i=$get();audio_ok(rr_audio_queued($i,studio_board_read($path),$config,$path)!==null,'approved WAV is attached to existing board item');
     $bad=$config;$bad['model_id']=$config['model_id']==='eleven_v4'?'eleven_multilingual_v2':'eleven_v4';audio_ok(rr_audio_queued($i,studio_board_read($path),$bad,$path)===null,'model change invalidates previously approved queued audio');
+    $trial=$config;$trial['test_only']=true;audio_ok(rr_audio_queued($i,studio_board_read($path),$trial,$path)===null,'test mode blocks send-file access even with existing approval');
+    audio_reject(fn()=>rr_audio_approve_or_queue($item['id'],$get()['revision'],$profile,'enqueue',[],$admin,$trial,$path),'test mode rejects forged enqueue POST');
     $changed=$i;$changed['script'].=' Ny rettelse.';audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'primary manuscript change invalidates audio');
     $changed=$i;$changed['audioScripts'][$profile]['script'].=' Endret.';audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'variant edit invalidates all approvals');
     audio_ok($i['audioScripts'][$profile]['audio']['aiPolicyVersion']==='1.0.0'&&$i['audioScripts'][$profile]['audio']['synthetic']===true,'TTS records policy version and synthetic origin');
