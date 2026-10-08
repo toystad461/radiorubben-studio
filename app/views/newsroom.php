@@ -32,6 +32,20 @@
 <?php if($item&&$card['status']==='attention'):?><form method="post" data-newsroom><?php newsroom_fields($selected,$card);?><input type="hidden" name="action" value="<?=empty($card['body'])?'prepare':'check'?>"><button><?=empty($card['body'])?'Hent original og klargjør':'Kontroller lagret tekst på nytt'?></button></form><?php endif;?></div>
 <?php if($item):?><details class="nr-edit"><summary>Rediger teksten selv</summary><form method="post" data-newsroom><?php newsroom_fields($selected,$card);?><input type="hidden" name="action" value="save"><label>Overskrift<input name="title" maxlength="180" value="<?=escape($card['title'])?>" required></label><label>Ingress<textarea name="intro" maxlength="500" required><?=escape($card['intro'])?></textarea></label><label>Artikkeltekst<textarea name="body" rows="12" maxlength="5000" required><?=escape($card['body'])?></textarea></label><label>Plassering<select name="news_scope"><option value="news">Nyheter</option><option value="local" <?=($item['web']['publication']['scope']??'')==='local'?'selected':''?>>Nyheter og Lokale Nyheter</option></select></label><button>Lagre og kontroller</button></form></details><?php endif;?>
 <?php endif;?>
+<?php if($item&&$can&&($item['program']??'')==='god-morgen-vestland'):?>
+<details class="nr-feedback"><summary>Kommentar til Robåten</summary>
+<p>Beskriv en språkfeil eller hvor teksten går lenger enn kilden. Kommentaren lagres med denne tekstversjonen og kildegrunnlaget.</p>
+<form method="post" data-newsroom><?php newsroom_fields($selected,$card);?><input type="hidden" name="action" value="feedback">
+<label>Hva skal Robåten gjøre bedre?<textarea name="comment" rows="3" minlength="10" maxlength="500" required placeholder="Kilden sier smerter, ikke alvorlig skade. Bevar kildens skadegrad og forbehold."></textarea></label>
+<?php if($admin):?><label><input type="checkbox" name="apply" value="1"> Bruk kommentaren som skriveråd i nye nett- og radioutkast for God morgen Vestland</label>
+<label><input type="checkbox" name="styleOnly" value="1"> Skriverådet gjelder språk og kildebruk, aldri nye fakta eller unntak fra kontroll</label><?php endif;?>
+<p>Lagrede utkast endres ikke. Kommentaren er ikke en ny faktakilde.</p><button>Lagre kommentar</button>
+</form>
+<?php $caseFeedback=array_values(array_filter($board['editorialRules']??[],static fn($rule)=>($rule['evidence']['kind']??'')==='feedback'&&($rule['evidence']['itemId']??'')===$item['id']));?>
+<?php if($caseFeedback):?><h3>Tidligere kommentarer</h3><?php foreach(array_reverse($caseFeedback) as $feedback):?><p><?=escape($feedback['text'])?><br><small><?=escape($feedback['createdBy'])?> · tekstversjon <?=(int)$feedback['evidence']['revision']?> · <?=escape(['approved'=>'Aktivt skriveråd','pending'=>'Venter på godkjenning','disabled'=>'Deaktivert','rejected'=>'Avvist'][$feedback['status']]??'Lagret')?></small></p><?php endforeach;?><?php endif;?>
+<p><a href="/learning.php?view=pending">Se og administrer læringen</a></p>
+</details>
+<?php endif;?>
 <?php if($item):?><details class="nr-evidence"><summary>Kilder, kontroll og radio</summary><p>Kildekontroll: <?=escape(newsroom_time($card['checkedAt']))?></p><?php if(!empty($item['web']['check']['source']['text'])):?><p><?=nl2br(escape($item['web']['check']['source']['text']))?></p><?php endif;?><a href="/case.php?item=<?=escape($item['id'])?>">Radiomanus og full sakshistorikk</a></details><?php endif;?>
 <?php endif;?></section></div>
 
