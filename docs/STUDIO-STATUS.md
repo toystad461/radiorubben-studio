@@ -787,3 +787,32 @@ Full lokal PHP-/pakketest og RR Audio-mobilkontroll (375/390/1280) består.
 Produksjonstilpasset head.php uten favicon beholdes med ny CSS-versjon.
 Selektiv utrulling bruker eksisterende hash-/backup-/rollbackmekanisme.
 Eksakt commit, filplan, CI og faktisk etterkontroll føres ved fullført utrulling.
+
+## RR Audio-test publisert – 08.10.2026 kl. 19:38 Oslo
+
+Selektivt deployet `baac6aab2ff777e85044091cf37290da8a9f8539`: 27 kodefiler.
+Eksakt før-/etterplan og pakkehash: `docs/ai-journalist/STUDIO-PILOT-DEPLOY.json`.
+Eksisterende Composer-metadata ble beholdt; ingen vendor-oppgradering.
+Privat backup: `~/.radiorubben-studio-deploy/backups/selective-rr-audio-baac6aa`.
+Tilbakeføring følger backupens manifest med hashkontroll; de to nye private
+Audio-filene kan fjernes bare hvis hashene fortsatt samsvarer med separat
+`audio-config-created.json`. Ingen redaksjonelle data skal tilbakeføres.
+
+Etterkontroll: 499 registrerte kodefiler, null drift. Web-SAPI bekrefter TTS på,
+`test_only=true`, `eleven_v4`, godkjent originalstemme, nøkkel lastet og dagsgrense
+3000 tegn. Eksisterende local.php har identisk hash. Uautentisert forsøk på
+Sak/lyd/private key-rute gir innloggingsredirect, CSS gir 200. Midlertidige
+kontrollfiler er fjernet. Faktisk konto-/rollebasert gjennomgang av en ekte sak
+og avspilling i innlogget nettleser gjenstår; ingen redaksjonell sluttgodkjenning,
+betalt TTS eller artikkelpublisering ble kjørt som produksjonssmoketest.
+
+CI på deployet SHA: PHP 8.2/8.4 og mobil er grønne i kjøring `37817684748`.
+Lokal full PHP-/pakketest og mobil består. Normalisering er ikke aktivert:
+webhotellet sperrer proc_open. Ingen FFmpeg-binær ble installert på serveren.
+Tilgang: `/case.php` → velg sak → RR Audio → profil → kontroller/godkjenn manus
+→ Generer lyd → forhåndslytting. Testmodus tillater ikke sendelistelevering.
+
+PR #55 er fortsatt en avhengig utviklingsgren; ingen merge til main er utført.
+Neste main-release må avstemmes mot dette nye selektive produksjonsgrunnlaget,
+ellers kan eldre hovedgrenkode tilbakeføre pilotfunksjonene. Lydarbeider og
+normaliseringsforbedring må fullføres før vanlig sending aktiveres.

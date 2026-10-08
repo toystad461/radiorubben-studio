@@ -1,0 +1,147 @@
+{
+  "commit": "baac6aab2ff777e85044091cf37290da8a9f8539",
+  "previous": "1aff7adeb2b90c9576265c70f06bab141a1519a0",
+  "packageSha256": "d57fe1cc887ca7237c4c4ac8cf7fc45b0cc1e9531b8138285480301dc618a42c",
+  "files": {
+    "studio-private/app/board.php": {
+      "before": "05b6fa08b96d8f3211b9e8734d7a86ea80ac16898a9a0e7e7a8b2c4d411ea3eb",
+      "after": "574d4273f4fbb3e65fb0ca6b3fca9a81e6739a0ea4db6b6304e94dcb4dbc94aa"
+    },
+    "studio-private/app/case-workflow.php": {
+      "before": "fe661ca5437998c11996e1bc8c60f84d5c85786b55604c997bf6cefcc9b0528c",
+      "after": "7f8b02327a73e26702877e6b9db1bd971df04e8884d7a899f33b59152441d846"
+    },
+    "studio-private/app/config.php": {
+      "before": "0dcf88d3b1ecf12db74a9d757d69edc834a128817d7de76b9dce05f9f3de30f7",
+      "after": "417f1ec0a516e9011e1c0aae307c028ef28792dcb8ded660486217372401ed06"
+    },
+    "studio-private/app/editorial-memory.php": {
+      "before": "d40b5dc3f30b397d84d7d98b087181255923a8db1574875e9e9a91e461d2fd2a",
+      "after": "422cd139f73ad80641851759f18e3ad80571744fa2a17219147dffff9c3dc625"
+    },
+    "studio-private/app/news-publication.php": {
+      "before": "37ab6f88138a53b95c4d0237284597436ff856d680d5a81b86b74784c3354ee7",
+      "after": "138f3d01b7a4b10d8c2163335b8b5223e5d45d2d7db8876f77db4b974e2c469c"
+    },
+    "studio-private/app/news-script.php": {
+      "before": "70f92f7a80444b8675bcfd7e088a2c2686bb5510aae01594b2404ea148ed7e5f",
+      "after": "ee388378a1c54f9c2d313985369e8f62d0e4a3699aa9935a482611462f052594"
+    },
+    "studio-private/app/newsroom.php": {
+      "before": "a9de161d74d111418b1b19603eab4d813138869f5f52e4789106bcd59aef8a72",
+      "after": "8bf3f805a2f69cf481a9916f4478b73a5086503b1f656ae3e0e5ab054825a79c"
+    },
+    "studio-private/app/views/head.php": {
+      "before": "394a15a90b094e9ca769d8a0745095a0650fb9b8e8ab020a274ff1d62f0fbc1e",
+      "after": "92d0fd4f0ebf66dcc6e5705405162ebd39e3416ed0a5dffc473fe2233ab3c023"
+    },
+    "studio-private/app/views/newsroom.php": {
+      "before": "2141536d677069e7c67e04c80c7b65291af893c12a75ade9fdac1f641b62a253",
+      "after": "6a23a9936dc8b457175ad60001d686c45676f8f327d22d3fd2b923371caf46bb"
+    },
+    "studio-private/app/web-publish.php": {
+      "before": "020e0dc906afbad621dfa382610a5ee1f9aa28c565e2af6bfa0100231598974c",
+      "after": "41a93350dd20e6289869826d6b4f653ea5b94f4e3ce12ffb42ad85d91d617185"
+    },
+    "studio-public/assets/case.js": {
+      "before": "f8fe8191d521f44be70e2d541c0c6dcfb4f033567b025facd3b372b791cdd2a6",
+      "after": "b0a2bdf106b52b381ea1919a478c696c2a77855f5e966f983e9a6c59d7edc6fc"
+    },
+    "studio-public/assets/studio.css": {
+      "before": "920290f3f1117a9bf2023fb3772bce80c2246aec31fd38746dcdf8ac598169af",
+      "after": "f282aa10e55f01efa698dab6305a1e9b889cd1cc43e0fbf74508555d932ad708"
+    },
+    "studio-public/case.php": {
+      "before": "4f50217b66021ec9648947f1df64cd3b5ea91812ae07fd5aa9b5ebb66a7026e2",
+      "after": "fe08306acbeeb10f1bc73a6a87976255f04241f417564ea3bc8b70b99bffae45"
+    },
+    "studio-public/learning.php": {
+      "before": "d6627c45cd9e76ac3dacd945c8524ae23fc5791a1244007e6a6fccf0bd8b2120",
+      "after": "1d93a5c5b0028150ea128bcfc0755b3a8caf9a3faee4f006313eb246825d6cd3"
+    },
+    "studio-public/newsdesk.php": {
+      "before": "9ed90d7b9f0b78432221f72709766fcf800ca0dd61ed8aef1852b6477b759d7c",
+      "after": "7b56eb27dc7a7f83c1caafee4114dde1b7ec94cbab8a839de8e79116cc6f3baf"
+    },
+    "studio-public/sending.php": {
+      "before": "93e32d6f17f9542cc258674aa1d5443a290fd78d65d93eacafa51dcb0e9742fe",
+      "after": "1d777653618410b2a0bc9f69b888df4a9c69c5979d503ce9782f8c6ef6be4177"
+    },
+    "studio-public/release.json": {
+      "before": "9fd2fc7ec0a11a27b6dfab97761e8f7f48041b18a245cbf246766eab5ad41a5c",
+      "after": "46d28e9105d994ed3cea4a985c350138799727a95b638e9d8c572269c1a5cfd9"
+    },
+    "studio-private/app/audio-workflow.php": {
+      "before": null,
+      "after": "184171a4cacd86705bca63817cad263cd43aef000ab0428430143067c349a315"
+    },
+    "studio-private/app/audio-profiles.php": {
+      "before": null,
+      "after": "e8ee56842328cffca04359f8d7a9d0ad1cf7ab0e533931d3646190cd4a60349e"
+    },
+    "studio-private/app/programs.php": {
+      "before": null,
+      "after": "e1e2666693ea9ab6ad29f3bf509ff7b467ce468585873d2c53ab01ee4d4f03a8"
+    },
+    "studio-private/app/stylebook.php": {
+      "before": null,
+      "after": "6f7187f2c8101b737c037ef3c535b3c8c79defb524e8561a5494cc5c0086112a"
+    },
+    "studio-private/app/integrations/ElevenLabs.php": {
+      "before": null,
+      "after": "6c2ef90554da2adc30db7e1ffb20a50ec182ac3598828075c2a8da163ffb6fe9"
+    },
+    "studio-private/app/audio-storage.php": {
+      "before": null,
+      "after": "e9ed774aa7d3b549d9a3e6d3c840595815f6dea7f04fc6668cf3035c7c783e08"
+    },
+    "studio-private/app/audio-processing.php": {
+      "before": null,
+      "after": "609970e4613283a01d80f44b498a76feb1ed86fa64e019db968be42321afc45d"
+    },
+    "studio-private/app/views/case-audio.php": {
+      "before": null,
+      "after": "80bf5f9fe99a3cc631be33b545bfba9a9c97e49aa0b7ee1a76417ae567289ce3"
+    },
+    "studio-private/app/audio-pronunciation.php": {
+      "before": null,
+      "after": "4047c3b76f1daf2f2ff75810123a8bc5355fa200f1a9d1ffa6bf62835e65a0ef"
+    },
+    "studio-public/audio-file.php": {
+      "before": null,
+      "after": "44b410b15be721d541c933d9a555abb835a4b792328613a59703998fd4ec19d5"
+    }
+  },
+  "preserved": [
+    "studio-private/app/bootstrap.php",
+    "studio-private/vendor/paragonie/random_compat/dist/random_compat.phar.pubkey",
+    "studio-private/vendor/paragonie/random_compat/dist/random_compat.phar.pubkey.asc",
+    "studio-public/assets/favicon.ico",
+    "studio-public/assets/radio-rubben-logo.png",
+    "studio-public/assets/radio-rubben-logo.svg",
+    "studio-public/local/login.php",
+    "studio-public/login.php"
+  ],
+  "deployment": {
+    "at": "2026-10-08T17:38:14Z",
+    "run": "rr-audio-baac6aa",
+    "filesChanged": 27,
+    "verifiedManagedFiles": 499,
+    "drift": [],
+    "webPhp": "8.2.34",
+    "sapi": "cgi-fcgi",
+    "testOnly": true,
+    "ttsEnabled": true,
+    "model": "eleven_v4",
+    "dailyCharacterLimit": 3000,
+    "normalizationAvailable": false,
+    "backup": "~/.radiorubben-studio-deploy/backups/selective-rr-audio-baac6aa",
+    "excludedLocalMetadata": "studio-private/vendor/composer/installed.php",
+    "privateConfigFiles": [
+      "config/audio-local.php",
+      "config/elevenlabs.key"
+    ],
+    "editorialDataModified": false,
+    "authenticatedEndToEndTest": false
+  }
+}
