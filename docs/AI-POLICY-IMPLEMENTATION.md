@@ -77,7 +77,7 @@ er ikke konfigurert eller påstått. Ingen eksisterende innstillinger er endret.
 
 ## Utrullingsgrense
 
-Ingen merge, deploy, workflow-dispatch, artikkelpublisering, læringsaktivering
+Ingen merge til hovedgren, deploy, workflow-dispatch, artikkelpublisering, læringsaktivering
 eller endring av produksjonsdata. En separat godkjent utrulling må avstemme ferske
 serverhasher, eksakt filsett, avhengigheter, backup og tilbakeføring. Ikke last opp
 en hel gren. Historiske release-manifester skal ikke omskrives til den nye koden.
