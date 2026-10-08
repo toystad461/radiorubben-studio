@@ -3,7 +3,8 @@
 ## Denne PR-en
 
 Base: Studio #55, `feature/ai-journalist-2`,
-`1a2cfb85030ee8db1473814d80cb97deb68cf84b`, som igjen bygger på #51.
+`6b6b768` (RR Audio), som igjen bygger på #51. Første kartlegging brukte
+`1a2cfb85030ee8db1473814d80cb97deb68cf84b`; nyere base ble tatt inn uten force-push.
 PR #55 gir allerede kildeproveniens, KI-merking og kontrollert læring; denne PR-en
 utvider dette avgrenset, uten en konkurrerende lærings-/godkjenningsmotor.
 
@@ -17,6 +18,9 @@ Implementert:
   injisert WordPress-transport: AI-kontroll alene, feil rolle, endret tekst,
   kilde eller proveniens og utløpt kontroll gir null transportkall. Gyldig
   menneskelig godkjenning leverer kildeattribusjon og synlig KI-merking én gang.
+- TTS-posten registrerer policyversjon og eksplisitt syntetisk opphav. Lydens
+  eksisterende godkjennings-/køgrense avviser manglende eller endrede verdier.
+  Målrettede tester utvider #55s eksisterende lydkjede; ingen ny lydmotor bygges.
 - Testen oppdages automatisk av `tests/run.php` i eksisterende PHP 8.2/8.4-CI.
   #55s tester av separat regelgodkjenning og kildeisolasjon beholdes.
 
@@ -25,9 +29,10 @@ policytest, eksisterende læringstester og deploysperre. JavaScript-saksflyt bes
 Eksisterende OpenID-bibliotek gir PHP 8.4-deprecationmeldinger; ingen nye
 avhengigheter er lagt til. PHP 8.2/8.4 og mobiltest kontrolleres også i CI.
 
-Endringer i `app/stylebook.php` må avstemmes mot pågående lydarbeid i #55 før
-integrasjon. Ingen ukommitterte filer fra den arbeidskopien er tatt med.
-Dette er nye metadata og regresjonssperrer, ikke påstand om ny mediepublisering.
+RR Audio ble kommittert i #55 mens denne oppgaven pågikk. Den nye basecommiten
+er tatt inn; statusnotatene er bevart og Stylebook 1.1.0 beholdt. Diffen mot #55
+inneholder bare policytilleggene, ikke den andre oppgavens lydimplementasjon.
+Ingen ukommitterte filer fra den arbeidskopien er tatt med. TTS er fortsatt av.
 
 ## Kartlagt før endring – 2026-10-08
 
@@ -62,8 +67,8 @@ er ikke konfigurert eller påstått. Ingen eksisterende innstillinger er endret.
 
 - Komplett mediekontrakt for syntetisk tale og AI-bilder, med filhash, korrekt
   merking i hver kanal, godkjenning av ferdig medium og negative publiseringstester.
-  Policyfeltet alene dekker ikke dette. Studio har parallelt, ukommittert lydarbeid;
-  det er ikke tatt inn eller redigert i denne leveransen.
+  Policyfeltet alene dekker ikke dette. #55s lydarbeid er nå base og bevarer separat
+  manus-/lydgodkjenning. Hørbar lytterinformasjon og AI-bildeflyten gjenstår.
 - Full produksjonsavstemming, ende-til-ende-test mot autentisering/WordPress,
   reelle modellsvar og redaksjonelt review av kvalitet. Mockede modellsvar måler
   sperrer, ikke modellens sannhetsgehalt.

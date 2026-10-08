@@ -3,7 +3,7 @@ declare(strict_types=1);
 // Render the actual page with isolated private data and a fixture identity; no network or writes.
 $root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/learning-ui-'.bin2hex(random_bytes(5));
 foreach(['/app/views','/public','/config'] as $dir)mkdir($tmp.$dir,0700,true);
-foreach(['web-publish','news-publication','editorial-memory','board','stylebook','news-script','source-identity'] as $name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
+foreach(['web-publish','news-publication','editorial-memory','board','programs','audio-profiles','stylebook','news-script','source-identity'] as $name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
 foreach(['head','sidebar','account'] as $name)copy($root.'/app/views/'.$name.'.php',$tmp.'/app/views/'.$name.'.php');
 copy($root.'/public/learning.php',$tmp.'/public/learning.php');
 $role=($argv[2]??'')==='observer'?'observer':'admin';

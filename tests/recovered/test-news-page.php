@@ -3,10 +3,12 @@ declare(strict_types=1);
 $mode = $argv[1] ?? 'get';
 $tmp = sys_get_temp_dir() . '/news-page-' . bin2hex(random_bytes(4));
 mkdir($tmp . '/app/views', 0700, true);
+mkdir($tmp . '/app/integrations', 0700, true);
 mkdir($tmp . '/config', 0700, true);
 mkdir($tmp . '/public', 0700, true);
-foreach (['board', 'stylebook','news-script', 'story-script', 'source-identity'] as $name)
+foreach (['board', 'programs','audio-profiles','stylebook','news-script', 'story-script', 'source-identity','case-workflow','web-publish','news-publication','audio-workflow','audio-processing','audio-pronunciation','audio-storage'] as $name)
     copy(dirname(__DIR__, 2) . '/app/' . $name . '.php', $tmp . '/app/' . $name . '.php');
+copy(dirname(__DIR__,2).'/app/integrations/ElevenLabs.php',$tmp.'/app/integrations/ElevenLabs.php');
 copy(dirname(__DIR__, 2) . '/public/sending.php', $tmp . '/public/sending.php');
 file_put_contents($tmp . '/app/bootstrap.php', '<?php
 function current_user() { return $GLOBALS["mode"] === "guest" ? null : ["name"=>"Test editor"]; }

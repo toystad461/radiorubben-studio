@@ -49,3 +49,4 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node tests/recovered/test-newsroom-mobile.cjs
       - run: node tests/recovered/test-learning-mobile.cjs
+      - run: node tests/recovered/test-audio-mobile.cjs

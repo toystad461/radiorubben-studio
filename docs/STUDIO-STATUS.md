@@ -706,13 +706,22 @@ Automatiske tester dekker sperrer, etiske issues, læring, versjoner, kontrollut
 
 Ikke deployet. Ikke merge til main uten ny godkjenning: main har automatisk selektiv deploy. PR #53 overlapper læringsflaten og må avstemmes senere. WordPress-fotballgeneratoren, vær, lyd og Render er uendret. Endelig test-/CI-status og eksakt head føres i leveransens PR. Neste steg er review, avstemming av avhengigheter og målt modellprøve før eventuell godkjent utrulling.
 
+## RR Audio integrert i AI-journalist 2.0 – 08.10.2026
+
+Utvidelsen i issue #54 fortsetter på samme `feature/ai-journalist-2` og draft-PR #55. Stylebook er nå 1.1.0 med lydtillegg. Eksisterende Sak får separate, kildekontrollerte radiomanusprofiler, manuell manusgodkjenning, ElevenLabs-adapter, privat forhåndslytting, FFmpeg-behandling og egen manuell lydgodkjenning. Godkjent sendefil knyttes til samme sendelistepunkt. Versjonert uttaleordbok gjenbruker board-lås, roller og historikk. Lokal programmodul gjenbrukes fra tidligere utviklingsbranch uten å flette inn gamle overlay-filer.
+
+Stemmen `azrGjm6gYkR15bxb9cVv` er eierbekreftet; programtilknytning og konkrete stasjonsnivåer mangler. TTS er avslått. Mock-kjede, HTTP-sperrer og mobile maler testes; faktisk FFmpeg 7.1 er prøvd lokalt med syntetisk lyd som både WAV og MP3. Ingen ElevenLabs-kostnad, produksjonsendring eller radio.co-opplasting. Den tidligere teksten om «lyd uendret» beskriver første del-leveranse; denne utvidelsen endrer bare utviklingsbranchen.
+
+Se `docs/ai-journalist/RR-AUDIO.md` for status, fagkilder og resterende avhengigheter. WordPress/NFF-faktapakke, hostingens web-SAPI/FFmpeg, leverandørtilgang og Radio.co Studio API må avklares før bredere aktivering. Ikke merge eller deploy uten eksplisitt godkjenning.
+
 
 ## AI-erklæring v1.0 – separat PR, 08.10.2026
 
-`policy/ai-v1` bygger på AI-journalist #55 (`1a2cfb8`). Felles policy og
-utviklingsinstruksjoner er lagt til. Ny generering får policyversjon; nettets
-godkjenning bindes til genereringsmetadata. Negative integrasjonstester dekker
-manglende menneskelig godkjenning og endret proveniens før WordPress-transport.
-Se `docs/AI-POLICY-IMPLEMENTATION.md` for base, overlapp, tester og begrensninger.
-Neste steg er gjennomgang og avstemming mot #55s pågående lydarbeid; full
-mediemetadata/lydgodkjenning og produksjonsutrulling inngår ikke. Ingen merge/deploy.
+`policy/ai-v1` er avstemt mot AI-journalist #55 med RR Audio (`6b6b768`).
+Felles policy og utviklingsinstruksjoner er lagt til. Ny generering får
+policyversjon; nettets godkjenning bindes til genereringsmetadata. Lydposten
+registrerer syntetisk opphav og policyversjon; manglende/endrede verdier sperrer
+lydkøen. Negative tester dekker menneskelig godkjenning og endret proveniens.
+Se `docs/AI-POLICY-IMPLEMENTATION.md` for base, tester og gjenstående arbeid.
+Lytterinformasjon i sending og full AI-bildemetadatakjede gjenstår.
+Ingen merge til hovedgren, deploy eller publisering er utført.
