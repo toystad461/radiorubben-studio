@@ -1,0 +1,46 @@
+[
+  {
+    "postId": 1283,
+    "publishedUrl": "https://www.radiorubben.no/studio-881809fd2615496a/",
+    "publishedAt": "2026-10-08T07:49:02",
+    "retrievedAt": "2026-10-08",
+    "sourceUrl": "https://www.nrk.no/vestland/slagsmal-pa-krohnengen-skule-1.18048789",
+    "sourceExcerpt": "Slagsmål på Krohnengen skule\nPolitiet rykte ut til skulen etter melding om eit mogleg slagsmål.\nDer møtte dei fleire personar og ein mann som var blodig.\nPolitiet er på staden og pratar med tre involverte. Dei skal ha kontroll på ein mistenkt og to fornærma.\nDet er uvisst kva som var bakgrunnen for slagsmålet.\n– Det verkar som dei har kjennskap til kvarandre, seier operasjonsleiar Steinar Hausvik.",
+    "sourceExcerptSha256": "a9f6763ad238b31d1974496bee298310c8b0d43fc39bcb00b03ea2e006d3f908",
+    "sourceScope": "Public excerpt fetched 2026-10-08; historical production snapshot unavailable.",
+    "before": {
+      "title": "Slagsmål på Krohnengen skole: Politiet har kontroll på involverte",
+      "intro": "Politiet rykket ut til Krohnengen skole etter melding om slagsmål. En blodig mann og flere personer var på stedet. Bakgrunnen for hendelsen er fortsatt ukjent.",
+      "body": "Politiet rykket ut til Krohnengen skole etter melding om et mulig slagsmål. Ved ankomst møtte de flere personer, inkludert en mann som var blodig.\n\nPolitiet pratet med tre involverte og har kontroll på én mistenkt og to fornærmede. Det er fortsatt uklart hva som var årsaken til slagsmålet.\n\nIfølge operasjonsleder Steinar Hausvik ser det ut til at de involverte kjenner hverandre. Politiet er fortsatt på stedet for å avklare situasjonen videre."
+    },
+    "candidate": {
+      "title": "Politiet undersøker mulig slagsmål ved Krohnengen skole",
+      "intro": "Politiet rykket ut etter en melding om mulig slagsmål ved skolen, melder NRK.",
+      "body": "Ifølge NRK skal politiet ha kontroll på én mistenkt og to fornærmede.\nBakgrunnen for hendelsen er ukjent."
+    },
+    "candidateOrigin": "Editorial candidate authored in this development task; not a recorded runtime model response.",
+    "assessment": "Bevarer mulig/skal ha; fjerner gjentakelser, bloddetalj og påstanden om fortsatt tilstedeværelse for videre avklaring."
+  },
+  {
+    "postId": 1271,
+    "publishedUrl": "https://www.radiorubben.no/studio-63afd93367530283/",
+    "publishedAt": "2026-10-07T01:30:29",
+    "retrievedAt": "2026-10-08",
+    "sourceUrl": "https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/oktober-til-desember-er-budsjettid-i-kommunen.20968.aspx",
+    "sourceExcerpt": "Kommunedirektør Kjetil Aga Gjøsæter legg fram sitt forslag til budsjett 2027 og økonomiplan 2027-2030 måndag 26. oktober. Deretter går det slag i slag.\n26. oktober - Kommunedirektøren sitt budsjettframlegg 2027Kommunedirektøren presenterer budsjett 2027 og økonomiplan 2027-2030 for kommunestyret\n26. november - Formannskapet handsamar kommunedirektøren sitt budsjettframleggFormannskapet innstiller budsjettforslag til kommunestyret. Formannskapet legg formelt ut budsjettframlegget til offentleg høyring fram til budsjettmøtet i kommunestyret.\n14. desember - Budsjettmøte i kommunestyretKommunestyret handsamar og gjer vedtak for budsjettet 2027 og økonomiplan 2027-2030",
+    "sourceExcerptSha256": "981f04bf7d1ee0f24cc6489807be39ce34a64a6c381c92d7a385316b60d18571",
+    "sourceScope": "Public excerpt fetched 2026-10-08; historical production snapshot unavailable.",
+    "before": {
+      "title": "Bømlo kommune legger fram budsjettforslag for 2027 26. oktober",
+      "intro": "Kommunedirektør Kjetil Aga Gjøsæter presenterer budsjett og økonomiplan for Bømlo kommune 26. oktober. Kommunestyret vedtar endelig budsjett i desember.",
+      "body": "Kommunedirektøren i Bømlo kommune legger fram sitt forslag til budsjett for 2027 og økonomiplan for 2027–2030 mandag 26. oktober.\n\nFormannskapet behandler forslaget 26. november og legger det ut til offentlig høring fram til budsjettmøtet i kommunestyret 14. desember. Kommunestyret fatter deretter endelig vedtak om budsjett og økonomiplan for kommende periode.\n\nBudsjettet viser hvordan kommunen planlegger å bruke sine ressurser det neste året, mens økonomiplanen angir prioriteringer og økonomiske utsikter for de neste fire årene. Kommunen gjennomfører også ulike informasjonsmøter for innbyggerne i løpet av prosessen. Informasjonen vil bli oppdatert fortløpende på kommunens nettsider."
+    },
+    "candidate": {
+      "title": "Bømlo legger fram budsjettforslaget 26. oktober",
+      "intro": "Kommunedirektør Kjetil Aga Gjøsæter presenterer forslaget til budsjett for 2027 og økonomiplan for 2027–2030, opplyser Bømlo kommune.",
+      "body": "Formannskapet behandler forslaget 26. november og legger det ut til offentlig høring.\nKommunestyrets budsjettmøte er 14. desember."
+    },
+    "candidateOrigin": "Editorial candidate authored in this development task; not a recorded runtime model response.",
+    "assessment": "Prioriterer budsjettprosessen, datoene og høringen. Fjerner gjentakelser og generell bakgrunn; fremstiller ikke planlagte informasjonsmøter som gjennomført."
+  }
+]

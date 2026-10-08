@@ -3,7 +3,7 @@ declare(strict_types=1);
 $mode=$argv[1]??'get';
 $root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/case-page-'.bin2hex(random_bytes(4));
 foreach(['/app/views','/app/integrations','/config','/public']as$dir)mkdir($tmp.$dir,0700,true);
-foreach(['board','source-identity','news-script','web-publish','news-publication','case-workflow']as$name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
+foreach(['board','source-identity','stylebook','news-script','web-publish','news-publication','case-workflow']as$name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
 copy($root.'/public/case.php',$tmp.'/public/case.php');
 file_put_contents($tmp.'/app/bootstrap.php','<?php
 function current_user(){return $GLOBALS["mode"]==="guest"?null:["name"=>"Editor","role"=>$GLOBALS["mode"]==="observer"?"observer":"admin"];}

@@ -5,7 +5,7 @@ $tmp = sys_get_temp_dir() . '/news-page-' . bin2hex(random_bytes(4));
 mkdir($tmp . '/app/views', 0700, true);
 mkdir($tmp . '/config', 0700, true);
 mkdir($tmp . '/public', 0700, true);
-foreach (['board', 'news-script', 'story-script', 'source-identity'] as $name)
+foreach (['board', 'stylebook','news-script', 'story-script', 'source-identity'] as $name)
     copy(dirname(__DIR__, 2) . '/app/' . $name . '.php', $tmp . '/app/' . $name . '.php');
 copy(dirname(__DIR__, 2) . '/public/sending.php', $tmp . '/public/sending.php');
 file_put_contents($tmp . '/app/bootstrap.php', '<?php

@@ -2,7 +2,7 @@
 declare(strict_types=1);
 $mode=$argv[1]??'get';$root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/desk-page-'.bin2hex(random_bytes(4));
 foreach(['/app/views','/app/integrations','/config','/public']as$dir)mkdir($tmp.$dir,0700,true);
-foreach(['board','source-identity','news-script','web-publish','news-publication','case-workflow','editorial-memory','newsroom','newsroom-view']as$name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
+foreach(['board','source-identity','stylebook','news-script','web-publish','news-publication','case-workflow','editorial-memory','newsroom','newsroom-view']as$name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
 copy($root.'/app/views/newsroom.php',$tmp.'/app/views/newsroom.php');
 copy($root.'/public/newsdesk.php',$tmp.'/public/newsdesk.php');
 file_put_contents($tmp.'/app/bootstrap.php','<?php

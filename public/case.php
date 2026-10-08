@@ -38,7 +38,7 @@ if($_SERVER['REQUEST_METHOD']==='POST' && !empty($_POST)) {
             studio_board_update($id,$rev,'source_checked',['sourceCheck'=>['status'=>'checking']],$user);
             $editorial=studio_memory_context(studio_board_read(),(string)($item['program']??''));
             $r=studio_news_prepare($item,$config,$editorial);
-            studio_board_update($id,$rev+1,'generated',['script'=>$r['script'],'sourceCheck'=>$r['check'],'generation'=>['model'=>$config['openai_model'],'editorial'=>$editorial]],$user);
+            studio_board_update($id,$rev+1,'generated',['script'=>$r['script'],'sourceCheck'=>$r['check'],'generation'=>['model'=>$config['openai_model'],'editorial'=>$editorial,'journalist'=>$r['generation']??null]],$user);
         } elseif($action==='save_radio') {
             studio_board_update($id,$rev,'save',['title'=>$item['title'],'script'=>(string)($_POST['script']??''),'notes'=>$item['notes'],'program'=>$item['program']??''],$user);
         } elseif($action==='check_radio') {

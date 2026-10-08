@@ -60,7 +60,7 @@ function studio_newsroom_prepare(string $id,int $revision,array $user,array $con
             $radio=studio_news_prepare($item,$config,$editorial,$existing,$request,$fetch,$source);
             studio_board_update($id,$nextRevision,$existing===null?'generated':'source_checked',
                 ['script'=>$radio['script'],'sourceCheck'=>$radio['check'],'generation'=>['model'=>$config['openai_model'],
-                'sourceSha256'=>$source['sha256'],'editorial'=>$editorial]],$user,$path);
+                'sourceSha256'=>$source['sha256'],'editorial'=>$editorial,'journalist'=>$radio['generation']??null]],$user,$path);
         }
         studio_board_change(static function(array &$b)use($id,$token){foreach($b['items'] as &$i)if($i['id']===$id&&($i['newsroom']['token']??'')===$token){$i['newsroom']['state']='prepared';$i['newsroom']['finishedAt']=gmdate('c');return;}},$path);
     }catch(Throwable $e){

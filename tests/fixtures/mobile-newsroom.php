@@ -1,4 +1,5 @@
 <?php
+$_SESSION=['csrf'=>'fixture'];
 // Isolated visual fixture: no authentication, network, database, email or real story mutations.
 require dirname(__DIR__,2).'/app/newsroom-view.php';
 function escape($v){return htmlspecialchars((string)$v,ENT_QUOTES,'UTF-8');}

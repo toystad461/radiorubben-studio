@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     studio_board_update($id, $revision, 'source_checked', ['sourceCheck'=>$result['check']], $user);
                 } else {
                     studio_board_update($id, $revision, 'generated', ['script'=>$result['script'],
-                        'generation'=>['model'=>$config['openai_model'], 'editorial'=>$editorial],
+                        'generation'=>['model'=>$config['openai_model'], 'editorial'=>$editorial,'journalist'=>$result['generation']??null],
                         'sourceCheck'=>$result['check']], $user);
                 }
                 $_SESSION['sending_message'] = $result['check']['status'] === 'passed'

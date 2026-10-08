@@ -46,7 +46,7 @@
 <p><a href="/learning.php?view=pending">Se og administrer læringen</a></p>
 </details>
 <?php endif;?>
-<?php if($item):?><details class="nr-evidence"><summary>Kilder, kontroll og radio</summary><p>Kildekontroll: <?=escape(newsroom_time($card['checkedAt']))?></p><?php if(!empty($item['web']['check']['source']['text'])):?><p><?=nl2br(escape($item['web']['check']['source']['text']))?></p><?php endif;?><a href="/case.php?item=<?=escape($item['id'])?>">Radiomanus og full sakshistorikk</a></details><?php endif;?>
+<?php if($item):?><details class="nr-evidence"><summary>Kilder, kontroll og radio</summary><?php if(!empty($item['web']['generation']['stylebookVersion'])):?><p>Utarbeidet med KI-støtte etter Radio Rubben Stylebook <?=escape($item['web']['generation']['stylebookVersion'])?>. Redaksjonen må lese teksten og kontrollrapporten før godkjenning.</p><?php endif;?><p>Kildekontroll: <?=escape(newsroom_time($card['checkedAt']))?></p><?php if(!empty($item['web']['check']['source']['text'])):?><p><?=nl2br(escape($item['web']['check']['source']['text']))?></p><?php endif;?><a href="/case.php?item=<?=escape($item['id'])?>">Radiomanus og full sakshistorikk</a></details><?php endif;?>
 <?php endif;?></section></div>
 
 <details class="nr-inbox"><summary>Innkommet fra NRK Vestland og Bømlo kommune · <?=count($sources)?> kildesaker</summary><p>Kildesaker fjernes automatisk fra Innkommet 48 timer etter publisering hos kilden. Saker som er tatt inn til behandling, manus og historikk beholdes.</p><div class="nr-source-grid">

@@ -695,3 +695,13 @@ Thomas bestilte enkel kommentarbasert læring direkte fra RSS-saken. Nyhetsdesk 
 Automatisk og manuell Nyhetsdesk-klargjøring sender nå aktive programråd med til både nett- og radiogeneratoren og registrerer brukt regelversjon på jobben. Dette var tidligere utelatt i Nyhetsdesk. Kommenterte kildefakta og gamle eksempeltekster sendes ikke som faktagrunnlag til nye saker; fakta-/språkkontroll mottar fortsatt bare gjeldende original og utkast. Lagrede utkast omskrives ikke når en kommentar lagres, og kommentaren gir ikke godkjenning eller publisering.
 
 Avgrensning: God morgen Vestland / Studio sine RSS-saker. Fotballrobotens WordPress-saker og værmanus har egne skriveråd og får ikke skjulte endringer. Dette er vedvarende redaksjonell hukommelse i genereringskonteksten, ikke trening av modellvekter. Tester dekker versjonskobling, kildegrunnlag, roller, dobbel innsending, godkjenning/deaktivering, isolasjon og gjennomslag i begge faktiske genereringskall med injiserte svar. CI, utrulling og innlogget UI kontrolleres ved levering. Ingen prøvekommentar aktiveres på produksjonsdata.
+
+## AI-journalist 2.0 – arbeidsbranch 08.10.2026
+
+`feature/ai-journalist-2` bygger på PR #51, head 7edbf808a9abfc9e99405066edf907acf5e2b260, etter kartlegging av main og faktisk Uniweb-runtime 1aff7ad. 491 serverfiler kontrollert; null drift fra deploymanifestet. Se `docs/ai-journalist/INVENTORY.md` og sanitert runtime-audit.
+
+Stylebook 1.0.0 og sju RR-ansvarsområder integreres i eksisterende RSS-nett/radio-flyt. Skriverens egenkontroll, separat kilde-/etikkontroll, proveniens og KI-merking. Eksisterende læringsregister utvides med manuelt godkjente nettrettelser og uforanderlige før/etter-eksempler; bare godkjente skriveråd sendes til generatoren. Faktakontrollen får ingen læringsregler. Ingen selvtrening, publisering eller automatisk regelaktivering.
+
+Automatiske tester dekker sperrer, etiske issues, læring, versjoner, kontrollutløp, endret tekst og historiske leveringshasher. To tidligere publiserte artikler er sammenlignet med nye redaksjonelle eksempler fra offentlige originalutdrag; dette er ikke live modellmåling. Privat kildeuttrekk ble avvist av automatisk sikkerhetskontroll og ble ikke utført. Se arkitektur, stylebook og sammenligning i `docs/ai-journalist/`.
+
+Ikke deployet. Ikke merge til main uten ny godkjenning: main har automatisk selektiv deploy. PR #53 overlapper læringsflaten og må avstemmes senere. WordPress-fotballgeneratoren, vær, lyd og Render er uendret. Endelig test-/CI-status og eksakt head føres i leveransens PR. Neste steg er review, avstemming av avhengigheter og målt modellprøve før eventuell godkjent utrulling.

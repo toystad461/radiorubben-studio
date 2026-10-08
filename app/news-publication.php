@@ -42,10 +42,15 @@ function studio_web_presentation_ready(array $item): bool
 function studio_web_approval_hash(array $item): string
 {
     $w = $item['web'] ?? [];
-    return hash('sha256', json_encode(['version'=>'web-approval-2',
+    $payload=['version'=>'web-approval-2',
         'title'=>$w['title'] ?? '', 'intro'=>$w['intro'] ?? '', 'body'=>$w['body'] ?? '',
         'sourceName'=>$item['sourceName'] ?? '', 'sourceUrl'=>$item['sourceUrl'] ?? '',
-        'publication'=>$w['publication'] ?? null], JSON_THROW_ON_ERROR));
+        'publication'=>$w['publication'] ?? null];
+    // Preserve delivered legacy hashes; bind new AI disclosure to new approvals.
+    if (!empty($w['generation']['aiAssisted'])) {
+        $payload['version']='web-approval-3'; $payload['aiAssisted']=true;
+    }
+    return hash('sha256', json_encode($payload, JSON_THROW_ON_ERROR));
 }
 
 function studio_web_status_label(array $item): string
