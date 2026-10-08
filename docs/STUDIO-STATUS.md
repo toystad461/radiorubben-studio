@@ -887,3 +887,18 @@ Ingen ekte saker eller eksterne genereringstjenester er brukt.
 
 Status: implementert for gjennomgang; ikke deployet til Studio. Aktiv pilot
 beholder forrige kodeversjon. Ingen merge eller ny produksjonsutrulling.
+
+
+### Nyhetsdesk deployet etter eksplisitt godkjenning
+
+Eier ba om «deploy». Kanalvalg og neste handling er nå lagt ut med kodecommit
+`b59cee0077966cb6c892f4f339d46cb8ee7fad6b`. Seks avstemte kode-/versjonsfiler ble
+oppdatert selektivt. Privat deployplan, backup og rollbackgrunnlag er lagret i
+eksisterende deploysystem; ingen private driftsfiler legges til dette notatet.
+Etterkontroll 08.10.2026 kl. 18:32 UTC: 501 registrerte filer, null drift.
+Offentlig versjonsmarkør stemmer med kildecommit. Innloggingssperren og
+kanalstatus-funksjonen består helsesjekken. Redaksjonelle data er ikke endret.
+
+CI-kjøring 37824716010 består på deployet kodecommit: PHP 8.2, PHP 8.4 og mobil.
+Eksisterende testmodus beholdes. Ingen merge til main eller ordinær utsending.
+Innlogget visuell kontroll av brukerens ekte saker er ikke utført her.
