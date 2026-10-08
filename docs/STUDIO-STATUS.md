@@ -677,3 +677,10 @@ Avgrenset oppgave: fjern offentlig robot.php og gamle Artikkelutkast-lenker fra 
 Fersk produksjonsavstemming: Actions 37464303567 og 37464726711; selektiv serverstatus b73d6646e69723c79521f81ee6d7ef68d0ee4445 / 37434976731-1. Ingen robot-news.json eller robot-inbox.json finnes i de to kontrollerte gamle/private konfigurasjonsområdene. De aktive sidebar-dimensjonene 2172×724 bevares i Git-endringen; main-varianten 2400×1073 skal ikke overskrive den nåværende logoen.
 
 Innlogget Studio er åpnet med eksisterende Microsoft-konto. Før endring er Nyhetsdesk og kontrollsenter sett i nettleseren. Godkjenningsknapper er ikke brukt. Endringen går via PR, grønne PHP-/mobiltester og den eksisterende, autoriserte selektive main-deployen med driftkontroll og privat backup. Endelig server-/visuelt resultat dokumenteres etter utrulling.
+
+
+## Mer kildetro generering – 08.10.2026
+
+Thomas bestilte mindre omskriving og bedre rettskriving etter at genererte påstander ble stoppet i faktakontroll. Nettets 120–200-ordmål og krav om to–tre avsnitt, samt radioens 20–40-sekundersmål, erstattes med korte oppsummeringer uten minstemål. Felles instruksjon gir et kildeavhengig ordtak (inntil 120 ord nett / 75 ord radio), få dokumenterte fakta og sikker språkvask uten sterkere skadegrad, sikkerhet, forklaringer eller oppfølging. Ordtaket er en modellinstruksjon, ikke en serverbasert lengdesperre eller garanti mot nye påstander.
+
+Uavhengig språk-/kildekontroll, urørt originalgrunnlag, revisjon og manuell godkjenning beholdes. Ingen nye automatiske regenereringer; eksisterende utkast omskrives ikke. Tester med injiserte modellsvar dekker begge kanaler, trofast bokmål og fortsatt blokkering av oppdiktet alvorlig skade/oppfølging. De måler kontrakten og kontrollsperren, ikke en faktisk modellfeilrate. Full CI og PR dokumenteres ved levering. Ingen betalt livegenerering eller redaksjonell publisering er utført i denne endringen. Neste steg er kontrollert sammenligning mot et lite, fast utvalg ekte kilder før bredere endringer i nyhetspuls/artikler.
