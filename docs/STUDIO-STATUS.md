@@ -840,4 +840,15 @@ lydgodkjenning beholdes separat. Testmodus gir fortsatt ingen sendefil eller pla
 
 Lokale negative tester, eksisterende PHP-/pakketest og nye mobile visninger
 (375/390/1280) består. Ingen ekte saker er redigert, godkjent eller sendt av agenten.
-Fersk CI og selektiv runtimeavstemming utføres før eventuell pilotoppdatering.
+Pilotoppdateringen er deployet som `5ecfd7b39d14e0f935169d0da27a38483ad2a955`.
+CI-kjøring `37821189701` består på denne SHA-en (PHP 8.2, PHP 8.4 og mobil).
+Selektiv deploy endret 12 filer. Etterkontroll 18:04:33 UTC fant null drift i
+501 registrerte filer. Seks tidligere dokumenterte runtimeforskjeller er bevart.
+Privat konfigurasjon, nøkler, innlogging og redaksjonelle data er ikke endret.
+Eksakte før-/etterhasher finnes i `ai-journalist/BULLETIN-PILOT-DEPLOY.json`.
+Backup: `~/.radiorubben-studio-deploy/backups/selective-rr-bulletin-5ecfd7b`.
+
+Innlogget visuell kontroll i brukerens nettleser ble hindret av nettleserens
+sikkerhetskontroll; ingen omgåelse ble forsøkt. Mobile fixture-visninger er
+kontrollert lokalt. En komplett prøve med brukerens to ekte saker, manuell
+manusgodkjenning og avspilling gjenstår. Testmodus og sperre mot playout beholdes.
