@@ -15,7 +15,7 @@ function rr_audio_projection(array $item,array $variant):array {
 function rr_audio_script_hash(array $item,array $v):string {
     return rr_audio_hash([studio_news_fingerprint($item,(string)($v['script']??'')),$v['profile']??'', $v['check']['source']['sha256']??'',RR_AUDIO_VERSION,RR_STYLEBOOK_VERSION,
         // Editing the primary radio manuscript invalidates dependent audio too.
-        studio_board_audio_identity($item)]);
+        studio_board_audio_identity($item),rr_audio_disclosure()]);
 }
 function rr_audio_checked(array $item,array $v):bool {
     $p=rr_audio_projection($item,$v);
@@ -32,10 +32,19 @@ function rr_audio_voice(array $config,string $voice,string $program):array {
     if(($v['approved']??false)!==true||trim((string)($v['rights_reference']??''))===''||!$allowed)throw new InvalidArgumentException('Stemmen er ikke godkjent for dette programmet.');
     return $v;
 }
+function rr_audio_spoken_text(array $variant,array $dictionary):string {
+    return rr_audio_disclosure()['text']."\n\n".rr_pronunciation_text((string)($variant['script']??''),$dictionary);
+}
+function rr_audio_approval_hash(array $audio):string {
+    return rr_audio_hash([$audio['raw']??[],$audio['master']??[],$audio['send']??[],$audio['token']??'',
+        $audio['disclosure']??[],$audio['spokenTextSha256']??'']);
+}
 function rr_audio_current(array $item,array $v,array $board,array $config):bool {
     $a=$v['audio']??[];
     try{$voice=rr_audio_voice($config,(string)($a['voice']??''),(string)($item['program']??''));}catch(Throwable){return false;}
     return ($a['aiPolicyVersion']??'')===RR_AI_POLICY_VERSION&&($a['synthetic']??null)===true
+        &&($a['disclosure']??null)===rr_audio_disclosure()
+        &&($a['spokenTextSha256']??'')===hash('sha256',rr_audio_spoken_text($v,rr_pronunciation_context($board)))
         &&rr_audio_script_approved($item,$v)&&hash_equals(rr_audio_script_hash($item,$v),(string)($a['scriptHash']??''))
         &&($a['dictionaryHash']??'')===rr_audio_hash(rr_pronunciation_context($board))
         &&($a['voiceHash']??'')===rr_audio_hash($voice)&&($a['model']??'')===($config['model_id']??'');
@@ -43,7 +52,7 @@ function rr_audio_current(array $item,array $v,array $board,array $config):bool 
 function rr_audio_ready(array $item,array $v,array $board,array $config,?string $path=null):bool {
     $a=$v['audio']??[];
     if(($item['status']??'')==='archived'||studio_board_channel($item)==='web'||!rr_audio_current($item,$v,$board,$config)||($a['status']??'')!=='processed'||($a['qa']['passed']??false)!==true
-        ||($a['profileHash']??'')!==rr_audio_hash($config['audio_profile']??[])||($a['approval']['hash']??'')!==rr_audio_hash([$a['master']??[],$a['send']??[],$a['token']??'']))return false;
+        ||($a['profileHash']??'')!==rr_audio_hash($config['audio_profile']??[])||($a['approval']['heardDisclosure']??false)!==true||($a['approval']['hash']??'')!==rr_audio_approval_hash($a))return false;
     try {rr_audio_asset($a['master'],$path);rr_audio_asset($a['send'],$path);}catch(Throwable){return false;}
     return true;
 }
@@ -101,12 +110,12 @@ function rr_audio_generate(string $id,int $revision,string $profile,string $voic
         foreach($b['items']as&$i)if(($i['id']??'')===$id){
             if(($i['revision']??0)!==$revision||($i['status']??'')==='archived'||studio_board_channel($i)==='web')throw new InvalidArgumentException('Saken ble endret eller er ikke valgt for radio.');
             $v=&$i['audioScripts'][$profile];if(!rr_audio_script_approved($i,$v??[]))throw new InvalidArgumentException('Manuset må kildekontrolleres og sluttgodkjennes før TTS.');
-            $vp=rr_audio_voice($config,$voice,(string)($i['program']??''));$d=rr_pronunciation_context($b);$text=rr_pronunciation_text($v['script'],$d);$count=mb_strlen($text);
+            $vp=rr_audio_voice($config,$voice,(string)($i['program']??''));$d=rr_pronunciation_context($b);$text=rr_audio_spoken_text($v,$d);$count=mb_strlen($text);
             $today=gmdate('Y-m-d');$used=(int)($b['audioUsage'][$today]??0);$limit=(int)($config['daily_character_limit']??0);
             if($count>3000||$count+$used>$limit)throw new InvalidArgumentException('TTS-budsjettet er brukt opp eller ikke angitt.');
             $b['audioUsage'][$today]=$used+$count;
             if(isset($v['audio']))$v['audioHistory'][]=$v['audio'];
-            $v['audio']=['aiPolicyVersion'=>RR_AI_POLICY_VERSION,'synthetic'=>true,'token'=>$token,'status'=>'generating','version'=>RR_AUDIO_VERSION,'stylebookVersion'=>RR_STYLEBOOK_VERSION,'at'=>gmdate('c'),'actor'=>$user['name']??'Medarbeider','scriptHash'=>rr_audio_script_hash($i,$v),'dictionaryHash'=>rr_audio_hash($d),'dictionary'=>$d,'voice'=>$voice,'voiceHash'=>rr_audio_hash($vp),'model'=>$config['model_id'],'settings'=>$safe,'characters'=>$count,'approval'=>null];
+            $v['audio']=['aiPolicyVersion'=>RR_AI_POLICY_VERSION,'synthetic'=>true,'disclosure'=>rr_audio_disclosure(),'spokenTextSha256'=>hash('sha256',$text),'token'=>$token,'status'=>'generating','version'=>RR_AUDIO_VERSION,'stylebookVersion'=>RR_STYLEBOOK_VERSION,'at'=>gmdate('c'),'actor'=>$user['name']??'Medarbeider','scriptHash'=>rr_audio_script_hash($i,$v),'dictionaryHash'=>rr_audio_hash($d),'dictionary'=>$d,'voice'=>$voice,'voiceHash'=>rr_audio_hash($vp),'model'=>$config['model_id'],'settings'=>$safe,'characters'=>$count,'approval'=>null];
             unset($i['audioQueue']);$i['revision']++;
             return ['text'=>$text,'model_id'=>$config['model_id'],'voice_settings'=>$safe];
         }

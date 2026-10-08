@@ -816,3 +816,14 @@ PR #55 er fortsatt en avhengig utviklingsgren; ingen merge til main er utført.
 Neste main-release må avstemmes mot dette nye selektive produksjonsgrunnlaget,
 ellers kan eldre hovedgrenkode tilbakeføre pilotfunksjonene. Lydarbeider og
 normaliseringsforbedring må fullføres før vanlig sending aktiveres.
+
+## Hørbar AI-merking – egen leveranse etter pilotdeploy
+
+Base: #55 ved `65a9bbd`, hvor `baac6aa` er bekreftet aktiv runtime.
+Ny gren `feat/audible-ai-disclosure` bevarer pilotens testmodus og annet arbeid.
+Fast opplysning om KI-stemme legges først i TTS, bindes til hele
+godkjenningskjeden og vises før manusgodkjenning. Ferdig lyd krever uttrykkelig
+lyttebekreftelse på merkingen. Tidligere lyd uten binding blir ikke sendeklar.
+Målrettede lyd-/rutetester, full PHP-/pakketest og mobilkontroll består.
+Ingen produksjonsendring eller betalt TTS-test. Neste steg er review,
+autorisert utrulling og menneskelig høreprøve.

@@ -17,6 +17,7 @@ const root=path.resolve(__dirname,'../..');
    await page.goto('http://fixture.test/case.php');
    const audio=page.locator('#audio-material');await audio.scrollIntoViewIfNeeded();
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'no horizontal overflow');
+   assert.match(await audio.innerText(),/Denne stemmen er KI-generert/,'audible disclosure visible before manuscript approval');
    assert.equal(await audio.locator('select[name=profile] option').count(),8);
    assert.equal(await audio.locator('textarea[name=script]').count(),1);
    assert.equal(await audio.locator('button[value=audio_tts]').count(),0,'disabled TTS has no paid action');

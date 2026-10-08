@@ -16,13 +16,13 @@ if(getenv('RR_AUDIO_TEST_FFMPEG')){$config['ffmpeg_binary']=getenv('RR_AUDIO_TES
 if(getenv('RR_AUDIO_TEST_PROFILE')==='approved'&&getenv('RR_AUDIO_TEST_FFMPEG'))$config['audio_profile']=(require dirname(__DIR__,2).'/config/example.php')['rr_audio']['audio_profile'];
 $input=['profile'=>$profile,'script'=>$script,'check'=>$review];
 $pcm='';for($n=0;$n<24000;$n++)$pcm.=pack('v',(int)(3000*sin(2*M_PI*440*$n/24000))&65535);$pcm=str_repeat($pcm,16);$wav=rr_audio_wav($pcm);
-$calls=0;$transport=static function($c,$v,$p)use(&$calls,$pcm,$voice,$config){$calls++;audio_ok($v===$voice&&!isset($p['api_key'])&&$p['model_id']===$config['model_id'],'voice and supported settings, no key in payload');return $pcm;};
+$calls=0;$transport=static function($c,$v,$p)use(&$calls,$pcm,$voice,$config,$script){$calls++;audio_ok($p['text']==="Denne stemmen er KI-generert.\n\n".$script,'real provider payload starts with audible disclosure');audio_ok($v===$voice&&!isset($p['api_key'])&&$p['model_id']===$config['model_id'],'voice and supported settings, no key in payload');return $pcm;};
 $runner=static function($args,$binary)use($wav){$last=end($args);if($last!=='-')file_put_contents($last,$wav);return '{"input_i":"-23.0","input_tp":"-20.0"}';};
 if(getenv('RR_AUDIO_TEST_FFMPEG'))$runner='rr_audio_ffmpeg';
 $get=fn()=>studio_case_get($item['id'],$path);
 $change=static function($action,$extra=[])use($get,$item,$profile,$path,$admin){rr_audio_change($item['id'],$get()['revision'],$action,['profile'=>$profile]+$extra,$admin,$path);};
 $generate=static function($tr=null)use($get,$item,$profile,$voice,$admin,$config,$path,$transport){rr_audio_generate($item['id'],$get()['revision'],$profile,$voice,[],$admin,$config,$path,$tr??$transport);};
-$approve=static function($action)use($get,$item,$profile,$admin,$config,$path){rr_audio_approve_or_queue($item['id'],$get()['revision'],$profile,$action,['confirmed'=>'1'],$admin,$config,$path);};
+$approve=static function($action)use($get,$item,$profile,$admin,$config,$path){rr_audio_approve_or_queue($item['id'],$get()['revision'],$profile,$action,['confirmed'=>'1','disclosure_confirmed'=>'1'],$admin,$config,$path);};
 try {
     file_put_contents($path,json_encode(['items'=>[$item]]));
     audio_reject(fn()=>$generate(),'no TTS before a variant exists');audio_ok($calls===0,'missing facts never reach provider');
@@ -35,20 +35,24 @@ try {
     $bad=$config;$bad['model_id']='unknown-model';audio_reject(fn()=>rr_audio_generate($item['id'],$get()['revision'],$profile,$voice,[],$admin,$bad,$path,$transport),'unsupported model rejected before provider call');
     $bad=$config;$bad['voices'][$voice]['programs']=[];audio_reject(fn()=>rr_audio_generate($item['id'],$get()['revision'],$profile,$voice,[],$admin,$bad,$path,$transport),'cross-program voice rejected');
     $bad=$config;$bad['daily_character_limit']=1;audio_reject(fn()=>rr_audio_generate($item['id'],$get()['revision'],$profile,$voice,[],$admin,$bad,$path,$transport),'budget checked before external call');
+    $bad=$config;$bad['daily_character_limit']=mb_strlen($script);audio_reject(fn()=>rr_audio_generate($item['id'],$get()['revision'],$profile,$voice,[],$admin,$bad,$path,$transport),'audible disclosure is included in paid character budget');
     $generate();$i=$get();$v=$i['audioScripts'][$profile];audio_ok($calls===1&&$v['audio']['status']==='needs_processing','one external call, private raw preview stored');
     audio_ok(abs($v['audio']['measurements']['duration']-16)<0.001,'duration measured from PCM bytes');
     audio_reject(fn()=>$approve('enqueue'),'raw audio cannot enter rundown');audio_reject(fn()=>$approve('approve_audio'),'raw audio cannot receive final approval');
     $bad=$config;$bad['audio_profile']['approved']=false;audio_reject(fn()=>rr_audio_process($item['id'],$get()['revision'],$profile,$admin,$bad,$path,$runner),'unknown station profile blocks processing');
     rr_audio_process($item['id'],$get()['revision'],$profile,$admin,$config,$path,$runner);audio_ok($calls===1,'processing never regenerates TTS');
-    audio_reject(fn()=>$approve('enqueue'),'QA is not human audio approval');$approve('approve_audio');$approve('enqueue');
+    audio_reject(fn()=>$approve('enqueue'),'QA is not human audio approval');audio_reject(fn()=>rr_audio_approve_or_queue($item['id'],$get()['revision'],$profile,'approve_audio',['confirmed'=>'1'],$admin,$config,$path),'cannot approve without hearing disclosure');$approve('approve_audio');$approve('enqueue');
     $i=$get();audio_ok(rr_audio_queued($i,studio_board_read($path),$config,$path)!==null,'approved WAV is attached to existing board item');
     $bad=$config;$bad['model_id']=$config['model_id']==='eleven_v4'?'eleven_multilingual_v2':'eleven_v4';audio_ok(rr_audio_queued($i,studio_board_read($path),$bad,$path)===null,'model change invalidates previously approved queued audio');
     $trial=$config;$trial['test_only']=true;audio_ok(rr_audio_queued($i,studio_board_read($path),$trial,$path)===null,'test mode blocks send-file access even with existing approval');
     audio_reject(fn()=>rr_audio_approve_or_queue($item['id'],$get()['revision'],$profile,'enqueue',[],$admin,$trial,$path),'test mode rejects forged enqueue POST');
+    audio_ok(str_starts_with(rr_audio_spoken_text(['script'=>'En sak.'],['entries'=>[['term'=>'KI-generert','alias'=>'ekte']]]),'Denne stemmen er KI-generert.'),'pronunciation rules cannot remove disclosure');
+    $changed=$i;unset($changed['audioScripts'][$profile]['audio']['approval']['heardDisclosure']);audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'old audio approval without heard disclosure cannot be exported');
+    audio_ok(rr_audio_spoken_text(['script'=>'Rubbestadneset'],['entries'=>[]])==="Denne stemmen er KI-generert.\n\nRubbestadneset",'disclosure is outside editable source manuscript');
     $changed=$i;$changed['script'].=' Ny rettelse.';audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'primary manuscript change invalidates audio');
     $changed=$i;$changed['audioScripts'][$profile]['script'].=' Endret.';audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'variant edit invalidates all approvals');
     audio_ok($i['audioScripts'][$profile]['audio']['aiPolicyVersion']==='1.0.0'&&$i['audioScripts'][$profile]['audio']['synthetic']===true,'TTS records policy version and synthetic origin');
-    foreach(['aiPolicyVersion','synthetic'] as $field) {
+    foreach(['aiPolicyVersion','synthetic','disclosure','spokenTextSha256'] as $field) {
         $changed=$i;unset($changed['audioScripts'][$profile]['audio'][$field]);
         audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'missing '.$field.' blocks queued audio');
         $changed=$i;$changed['audioScripts'][$profile]['audio'][$field]=$field==='synthetic'?false:'old';
