@@ -740,3 +740,7 @@ Eier bekreftet lokal nøkkellagring og autoriserte ekte test. Ett TTS-kall med e
 Et separat, skrivefritt GET-kall til den oppgitte stemmen ga HTTP 401 / `missing_permissions` med `voices_read`. Dette bekrefter manglende diagnostisk lesetilgang, ikke at samme rettighet var årsaken til TTS-avslaget. Eier er bedt om å kontrollere TTS-tilgang og aktivere Voices Read på eksisterende nøkkel. Nøkkelen er ikke vist eller tatt inn i Git.
 
 Adapteren bevarer nå HTTP-status og en begrenset liste faste feilkoder ved avvisning, uten rårespons eller privat manus i feilmeldingen. Studio viser den sikre feilmeldingen. Målrettede lyd- og sidetester består, inkludert avslag og hemmelig tekst som ikke skal lekke. Ingen produksjonsendring eller sendelistegodkjenning. Nytt betalt prøveforsøk venter på avklart nøkkeltilgang.
+
+## Ny prøvestemme etter eiers valg
+
+Eier ba om å bruke `xF681s0UeE04gsf0mVsJ` i stedet. Den er registrert som valgt prøvestemme for alle kontekster; tidligere `azrGjm6gYkR15bxb9cVv` er deaktivert for nye genereringer, uten å slette historikk. Ett autorisert TTS-forsøk med den nye stemmen ble avvist med HTTP 402. Ingen lyd ble produsert, ingen automatisk gjentakelse eller produksjonsendring. HTTP-status er kjent, men detaljert leverandørårsak ble klassifisert som ukjent; abonnement/stemmetilgang må avklares før nytt forsøk. Nøkkel-/scope-testene består, inkludert sperre for den tidligere stemmen. Den godkjente prøveprofilen er uendret.

@@ -3,7 +3,8 @@ declare(strict_types=1);
 require dirname(__DIR__,2).'/app/audio-processing.php';
 function config_audio_ok(bool $ok,string $label):void{if(!$ok)throw new RuntimeException($label);echo "PASS Audio config: $label\n";}
 function config_audio_reject(callable $fn,string $label):void{try{$fn();}catch(InvalidArgumentException|RuntimeException){config_audio_ok(true,$label);return;}throw new RuntimeException('Expected rejection: '.$label);}
-$root=dirname(__DIR__,2);$c=(require $root.'/config/example.php')['rr_audio'];$voice='azrGjm6gYkR15bxb9cVv';
+$root=dirname(__DIR__,2);$c=(require $root.'/config/example.php')['rr_audio'];$voice='xF681s0UeE04gsf0mVsJ';
+config_audio_reject(fn()=>rr_audio_voice($c,'azrGjm6gYkR15bxb9cVv',''),'superseded voice is unavailable for new generation');
 config_audio_ok($c['enabled']===false&&$c['daily_character_limit']===0,'trial approval does not activate TTS or spend');
 $p=rr_audio_processing_profile($c['audio_profile']);
 config_audio_ok($p['lufs']===-18.0&&$p['true_peak_db']===-2.0&&$p['sample_rate']===44100&&$p['send_format']==='mp3'&&$p['bitrate_kbps']===192,'approved trial values retained');

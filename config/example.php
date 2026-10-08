@@ -17,9 +17,16 @@ return [
         'ffmpeg_binary' => '', // Verified absolute server path, not browser input.
         'daily_character_limit' => 0, // Set a deliberate budget before enabling.
         'voices' => [
+            'xF681s0UeE04gsf0mVsJ' => [
+                'label' => 'Radio Rubben – ny prøvestemme',
+                'approved' => true,
+                'rights_reference' => 'Valgt av eier til prøve; bruksrettigheter verifiseres før produksjon',
+                'scope' => 'all',
+                'programs' => [],
+            ],
             'azrGjm6gYkR15bxb9cVv' => [
                 'label' => 'Radio Rubben',
-                'approved' => true, // Owner confirmed an approved voice in the RR Audio request.
+                'approved' => false, // Superseded by the owner-selected trial voice; retained for history.
                 'rights_reference' => 'Eierbekreftelse i RR Audio-oppdraget, 2026-10-08',
                 'scope' => 'all', // Owner approved all Radio Rubben contexts; editorial gates remain.
                 'programs' => [],
