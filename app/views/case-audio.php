@@ -8,7 +8,7 @@ $audioProcessingAvailable=function_exists('proc_open')&&!empty($audioConfig['ffm
 <p>Hver ny lydfil starter med «<?=escape(rr_audio_disclosure()['text'])?>». Opplysningen blir en del av lyden og følger med ved eksport. Den er inkludert i varigheten.</p>
 <p>Selvstendige radiomanus fra sakens kontrollerte originalgrunnlag. KI-generert stemme krever egen gjennomlytting og sluttgodkjenning.</p>
 <?php if(empty($audioConfig['enabled'])):?><p>Talegenerering er deaktivert. Manus og uttaleordbok kan klargjøres.</p><?php endif;?>
-<?php if($can):?><form method="post" class="editor-form"><?php case_fields($item);?><label>Manusprofil<select name="profile"><?php foreach(rr_audio_profiles()as$key=>$p):?><option value="<?=escape($key)?>"><?=escape($p['name'])?></option><?php endforeach;?></select></label><button name="action" value="audio_generate_script">Lag separat radiomanus</button></form><?php endif;?>
+<?php if($can):?><form method="post" class="editor-form"><?php case_fields($item);?><label>Manusprofil<select name="profile"><?php foreach(rr_audio_profiles()as$key=>$p):if($key==='bulletin')continue;?><option value="<?=escape($key)?>"><?=escape($p['name'])?></option><?php endforeach;?></select></label><button name="action" value="audio_generate_script">Lag separat radiomanus</button></form><?php endif;?>
 <?php foreach($item['audioScripts']??[]as$key=>$v):$a=$v['audio']??[];$p=rr_audio_profile($key);?>
 <details open><summary><?=escape($p['name'])?></summary>
 <?php if(isset($a['raw'])&&!rr_audio_current($item,$v,$audioBoard,$audioConfig)):?><p>Utdatert lyd: ny kontroll, godkjenning og generering kreves før sending.</p><?php endif;?>

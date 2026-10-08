@@ -28,6 +28,11 @@ function studio_board_audio_identity(array $item): array
         $item['sourceCheck']['source']['sha256'] ?? '', $item['web']['check']['source']['sha256'] ?? ''];
 }
 
+/** Relevant source changes invalidate composite approvals permanently, including edit/restore. */
+function studio_board_bulletin_identity(array $item):string {
+    return hash('sha256',json_encode([studio_board_audio_identity($item),$item['sourceCheck']??[], $item['verified']??false,$item['approvedBy']??null,$item['status']??''],JSON_THROW_ON_ERROR));
+}
+
 /** Lock a separate file so atomic rename never invalidates another writer's lock. */
 function studio_board_change(callable $change, ?string $path = null): mixed
 {
@@ -55,6 +60,18 @@ function studio_board_change(callable $change, ?string $path = null): mixed
                 if (isset($variant['audio'])) $row['audioScripts'][$profile]['audio']['approval'] = null;
             }
             unset($row['audioQueue']);
+        }
+        unset($row);
+        $live=array_column($board['items'],null,'id');
+        foreach($board['items']as&$row){
+            if(empty($row['bulletin']['valid']))continue;
+            foreach($row['bulletin']['sources']as$source){
+                if(!isset($live[$source['id']])||studio_board_bulletin_identity($live[$source['id']])!==$source['hash']){
+                    $row['bulletin']['valid']=false;
+                    foreach($row['audioScripts']??[]as$key=>$v){$row['audioScripts'][$key]['scriptApproval']=null;if(isset($v['audio']))$row['audioScripts'][$key]['audio']['approval']=null;}
+                    unset($row['audioQueue']);$row['revision']++;break;
+                }
+            }
         }
         unset($row);
         $board['updatedAt'] = gmdate('c');
@@ -104,14 +121,15 @@ function studio_board_has_source(array $items, array $source): bool
     return false;
 }
 
-function studio_board_add_source(array $source, array $user, ?string $path = null): void
+function studio_board_add_source(array $source, array $user, ?string $path = null, string $channel = 'both'): void
 {
-    studio_board_change(static function (array &$board) use ($source, $user): void {
+    if (!in_array($channel, ['radio','web','both'], true)) throw new InvalidArgumentException('Velg Radio, Nett eller Begge.');
+    studio_board_change(static function (array &$board) use ($source, $user, $channel): void {
         if (studio_board_has_source(studio_board_active($board), $source)) return;
         if (count(studio_board_active($board)) >= 30) throw new InvalidArgumentException('Sendelisten har plass til 30 aktive punkter. Arkiver et punkt først.');
         if (!is_string($source['id'] ?? null) || !is_string($source['title'] ?? null)) throw new InvalidArgumentException('Ugyldig kildesak.');
         $board['items'][] = [
-            'id'=>bin2hex(random_bytes(8)), 'originId'=>$source['id'],
+            'id'=>bin2hex(random_bytes(8)), 'originId'=>$source['id'], 'channel'=>$channel,
             'title'=>$source['title'], 'sourceName'=>$source['sourceName'] ?? 'Kilde',
             'sourceUrl'=>$source['url'] ?? '', 'sourceAt'=>$source['publishedAt'] ?? null,
             'capturedAt'=>$source['fetchedAt'] ?? gmdate('c'), 'summary'=>$source['summary'] ?? '',
@@ -152,6 +170,7 @@ function studio_board_update(string $id, int $revision, string $action, array $i
             // Old items remain unassigned until a person chooses their program.
             $before = $item;
             unset($before['history']);
+            if(isset($item['bulletin'])&&!in_array($action,['archive','up','down'],true))throw new InvalidArgumentException('Endre enkeltsakene og lag en ny samlet sending.');
             if ($action === 'channel') {
                 if (!in_array($user['role'] ?? '', ['admin', 'producer', 'presenter'], true))
                     throw new InvalidArgumentException('Ingen skrivetilgang.');

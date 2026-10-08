@@ -1,0 +1,75 @@
+{
+  "commit": "5ecfd7b39d14e0f935169d0da27a38483ad2a955",
+  "previous": "baac6aab2ff777e85044091cf37290da8a9f8539",
+  "packageSha256": "815c221fd9fd7bc5c903fc7f33956e82cef424d0e03343845837d83e7d41e278",
+  "files": {
+    "studio-private/app/board.php": {
+      "before": "574d4273f4fbb3e65fb0ca6b3fca9a81e6739a0ea4db6b6304e94dcb4dbc94aa",
+      "after": "efb69eba62a89deb9ff9b9c465980c51a3c6796d693ef695ed4ef1f32a1c9c1f"
+    },
+    "studio-private/app/weather.php": {
+      "before": "1d216b8029ce7f68f52dda3eb339fff96fcd0079e3b070f167705228e5302e7f",
+      "after": "80fc650ee3465872778777ca63cd74fa715ae2ce2b68cf586439836f4b5ba7e6"
+    },
+    "studio-public/case.php": {
+      "before": "fe08306acbeeb10f1bc73a6a87976255f04241f417564ea3bc8b70b99bffae45",
+      "after": "0347e1948ce5164a9e395b0e6337c795fcf41f2fb33648c0c25b89fdef15a8c4"
+    },
+    "studio-public/sending.php": {
+      "before": "1d777653618410b2a0bc9f69b888df4a9c69c5979d503ce9782f8c6ef6be4177",
+      "after": "d1380f1e6454dc40653eb4624da7b4324aaf78c2e5c145850eb0ea90a8836239"
+    },
+    "studio-public/release.json": {
+      "before": "46d28e9105d994ed3cea4a985c350138799727a95b638e9d8c572269c1a5cfd9",
+      "after": "de213b8a140e4b28777e48775f8704ce4296085b20fefa1762e93ee10dafd672"
+    },
+    "studio-private/app/weather-script.php": {
+      "before": "e6c3d141686578e8fc86e22ef4cdfb4263c9505008cabfa4543950d3b96eeff4",
+      "after": "5a4648cbc3d6997dd6308e3dcfcbb2b71955c55315b9fd3212d02993a904d538"
+    },
+    "studio-private/app/audio-workflow.php": {
+      "before": "184171a4cacd86705bca63817cad263cd43aef000ab0428430143067c349a315",
+      "after": "9c9df5df86efdc732b00c3715d5846d7298923959a4923652f988f015e8f2a2a"
+    },
+    "studio-private/app/audio-profiles.php": {
+      "before": "e8ee56842328cffca04359f8d7a9d0ad1cf7ab0e533931d3646190cd4a60349e",
+      "after": "4261261ee18a7746fe1c4a98161278e66732e1a35ad8c26960865157ff6dad68"
+    },
+    "studio-private/app/stylebook.php": {
+      "before": "6f7187f2c8101b737c037ef3c535b3c8c79defb524e8561a5494cc5c0086112a",
+      "after": "5d77979e6dff3b2004cf6e6bf863c5bae84acb8fcefd4d1d201bf244f804d3c0"
+    },
+    "studio-private/app/views/case-audio.php": {
+      "before": "80bf5f9fe99a3cc631be33b545bfba9a9c97e49aa0b7ee1a76417ae567289ce3",
+      "after": "a453a6e6d672706e8912b88844df11d380229c6715b0e876d992496054a305d1"
+    },
+    "studio-private/app/bulletin.php": {
+      "before": null,
+      "after": "231618032e111d00a9108b4825e6b18bbbc603d476b4a528d793f0647491a96b"
+    },
+    "studio-private/app/views/bulletin.php": {
+      "before": null,
+      "after": "f2d2ce9a623ce5a6543568d4668ad9e536cb28abd8295303a87f5207723a956c"
+    }
+  },
+  "preserved": [
+    "studio-private/app/bootstrap.php",
+    "studio-public/assets/favicon.ico",
+    "studio-public/assets/radio-rubben-logo.png",
+    "studio-public/assets/radio-rubben-logo.svg",
+    "studio-public/local/login.php",
+    "studio-public/login.php"
+  ],
+  "deployment": {
+    "checkedAt": "2026-10-08T18:04:33+00:00",
+    "run": "rr-bulletin-5ecfd7b",
+    "backup": "/home/cptk37ymg_w1417156/.radiorubben-studio-deploy/backups/selective-rr-bulletin-5ecfd7b",
+    "changedFiles": 12,
+    "checkedFiles": 501,
+    "drift": [],
+    "privateConfigPreserved": true,
+    "editorialDataModified": false,
+    "testOnly": true,
+    "ciRun": 37821189701
+  }
+}

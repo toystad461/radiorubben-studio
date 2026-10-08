@@ -29,6 +29,7 @@ if($id!=='' && !preg_match('/^[a-f0-9]{16}$/D',$id)){http_response_code(404);exi
 $can=studio_can($user,'produce'); $admin=($user['role']??'')==='admin'; $wp=studio_wp_config();
 $error=$inboxError;$item=null;
 try {if($id!=='')$item=studio_case_get($id);} catch(Throwable $e){http_response_code(404);exit('Saken er ikke tilgjengelig.');}
+if(isset($item['bulletin']))redirect('/sending.php?item='.$item['id']);
 if($_SERVER['REQUEST_METHOD']==='POST' && !empty($_POST)) {
     if(!is_string($_POST['csrf']??null)||!hash_equals($_SESSION['csrf'],$_POST['csrf'])||!$can){http_response_code(403);exit('Ingen tilgang.');}
     try {

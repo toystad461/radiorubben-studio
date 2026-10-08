@@ -5,9 +5,46 @@ require_once __DIR__.'/editorial-memory.php';
 
 const STUDIO_NEWSROOM_VERSION='2026-10-04.1';
 
+/** Intake reuses existing stories without changing their channel, text or approvals. */
+function studio_newsroom_intake(array $source, string $channel, array $user, ?string $path=null): array {
+    if(!in_array($user['role']??'', ['admin','producer','presenter'],true))throw new InvalidArgumentException('Ingen skrivetilgang.');
+    if(!in_array($channel,['radio','web','both'],true))throw new InvalidArgumentException('Velg Radio, Nett eller Begge.');
+    $board=studio_board_read($path);
+    if(studio_board_has_source($board['items'],$source)){
+        $item=studio_case_source_item($board['items'],$source);
+        if($item['status']==='archived')throw new InvalidArgumentException('Denne saken er allerede forkastet eller arkivert.');
+        return $item;
+    }
+    studio_board_add_source($source,$user,$path,$channel);
+    return studio_case_source_item(studio_board_active(studio_board_read($path)),$source);
+}
+
+/** Read-only channel guidance. This never grants editorial or audio approval. */
+function studio_newsroom_flow(array $item): array {
+    $channel=studio_board_channel($item);$radio='Ikke valgt';$web='Ikke valgt';
+    $radioChecked=trim((string)($item['script']??''))!==''&&studio_news_check_current($item)&&studio_news_radio_credit($item);
+    $radioApproved=$radioChecked&&($item['status']??'')==='ready'&&!empty($item['verified'])&&!empty($item['approvedBy']);
+    if($channel!=='web')$radio=empty($item['script'])?'Manus mangler':(!$radioChecked?'Manus trenger kontroll':($radioApproved?'Manus godkjent':'Manus til godkjenning'));
+    if($channel!=='radio')$web=empty($item['web']['body'])?'Artikkel mangler':studio_web_status_label($item);
+    $url='/case.php?item='.rawurlencode($item['id']);
+    if($channel!=='web'&&!$radioApproved){$next=['label'=>empty($item['script'])?'Lag radiomanus':($radioChecked?'Godkjenn radiomanus':'Kontroller radiomanus'),'url'=>$url.'#radio-material'];}
+    elseif($channel!=='radio'){$next=['label'=>'Åpne nettartikkel','url'=>$url.'#web-material'];}
+    else{$next=['label'=>'Velg sak til nyhetssending','url'=>'/sending.php?item='.rawurlencode($item['id'])];}
+    return ['channel'=>$channel,'radio'=>$radio,'web'=>$web,'radioApproved'=>$radioApproved,'radioChecked'=>$radioChecked,'next'=>$next];
+}
+
 /** All badges and buttons derive from the same server-side gates as publication. */
 function studio_newsroom_card(array $item): array {
     $w=$item['web']??[];$d=$w['delivery']??[];$check=$w['check']??[];$reasons=[];
+    $flow=studio_newsroom_flow($item);
+    if($flow['channel']==='radio')return [
+        'id'=>$item['id'],'type'=>'studio','revision'=>$item['revision'],'title'=>$item['title'],
+        'intro'=>'','body'=>$item['script']??'','sourceName'=>$item['sourceName'],'sourceUrl'=>$item['sourceUrl'],
+        'status'=>$flow['radioChecked']?'working':'attention','reasons'=>[$flow['radio']],
+        'originalRead'=>studio_news_original_read($item,$item['sourceCheck']??[]),
+        'sourceFetchedAt'=>$item['sourceCheck']['source']['fetchedAt']??null,
+        'checkedAt'=>$item['sourceCheck']['checkedAt']??null,'publishedUrl'=>null,'canApprove'=>false,'flow'=>$flow];
+
     if(($d['state']??'')==='confirmed'&&($d['status']??'')==='publish'&&($d['hash']??'')===studio_web_approval_hash($item))$status='published';
     else {
         if(in_array($d['state']??'',['unknown','pending'],true))$reasons[]='WordPress-overføringen må avklares før nytt forsøk.';
@@ -21,7 +58,6 @@ function studio_newsroom_card(array $item): array {
         if(!studio_web_presentation_ready($item))$reasons[]='Bilde og kategorier må lagres.';
         if(!empty($item['newsroom']['error']))$reasons[]=$item['newsroom']['error'];
         $status=$reasons?'attention':'ready';
-        if (studio_board_channel($item) === 'radio') { $status='attention'; $reasons[]='Valgt som radiomateriale. Behandle radiomanuset i Kontrollsenter.'; }
         if(($item['newsroom']['state']??'')==='working'){
             if((strtotime($item['newsroom']['startedAt']??'')?:0)>time()-300){$status='working';$reasons=['Robåt leser originalen og klargjør saken.'];}
             else{$status='attention';$reasons=['Klargjøringen ble avbrutt. Kontroller saken før et nytt forsøk.'];}
@@ -31,7 +67,7 @@ function studio_newsroom_card(array $item): array {
         'intro'=>$w['intro']??'','body'=>$w['body']??'','sourceName'=>$item['sourceName'],'sourceUrl'=>$item['sourceUrl'],
         'status'=>$status,'reasons'=>array_values(array_unique($reasons)),'originalRead'=>studio_news_original_read($item,$check),
         'sourceFetchedAt'=>$check['source']['fetchedAt']??null,'checkedAt'=>$check['checkedAt']??null,
-        'publishedUrl'=>$status==='published'?($d['link']??null):null,'canApprove'=>$status==='ready'];
+        'publishedUrl'=>$status==='published'?($d['link']??null):null,'canApprove'=>$status==='ready','flow'=>$flow];
 }
 
 /** Durable preparation job, not an approval. Human edits invalidate the reserved revision. */

@@ -817,6 +817,92 @@ Neste main-release må avstemmes mot dette nye selektive produksjonsgrunnlaget,
 ellers kan eldre hovedgrenkode tilbakeføre pilotfunksjonene. Lydarbeider og
 normaliseringsforbedring må fullføres før vanlig sending aktiveres.
 
+## Samlet nyhetssending fra radiolisten – 08.10.2026
+
+Etter eiers «Flott da går vi videre»: samme branch/PR #55 utvides med «Lag
+nyhetssending» i eksisterende radioliste. Valgte saker beholder listens rekkefølge.
+Én til fem ferdig kildekontrollerte og manuelt klarmerkede saker kan samles med
+Bømlo-vær (alternativt Stord/Haugesund eller uten vær). Programtilknytning blandes
+ikke. Korte, deterministiske overganger legger ikke til journalistiske fakta.
+
+Sendetid foreslås som neste hele time, velges inntil åtte timer fram og vises med
+Oslo-tidssone. Intro følger eiers ordlyd: «Det er torsdag kveld, klokken er åtte,
+og her er nyhetene på Radio Rubben.» Midnatt og begge DST-overganger er testet.
+Værprognosen velges for sendingen; ferskhet regnes mot faktisk nåtid, ikke fremtid.
+Stylebook 1.2.0 versjonerer disse reglene; faktakrav er uendret.
+
+Samlet sending lagres som et radiopunkt med kilde-/manussnapshots på samme board.
+Manuell samlet manusgodkjenning, TTS-reservasjon, budsjett, leverandørfeil,
+privat rålydlager og avspilling gjenbruker RR Audio. Endring/arkivering av en
+kildesak ugyldiggjør varig samlet godkjenning, også dersom gammel tekst gjenopprettes.
+Utløpt kontroll/vær og passert sendetid sperrer ny generering. Uttale- og
+lydgodkjenning beholdes separat. Testmodus gir fortsatt ingen sendefil eller playout.
+
+Lokale negative tester, eksisterende PHP-/pakketest og nye mobile visninger
+(375/390/1280) består. Ingen ekte saker er redigert, godkjent eller sendt av agenten.
+Pilotoppdateringen er deployet som `5ecfd7b39d14e0f935169d0da27a38483ad2a955`.
+CI-kjøring `37821189701` består på denne SHA-en (PHP 8.2, PHP 8.4 og mobil).
+Selektiv deploy endret 12 filer. Etterkontroll 18:04:33 UTC fant null drift i
+501 registrerte filer. Seks tidligere dokumenterte runtimeforskjeller er bevart.
+Privat konfigurasjon, nøkler, innlogging og redaksjonelle data er ikke endret.
+Eksakte før-/etterhasher finnes i `ai-journalist/BULLETIN-PILOT-DEPLOY.json`.
+Backup: `~/.radiorubben-studio-deploy/backups/selective-rr-bulletin-5ecfd7b`.
+
+Innlogget visuell kontroll i brukerens nettleser ble hindret av nettleserens
+sikkerhetskontroll; ingen omgåelse ble forsøkt. Mobile fixture-visninger er
+kontrollert lokalt. En komplett prøve med brukerens to ekte saker, manuell
+manusgodkjenning og avspilling gjenstår. Testmodus og sperre mot playout beholdes.
+
+
+## Manuslæring etter høreprøve – 08.10.2026
+
+Eiers ønske om å bruke læringen videre er registrert som RR-AUDIO-L01 v1 i
+`ai-journalist/RR-AUDIO.md`: færre faste overganger, naturlig muntlig rytme og
+mindre overflødig kildegjentakelse. Faktakrav, nødvendig attribusjon og manuell
+godkjenning er uendret. Neste steg er versjonert manusforbedring med separat
+kontroll av eventuell omskriving og sammenligning mot samme faktagrunnlag.
+Kun dokumentasjon er endret; ingen runtime-endring, TTS-kall, ny stemme eller
+deploy. Dokumentasjonsdiff kontrollert; runtime-tester er ikke nødvendige.
+
+
+## Nyhetsdesk: kanalvalg og neste handling – 08.10.2026
+
+På samme utviklingsbranch utvides eksisterende inntak med Radio, Nett eller
+Radio og nett. Valget lagres ved opprettelse i samme board; forberedelsen
+bruker eksisterende kanalstyrte generator og separate kontroller. Åpning av
+en eksisterende sak endrer ikke kanalvalg, manus eller godkjenninger.
+
+Sakslisten og leseflaten viser status per kanal. Radiosaker får radiomanus,
+relevant kildegrunnlag og lenke til neste handling i eksisterende saksside,
+uten nettartikkelens redigerings-/publiseringsknapper. Manusgodkjenning merkes
+uttrykkelig som separat fra lydgodkjenning. Kanalendring skjer fortsatt på
+sakssiden gjennom eksisterende revisjons- og godkjenningssperrer.
+
+Validering: full lokal PHP-/pakketest består. Kanaltester dekker inntak,
+ugyldig valg/rolle, gjenåpning uten endring, riktig antall mock-kall, felles
+kildegrunnlag og ingen falsk manusgodkjenning etter tekstendring, utløpt
+kontroll eller manglende godkjenner. Nye mobiltester dekker radio/begge ved
+375, 390 og 1280 piksler, kanalvalg og fravær av nettgodkjenning for radio.
+Ingen ekte saker eller eksterne genereringstjenester er brukt.
+
+Status: implementert for gjennomgang; ikke deployet til Studio. Aktiv pilot
+beholder forrige kodeversjon. Ingen merge eller ny produksjonsutrulling.
+
+
+### Nyhetsdesk deployet etter eksplisitt godkjenning
+
+Eier ba om «deploy». Kanalvalg og neste handling er nå lagt ut med kodecommit
+`b59cee0077966cb6c892f4f339d46cb8ee7fad6b`. Seks avstemte kode-/versjonsfiler ble
+oppdatert selektivt. Privat deployplan, backup og rollbackgrunnlag er lagret i
+eksisterende deploysystem; ingen private driftsfiler legges til dette notatet.
+Etterkontroll 08.10.2026 kl. 18:32 UTC: 501 registrerte filer, null drift.
+Offentlig versjonsmarkør stemmer med kildecommit. Innloggingssperren og
+kanalstatus-funksjonen består helsesjekken. Redaksjonelle data er ikke endret.
+
+CI-kjøring 37824716010 består på deployet kodecommit: PHP 8.2, PHP 8.4 og mobil.
+Eksisterende testmodus beholdes. Ingen merge til main eller ordinær utsending.
+Innlogget visuell kontroll av brukerens ekte saker er ikke utført her.
+
 ## Hørbar AI-merking – egen leveranse etter pilotdeploy
 
 Base: #55 ved `65a9bbd`, hvor `baac6aa` er bekreftet aktiv runtime.
@@ -827,3 +913,4 @@ lyttebekreftelse på merkingen. Tidligere lyd uten binding blir ikke sendeklar.
 Målrettede lyd-/rutetester, full PHP-/pakketest og mobilkontroll består.
 Ingen produksjonsendring eller betalt TTS-test. Neste steg er review,
 autorisert utrulling og menneskelig høreprøve.
+
