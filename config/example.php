@@ -12,7 +12,7 @@ return [
     'openai_model' => '',
     'rr_audio' => [
         'enabled' => false,
-        'api_key' => '', // private local.php or ELEVENLABS_API_KEY; never browser input
+        'api_key' => '', // private elevenlabs.key, local.php or ELEVENLABS_API_KEY; never browser input
         'model_id' => 'eleven_multilingual_v2',
         'ffmpeg_binary' => '', // Verified absolute server path, not browser input.
         'daily_character_limit' => 0, // Set a deliberate budget before enabling.
@@ -21,18 +21,19 @@ return [
                 'label' => 'Radio Rubben',
                 'approved' => true, // Owner confirmed an approved voice in the RR Audio request.
                 'rights_reference' => 'Eierbekreftelse i RR Audio-oppdraget, 2026-10-08',
-                'programs' => [], // Explicit program IDs from the existing registry.
+                'scope' => 'all', // Owner approved all Radio Rubben contexts; editorial gates remain.
+                'programs' => [],
             ],
         ],
         'audio_profile' => [
-            'approved' => false,
-            'version' => '',
-            'lufs' => null,
-            'true_peak_db' => null,
-            'sample_rate' => null,
-            'send_format' => null,
-            'max_silence_seconds' => null,
-            'bitrate_kbps' => null,
+            'approved' => true, // Approved for trials, not production rollout.
+            'version' => 'rr-tale-trial-0.1.0',
+            'lufs' => -18.0,
+            'true_peak_db' => -2.0,
+            'sample_rate' => 44100,
+            'send_format' => 'mp3',
+            'max_silence_seconds' => 1.0,
+            'bitrate_kbps' => 192,
         ],
     ],
     'vipps_environment' => 'test',

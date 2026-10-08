@@ -725,3 +725,10 @@ lydkøen. Negative tester dekker menneskelig godkjenning og endret proveniens.
 Se `docs/AI-POLICY-IMPLEMENTATION.md` for base, tester og gjenstående arbeid.
 Lytterinformasjon i sending og full AI-bildemetadatakjede gjenstår.
 Ingen merge til hovedgren, deploy eller publisering er utført.
+
+
+## Godkjent RR Audio-prøveprofil og felles stemme
+
+Eier godkjente prøveprofilen og stemmen i alle sammenhenger. `rr-tale-trial-0.1.0` er registrert i utviklingskonfigurasjonen: −18 LUFS, −2 dBTP, 44,1 kHz mono WAV-master (PCM16), MP3 192 kbps CBR og ett sekund som stillhetsgrense. `scope=all` gir stemmetilgang også til eksisterende saker uten program, men endrer ikke programtilordning, læring, kilder eller manuell sluttgodkjenning. Ukjente program-ID-er avvises fortsatt.
+
+Nyeste remote #55 (`fc3d134`, inkludert AI-policy #56) ble hentet inn før endringen. Policy-/syntesemetadata og sperrer er bevart. Skjult lokal nøkkelinnlegging er klargjort med et brukerbetjent Python-skript; nøkkel er ikke mottatt eller lagret av agenten. Privat filstøtte krever rettighet 600 og har ingen automatisk aktivering. Faktisk FFmpeg med syntetisk lyd består med den godkjente prøveprofilen. Ingen nøkkel er testet mot ElevenLabs, ingen produksjonsdata er endret, og TTS/budsjett er fortsatt av/0. Neste steg er brukerens lokale nøkkelinnlegging, deretter kontrollert tilkobling og høreprøve. Produksjonsdeploy krever fortsatt eksplisitt godkjenning.

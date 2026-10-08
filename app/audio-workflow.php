@@ -27,7 +27,9 @@ function rr_audio_script_approved(array $item,array $v):bool {
 }
 function rr_audio_voice(array $config,string $voice,string $program):array {
     $v=$config['voices'][$voice]??[];
-    if(!studio_program_profile($program)||($v['approved']??false)!==true||trim((string)($v['rights_reference']??''))===''||!in_array($program,$v['programs']??[],true))throw new InvalidArgumentException('Stemmen er ikke godkjent for dette programmet.');
+    if($program!=='')studio_program_profile($program); // Reject unknown IDs; do not assign legacy items.
+    $allowed=($v['scope']??'')==='all'||($program!==''&&in_array($program,$v['programs']??[],true));
+    if(($v['approved']??false)!==true||trim((string)($v['rights_reference']??''))===''||!$allowed)throw new InvalidArgumentException('Stemmen er ikke godkjent for dette programmet.');
     return $v;
 }
 function rr_audio_current(array $item,array $v,array $board,array $config):bool {

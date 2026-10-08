@@ -36,6 +36,14 @@ function load_config(): array
         if (getenv($env) !== false) $config[$key] = getenv($env);
     }
     if (getenv('VIPPS_ALLOWED_PHONES') !== false) $config['vipps_allowed_phones'] = array_values(array_filter(array_map('trim', explode(',', getenv('VIPPS_ALLOWED_PHONES')))));
+    $audioKeyFile = dirname(__DIR__) . '/config/elevenlabs.key';
+    if (getenv('ELEVENLABS_API_KEY') === false && empty($config['rr_audio']['api_key']) && (file_exists($audioKeyFile) || is_link($audioKeyFile))) {
+        if (is_link($audioKeyFile) || !is_file($audioKeyFile) || (fileperms($audioKeyFile) & 0077) !== 0 || filesize($audioKeyFile) > 512)
+            throw new RuntimeException('ElevenLabs-nøkkelfilen må være privat og ha filrettighet 600.');
+        $key = trim((string)file_get_contents($audioKeyFile));
+        if (!preg_match('/^[\x21-\x7e]{20,512}$/D', $key)) throw new RuntimeException('ElevenLabs-nøkkelfilen er ugyldig.');
+        $config['rr_audio']['api_key'] = $key;
+    }
     if (getenv('ELEVENLABS_API_KEY') !== false) $config['rr_audio']['api_key'] = getenv('ELEVENLABS_API_KEY');
     return $config;
 }

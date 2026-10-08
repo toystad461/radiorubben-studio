@@ -13,6 +13,7 @@ $voice='azrGjm6gYkR15bxb9cVv';$profile='news-short';
 // These are synthetic test settings, NOT the station's approved audio profile.
 $config=['enabled'=>true,'api_key'=>'MOCK-ONLY','model_id'=>'eleven_multilingual_v2','daily_character_limit'=>10000,'voices'=>[$voice=>['approved'=>true,'rights_reference'=>'fixture only','programs'=>[$item['program']]]],'audio_profile'=>['approved'=>true,'version'=>'fixture-1','sample_rate'=>24000,'send_format'=>'wav','lufs'=>-23,'true_peak_db'=>-1,'max_silence_seconds'=>1]];
 if(getenv('RR_AUDIO_TEST_FFMPEG')){$config['ffmpeg_binary']=getenv('RR_AUDIO_TEST_FFMPEG');if(getenv('RR_AUDIO_TEST_FORMAT')==='mp3'){$config['audio_profile']['send_format']='mp3';$config['audio_profile']['bitrate_kbps']=128;}}
+if(getenv('RR_AUDIO_TEST_PROFILE')==='approved'&&getenv('RR_AUDIO_TEST_FFMPEG'))$config['audio_profile']=(require dirname(__DIR__,2).'/config/example.php')['rr_audio']['audio_profile'];
 $input=['profile'=>$profile,'script'=>$script,'check'=>$review];
 $pcm='';for($n=0;$n<24000;$n++)$pcm.=pack('v',(int)(3000*sin(2*M_PI*440*$n/24000))&65535);$pcm=str_repeat($pcm,16);$wav=rr_audio_wav($pcm);
 $calls=0;$transport=static function($c,$v,$p)use(&$calls,$pcm,$voice){$calls++;audio_ok($v===$voice&&!isset($p['api_key'])&&$p['model_id']==='eleven_multilingual_v2','voice and supported settings, no key in payload');return $pcm;};
