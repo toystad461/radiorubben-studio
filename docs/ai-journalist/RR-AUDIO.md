@@ -82,3 +82,45 @@ normalisering aktiveres på dette webhotellet. Den lokalt brukte to-pass-behandl
 er ikke integrert i produksjon. Testmodus sperrer sendeliste og sendefilnedlasting.
 En egnet lydarbeider med samme lagrings-/godkjenningskontrakt er en videre avhengighet.
 Privat `config/audio-local.php` styrer aktivering/budsjett uten endring av innlogging.
+
+
+## Godkjent redaksjonell læring RR-AUDIO-L01 v1 – 08.10.2026
+
+Eier ba etter prøveavspilling om å bruke denne læringen videre. Omfanget er
+radiomanus for samlede nyhetssendinger; dette er en godkjent utviklingsføring,
+ikke en faktarettelse eller godkjenning av enkeltmanus. Ingen programspesifikke
+læringsregistre eller tidligere godkjente manus er endret.
+
+Observasjon fra eier: manus oppleves kunstig, særlig gjentakelser av «det melder»,
+«videre i nyhetene» og «det melder NRK». Selve lydopptaket er ikke analysert i denne
+oppfølgingen. En eventuell feiluttale av «melder» er derfor ikke bekreftet.
+
+Føringer for neste manusendring:
+- La neste sak begynne direkte med en tydelig førstesetning. Unngå den faste
+  overgangen «Videre i nyhetene» mellom alle saker; bruk avsnitt og naturlig pause.
+- Bruk korte, muntlige setninger og varier rytmen uten å legge til fakta,
+  stemning, årsakssammenhenger eller geografisk tilknytning som ikke har belegg.
+- Unngå identiske kildefraser flere ganger i samme sak når én tydelig henvisning
+  er tilstrekkelig. Bevar nødvendig kreditering, partsattribusjon og forbehold.
+  NRK skal fortsatt krediteres tidlig der gjeldende regler krever det. Ikke fjern
+  kildehenvisninger med et generelt tekstfilter eller en regel om maks én kilde.
+- Skill mellom manusredigering og uttaleretting. Undersøk eventuelle uttalefeil
+  mot faktisk manus og lyd før en separat rettelse i uttaleordboken godkjennes.
+- Forbedre manus og leserytme før vurdering av en ny stemme eller stemmeklon.
+  Denne føringen bestiller ikke kloning eller endring av godkjent stemme.
+
+Neste implementering skal versjonere Stylebook og produksjonsreglene samlet.
+Dagens sammensetning gjenbruker kontrollerte tekster ordrett: en fri omskriving
+av den samlede sendingen må få separat kildekontroll av den faktiske nye teksten
+før manuell godkjenning. Bevar kildegrunnlag, original, rettelse og begrunnelse.
+Endret manus skal ugyldiggjøre tidligere manus-/lydgodkjenning som før.
+
+Validering før aktivering: sammenlign gammel og ny tekst fra samme kontrollerte
+faktagrunnlag, kontroller at nødvendig attribusjon og forbehold er bevart, kjør
+negative tester for endret tekst og manglende kontroll/godkjenning, og lytt til
+samme stemme med gammelt og nytt manus. Ingen forbedring i faktisk lydkvalitet
+påstås før denne prøven. Læringen kan revideres eller trekkes tilbake med ny
+versjon og begrunnelse; tidligere føring beholdes i Git-historikken.
+
+Status: dokumentert for videre utvikling. Ikke aktivert i generatoren eller
+deployet til Studio i denne oppfølgingen.

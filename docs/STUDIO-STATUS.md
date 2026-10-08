@@ -852,3 +852,14 @@ Innlogget visuell kontroll i brukerens nettleser ble hindret av nettleserens
 sikkerhetskontroll; ingen omgåelse ble forsøkt. Mobile fixture-visninger er
 kontrollert lokalt. En komplett prøve med brukerens to ekte saker, manuell
 manusgodkjenning og avspilling gjenstår. Testmodus og sperre mot playout beholdes.
+
+
+## Manuslæring etter høreprøve – 08.10.2026
+
+Eiers ønske om å bruke læringen videre er registrert som RR-AUDIO-L01 v1 i
+`ai-journalist/RR-AUDIO.md`: færre faste overganger, naturlig muntlig rytme og
+mindre overflødig kildegjentakelse. Faktakrav, nødvendig attribusjon og manuell
+godkjenning er uendret. Neste steg er versjonert manusforbedring med separat
+kontroll av eventuell omskriving og sammenligning mot samme faktagrunnlag.
+Kun dokumentasjon er endret; ingen runtime-endring, TTS-kall, ny stemme eller
+deploy. Dokumentasjonsdiff kontrollert; runtime-tester er ikke nødvendige.
