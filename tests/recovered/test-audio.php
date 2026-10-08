@@ -42,6 +42,13 @@ try {
     $i=$get();audio_ok(rr_audio_queued($i,studio_board_read($path),$config,$path)!==null,'approved WAV is attached to existing board item');
     $changed=$i;$changed['script'].=' Ny rettelse.';audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'primary manuscript change invalidates audio');
     $changed=$i;$changed['audioScripts'][$profile]['script'].=' Endret.';audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'variant edit invalidates all approvals');
+    audio_ok($i['audioScripts'][$profile]['audio']['aiPolicyVersion']==='1.0.0'&&$i['audioScripts'][$profile]['audio']['synthetic']===true,'TTS records policy version and synthetic origin');
+    foreach(['aiPolicyVersion','synthetic'] as $field) {
+        $changed=$i;unset($changed['audioScripts'][$profile]['audio'][$field]);
+        audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'missing '.$field.' blocks queued audio');
+        $changed=$i;$changed['audioScripts'][$profile]['audio'][$field]=$field==='synthetic'?false:'old';
+        audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'changed '.$field.' blocks queued audio');
+    }
     $changed=$i;$changed['audioScripts'][$profile]['check']['checkedAt']=gmdate('c',time()-3601);audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'expired source check blocks rundown');
     $bad=$config;$bad['voices'][$voice]['approved']=false;audio_ok(rr_audio_queued($i,studio_board_read($path),$bad,$path)===null,'revoked voice blocks existing queued audio');
     $asset=$i['audioScripts'][$profile]['audio']['send'];file_put_contents(rr_audio_asset($asset,$path),'changed');audio_ok(rr_audio_queued($i,studio_board_read($path),$config,$path)===null,'changed file cannot be sent');

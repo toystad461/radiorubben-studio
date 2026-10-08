@@ -33,7 +33,8 @@ function rr_audio_voice(array $config,string $voice,string $program):array {
 function rr_audio_current(array $item,array $v,array $board,array $config):bool {
     $a=$v['audio']??[];
     try{$voice=rr_audio_voice($config,(string)($a['voice']??''),(string)($item['program']??''));}catch(Throwable){return false;}
-    return rr_audio_script_approved($item,$v)&&hash_equals(rr_audio_script_hash($item,$v),(string)($a['scriptHash']??''))
+    return ($a['aiPolicyVersion']??'')===RR_AI_POLICY_VERSION&&($a['synthetic']??null)===true
+        &&rr_audio_script_approved($item,$v)&&hash_equals(rr_audio_script_hash($item,$v),(string)($a['scriptHash']??''))
         &&($a['dictionaryHash']??'')===rr_audio_hash(rr_pronunciation_context($board))
         &&($a['voiceHash']??'')===rr_audio_hash($voice)&&($a['model']??'')===($config['model_id']??'');
 }
@@ -103,7 +104,7 @@ function rr_audio_generate(string $id,int $revision,string $profile,string $voic
             if($count>3000||$count+$used>$limit)throw new InvalidArgumentException('TTS-budsjettet er brukt opp eller ikke angitt.');
             $b['audioUsage'][$today]=$used+$count;
             if(isset($v['audio']))$v['audioHistory'][]=$v['audio'];
-            $v['audio']=['token'=>$token,'status'=>'generating','version'=>RR_AUDIO_VERSION,'stylebookVersion'=>RR_STYLEBOOK_VERSION,'at'=>gmdate('c'),'actor'=>$user['name']??'Medarbeider','scriptHash'=>rr_audio_script_hash($i,$v),'dictionaryHash'=>rr_audio_hash($d),'dictionary'=>$d,'voice'=>$voice,'voiceHash'=>rr_audio_hash($vp),'model'=>$config['model_id'],'settings'=>$safe,'characters'=>$count,'approval'=>null];
+            $v['audio']=['aiPolicyVersion'=>RR_AI_POLICY_VERSION,'synthetic'=>true,'token'=>$token,'status'=>'generating','version'=>RR_AUDIO_VERSION,'stylebookVersion'=>RR_STYLEBOOK_VERSION,'at'=>gmdate('c'),'actor'=>$user['name']??'Medarbeider','scriptHash'=>rr_audio_script_hash($i,$v),'dictionaryHash'=>rr_audio_hash($d),'dictionary'=>$d,'voice'=>$voice,'voiceHash'=>rr_audio_hash($vp),'model'=>$config['model_id'],'settings'=>$safe,'characters'=>$count,'approval'=>null];
             unset($i['audioQueue']);$i['revision']++;
             return ['text'=>$text,'model_id'=>$config['model_id'],'voice_settings'=>$safe];
         }

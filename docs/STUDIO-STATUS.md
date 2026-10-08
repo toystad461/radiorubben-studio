@@ -713,3 +713,15 @@ Utvidelsen i issue #54 fortsetter på samme `feature/ai-journalist-2` og draft-P
 Stemmen `azrGjm6gYkR15bxb9cVv` er eierbekreftet; programtilknytning og konkrete stasjonsnivåer mangler. TTS er avslått. Mock-kjede, HTTP-sperrer og mobile maler testes; faktisk FFmpeg 7.1 er prøvd lokalt med syntetisk lyd som både WAV og MP3. Ingen ElevenLabs-kostnad, produksjonsendring eller radio.co-opplasting. Den tidligere teksten om «lyd uendret» beskriver første del-leveranse; denne utvidelsen endrer bare utviklingsbranchen.
 
 Se `docs/ai-journalist/RR-AUDIO.md` for status, fagkilder og resterende avhengigheter. WordPress/NFF-faktapakke, hostingens web-SAPI/FFmpeg, leverandørtilgang og Radio.co Studio API må avklares før bredere aktivering. Ikke merge eller deploy uten eksplisitt godkjenning.
+
+
+## AI-erklæring v1.0 – separat PR, 08.10.2026
+
+`policy/ai-v1` er avstemt mot AI-journalist #55 med RR Audio (`6b6b768`).
+Felles policy og utviklingsinstruksjoner er lagt til. Ny generering får
+policyversjon; nettets godkjenning bindes til genereringsmetadata. Lydposten
+registrerer syntetisk opphav og policyversjon; manglende/endrede verdier sperrer
+lydkøen. Negative tester dekker menneskelig godkjenning og endret proveniens.
+Se `docs/AI-POLICY-IMPLEMENTATION.md` for base, tester og gjenstående arbeid.
+Lytterinformasjon i sending og full AI-bildemetadatakjede gjenstår.
+Ingen merge til hovedgren, deploy eller publisering er utført.
