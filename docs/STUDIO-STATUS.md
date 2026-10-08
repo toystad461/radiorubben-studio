@@ -914,3 +914,13 @@ Målrettede lyd-/rutetester, full PHP-/pakketest og mobilkontroll består.
 Ingen produksjonsendring eller betalt TTS-test. Neste steg er review,
 autorisert utrulling og menneskelig høreprøve.
 
+
+### Hørbar merking satt i produksjon 08.10.2026
+
+Etter «sett endringene i produksjon» er `28df44f035cfad383e3cf15ade182ad2ba0bfd94`
+lagt ut selektivt. Nyere nyhetssending og nyhetsdesk er bevart. Fem filer er
+oppdatert med privat sikkerhetskopi og automatisk tilbakeføring ved kontrollfeil.
+Etterkontroll: 501 registrerte filer, null drift; HTTPS-innlogging, offentlig
+versjonsmarkør og fast talestreng bestod. Fotballrobotens filer er uendret.
+PHP 8.2/8.4 og mobilkontroll var grønne på levert kode. Testmodus beholdes;
+ingen betalt TTS, menneskelig høreprøve eller faktisk utsending er utført.
