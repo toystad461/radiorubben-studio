@@ -732,3 +732,11 @@ Ingen merge til hovedgren, deploy eller publisering er utført.
 Eier godkjente prøveprofilen og stemmen i alle sammenhenger. `rr-tale-trial-0.1.0` er registrert i utviklingskonfigurasjonen: −18 LUFS, −2 dBTP, 44,1 kHz mono WAV-master (PCM16), MP3 192 kbps CBR og ett sekund som stillhetsgrense. `scope=all` gir stemmetilgang også til eksisterende saker uten program, men endrer ikke programtilordning, læring, kilder eller manuell sluttgodkjenning. Ukjente program-ID-er avvises fortsatt.
 
 Nyeste remote #55 (`fc3d134`, inkludert AI-policy #56) ble hentet inn før endringen. Policy-/syntesemetadata og sperrer er bevart. Skjult lokal nøkkelinnlegging er klargjort med et brukerbetjent Python-skript; nøkkel er ikke mottatt eller lagret av agenten. Privat filstøtte krever rettighet 600 og har ingen automatisk aktivering. Faktisk FFmpeg med syntetisk lyd består med den godkjente prøveprofilen. Ingen nøkkel er testet mot ElevenLabs, ingen produksjonsdata er endret, og TTS/budsjett er fortsatt av/0. Neste steg er brukerens lokale nøkkelinnlegging, deretter kontrollert tilkobling og høreprøve. Produksjonsdeploy krever fortsatt eksplisitt godkjenning.
+
+## Første autoriserte ElevenLabs-prøve – avvist
+
+Eier bekreftet lokal nøkkellagring og autoriserte ekte test. Ett TTS-kall med en kort tekst som eksplisitt sier at stemmen er KI-generert, ble avvist; ingen lydfil ble produsert og ingen automatisk gjentakelse ble gjort. Den daværende adapteren beholdt ikke konkret HTTP-status/leverandørkode, så årsaken til selve TTS-avslaget er ikke fastslått.
+
+Et separat, skrivefritt GET-kall til den oppgitte stemmen ga HTTP 401 / `missing_permissions` med `voices_read`. Dette bekrefter manglende diagnostisk lesetilgang, ikke at samme rettighet var årsaken til TTS-avslaget. Eier er bedt om å kontrollere TTS-tilgang og aktivere Voices Read på eksisterende nøkkel. Nøkkelen er ikke vist eller tatt inn i Git.
+
+Adapteren bevarer nå HTTP-status og en begrenset liste faste feilkoder ved avvisning, uten rårespons eller privat manus i feilmeldingen. Studio viser den sikre feilmeldingen. Målrettede lyd- og sidetester består, inkludert avslag og hemmelig tekst som ikke skal lekke. Ingen produksjonsendring eller sendelistegodkjenning. Nytt betalt prøveforsøk venter på avklart nøkkeltilgang.

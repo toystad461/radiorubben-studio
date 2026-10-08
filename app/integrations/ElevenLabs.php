@@ -1,6 +1,20 @@
 <?php
 declare(strict_types=1);
 class RRAudioUncertainException extends RuntimeException {}
+/** Only fixed diagnostic codes leave the transport; raw provider bodies may contain private text. */
+class RRElevenLabsRejectedException extends InvalidArgumentException {
+    public function __construct(public readonly int $httpStatus, public readonly string $providerCode) {
+        $reason=match($providerCode){
+            'missing_permissions'=>'nøkkelen mangler tilgang',
+            'invalid_api_key'=>'ugyldig API-nøkkel',
+            'voice_not_found'=>'stemmen er ikke tilgjengelig',
+            'quota_exceeded'=>'kvoten er brukt opp',
+            'paid_plan_required'=>'leverandøren krever et betalt abonnement',
+            default=>'kontroller tilgang, stemme og abonnement',
+        };
+        parent::__construct('ElevenLabs avviste forespørselen (HTTP '.$httpStatus.'): '.$reason.'. Ingen automatisk gjentakelse.');
+    }
+}
 /** Fixed transport: no client-selected host, redirects, credentials in URLs or provider error bodies in logs. */
 function rr_elevenlabs_request(array $config,string $voice,array $payload):string {
     if(!preg_match('/^[a-zA-Z0-9]{10,80}$/D',$voice)||empty($config['api_key']))throw new InvalidArgumentException('TTS er ikke konfigurert.');
@@ -16,8 +30,11 @@ function rr_elevenlabs_request(array $config,string $voice,array $payload):strin
 /** Classification is shared by the real transport and deterministic failure tests. */
 function rr_elevenlabs_response(bool $ok,int $status,string $type,string $body):string {
     if(!$ok||$status>=500)throw new RRAudioUncertainException('TTS-resultatet er uavklart. Kontroller leverandørhistorikken før nytt forsøk.');
-    if($status===429)throw new InvalidArgumentException('ElevenLabs avviser forespørselen på grunn av bruksgrense. Ingen automatisk gjentakelse.');
-    if($status!==200)throw new InvalidArgumentException('ElevenLabs kunne ikke levere lyd. Kontroller tilgang og innstillinger.');
+    if($status!==200){
+        $data=json_decode($body,true);$code=is_array($data)?($data['detail']['status']??null):null;
+        $allowed=['missing_permissions','invalid_api_key','voice_not_found','quota_exceeded','paid_plan_required'];
+        throw new RRElevenLabsRejectedException($status,in_array($code,$allowed,true)?$code:'unclassified');
+    }
     if(!preg_match('~^(audio/|application/octet-stream)~i',$type)||strlen($body)<4800||strlen($body)%2!==0)throw new RRAudioUncertainException('TTS returnerte et uventet lydformat. Kontroller forespørselen før nytt forsøk.');
     return $body;
 }

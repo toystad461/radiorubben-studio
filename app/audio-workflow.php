@@ -114,6 +114,7 @@ function rr_audio_generate(string $id,int $revision,string $profile,string $voic
     },$path);
     $result=[];
     try{$pcm=($transport??'rr_elevenlabs_request')($config,$voice,$payload);$wav=rr_audio_wav($pcm);$result=['status'=>'needs_processing','raw'=>rr_audio_store($wav,'wav',$path),'measurements'=>rr_audio_measure($wav)];}
+    catch(RRElevenLabsRejectedException $e){$result=['status'=>'failed','httpStatus'=>$e->httpStatus,'providerCode'=>$e->providerCode,'error'=>$e->getMessage()];}
     catch(InvalidArgumentException){$result=['status'=>'failed','error'=>'Leverandøren avviste forespørselen. Kontroller tilgang og bruksgrense.'];}
     catch(Throwable){$result=['status'=>'unknown','error'=>'Resultatet er uavklart. Administrator må kontrollere leverandørhistorikken.'];}
     studio_board_change(static function(&$b)use($id,$profile,$token,$result,$config){

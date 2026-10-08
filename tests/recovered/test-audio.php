@@ -71,6 +71,10 @@ try {
     $silent=rr_audio_measure(rr_audio_wav(str_repeat("\0",24000*2*16)));audio_ok(!rr_audio_quality($silent,['lufs'=>-23,'truePeakDb'=>-20],$config['audio_profile'],rr_audio_profile($profile))['passed'],'silence QA fails independently of loudness');
     $clip=rr_audio_measure(rr_audio_wav(str_repeat(pack('v',32767),24000*16)));audio_ok($clip['clippedSamples']>0,'clipping detected');
     $measure=rr_audio_measure($wav);$measure['duration']=1;audio_ok(!rr_audio_quality($measure,['lufs'=>-23,'truePeakDb'=>-20],$config['audio_profile'],rr_audio_profile($profile))['passed'],'too-short audio rejected');
+    foreach(['missing_permissions','private-secret-in-unrecognized-code']as$code){
+        try{rr_elevenlabs_response(true,401,'application/json',json_encode(['detail'=>['status'=>$code,'message'=>'private-secret-body']]));throw new RuntimeException('Expected rejection');}
+        catch(RRElevenLabsRejectedException $e){audio_ok($e->httpStatus===401&&$e->providerCode===($code==='missing_permissions'?$code:'unclassified')&&!str_contains($e->getMessage(),'private-secret'),'safe provider diagnosis without response text');}
+    }
     foreach([401,403,422,429,500,503]as$status)audio_reject(fn()=>rr_elevenlabs_response(true,$status,'application/json','{secret error body}'),'HTTP '.$status.' rejected');
     audio_reject(fn()=>rr_elevenlabs_response(false,0,'',''),'network timeout rejected');
     audio_reject(fn()=>rr_elevenlabs_response(true,200,'application/json','{}'),'non-audio response rejected');
