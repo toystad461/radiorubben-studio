@@ -75,6 +75,8 @@ try {
         try{rr_elevenlabs_response(true,401,'application/json',json_encode(['detail'=>['status'=>$code,'message'=>'private-secret-body']]));throw new RuntimeException('Expected rejection');}
         catch(RRElevenLabsRejectedException $e){audio_ok($e->httpStatus===401&&$e->providerCode===($code==='missing_permissions'?$code:'unclassified')&&!str_contains($e->getMessage(),'private-secret'),'safe provider diagnosis without response text');}
     }
+    try{rr_elevenlabs_response(true,402,'application/json',json_encode(['detail'=>['code'=>'insufficient_credits','status'=>'legacy','message'=>'private billing details']]));throw new RuntimeException('Expected rejection');}
+    catch(RRElevenLabsRejectedException $e){audio_ok($e->providerCode==='insufficient_credits'&&!str_contains($e->getMessage(),'private'),'current provider code takes precedence over legacy status');}
     foreach([401,403,422,429,500,503]as$status)audio_reject(fn()=>rr_elevenlabs_response(true,$status,'application/json','{secret error body}'),'HTTP '.$status.' rejected');
     audio_reject(fn()=>rr_elevenlabs_response(false,0,'',''),'network timeout rejected');
     audio_reject(fn()=>rr_elevenlabs_response(true,200,'application/json','{}'),'non-audio response rejected');

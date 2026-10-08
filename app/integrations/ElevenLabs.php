@@ -8,7 +8,7 @@ class RRElevenLabsRejectedException extends InvalidArgumentException {
             'missing_permissions'=>'nøkkelen mangler tilgang',
             'invalid_api_key'=>'ugyldig API-nøkkel',
             'voice_not_found'=>'stemmen er ikke tilgjengelig',
-            'quota_exceeded'=>'kvoten er brukt opp',
+            'quota_exceeded','insufficient_credits'=>'utilstrekkelig kvote eller kreditter',
             'paid_plan_required'=>'leverandøren krever et betalt abonnement',
             default=>'kontroller tilgang, stemme og abonnement',
         };
@@ -31,8 +31,8 @@ function rr_elevenlabs_request(array $config,string $voice,array $payload):strin
 function rr_elevenlabs_response(bool $ok,int $status,string $type,string $body):string {
     if(!$ok||$status>=500)throw new RRAudioUncertainException('TTS-resultatet er uavklart. Kontroller leverandørhistorikken før nytt forsøk.');
     if($status!==200){
-        $data=json_decode($body,true);$code=is_array($data)?($data['detail']['status']??null):null;
-        $allowed=['missing_permissions','invalid_api_key','voice_not_found','quota_exceeded','paid_plan_required'];
+        $data=json_decode($body,true);$code=is_array($data)?($data['detail']['code']??$data['detail']['status']??null):null;
+        $allowed=['missing_permissions','invalid_api_key','voice_not_found','quota_exceeded','insufficient_credits','paid_plan_required'];
         throw new RRElevenLabsRejectedException($status,in_array($code,$allowed,true)?$code:'unclassified');
     }
     if(!preg_match('~^(audio/|application/octet-stream)~i',$type)||strlen($body)<4800||strlen($body)%2!==0)throw new RRAudioUncertainException('TTS returnerte et uventet lydformat. Kontroller forespørselen før nytt forsøk.');
