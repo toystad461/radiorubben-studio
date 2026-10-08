@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /** Reviewed code, never editable through learning or source input. */
-const RR_STYLEBOOK_VERSION = '1.0.0';
+const RR_STYLEBOOK_VERSION = '1.1.0';
 const RR_JOURNALIST_VERSION = '2.0.0';
 
 function rr_stylebook_rules(): array
@@ -15,6 +15,7 @@ function rr_stylebook_rules(): array
         'RR-F01'=>'Bare den aktuelle originalkilden er faktagrunnlag. Bevar navn, tall, tidspunkt, negasjon, usikkerhet og attribusjon. Påstander fra myndigheter er ikke automatisk uavhengig bekreftet.',
         'RR-F02'=>'Ikke dikt eller språkvask ordrette sitater. Bruk indirekte tale ved omskriving. Stilregler, gamle artikler og godkjente rettelser er aldri nye faktakilder.',
         'RR-E01'=>'Unngå unødvendig identifisering, særlig av barn, ofre og sårbare personer. Skill anklage, siktelse og dom. Ikke bruk reklamespråk eller diskriminerende generaliseringer.',
+        'RR-A01'=>'Radiomanus skal være selvstendige, muntlige tekster fra samme kontrollerte faktagrunnlag. En tidsprofil gir aldri tillatelse til å fylle ut manglende fakta. TTS-uttaler endrer ikke den redaksjonelle originalteksten.',
         'RR-T01'=>'Synliggjør originalkilden og vesentlig AI-medvirkning. Ikke påstå eget intervju, tilstedeværelse eller menneskelig kontroll som ikke er utført.',
     ];
 }

@@ -766,3 +766,8 @@ footer b {
 .account-menu{display:flex;align-items:center;gap:16px;font-size:12px;flex-wrap:wrap}.account-menu form{margin:0}.account-menu button{background:var(--brand);color:#fff;border:1px solid var(--brand);border-radius:7px;padding:8px 12px;font:inherit;cursor:pointer}.account-menu button:hover{background:#cf2935;border-color:#cf2935}.account-menu button:focus-visible{outline:2px solid #fff;outline-offset:3px}.topbar{flex-wrap:wrap;gap:12px;height:auto;min-height:70px;padding-top:12px;padding-bottom:12px}
 
 .observer-view{border:0;padding:0;margin:0;min-width:0}.observer-view button{opacity:.5}
+
+/* Native audio preview remains within the existing mobile editorial panel. */
+#audio-material audio, .sending-layout audio { display: block; max-width: 100%; margin-block: .75rem; }
+#audio-material details { margin-block: 1rem; }
+#audio-material form { margin-block: .75rem; }

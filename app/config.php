@@ -36,5 +36,6 @@ function load_config(): array
         if (getenv($env) !== false) $config[$key] = getenv($env);
     }
     if (getenv('VIPPS_ALLOWED_PHONES') !== false) $config['vipps_allowed_phones'] = array_values(array_filter(array_map('trim', explode(',', getenv('VIPPS_ALLOWED_PHONES')))));
+    if (getenv('ELEVENLABS_API_KEY') !== false) $config['rr_audio']['api_key'] = getenv('ELEVENLABS_API_KEY');
     return $config;
 }

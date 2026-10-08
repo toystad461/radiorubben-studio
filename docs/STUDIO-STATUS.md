@@ -705,3 +705,11 @@ Stylebook 1.0.0 og sju RR-ansvarsområder integreres i eksisterende RSS-nett/rad
 Automatiske tester dekker sperrer, etiske issues, læring, versjoner, kontrollutløp, endret tekst og historiske leveringshasher. To tidligere publiserte artikler er sammenlignet med nye redaksjonelle eksempler fra offentlige originalutdrag; dette er ikke live modellmåling. Privat kildeuttrekk ble avvist av automatisk sikkerhetskontroll og ble ikke utført. Se arkitektur, stylebook og sammenligning i `docs/ai-journalist/`.
 
 Ikke deployet. Ikke merge til main uten ny godkjenning: main har automatisk selektiv deploy. PR #53 overlapper læringsflaten og må avstemmes senere. WordPress-fotballgeneratoren, vær, lyd og Render er uendret. Endelig test-/CI-status og eksakt head føres i leveransens PR. Neste steg er review, avstemming av avhengigheter og målt modellprøve før eventuell godkjent utrulling.
+
+## RR Audio integrert i AI-journalist 2.0 – 08.10.2026
+
+Utvidelsen i issue #54 fortsetter på samme `feature/ai-journalist-2` og draft-PR #55. Stylebook er nå 1.1.0 med lydtillegg. Eksisterende Sak får separate, kildekontrollerte radiomanusprofiler, manuell manusgodkjenning, ElevenLabs-adapter, privat forhåndslytting, FFmpeg-behandling og egen manuell lydgodkjenning. Godkjent sendefil knyttes til samme sendelistepunkt. Versjonert uttaleordbok gjenbruker board-lås, roller og historikk. Lokal programmodul gjenbrukes fra tidligere utviklingsbranch uten å flette inn gamle overlay-filer.
+
+Stemmen `azrGjm6gYkR15bxb9cVv` er eierbekreftet; programtilknytning og konkrete stasjonsnivåer mangler. TTS er avslått. Mock-kjede, HTTP-sperrer og mobile maler testes; faktisk FFmpeg 7.1 er prøvd lokalt med syntetisk lyd som både WAV og MP3. Ingen ElevenLabs-kostnad, produksjonsendring eller radio.co-opplasting. Den tidligere teksten om «lyd uendret» beskriver første del-leveranse; denne utvidelsen endrer bare utviklingsbranchen.
+
+Se `docs/ai-journalist/RR-AUDIO.md` for status, fagkilder og resterende avhengigheter. WordPress/NFF-faktapakke, hostingens web-SAPI/FFmpeg, leverandørtilgang og Radio.co Studio API må avklares før bredere aktivering. Ikke merge eller deploy uten eksplisitt godkjenning.

@@ -1,0 +1,26 @@
+<?php
+declare(strict_types=1);
+if(empty($argv[1])){foreach(['guest','preview','unapproved','approved','tampered','archived','method','range','range-invalid']as$mode){passthru(escapeshellarg(PHP_BINARY).' '.escapeshellarg(__FILE__).' '.escapeshellarg($mode),$code);if($code)exit($code);}exit;}
+$mode=$argv[1];$root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/audio-route-'.bin2hex(random_bytes(6));
+foreach(['/app/integrations','/public','/config']as$d)mkdir($tmp.$d,0700,true);
+foreach(['board','programs','audio-profiles','stylebook','news-script','source-identity','case-workflow','web-publish','news-publication','audio-workflow','audio-processing','audio-pronunciation','audio-storage']as$n)copy($root.'/app/'.$n.'.php',$tmp.'/app/'.$n.'.php');
+copy($root.'/app/integrations/ElevenLabs.php',$tmp.'/app/integrations/ElevenLabs.php');copy($root.'/public/audio-file.php',$tmp.'/public/audio-file.php');
+file_put_contents($tmp.'/app/bootstrap.php','<?php function current_user(){return $GLOBALS["mode"]==="guest"?null:["role"=>"presenter"];} function redirect($url){$GLOBALS["redirected"]=$url;exit;}');
+require $tmp.'/app/audio-processing.php';
+$config=['rr_audio'=>['model_id'=>'eleven_multilingual_v2','voices'=>['fixturevoice'=>['approved'=>true,'rights_reference'=>'test','programs'=>['god-morgen-vestland']]],'audio_profile'=>['approved'=>true,'version'=>'test']]];
+$item=['id'=>'1234567890abcdef','program'=>'god-morgen-vestland','title'=>'Møte','script'=>'Dette melder Bømlo kommune.','sourceUrl'=>'https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/mote.123.aspx','status'=>'draft'];$text=str_repeat('Kommunen holder et møte. ',8);
+$check=['status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,$item['script']),'source'=>['url'=>$item['sourceUrl'],'text'=>$text,'sha256'=>hash('sha256',$text),'fetchedAt'=>gmdate('c')]];
+$v=['profile'=>'news-short','script'=>$item['script'],'check'=>$check];$v['scriptApproval']=['hash'=>rr_audio_script_hash($item,$v)];$bytes=rr_audio_wav(str_repeat(pack('v',1000),5000));$path=$tmp.'/config/sending-board.json';$asset=rr_audio_store($bytes,'wav',$path);
+$v['audio']=['token'=>'fixture-token','voice'=>'fixturevoice','model'=>'eleven_multilingual_v2','status'=>'processed','scriptHash'=>rr_audio_script_hash($item,$v),'voiceHash'=>rr_audio_hash($config['rr_audio']['voices']['fixturevoice']),'dictionaryHash'=>rr_audio_hash(rr_pronunciation_context([])),'profileHash'=>rr_audio_hash($config['rr_audio']['audio_profile']),'qa'=>['passed'=>true],'raw'=>$asset,'master'=>$asset,'send'=>$asset];
+$v['audio']['approval']=['hash'=>rr_audio_hash([$asset,$asset,'fixture-token'])];$item['audioScripts']=['news-short'=>$v];$item['audioQueue']=['profile'=>'news-short','token'=>'fixture-token','sendHash'=>$asset['sha256']];
+if($mode==='unapproved')$item['audioScripts']['news-short']['audio']['approval']=null;
+if($mode==='archived')$item['status']='archived';
+if($mode==='tampered')file_put_contents(rr_audio_asset($asset,$path),'changed');
+file_put_contents($path,json_encode(['items'=>[$item]]));
+$_GET=['item'=>$item['id'],'profile'=>'news-short','kind'=>$mode==='preview'?'raw':'send'];$_SERVER['REQUEST_METHOD']=$mode==='method'?'POST':'GET';
+if($mode==='range')$_SERVER['HTTP_RANGE']='bytes=4-11';
+if($mode==='range-invalid')$_SERVER['HTTP_RANGE']='bytes=999999999-';
+ob_start();register_shutdown_function(static function()use($tmp,$bytes,$mode){$out=ob_get_clean();$ok=match($mode){'guest'=>($GLOBALS['redirected']??'')==='/login.php','preview','approved'=>$out===$bytes,'method'=>http_response_code()===405,'range'=>http_response_code()===206&&$out===substr($bytes,4,8),'range-invalid'=>http_response_code()===416&&$out==='',default=>http_response_code()===404&&!str_contains($out,'RIFF')};
+    foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tmp,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST)as$f)$f->isDir()?rmdir($f->getPathname()):unlink($f->getPathname());rmdir($tmp);
+    if(!$ok){fwrite(STDERR,'FAIL audio route '.$mode);exit(1);}echo "PASS Audio route $mode\n";});
+require $tmp.'/public/audio-file.php';

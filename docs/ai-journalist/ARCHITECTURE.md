@@ -1,6 +1,6 @@
 # AI-journalist 2.0 – integrert Robåt-arkitektur
 
-Versjon 2.0.0 / Stylebook 1.0.0. Implementert for Studios eksisterende RSS-nyhetssaker i Nyhetsdesk, Kontrollsenter/Sak og Sending. PHP/Composer, sendeliste, låsing, revisjoner, roller, CSRF og manuell sluttgodkjenning gjenbrukes.
+Versjon 2.0.0 / Stylebook 1.1.0. Implementert for Studios eksisterende RSS-nyhetssaker i Nyhetsdesk, Kontrollsenter/Sak og Sending. PHP/Composer, sendeliste, låsing, revisjoner, roller, CSRF og manuell sluttgodkjenning gjenbrukes.
 
 | Funksjon | Ansvar og faktisk implementasjon | Resultat / sperre |
 | --- | --- | --- |
@@ -10,6 +10,7 @@ Versjon 2.0.0 / Stylebook 1.0.0. Implementert for Studios eksisterende RSS-nyhet
 | RR Editor | Skriverens egen språkvask, eksisterende manuell redigering og separat språk-/kildekontroll | Redaktør kan rette; lagring opphever kontroll/godkjenning |
 | RR FactCheck | `studio_news_review`, eget modellkall uten læringsregler | Samtlige segmenter med serveroppslått kildebelegg; usikkerhet eller feil stopper |
 | RR Ethics | `rr_review_instructions` i samme uavhengige kontrollpass | Konkrete etiske hindringer i `issues` stopper klar-status, også med faktabelegg |
+| RR Audio | `audio-workflow`, `audio-processing`, eksisterende Sak og sendeliste | Separate manusvarianter, manuell manus- og lydgodkjenning, privat lydlager, TTS- og sendesperrer |
 | RR Transparency | `rr_generation_record`, kontrollmetadata, sakshistorikk og `studio_web_html` | Versjon/modell/kildespor, synlig KI-merke og originalkreditering |
 
 Rollene er funksjonsansvar, ikke sju autonome agenter eller sju API-kall. Ett nytt utkast bruker normalt to modellkall: skriving med egenkontroll, deretter uavhengig kilde-/språk-/etikkontroll. Det menneskelige redaktøransvaret ligger utenfor AI-rollene. Ingen nye betalte automatiske omforsøk.
@@ -53,3 +54,7 @@ WordPress-fotballrobotens NFF-data, spillerlæring og faktagater er ikke endret.
 ## Validering 08.10.2026
 
 Full `php tests/run.php` bestått lokalt på PHP 8.4.25, inkludert pakking. Eksisterende vendor ble gjenbrukt etter byteidentisk `composer.lock`; ingen avhengighetsendring. JavaScript-test av saksflyt og shell-test av fullpakke-deploysperre bestått. Playwright bestått for Nyhetsdesk på 375/390/800/1280 px og læringssiden på 390/1280 px, inkludert valg av godkjent nettrettelse og lesertilgang. Mobilskjermbilde er visuelt kontrollert. Ingen fysisk iPhone eller produksjonsinnlogging testet. CI på PHP 8.2/8.4 kjøres på PR-head; lokal testing erstatter ikke den.
+
+## RR Audio – utvidelse i samme utviklingsløp
+
+Se [implementeringsplan og verifikasjon](RR-AUDIO.md) og [Stylebook 1.1.0](STYLEBOOK-1.1.0.md). RR Audio tar originalsnapshot fra den eksisterende saken, bruker samme faktakontroll og skriveråd, og lagrer varianter på det eksisterende sendelistepunktet. Ingen ny publiseringskø, separat robot eller parallell programdatabase.

@@ -3,6 +3,7 @@ declare(strict_types=1);
 require dirname(__DIR__).'/app/bootstrap.php';
 $user=current_user(); if(!$user) redirect('/login.php');
 require_once dirname(__DIR__).'/app/case-workflow.php';
+require_once dirname(__DIR__).'/app/audio-processing.php';
 require dirname(__DIR__).'/app/editorial-memory.php';
 require dirname(__DIR__).'/app/producer.php';
 if(!in_array($_SERVER['REQUEST_METHOD'],['GET','POST'],true)){http_response_code(405);exit;}
@@ -34,7 +35,21 @@ if($_SERVER['REQUEST_METHOD']==='POST' && !empty($_POST)) {
         $rev=(int)($_POST['revision']??0); if($rev!==$item['revision']) throw new InvalidArgumentException('Saken ble endret. Last siden på nytt.');
         $action=(string)($_POST['action']??'');
         if(!$item)throw new InvalidArgumentException('Velg en sak først.');
-        if($action==='prepare_radio') {
+        if(str_starts_with($action,'pronunciation_')) {
+            rr_pronunciation_change(substr($action,14),array_replace($_POST,['id'=>$_POST['entry']??'','revision'=>$_POST['entry_revision']??0]),$user);
+        } elseif(str_starts_with($action,'audio_')) {
+            $profile=(string)($_POST['profile']??'');rr_audio_profile($profile);$audio=$config['rr_audio']??[];$step=substr($action,6);
+            if(in_array($step,['generate_script','check'],true)) {
+                $script=$step==='check'?(string)($item['audioScripts'][$profile]['script']??''):null;
+                $r=rr_audio_prepare($item,$profile,$config,studio_memory_context(studio_board_read(),(string)($item['program']??'')),$script);
+                rr_audio_change($id,$rev,$step==='check'?'checked':'generated',['profile'=>$profile,'script'=>$r['script'],'check'=>$r['check'],'generation'=>$r['generation']],$user);
+            } elseif(in_array($step,['save','approve_script'],true))rr_audio_change($id,$rev,$step,$_POST,$user);
+            elseif($step==='tts')rr_audio_generate($id,$rev,$profile,(string)($_POST['voice']??''),$_POST,$user,$audio);
+            elseif($step==='process')rr_audio_process($id,$rev,$profile,$user,$audio);
+            elseif($step==='resolve')rr_audio_resolve($id,$rev,$profile,$_POST,$user);
+            elseif(in_array($step,['approve_audio','enqueue'],true))rr_audio_approve_or_queue($id,$rev,$profile,$step,$_POST,$user,$audio);
+            else throw new InvalidArgumentException('Ukjent lydhandling.');
+        } elseif($action==='prepare_radio') {
             studio_board_update($id,$rev,'source_checked',['sourceCheck'=>['status'=>'checking']],$user);
             $editorial=studio_memory_context(studio_board_read(),(string)($item['program']??''));
             $r=studio_news_prepare($item,$config,$editorial);
@@ -123,5 +138,6 @@ $extraStylesheet='/assets/case.css?v=20261004-1'; require dirname(__DIR__).'/app
 <?php if(isset($w['delivery'])):?><p>WordPress: <?=escape(['confirmed'=>'Overføring bekreftet','pending'=>'Overføring pågår','unknown'=>'Overføringen må avklares før nytt forsøk'][$w['delivery']['state']]??'Ikke overført')?></p><?php if(!empty($w['delivery']['link'])):?><a href="<?=escape($w['delivery']['link'])?>" target="_blank" rel="noopener noreferrer">Åpne på nettsiden</a><?php endif;endif;?>
 <details><summary>Flere valg for nettsak</summary><?php if($can):foreach(['prepare_web'=>'Lag nettsak på nytt','check_web'=>'Kontroller lagret nettsak på nytt'] as $action=>$label):?><form method="post" data-step="<?=$action?>"><?php case_fields($item);?><button name="action" value="<?=$action?>"><?=$label?></button></form><?php endforeach;endif;?><?php if($admin && studio_wp_ready($wp) && !in_array($w['delivery']['state']??'', ['pending','unknown'],true)):?><form method="post"><?php case_fields($item);?><button name="action" value="wp_draft">Overfør bare som WordPress-kladd</button></form><?php endif;?></details>
 </section></div>
-<?php if($can):?><script id="case-controller" src="/assets/case.js?v=20261004-1" defer data-item="<?=escape($id)?>" data-revision="<?=(int)$item['revision']?>" data-csrf="<?=escape($_SESSION['csrf'])?>" data-auto-prepare="<?=$autoPrepare?'1':'0'?>"></script><noscript><p>Automatisk klargjøring krever JavaScript. Bruk «Flere valg» for trinnvis kontroll. Lagrede rettelser må kontrolleres før godkjenning.</p></noscript><?php endif;?>
+<?php require dirname(__DIR__).'/app/views/case-audio.php';?>
+<?php if($can):?><script id="case-controller" src="/assets/case.js?v=20261008-audio1" defer data-item="<?=escape($id)?>" data-revision="<?=(int)$item['revision']?>" data-csrf="<?=escape($_SESSION['csrf'])?>" data-auto-prepare="<?=$autoPrepare?'1':'0'?>"></script><noscript><p>Automatisk klargjøring krever JavaScript. Bruk «Flere valg» for trinnvis kontroll. Lagrede rettelser må kontrolleres før godkjenning.</p></noscript><?php endif;?>
 <?php endif;?></main></div></div></body></html>

@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . '/news-script.php';
+require_once __DIR__ . '/programs.php';
 require_once __DIR__ . '/source-identity.php';
 
 /** Shared editorial rundown. This file lives outside the public document root. */
@@ -18,6 +19,15 @@ function studio_board_read(?string $path = null): array
     return $data;
 }
 
+/** Inputs shared by radio variants. Web prose alone is not an audio source. */
+function studio_board_audio_identity(array $item): array
+{
+    return [$item['title'] ?? '', $item['script'] ?? '', $item['program'] ?? '',
+        $item['sourceUrl'] ?? '', $item['sourceAt'] ?? '', $item['channel'] ?? 'both',
+        ($item['status'] ?? '') === 'archived',
+        $item['sourceCheck']['source']['sha256'] ?? '', $item['web']['check']['source']['sha256'] ?? ''];
+}
+
 /** Lock a separate file so atomic rename never invalidates another writer's lock. */
 function studio_board_change(callable $change, ?string $path = null): mixed
 {
@@ -28,7 +38,25 @@ function studio_board_change(callable $change, ?string $path = null): mixed
     $temp = null;
     try {
         $board = studio_board_read($path);
+        $previous = []; $pendingAudio = [];
+        foreach ($board['items'] as $row) {
+            $previous[$row['id']] = studio_board_audio_identity($row);
+            foreach ($row['audioScripts'] ?? [] as $variant) {
+                if (in_array($variant['audio']['status'] ?? '', ['generating', 'unknown'], true)) $pendingAudio[$row['id']] = true;
+            }
+        }
         $result = $change($board);
+        foreach ($board['items'] as &$row) {
+            if (($row['status'] ?? '') === 'archived' && isset($pendingAudio[$row['id']])) throw new InvalidArgumentException('Avklar pågående eller uavklart TTS før saken arkiveres.');
+            if (!isset($previous[$row['id']]) || $previous[$row['id']] === studio_board_audio_identity($row)) continue;
+            // Invalidations persist even if a later edit restores the old wording.
+            foreach ($row['audioScripts'] ?? [] as $profile => $variant) {
+                $row['audioScripts'][$profile]['scriptApproval'] = null;
+                if (isset($variant['audio'])) $row['audioScripts'][$profile]['audio']['approval'] = null;
+            }
+            unset($row['audioQueue']);
+        }
+        unset($row);
         $board['updatedAt'] = gmdate('c');
         $temp = tempnam(dirname($path), '.sending-');
         if (!$temp || !chmod($temp, 0600)
@@ -139,7 +167,7 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                 $item['web']['approvedHash'] = null;
             } elseif ($action === 'save') {
                 $program = (string)($input['program'] ?? $item['program'] ?? '');
-                if (!in_array($program, ['', 'god-morgen-vestland'], true))
+                if ($program !== '' && !isset(studio_program_registry()['programs'][$program]))
                     throw new InvalidArgumentException('Velg et gyldig program.');
                 $item['program'] = $program;
                 $title = trim((string)($input['title'] ?? ''));

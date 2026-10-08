@@ -6,16 +6,16 @@ require_once __DIR__ . '/web-publish.php';
 /** First profile. Rules are editorial preferences, never a source of facts. */
 function studio_memory_context(array $board, string $program): array
 {
-    if ($program !== 'god-morgen-vestland') return [];
+    $profile=studio_program_registry()['programs'][$program]??null;
+    if (!$profile || empty($profile['learningEnabled'])) return [];
     $rules = [];
     foreach ($board['editorialRules'] ?? [] as $rule) {
         if (($rule['status'] ?? '') === 'approved' && ($rule['program'] ?? '') === $program) {
             $rules[] = ['id'=>$rule['id'], 'version'=>$rule['revision'], 'text'=>$rule['text']];
         }
     }
-    return ['profileVersion'=>1, 'program'=>$program, 'name'=>'God morgen Vestland',
-        'style'=>'Varm, tydelig og muntlig morgenradio for Bømlo og Vestland. Rolig og respektfull tone i alvorlige saker. Ingen påfunnet lokal tilknytning eller humor i nyhetsfakta.',
-        'rules'=>$rules];
+    return ['profileVersion'=>$profile['profileVersion'], 'program'=>$program, 'name'=>$profile['name'],
+        'style'=>$profile['style'], 'rules'=>$rules];
 }
 
 function studio_memory_change(string $action, array $input, array $user, ?string $path = null): void

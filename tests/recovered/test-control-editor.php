@@ -9,7 +9,7 @@ if (empty($argv[1])) {
 }
 $mode=$argv[1];$root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/control-editor-'.bin2hex(random_bytes(5));
 foreach(['/app/views','/app/integrations','/public','/config'] as $dir)mkdir($tmp.$dir,0700,true);
-foreach(['board','stylebook','news-script','source-identity','web-publish','news-publication','case-workflow','editorial-memory','newsroom'] as $name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
+foreach(['board','programs','audio-profiles','stylebook','news-script','source-identity','web-publish','news-publication','case-workflow','editorial-memory','newsroom'] as $name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
 copy($root.'/public/control.php',$tmp.'/public/control.php');
 file_put_contents($tmp.'/app/bootstrap.php','<?php function current_user(){return ["name"=>"Fixture","role"=>$GLOBALS["mode"]==="observer"?"observer":"admin"];} function studio_can($u,$p){return $u["role"]==="admin";} function escape($s){return htmlspecialchars((string)$s,ENT_QUOTES,"UTF-8");} function redirect($url){$GLOBALS["redirected"]=$url;exit;}');
 file_put_contents($tmp.'/app/integrations/NewsDesk.php','<?php function newsdesk_sources(){return ["bomlo"=>[]];} function newsdesk_feed(...$a){return ["status"=>"updated","items"=>[]];} function newsdesk_traffic(...$a){return ["status"=>"updated","items"=>[]];}');
