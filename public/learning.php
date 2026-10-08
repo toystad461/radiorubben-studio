@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         studio_memory_change((string)($_POST['action'] ?? ''), $_POST, $user);
         $action=(string)($_POST['action']??'');
         $_SESSION['learning_message'] = match($action){
-            'propose'=>'Forslaget er lagret og venter på administrator. Det brukes ikke ennå.',
+            'propose'=>'Instruksene er lagret som forslag og venter på administrator. De brukes ikke ennå.',
             'approve'=>'Regelen er aktiv og følger med i neste radiomanus for God morgen Vestland.',
             'disable'=>'Regelen er deaktivert. Tidligere manus og regelhistorikken er bevart.',
             default=>'Forslaget er avvist og ligger i historikken.',
@@ -65,13 +65,21 @@ require dirname(__DIR__) . '/app/views/head.php';
 <details class="control-panel learning-profile"><summary>Dette bruker Robåt i neste radiomanus</summary><p><?= escape($context['style']) ?></p><?php if($context['rules']):?><ul><?php foreach($context['rules'] as $rule):?><li><?=escape($rule['text'])?> <small>· versjon <?=(int)$rule['version']?></small></li><?php endforeach;?></ul><?php else:?><p>Ingen ekstra programregler er aktive ennå.</p><?php endif;?><p>Dette gjelder radiomanus for God morgen Vestland i Sending. Rettelser blir først en ny regel når et forslag er godkjent. Gamle manus endres ikke. Nettartikler og værmanus bruker foreløpig sine egne skriveråd.</p><p>Kildekravene gjelder alltid. Eksempeltekst gir hjelp med språk og form; den brukes ikke som faktakilde i andre saker.</p></details>
 <div class="learning-grid">
 <?php if ($canPrepare): ?>
-<section class="control-panel"><h2>Ny læring</h2>
+<section class="control-panel"><h2>Gi Robåt skriveinstrukser</h2><p>Du kan gi instrukser direkte, uten å velge et manus. Skriv ett punkt per linje. Hvert punkt blir et eget forslag som kan godkjennes eller deaktiveres.</p>
 <form method="get" class="editor-form"><label for="learning-item">Velg utgangspunkt</label><select id="learning-item" name="item"><option value="">En generell språkregel</option><?php foreach($corrected as $candidate):?><option value="<?=escape($candidate['id'])?>"<?=$selectedId===$candidate['id']?' selected':''?>><?=escape($candidate['title'])?></option><?php endforeach;?></select><button type="submit">Vis utgangspunkt</button></form>
 <?php if(!$corrected):?><p class="control-muted">Ingen rettede og godkjente manus er klare som eksempler. Du kan foreslå en generell språkregel nå.</p><?php endif;?>
 <?php if ($selected): ?><p><?= escape($selected['title']) ?> · <a href="/sending.php?item=<?= escape($selected['id']) ?>">Åpne manuset</a></p><?php endif; ?>
 <?php if ($eligible): ?><details open><summary>Sammenlign rettelsen</summary><div class="learning-comparison"><div><h3>Originalutkast</h3><p class="script-view"><?= nl2br(escape($selected['generatedOriginal'])) ?></p></div><div><h3>Rettet og kontrollert</h3><p class="script-view"><?= nl2br(escape($selected['script'])) ?></p></div></div></details><?php endif; ?>
 <?php if (!$selectedId || $eligible): ?>
-<form method="post" class="editor-form"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="propose"><input type="hidden" name="item" value="<?= escape($selectedId) ?>"><input type="hidden" name="itemRevision" value="<?= (int)($selected['revision'] ?? 0) ?>"><label for="rule-text">Hva skal Robåt gjøre bedre neste gang?</label><p id="rule-help" class="control-muted">Skriv én konkret regel på 10–500 tegn. Beskriv ønsket språk eller form.</p><textarea id="rule-text" name="text" rows="3" minlength="10" maxlength="500" required aria-describedby="rule-help" placeholder="Del lange setninger i korte setninger som er lette å lese høyt."><?= escape(is_string($_POST['text'] ?? null) ? $_POST['text'] : '') ?></textarea><label class="verify-row"><input type="checkbox" name="styleOnly" value="1" required<?=($_POST['styleOnly']??'')==='1'?' checked':''?>> Regelen gjelder språk eller form, ikke fakta eller unntak fra kildekontroll.</label><p>Forslaget må godkjennes av administrator før det brukes. Kontroller at det passer sammen med aktive regler.</p><button type="submit">Send forslag til godkjenning</button></form>
+<form method="post" class="editor-form"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="propose"><input type="hidden" name="item" value="<?= escape($selectedId) ?>"><input type="hidden" name="itemRevision" value="<?= (int)($selected['revision'] ?? 0) ?>"><label for="rule-text">Hva skal Robåt gjøre bedre neste gang?</label><p id="rule-help" class="control-muted">Skriv 1–20 instrukser, én per linje og 10–500 tegn per instruks. Beskriv ønsket språk eller form. LIX 40–50 er et skrivemål; siden måler ikke tekstens LIX.</p><textarea id="rule-text" name="text" rows="10" minlength="10" maxlength="10000" required aria-describedby="rule-help" placeholder="Del lange setninger i korte setninger som er lette å lese høyt."><?= escape(is_string($_POST['text'] ?? null) ? $_POST['text'] : (!$selectedId ? implode("\n", [
+'Skriv i klarspråk. Teksten skal være lettlest.',
+'Sikt mot en lesbarhetsindeks (LIX) på 40–50.',
+'Bruk hovedsakelig korte og noen mellomlange setninger.',
+'Bruk aktivt språk og unngå passive setninger.',
+'Velg enkle, folkelige ord fremfor faguttrykk.',
+'Unngå lange setninger, klisjeer og buzzord.',
+'Vær nøktern. Unngå skryt av egen virksomhet.',
+]) : '')) ?></textarea><label class="verify-row"><input type="checkbox" name="styleOnly" value="1" required<?=($_POST['styleOnly']??'')==='1'?' checked':''?>> Regelen gjelder språk eller form, ikke fakta eller unntak fra kildekontroll.</label><p>Forslaget må godkjennes av administrator før det brukes. Kontroller at det passer sammen med aktive regler.</p><button type="submit">Send instrukser til godkjenning</button></form>
 <details><summary>Eksempler på gode læringsregler</summary><ul><li>Del lange setninger i korte setninger som er lette å lese høyt.</li><li>Bevar kildens forbehold når noe ikke er bekreftet.</li><li>Unngå å gjenta samme poeng i ingressen og avslutningen.</li></ul><p>Eksemplene er skrivehjelp og aktiveres ikke automatisk.</p></details>
 <?php else: ?><p>Velg God morgen Vestland i Sending, rett et AI-utkast, lagre med kildekontroll og merk det klart. Deretter kan rettelsen brukes som grunnlag for læring.</p><a href="/learning.php">Foreslå en generell programregel</a><?php endif; ?>
 </section><?php endif; ?>

@@ -1,5 +1,22 @@
 # Studio – felles status og arbeidsliste
 
+## Direkte skriveinstrukser – 08.10.2026
+
+Thomas bestiller klarspråk, LIX-mål 40–50, korte og mellomlange setninger,
+aktivt språk, folkelige ord og nøktern tone uten klisjeer eller selvskryt.
+Læringssiden får disse rådene som redigerbar starttekst ved generelle regler.
+En liste på 1–20 instrukser lagres atomisk som individuelle ventende forslag;
+alle linjer valideres før lagring. Eksisterende administratorgodkjenning,
+roller, CSRF, revisjoner, historikk og programisolasjon beholdes.
+LIX er et skrivemål, ikke en implementert måling eller en garantert verdi.
+Ingen private produksjonsregler endres eller aktiveres av kodeendringen.
+Base er main 1aff7adeb2b90c9576265c70f06bab141a1519a0. PR #51 for
+Nyhetsdesk-kommentarer og videre bruk av læring er en separat avhengighet;
+denne endringen gjelder dagens God morgen Vestland-manus i Sending.
+Leveres som avgrenset PR med PHP- og mobiltester. Ingen produksjonsdeploy.
+Neste steg etter godkjent kode: kontrollere instrukslisten i Studio og
+godkjenne ønskede regler individuelt før de brukes i nye manus.
+
 ## Tydelig forkasting i Nyhetsdesk – 08.10.2026
 
 Thomas har bedt om tydeligere og enklere forkasting av robotforslag.
