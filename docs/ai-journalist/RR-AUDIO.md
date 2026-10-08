@@ -17,7 +17,7 @@ Oppgave: [Studio #54](https://github.com/toystad461/radiorubben-studio/issues/54
 | --- | --- | --- |
 | Original og manus | Felles originalsnapshot, åtte profiler, samme Writer/FactCheck/Ethics og godkjente programråd | Ingen nettprosa som kilde; ingen automatisk godkjenning |
 | Redigering | Manusvarianter i eksisterende Sak, optimistisk revisjon, historie | Lagret endring fjerner kontroll/godkjenning og valgt sendelyd |
-| TTS | Fast HTTPS-endepunkt, servernøkkel, godkjente programstemmer, `eleven_multilingual_v2`, hastighet/uttrykk | Deaktivert standard, dagsbudsjett, ett pågående/uavklart kall, ingen automatiske omforsøk |
+| TTS | Fast HTTPS-endepunkt, servernøkkel, godkjente programstemmer, `eleven_v4` som valgt modell (v2 beholdt for eldre eksplisitt konfigurasjon), hastighet/uttrykk | Deaktivert standard, dagsbudsjett, ett pågående/uavklart kall, ingen automatiske omforsøk |
 | Lagring | Immutable tilfeldige filnavn i privat `config/audio`, SHA-256, autentisert forhåndslytting | Ingen nøkler i frontend, ingen kundevalgte stier, ingen lyd i releasepakken |
 | Lydbehandling | PCM16 mono fra 24 kHz TTS, WAV-master; WAV eller MP3 sendefil; FFmpeg loudnorm og etterkontroll | Godkjent versjonert stasjonsprofil kreves; varighet, stillhet, klipping, samplerate, LUFS og sant toppnivå kontrolleres |
 | Sluttgodkjenning | Separat bekreftelse etter gjennomlytting | Faktakontroll, manus, stemme, ordbok, profil og filer må fortsatt stemme |

@@ -744,3 +744,23 @@ Adapteren bevarer nå HTTP-status og en begrenset liste faste feilkoder ved avvi
 ## Ny prøvestemme etter eiers valg
 
 Eier ba om å bruke `xF681s0UeE04gsf0mVsJ` i stedet. Den er registrert som valgt prøvestemme for alle kontekster; tidligere `azrGjm6gYkR15bxb9cVv` er deaktivert for nye genereringer, uten å slette historikk. Ett autorisert TTS-forsøk med den nye stemmen ble avvist med HTTP 402. Ingen lyd ble produsert, ingen automatisk gjentakelse eller produksjonsendring. HTTP-status er kjent, men detaljert leverandørårsak ble klassifisert som ukjent; abonnement/stemmetilgang må avklares før nytt forsøk. Nøkkel-/scope-testene består, inkludert sperre for den tidligere stemmen. Den godkjente prøveprofilen er uendret.
+
+## Eleven v4 og original stemme – 08.10.2026
+
+Etter eiers nye valg er `eleven_v4` standard i utviklingskonfigurasjonen og
+`azrGjm6gYkR15bxb9cVv` igjen valgt prøvestemme. Tidligere alternativ er deaktivert
+uten sletting av historikk. Modell-ID og eksisterende TTS-endepunkt er bekreftet i
+[ElevenLabs v4-dokumentasjonen](https://elevenlabs.io/v4). V2 støttes fortsatt ved
+uttrykkelig eldre konfigurasjon, men brukes aldri som automatisk reserve ved feil.
+Eksisterende modellbinding sperrer tidligere godkjent lyd etter modellbytte.
+
+Ett ekte, autorisert v4-kall med 212 tegn ga 17,04 sekunder lyd. WAV-master besto
+prøveprofilens tekniske kontroll (−18,42 LUFS, −2,00 dBTP, ingen klipping).
+MP3 målte −18,68 LUFS og ble korrekt avvist av lydstyrketoleransen; videre
+lydbehandling må justeres før sendefilen kan godkjennes. Filene og rapporten er
+lagret privat utenfor repoet. Uttale og fremføring er ikke menneskelig godkjent.
+Målrettede mock-tester av både v4 og v2 besto, inkludert manglende manusgodkjenning,
+ukjent modell, modellbytte og sperret sendeliste. TTS for Studio er fortsatt av,
+dagsbudsjett 0. Ingen produksjonsdeploy, publisering eller endring i sendelisten.
+
+Full lokal PHP-testpakke og pakkekontroll besto etter modellbyttet.

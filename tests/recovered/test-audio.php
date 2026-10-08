@@ -11,12 +11,12 @@ $source=['url'=>$item['sourceUrl'],'text'=>$text,'sha256'=>hash('sha256',$text),
 $review=['source'=>$source,'status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,$script)];$item['sourceCheck']=$review;
 $voice='azrGjm6gYkR15bxb9cVv';$profile='news-short';
 // These are synthetic test settings, NOT the station's approved audio profile.
-$config=['enabled'=>true,'api_key'=>'MOCK-ONLY','model_id'=>'eleven_multilingual_v2','daily_character_limit'=>10000,'voices'=>[$voice=>['approved'=>true,'rights_reference'=>'fixture only','programs'=>[$item['program']]]],'audio_profile'=>['approved'=>true,'version'=>'fixture-1','sample_rate'=>24000,'send_format'=>'wav','lufs'=>-23,'true_peak_db'=>-1,'max_silence_seconds'=>1]];
+$config=['enabled'=>true,'api_key'=>'MOCK-ONLY','model_id'=>(getenv('RR_AUDIO_TEST_MODEL')?:'eleven_v4'),'daily_character_limit'=>10000,'voices'=>[$voice=>['approved'=>true,'rights_reference'=>'fixture only','programs'=>[$item['program']]]],'audio_profile'=>['approved'=>true,'version'=>'fixture-1','sample_rate'=>24000,'send_format'=>'wav','lufs'=>-23,'true_peak_db'=>-1,'max_silence_seconds'=>1]];
 if(getenv('RR_AUDIO_TEST_FFMPEG')){$config['ffmpeg_binary']=getenv('RR_AUDIO_TEST_FFMPEG');if(getenv('RR_AUDIO_TEST_FORMAT')==='mp3'){$config['audio_profile']['send_format']='mp3';$config['audio_profile']['bitrate_kbps']=128;}}
 if(getenv('RR_AUDIO_TEST_PROFILE')==='approved'&&getenv('RR_AUDIO_TEST_FFMPEG'))$config['audio_profile']=(require dirname(__DIR__,2).'/config/example.php')['rr_audio']['audio_profile'];
 $input=['profile'=>$profile,'script'=>$script,'check'=>$review];
 $pcm='';for($n=0;$n<24000;$n++)$pcm.=pack('v',(int)(3000*sin(2*M_PI*440*$n/24000))&65535);$pcm=str_repeat($pcm,16);$wav=rr_audio_wav($pcm);
-$calls=0;$transport=static function($c,$v,$p)use(&$calls,$pcm,$voice){$calls++;audio_ok($v===$voice&&!isset($p['api_key'])&&$p['model_id']==='eleven_multilingual_v2','voice and supported settings, no key in payload');return $pcm;};
+$calls=0;$transport=static function($c,$v,$p)use(&$calls,$pcm,$voice,$config){$calls++;audio_ok($v===$voice&&!isset($p['api_key'])&&$p['model_id']===$config['model_id'],'voice and supported settings, no key in payload');return $pcm;};
 $runner=static function($args,$binary)use($wav){$last=end($args);if($last!=='-')file_put_contents($last,$wav);return '{"input_i":"-23.0","input_tp":"-20.0"}';};
 if(getenv('RR_AUDIO_TEST_FFMPEG'))$runner='rr_audio_ffmpeg';
 $get=fn()=>studio_case_get($item['id'],$path);
@@ -32,6 +32,7 @@ try {
     $change('checked',['check'=>$review]);audio_reject(fn()=>$generate(),'AI check alone cannot authorize TTS');
     $change('approve_script',['confirmed'=>'1']);
     audio_reject(fn()=>rr_audio_generate($item['id'],$get()['revision'],$profile,$voice,[],$admin,array_replace($config,['enabled'=>false]),$path,$transport),'disabled integration rejects real and injected transport');
+    $bad=$config;$bad['model_id']='unknown-model';audio_reject(fn()=>rr_audio_generate($item['id'],$get()['revision'],$profile,$voice,[],$admin,$bad,$path,$transport),'unsupported model rejected before provider call');
     $bad=$config;$bad['voices'][$voice]['programs']=[];audio_reject(fn()=>rr_audio_generate($item['id'],$get()['revision'],$profile,$voice,[],$admin,$bad,$path,$transport),'cross-program voice rejected');
     $bad=$config;$bad['daily_character_limit']=1;audio_reject(fn()=>rr_audio_generate($item['id'],$get()['revision'],$profile,$voice,[],$admin,$bad,$path,$transport),'budget checked before external call');
     $generate();$i=$get();$v=$i['audioScripts'][$profile];audio_ok($calls===1&&$v['audio']['status']==='needs_processing','one external call, private raw preview stored');
@@ -41,6 +42,7 @@ try {
     rr_audio_process($item['id'],$get()['revision'],$profile,$admin,$config,$path,$runner);audio_ok($calls===1,'processing never regenerates TTS');
     audio_reject(fn()=>$approve('enqueue'),'QA is not human audio approval');$approve('approve_audio');$approve('enqueue');
     $i=$get();audio_ok(rr_audio_queued($i,studio_board_read($path),$config,$path)!==null,'approved WAV is attached to existing board item');
+    $bad=$config;$bad['model_id']=$config['model_id']==='eleven_v4'?'eleven_multilingual_v2':'eleven_v4';audio_ok(rr_audio_queued($i,studio_board_read($path),$bad,$path)===null,'model change invalidates previously approved queued audio');
     $changed=$i;$changed['script'].=' Ny rettelse.';audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'primary manuscript change invalidates audio');
     $changed=$i;$changed['audioScripts'][$profile]['script'].=' Endret.';audio_ok(rr_audio_queued($changed,studio_board_read($path),$config,$path)===null,'variant edit invalidates all approvals');
     audio_ok($i['audioScripts'][$profile]['audio']['aiPolicyVersion']==='1.0.0'&&$i['audioScripts'][$profile]['audio']['synthetic']===true,'TTS records policy version and synthetic origin');

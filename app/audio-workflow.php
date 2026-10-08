@@ -92,7 +92,7 @@ function rr_audio_prepare(array $item,string $profile,array $config,array $edito
 /** Reserve before the external call. Unknown provider outcomes require explicit resolution. */
 function rr_audio_generate(string $id,int $revision,string $profile,string $voice,array $settings,array $user,array $config,?string $path=null,?callable $transport=null):void {
     rr_audio_role($user);rr_audio_profile($profile);
-    if(($config['enabled']??false)!==true||empty($config['api_key'])||($config['model_id']??'')!=='eleven_multilingual_v2')throw new InvalidArgumentException('Ekte TTS er deaktivert eller ikke konfigurert.');
+    if(($config['enabled']??false)!==true||empty($config['api_key'])||!in_array($config['model_id']??'',['eleven_multilingual_v2','eleven_v4'],true))throw new InvalidArgumentException('Ekte TTS er deaktivert eller ikke konfigurert.');
     $safe=[];
     foreach(['speed'=>[0.8,1.2,1.0],'stability'=>[0,1,0.5],'similarity_boost'=>[0,1,0.75],'style'=>[0,1,0.0]]as$key=>$bounds){$x=$settings[$key]??$bounds[2];if(!is_numeric($x)||!is_finite((float)$x)||$x<$bounds[0]||$x>$bounds[1])throw new InvalidArgumentException('Ugyldig stemmeinnstilling.');$safe[$key]=(float)$x;}
     $token=bin2hex(random_bytes(16));

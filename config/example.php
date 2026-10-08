@@ -13,20 +13,20 @@ return [
     'rr_audio' => [
         'enabled' => false,
         'api_key' => '', // private elevenlabs.key, local.php or ELEVENLABS_API_KEY; never browser input
-        'model_id' => 'eleven_multilingual_v2',
+        'model_id' => 'eleven_v4',
         'ffmpeg_binary' => '', // Verified absolute server path, not browser input.
         'daily_character_limit' => 0, // Set a deliberate budget before enabling.
         'voices' => [
             'xF681s0UeE04gsf0mVsJ' => [
-                'label' => 'Radio Rubben – ny prøvestemme',
-                'approved' => true,
+                'label' => 'Radio Rubben – alternativ prøvestemme',
+                'approved' => false,
                 'rights_reference' => 'Valgt av eier til prøve; bruksrettigheter verifiseres før produksjon',
                 'scope' => 'all',
                 'programs' => [],
             ],
             'azrGjm6gYkR15bxb9cVv' => [
                 'label' => 'Radio Rubben',
-                'approved' => false, // Superseded by the owner-selected trial voice; retained for history.
+                'approved' => true, // Owner selected the original voice again for the v4 trial.
                 'rights_reference' => 'Eierbekreftelse i RR Audio-oppdraget, 2026-10-08',
                 'scope' => 'all', // Owner approved all Radio Rubben contexts; editorial gates remain.
                 'programs' => [],
