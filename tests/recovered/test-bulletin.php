@@ -34,7 +34,7 @@ try{
  bulletin_ok(str_contains($v['script'],'KI-generert')&&str_contains($v['script'],'Meteorologisk institutt'),'spoken disclosure and weather attribution retained');
  bulletin_ok(rr_bulletin_checked($i,$v,studio_board_read($path)),'composite source and weather checks pass');
  $voice='azrGjm6gYkR15bxb9cVv';$c=['enabled'=>true,'test_only'=>true,'api_key'=>'fixture','model_id'=>'eleven_v4','daily_character_limit'=>10000,'voices'=>[$voice=>['approved'=>true,'rights_reference'=>'fixture','scope'=>'all']]];
- $calls=0;$transport=static function($c,$voice,$p)use(&$calls,$v){$calls++;bulletin_ok($p['text']===$v['script'],'whole approved bulletin sent in one call');return str_repeat(pack('v',1000),24000);};
+ $calls=0;$transport=static function($c,$voice,$p)use(&$calls,$v){$calls++;bulletin_ok($p['text']==="Denne stemmen er KI-generert.\n\n".$v['script'],'audible disclosure and whole approved bulletin sent in one call');return str_repeat(pack('v',1000),24000);};
  $tts=fn()=>rr_audio_generate($id,$get($id)['revision'],'bulletin',$voice,[],$admin,$c,$path,$transport);
  bulletin_reject($tts,'no TTS without human composite approval');bulletin_ok($calls===0,'unapproved bulletin never reaches provider');
  rr_audio_change($id,$i['revision'],'approve_script',['profile'=>'bulletin','confirmed'=>'1'],$admin,$path);$tts();
