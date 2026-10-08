@@ -4,6 +4,7 @@ require_once __DIR__.'/case-workflow.php';
 require_once __DIR__.'/audio-pronunciation.php';
 require_once __DIR__.'/audio-storage.php';
 require_once __DIR__.'/integrations/ElevenLabs.php';
+require_once __DIR__.'/bulletin.php';
 
 function rr_audio_role(array $user):void {
     if(!in_array($user['role']??'',['admin','producer','presenter'],true))throw new InvalidArgumentException('Ingen tilgang til lydproduksjon.');
@@ -15,9 +16,10 @@ function rr_audio_projection(array $item,array $variant):array {
 function rr_audio_script_hash(array $item,array $v):string {
     return rr_audio_hash([studio_news_fingerprint($item,(string)($v['script']??'')),$v['profile']??'', $v['check']['source']['sha256']??'',RR_AUDIO_VERSION,RR_STYLEBOOK_VERSION,
         // Editing the primary radio manuscript invalidates dependent audio too.
-        studio_board_audio_identity($item)]);
+        studio_board_audio_identity($item),$item['bulletin']??null]);
 }
 function rr_audio_checked(array $item,array $v):bool {
+    if(isset($item['bulletin']))return rr_bulletin_checked($item,$v);
     $p=rr_audio_projection($item,$v);
     return trim((string)($v['script']??''))!==''&&studio_news_check_current($p)&&studio_news_original_read($p,$v['check']??[])&&studio_news_radio_credit($p)
         && (strtotime((string)($v['check']['source']['fetchedAt']??''))?:0)>=time()-3600;
@@ -33,6 +35,7 @@ function rr_audio_voice(array $config,string $voice,string $program):array {
     return $v;
 }
 function rr_audio_current(array $item,array $v,array $board,array $config):bool {
+    if(isset($item['bulletin'])&&!rr_bulletin_checked($item,$v,$board))return false;
     $a=$v['audio']??[];
     try{$voice=rr_audio_voice($config,(string)($a['voice']??''),(string)($item['program']??''));}catch(Throwable){return false;}
     return ($a['aiPolicyVersion']??'')===RR_AI_POLICY_VERSION&&($a['synthetic']??null)===true
@@ -54,6 +57,7 @@ function rr_audio_change(string $id,int $revision,string $action,array $input,ar
         foreach($b['items'] as &$i)if(($i['id']??'')===$id&&($i['status']??'')!=='archived'){
             if(($i['revision']??0)!==$revision)throw new InvalidArgumentException('Saken ble endret. Last siden på nytt.');
             $profile=(string)($input['profile']??'');rr_audio_profile($profile);
+            if(isset($i['bulletin'])&&$action!=='approve_script')throw new InvalidArgumentException('Rett enkeltsakene og lag en ny samlet sending.');
             $before=$i;unset($before['history']);$v=&$i['audioScripts'][$profile];
             if($action==='save'||$action==='generated'){
                 $script=trim((string)($input['script']??''));
@@ -69,7 +73,7 @@ function rr_audio_change(string $id,int $revision,string $action,array $input,ar
                 if(isset($v['audio']))$v['audio']['approval']=null;
                 unset($i['audioQueue']);
             }elseif($action==='approve_script'){
-                if(($input['confirmed']??'')!=='1'||!rr_audio_checked($i,$v??[]))throw new InvalidArgumentException('Les manuset og kjør gyldig kildekontroll før godkjenning.');
+                if(($input['confirmed']??'')!=='1'||!rr_audio_checked($i,$v??[])||(isset($i['bulletin'])&&!rr_bulletin_checked($i,$v??[],$b)))throw new InvalidArgumentException('Les manuset og kjør gyldig kildekontroll før godkjenning.');
                 $v['scriptApproval']=['hash'=>rr_audio_script_hash($i,$v),'actor'=>$user['name']??'Medarbeider','at'=>gmdate('c')];
             }else throw new InvalidArgumentException('Ukjent manushandling.');
             $i['history'][]=['action'=>'audio_'.$action,'at'=>gmdate('c'),'actor'=>$user['name']??'Medarbeider','before'=>$before];$i['revision']++;return;
@@ -100,7 +104,7 @@ function rr_audio_generate(string $id,int $revision,string $profile,string $voic
         foreach($b['items']as$other)foreach($other['audioScripts']??[]as$ov)if(in_array($ov['audio']['status']??'', ['generating','unknown'],true))throw new InvalidArgumentException('En TTS-forespørsel pågår eller må avklares før nytt forsøk.');
         foreach($b['items']as&$i)if(($i['id']??'')===$id){
             if(($i['revision']??0)!==$revision||($i['status']??'')==='archived'||studio_board_channel($i)==='web')throw new InvalidArgumentException('Saken ble endret eller er ikke valgt for radio.');
-            $v=&$i['audioScripts'][$profile];if(!rr_audio_script_approved($i,$v??[]))throw new InvalidArgumentException('Manuset må kildekontrolleres og sluttgodkjennes før TTS.');
+            $v=&$i['audioScripts'][$profile];if(!rr_audio_script_approved($i,$v??[])||(isset($i['bulletin'])&&!rr_bulletin_checked($i,$v??[],$b)))throw new InvalidArgumentException('Manuset må kildekontrolleres og sluttgodkjennes før TTS.');
             $vp=rr_audio_voice($config,$voice,(string)($i['program']??''));$d=rr_pronunciation_context($b);$text=rr_pronunciation_text($v['script'],$d);$count=mb_strlen($text);
             $today=gmdate('Y-m-d');$used=(int)($b['audioUsage'][$today]??0);$limit=(int)($config['daily_character_limit']??0);
             if($count>3000||$count+$used>$limit)throw new InvalidArgumentException('TTS-budsjettet er brukt opp eller ikke angitt.');

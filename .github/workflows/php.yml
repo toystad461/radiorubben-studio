@@ -51,3 +51,4 @@ jobs:
       - run: node tests/recovered/test-newsroom-mobile.cjs
       - run: node tests/recovered/test-learning-mobile.cjs
       - run: node tests/recovered/test-audio-mobile.cjs
+      - run: node tests/recovered/test-bulletin-mobile.cjs

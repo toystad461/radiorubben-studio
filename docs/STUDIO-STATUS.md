@@ -816,3 +816,28 @@ PR #55 er fortsatt en avhengig utviklingsgren; ingen merge til main er utført.
 Neste main-release må avstemmes mot dette nye selektive produksjonsgrunnlaget,
 ellers kan eldre hovedgrenkode tilbakeføre pilotfunksjonene. Lydarbeider og
 normaliseringsforbedring må fullføres før vanlig sending aktiveres.
+
+## Samlet nyhetssending fra radiolisten – 08.10.2026
+
+Etter eiers «Flott da går vi videre»: samme branch/PR #55 utvides med «Lag
+nyhetssending» i eksisterende radioliste. Valgte saker beholder listens rekkefølge.
+Én til fem ferdig kildekontrollerte og manuelt klarmerkede saker kan samles med
+Bømlo-vær (alternativt Stord/Haugesund eller uten vær). Programtilknytning blandes
+ikke. Korte, deterministiske overganger legger ikke til journalistiske fakta.
+
+Sendetid foreslås som neste hele time, velges inntil åtte timer fram og vises med
+Oslo-tidssone. Intro følger eiers ordlyd: «Det er torsdag kveld, klokken er åtte,
+og her er nyhetene på Radio Rubben.» Midnatt og begge DST-overganger er testet.
+Værprognosen velges for sendingen; ferskhet regnes mot faktisk nåtid, ikke fremtid.
+Stylebook 1.2.0 versjonerer disse reglene; faktakrav er uendret.
+
+Samlet sending lagres som et radiopunkt med kilde-/manussnapshots på samme board.
+Manuell samlet manusgodkjenning, TTS-reservasjon, budsjett, leverandørfeil,
+privat rålydlager og avspilling gjenbruker RR Audio. Endring/arkivering av en
+kildesak ugyldiggjør varig samlet godkjenning, også dersom gammel tekst gjenopprettes.
+Utløpt kontroll/vær og passert sendetid sperrer ny generering. Uttale- og
+lydgodkjenning beholdes separat. Testmodus gir fortsatt ingen sendefil eller playout.
+
+Lokale negative tester, eksisterende PHP-/pakketest og nye mobile visninger
+(375/390/1280) består. Ingen ekte saker er redigert, godkjent eller sendt av agenten.
+Fersk CI og selektiv runtimeavstemming utføres før eventuell pilotoppdatering.

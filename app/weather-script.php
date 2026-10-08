@@ -5,7 +5,7 @@ require_once __DIR__.'/board.php';
 
 function studio_weather_script_path(): string { return dirname(__DIR__).'/config/weather-script.json'; }
 function studio_weather_script_text(array $places): string {
-    if(count($places)!==3)throw new RuntimeException('Venter på værgrunnlag fra alle tre steder.');
+    if(count($places)<1||count($places)>3)throw new RuntimeException('Venter på værgrunnlag for valgte steder.');
     $sentences=['Her er været, ifølge Meteorologisk institutt.'];
     foreach($places as $p){
         if(!is_numeric($p['temperature']??null))throw new RuntimeException('Temperatur mangler.');

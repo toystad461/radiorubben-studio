@@ -4,6 +4,7 @@ require_once __DIR__.'/programs.php';
 const RR_AUDIO_VERSION='1.0.0';
 function rr_audio_profiles():array {
     return [
+        'bulletin'=>['name'=>'Samlet nyhetssending','min'=>20,'max'=>180,'words'=>450,'instruction'=>'Samles fra kontrollerte enkeltsaker i radiolisten.'],
         'news-short'=>['name'=>'Nyhetsstikk · 15–20 sek','min'=>15,'max'=>20,'words'=>45,'instruction'=>'Ett hovedpoeng og nødvendig kildeattribusjon.'],
         'news-standard'=>['name'=>'Nyhetsstikk · 30–45 sek','min'=>30,'max'=>45,'words'=>100,'instruction'=>'Hovedpoeng og én relevant, dokumentert bakgrunnsopplysning.'],
         'news-extended'=>['name'=>'Utvidet nyhetsstikk · 60–90 sek','min'=>60,'max'=>90,'words'=>200,'instruction'=>'Forklar dokumentert sammenheng og forløp uten å gjenta poenger.'],
