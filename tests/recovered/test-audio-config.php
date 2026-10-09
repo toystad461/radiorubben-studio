@@ -20,12 +20,17 @@ require $tmp.'/app/config.php';putenv('ELEVENLABS_API_KEY');$key=$tmp.'/config/e
 try{
     config_audio_ok(load_config()['rr_audio']['api_key']==='','absent key stays unconfigured');
     file_put_contents($key,'fixture-not-a-real-key-1234');chmod($key,0600);
-    config_audio_ok(load_config()['rr_audio']['api_key']==='fixture-not-a-real-key-1234'&&load_config()['rr_audio']['enabled']===false,'private key loads without activation');
-    chmod($key,0644);clearstatcache();config_audio_reject(fn()=>load_config(),'readable-by-others key rejected');
-    chmod($key,0600);clearstatcache();putenv('ELEVENLABS_API_KEY=fixture-env-key');config_audio_ok(load_config()['rr_audio']['api_key']==='fixture-env-key','environment takes precedence');putenv('ELEVENLABS_API_KEY');
+    if (PHP_OS_FAMILY === 'Windows') {
+        config_audio_reject(fn()=>load_config(),'Windows file mode cannot establish Unix key privacy; reject closed');
+    } else {
+        config_audio_ok(load_config()['rr_audio']['api_key']==='fixture-not-a-real-key-1234'&&load_config()['rr_audio']['enabled']===false,'private key loads without activation');
+        chmod($key,0644);clearstatcache();config_audio_reject(fn()=>load_config(),'readable-by-others key rejected');
+    }
+    chmod($key,0600);clearstatcache();putenv('ELEVENLABS_API_KEY=fixture-env-key');config_audio_ok(load_config()['rr_audio']['api_key']==='fixture-env-key','environment takes precedence');
     file_put_contents($tmp.'/config/audio-local.php',"<?php return ['enabled'=>true,'test_only'=>true,'daily_character_limit'=>3000];");
     $loaded=load_config();config_audio_ok($loaded['rr_audio']['enabled']===true&&$loaded['rr_audio']['test_only']===true&&$loaded['rr_audio']['model_id']==='eleven_v4'&&$loaded['auth_mode']==='demo','private audio settings preserve model and authentication');
-    unlink($key);symlink($tmp.'/config/example.php',$key);config_audio_reject(fn()=>load_config(),'key symlink rejected');unlink($key);
+    unlink($key);putenv('ELEVENLABS_API_KEY');
+    if (PHP_OS_FAMILY !== 'Windows') { symlink($tmp.'/config/example.php',$key);config_audio_reject(fn()=>load_config(),'key symlink rejected');unlink($key); }
 }finally{
     putenv('ELEVENLABS_API_KEY');foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tmp,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST)as$f)$f->isDir()?rmdir($f->getPathname()):unlink($f->getPathname());rmdir($tmp);
 }

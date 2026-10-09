@@ -65,8 +65,8 @@ function rr_audio_approve_or_queue(string $id,int $revision,string $profile,stri
         if(($i['revision']??0)!==$revision)throw new InvalidArgumentException('Saken ble endret. Last siden på nytt.');
         $v=&$i['audioScripts'][$profile];if(!$v)throw new InvalidArgumentException('Lydvarianten finnes ikke.');$a=&$v['audio'];
         if($action==='approve_audio'){
-            if(($input['confirmed']??'')!=='1')throw new InvalidArgumentException('Lytt gjennom og bekreft manuell sluttgodkjenning av lyden.');
-            $a['approval']=['hash'=>rr_audio_hash([$a['master']??[],$a['send']??[],$a['token']??'']),'actor'=>$user['name']??'Medarbeider','at'=>gmdate('c')];
+            if(($input['confirmed']??'')!=='1'||($input['disclosure_confirmed']??'')!=='1')throw new InvalidArgumentException('Lytt gjennom ferdig lyd og bekreft at opplysningen om KI-generert stemme høres tydelig.');
+            $a['approval']=['hash'=>rr_audio_approval_hash($a),'heardDisclosure'=>true,'actor'=>$user['name']??'Medarbeider','at'=>gmdate('c')];
             if(!rr_audio_ready($i,$v,$b,$config,$path))throw new InvalidArgumentException('Lydfilen, kildekontrollen eller lydprofilen er ikke godkjennbar.');
         }elseif($action==='enqueue'){
             if(!empty($config['test_only']))throw new InvalidArgumentException('RR Audio er i testmodus. Lyd kan ikke legges i sendelisten.');

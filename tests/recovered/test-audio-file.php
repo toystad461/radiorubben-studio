@@ -1,6 +1,6 @@
 <?php
 declare(strict_types=1);
-if(empty($argv[1])){foreach(['guest','preview','unapproved','approved','missing-policy','missing-synthetic','tampered','archived','method','range','range-invalid']as$mode){passthru(escapeshellarg(PHP_BINARY).' '.escapeshellarg(__FILE__).' '.escapeshellarg($mode),$code);if($code)exit($code);}exit;}
+if(empty($argv[1])){foreach(['guest','preview','unapproved','approved','missing-policy','missing-synthetic','missing-disclosure','unheard-disclosure','changed-spoken-text','tampered','archived','method','range','range-invalid']as$mode){passthru(escapeshellarg(PHP_BINARY).' '.escapeshellarg(__FILE__).' '.escapeshellarg($mode),$code);if($code)exit($code);}exit;}
 $mode=$argv[1];$root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/audio-route-'.bin2hex(random_bytes(6));
 foreach(['/app/integrations','/public','/config']as$d)mkdir($tmp.$d,0700,true);
 foreach(['board','programs','audio-profiles','stylebook','news-script','source-identity','case-workflow','web-publish','news-publication','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage']as$n)copy($root.'/app/'.$n.'.php',$tmp.'/app/'.$n.'.php');
@@ -12,10 +12,14 @@ $item=['id'=>'1234567890abcdef','program'=>'god-morgen-vestland','title'=>'Møte
 $check=['status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,$item['script']),'source'=>['url'=>$item['sourceUrl'],'text'=>$text,'sha256'=>hash('sha256',$text),'fetchedAt'=>gmdate('c')]];
 $v=['profile'=>'news-short','script'=>$item['script'],'check'=>$check];$v['scriptApproval']=['hash'=>rr_audio_script_hash($item,$v)];$bytes=rr_audio_wav(str_repeat(pack('v',1000),5000));$path=$tmp.'/config/sending-board.json';$asset=rr_audio_store($bytes,'wav',$path);
 $v['audio']=['aiPolicyVersion'=>RR_AI_POLICY_VERSION,'synthetic'=>true,'token'=>'fixture-token','voice'=>'fixturevoice','model'=>'eleven_multilingual_v2','status'=>'processed','scriptHash'=>rr_audio_script_hash($item,$v),'voiceHash'=>rr_audio_hash($config['rr_audio']['voices']['fixturevoice']),'dictionaryHash'=>rr_audio_hash(rr_pronunciation_context([])),'profileHash'=>rr_audio_hash($config['rr_audio']['audio_profile']),'qa'=>['passed'=>true],'raw'=>$asset,'master'=>$asset,'send'=>$asset];
-$v['audio']['approval']=['hash'=>rr_audio_hash([$asset,$asset,'fixture-token'])];$item['audioScripts']=['news-short'=>$v];$item['audioQueue']=['profile'=>'news-short','token'=>'fixture-token','sendHash'=>$asset['sha256']];
+$v['audio']['disclosure']=rr_audio_disclosure();$v['audio']['spokenTextSha256']=hash('sha256',rr_audio_spoken_text($v,rr_pronunciation_context([])));
+$v['audio']['approval']=['hash'=>rr_audio_approval_hash($v['audio']),'heardDisclosure'=>true];$item['audioScripts']=['news-short'=>$v];$item['audioQueue']=['profile'=>'news-short','token'=>'fixture-token','sendHash'=>$asset['sha256']];
 if($mode==='unapproved')$item['audioScripts']['news-short']['audio']['approval']=null;
 if($mode==='missing-policy')unset($item['audioScripts']['news-short']['audio']['aiPolicyVersion']);
 if($mode==='missing-synthetic')unset($item['audioScripts']['news-short']['audio']['synthetic']);
+if($mode==='missing-disclosure')unset($item['audioScripts']['news-short']['audio']['disclosure']);
+if($mode==='unheard-disclosure')unset($item['audioScripts']['news-short']['audio']['approval']['heardDisclosure']);
+if($mode==='changed-spoken-text')$item['audioScripts']['news-short']['audio']['spokenTextSha256']=hash('sha256','unmarked');
 if($mode==='archived')$item['status']='archived';
 if($mode==='tampered')file_put_contents(rr_audio_asset($asset,$path),'changed');
 file_put_contents($path,json_encode(['items'=>[$item]]));

@@ -2,6 +2,11 @@
 declare(strict_types=1);
 require_once __DIR__.'/programs.php';
 const RR_AUDIO_VERSION='1.0.0';
+/** Station disclosure is applied after pronunciation; source text cannot override it. */
+function rr_audio_disclosure():array {
+    return ['version'=>'1.0.0','text'=>'Denne stemmen er KI-generert.','placement'=>'start'];
+}
+
 function rr_audio_profiles():array {
     return [
         'bulletin'=>['name'=>'Samlet nyhetssending','min'=>20,'max'=>180,'words'=>450,'instruction'=>'Samles fra kontrollerte enkeltsaker i radiolisten.'],
@@ -25,5 +30,6 @@ function rr_audio_profile_instructions(string $id):string {
     return ' RR Audio: Skriv et selvstendig muntlig manus direkte fra den samme originalkilden, ikke en forkortelse av nettartikkelen. '
         .$p['instruction'].' Ønsket varighet '.$p['min'].'–'.$p['max'].' sekunder ved naturlig tale. '
         .'Varigheten er et mål, aldri tillatelse til å fylle på fakta. Hvis kilden er for knapp, skriv kortere og la redaktøren velge en kortere profil. '
+        .'Den ferdige lyden starter automatisk med «'.rr_audio_disclosure()['text'].'». Sett av omtrent to sekunder innenfor totalvarigheten til dette; ikke skriv merkingen inn i nyhetsmanuset. '
         .'Manuset skal være rent talespråk, uten lydtagger, SSML, sceneanvisninger eller overskrift.';
 }

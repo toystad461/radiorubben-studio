@@ -95,3 +95,22 @@ Ingen merge til hovedgren, deploy, workflow-dispatch, artikkelpublisering, læri
 eller endring av produksjonsdata. En separat godkjent utrulling må avstemme ferske
 serverhasher, eksakt filsett, avhengigheter, backup og tilbakeføring. Ikke last opp
 en hel gren. Historiske release-manifester skal ikke omskrives til den nye koden.
+
+## Hørbar merking – utrullet 08.10.2026
+
+RR Audio legger nå «Denne stemmen er KI-generert.» først i hver TTS-forespørsel,
+etter at uttaleregler er brukt på nyhetsmanuset. Merkingen inngår i tegnbudsjett
+og ferdig varighet, og kan ikke fjernes via manus eller uttaleordbok.
+Versjon, tekst og hash av faktisk talestreng bindes til manus-, lyd- og
+sendegodkjenning. Sluttgodkjenning krever egen bekreftelse på at opplysningen
+høres i den behandlede lyden. Gamle lydfiler uten denne bindingen må genereres
+og godkjennes på nytt. Det er ingen automatisk ny belastning eller migrering.
+
+Tester bruker syntetisk PCM og kontrollerer faktisk leverandørpayload, budsjett,
+manipulert/manglende metadata, lyttebekreftelse og tilgang til sendefilen.
+Eksisterende testmodus forblir sperret mot sending. Dette aktiverer ingen
+lydarbeider eller radio.co-integrasjon. Kodecommit `28df44f035cfad383e3cf15ade182ad2ba0bfd94`
+er utrullet etter eksplisitt godkjenning. Fem filer ble oppdatert med privat
+sikkerhetskopi; HTTPS-innlogging, offentlig versjonsmarkør og talestreng bestod
+kontroll. Alle 501 registrerte filer er avstemt uten drift. Menneskelig høreprøve
+med ekte TTS og faktisk utsending gjenstår.
