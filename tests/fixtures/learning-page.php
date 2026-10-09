@@ -26,6 +26,6 @@ $rules=[];
 foreach(['pending'=>'Bevar forbeholdene i kilden.','approved'=>'Del lange setninger i korte setninger.','disabled'=>'En gammel regel.'] as $status=>$text)$rules[]=['id'=>$status,'program'=>'god-morgen-vestland','status'=>$status,'revision'=>1,'text'=>$text,'createdBy'=>'Fixture','evidence'=>$evidence,'history'=>[['at'=>'2026-10-07T10:00:00Z','actor'=>'Fixture','action'=>'propose']]];
 $rules[]=array_replace($rules[0],['id'=>'other-program','program'=>'other-program','text'=>'Skal ikke vises.']);
 file_put_contents($tmp.'/config/sending-board.json',json_encode(['items'=>[$item,$webItem],'editorialRules'=>$rules]));
-$_SERVER['REQUEST_METHOD']='GET';$_SESSION=['csrf'=>'fixture'];$_GET=['view'=>$argv[1]??'pending','channel'=>$argv[3]??'radio','item'=>($argv[3]??'radio')==='web'?$webItem['id']:$item['id']];$_POST=[];
+$_SERVER['REQUEST_METHOD']='GET';$_SESSION=['csrf'=>'fixture'];$_GET=['view'=>$argv[1]??'pending','channel'=>$argv[3]??'radio','item'=>($argv[3]??'')==='general'?'':(($argv[3]??'radio')==='web'?$webItem['id']:$item['id'])];$_POST=[];
 register_shutdown_function(static function()use($tmp){foreach(['/app/views','/app','/public','/config',''] as $dir){foreach(glob($tmp.$dir.'/*') as $file)if(is_file($file))unlink($file);rmdir($tmp.$dir);}});
 require $tmp.'/public/learning.php';
