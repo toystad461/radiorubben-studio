@@ -18,6 +18,8 @@
   "scripts": {
     "test": [
       "php tests/crm.php",
+      "php tests/crm-outreach.php",
+      "php tests/crm-outreach-routes.php",
       "php tests/crm-page.php get",
       "php tests/crm-page.php list",
       "php tests/crm-page.php new",
