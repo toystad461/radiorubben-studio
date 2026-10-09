@@ -11,6 +11,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf'], $_POST['csrf'])) { http_response_code(403); exit('Last siden på nytt før du lagrer.'); }
     try {
         $postedAction = studio_crm_text($_POST, 'action', 20);
+
+        if ($postedAction==='select_company') {
+            $choice=studio_crm_text($_POST,'choice',40);
+            $records=studio_crm_read()['records'];
+            if(preg_match('/^card:([a-f0-9]{16})$/D',$choice,$match)) {
+                foreach($records as $row) if($row['id']===$match[1]) redirect('/crm.php?id='.$row['id'].'#crm-detail');
+                throw new InvalidArgumentException('Kortet finnes ikke lenger. Søk på nytt.');
+            }
+            if(!preg_match('/^org:([0-9]{9})$/D',$choice,$match)) throw new InvalidArgumentException('Velg en bedrift fra trefflisten.');
+            $evidence=studio_crm_brreg($match[1]);
+            $matches=studio_crm_matches($records,$evidence['fields']);
+            if(count($matches)>1) throw new InvalidArgumentException('Flere kort matcher navn eller organisasjonsnummer. Åpne riktig kort fra CRM-listen og avklar duplikatet først.');
+            if($matches && !empty($matches[0]['orgNumber']) && $matches[0]['orgNumber']!==$match[1]) throw new InvalidArgumentException('Navnet finnes med et annet organisasjonsnummer. Kontroller eksisterende kort.');
+            $_SESSION['crm_lookup']=$evidence;
+            redirect('/crm.php?'.($matches?'id='.$matches[0]['id']:'new=1').'&from_lookup='.$match[1].'#crm-detail');
+        }
         $evidence = $_SESSION['crm_lookup'] ?? null;
         if ($evidence && (strtotime($evidence['fetchedAt']??'')?:0)<time()-3600) $evidence=null;
         $saved = studio_crm_apply($postedAction, $_POST, $user, null, $evidence);
@@ -42,6 +58,15 @@ $form = $selected ?? $defaults;
 if ($error && in_array($postedAction, ['create', 'save'], true)) {
     foreach (array_keys($defaults) as $key) if (is_string($_POST[$key] ?? null)) $form[$key] = $_POST[$key];
 }
+
+$lookupNotice=null; $prefill=$_SESSION['crm_lookup']??null;
+if(!$error && ($selected||$creating) && is_array($prefill)
+    && ($_GET['from_lookup']??'')===($prefill['fields']['orgNumber']??null)
+    && (strtotime($prefill['fetchedAt']??'')?:0)>=time()-3600
+    && (!$selected || (studio_crm_matches([$selected],$prefill['fields']) && (empty($selected['orgNumber']) || $selected['orgNumber']===$prefill['fields']['orgNumber'])))) {
+    foreach($prefill['fields'] as $key=>$value) if($value!=='') $form[$key]=$value;
+    $lookupNotice=$selected?'Bedriften er allerede registrert. Registeropplysninger er foreslått nedenfor. Kontaktinformasjon, status og historikk er beholdt. Kontroller og lagre for å oppdatere kortet.':'Ny potensiell kunde. Kontroller opplysningene og opprett bedriftskortet nedenfor.';
+}
 $revision = $selected['revision'] ?? 0;
 // Preserve the rejected revision: retrying an old form must never overwrite a newer edit.
 if ($error && is_scalar($_POST['revision'] ?? null)) $revision = (int)$_POST['revision'];
@@ -56,7 +81,7 @@ foreach ($registry['records'] as $row) {
 $labels = ['company'=>'Bedrift', 'contact'=>'Kontaktperson', 'phone'=>'Telefon', 'email'=>'E-post', 'website'=>'Nettside',
     'orgNumber'=>'Organisasjonsnummer', 'businessAddress'=>'Adresse', 'industry'=>'Bransje', 'organizationForm'=>'Organisasjonsform', 'owner'=>'Ansvarlig', 'stage'=>'Status', 'priority'=>'Prioritet', 'opportunity'=>'Samarbeidsidé',
     'nextStep'=>'Neste steg', 'followUp'=>'Oppfølgingsdato', 'oneDriveUrl'=>'OneDrive-lenke'];
-$extraStylesheet = '/assets/crm.css?v=2'; require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet = '/assets/crm.css?v=3'; require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell crm-shell">
 <?php $activePage = 'crm'; require dirname(__DIR__).'/app/views/sidebar.php'; ?>
@@ -66,6 +91,18 @@ $extraStylesheet = '/assets/crm.css?v=2'; require dirname(__DIR__).'/app/views/h
 <header class="crm-heading"><div><p class="eyebrow">SAMARBEID OG LOKALT ENGASJEMENT</p><h1>Samarbeidspartnere</h1><p>Gode samtaler. Tydelige avtaler. Neste steg på ett sted.</p></div><a class="crm-button primary" href="/crm.php?new=1#crm-detail">+ Ny bedrift</a></header>
 <?php if ($message): ?><p class="crm-notice" role="status"><?= escape($message) ?></p><?php endif; ?>
 <?php if ($error): ?><p class="crm-notice error" role="alert"><?= escape($error) ?></p><?php endif; ?>
+
+<section class="crm-panel crm-company-search" aria-labelledby="company-search-title">
+<h2 id="company-search-title">Finn og legg til bedrift</h2>
+<form method="post" data-company-search>
+<input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="select_company">
+<label>Søk på bedriftsnavn<input type="search" name="query" maxlength="180" autocomplete="off" data-company-query aria-describedby="company-search-status"></label>
+<button type="button" data-company-search-button>Søk etter bedrift</button>
+<p id="company-search-status" role="status">Søk i CRM og Brønnøysundregistrene. Skriv minst to tegn.</p>
+<div data-company-results hidden><label>Velg bedrift<select name="choice" required data-company-choices><option value="">Velg et treff</option></select></label>
+<button type="submit" data-company-open disabled>Åpne valgt bedrift</button></div>
+<noscript>Navnesøk krever JavaScript. Du kan fortsatt bruke CRM-listen og opprette kort manuelt.</noscript>
+</form></section>
 <div class="crm-stats" aria-label="Statusoversikt">
 <a href="/crm.php?due=1"><strong><?= $stats['due'] ?></strong><span>Til oppfølging</span></a>
 <a href="/crm.php"><strong><?= $stats['open'] ?></strong><span>Åpne muligheter</span></a>
@@ -114,6 +151,7 @@ $extraStylesheet = '/assets/crm.css?v=2'; require dirname(__DIR__).'/app/views/h
 <label>Hva ble sagt eller avtalt?<textarea name="text" rows="3" maxlength="5000" required placeholder="Skriv kort om behov, respons og avtaler."><?= escape($error && $postedAction === 'activity' && is_string($_POST['text'] ?? null) ? $_POST['text'] : '') ?></textarea></label>
 <button type="submit">Lagre i historikken</button></form></section>
 <?php endif; ?>
+<?php if ($lookupNotice): ?><p role="status" class="crm-notice"><?= escape($lookupNotice) ?></p><?php endif; ?>
 <form method="post" class="crm-form crm-edit">
 <input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="<?= $creating ? 'create' : 'save' ?>">
 <?php if ($selected && !$creating): ?><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= $revision ?>"><?php endif; ?>
@@ -146,4 +184,4 @@ $extraStylesheet = '/assets/crm.css?v=2'; require dirname(__DIR__).'/app/views/h
 </li><?php endforeach; ?></ol></section><?php endif; ?>
 <?php endif; ?>
 </section></div>
-<script src="/assets/crm.js?v=1" defer></script></main></div></div></body></html>
+<script src="/assets/crm.js?v=2" defer></script></main></div></div></body></html>

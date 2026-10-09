@@ -8,6 +8,7 @@ const root=path.resolve(__dirname,'..'),tmp=fs.mkdtempSync(path.join(os.tmpdir()
  for(const width of [320,390,800,1280]){
   const page=await browser.newPage({viewport:{width,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>{const u=new URL(r.request().url());
+   if(u.pathname==='/crm-register.php' && new URLSearchParams(r.request().postData()).get('action')==='search')return r.fulfill({contentType:'application/json',body:JSON.stringify({results:[{value:'org:999999999',label:'Fiktiv AS · 999999999 · Ny potensiell kunde'},{value:'card:aaaaaaaaaaaaaaaa',label:'Eksisterende AS · Allerede registrert · Arkivert'}],more:true,warning:''})});
    if(u.pathname==='/crm-register.php')return r.fulfill({contentType:'application/json',body:JSON.stringify({fields:{company:'Fiktiv AS',orgNumber:'999999999',website:'https://example.test',industry:'Test',businessAddress:'Testvegen 1',organizationForm:'AS'}})});
    if(u.pathname.startsWith('/assets/'))return r.fulfill({path:path.join(root,'public',u.pathname)});
    return r.fulfill({contentType:'text/html',body:fs.readFileSync(u.pathname==='/crm.php'?newFile:file,'utf8')});
@@ -16,6 +17,16 @@ const root=path.resolve(__dirname,'..'),tmp=fs.mkdtempSync(path.join(os.tmpdir()
   await page.getByText(/Hentet Fiktiv AS/).waitFor({state:'visible'});
   assert.equal(await page.locator('[name=company]').inputValue(),'Eget navn');assert.equal(await page.locator('[name=website]').inputValue(),'https://example.test');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Lookup fits '+width);
+
+  await page.getByRole('searchbox',{name:'Søk på bedriftsnavn',exact:true}).fill('Fiktiv');
+  await page.getByText(/Velg en bedrift. Registrerte kort/).waitFor();
+  assert.equal(await page.getByRole('combobox',{name:'Velg bedrift',exact:true}).isVisible(),true);
+  assert.equal(await page.getByRole('button',{name:'Åpne valgt bedrift',exact:true}).isEnabled(),false);
+  await page.getByRole('combobox',{name:'Velg bedrift',exact:true}).selectOption('card:aaaaaaaaaaaaaaaa');
+  assert.equal(await page.getByRole('button',{name:'Åpne valgt bedrift',exact:true}).isEnabled(),true);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Search fits '+width);
+  await page.getByRole('searchbox',{name:'Søk på bedriftsnavn',exact:true}).fill('X');
+  assert.equal(await page.getByRole('combobox',{name:'Velg bedrift',exact:true}).isVisible(),false,'Stale choices removed');
   await page.goto('https://crm.test/crm-outreach.php');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Proposal fits '+width);
   assert.equal(await page.getByRole('textbox',{name:'Introduksjonsmail',exact:true}).isVisible(),true);

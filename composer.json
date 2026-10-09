@@ -18,11 +18,17 @@
   "scripts": {
     "test": [
       "php tests/crm.php",
+      "php tests/crm-search.php",
       "php tests/crm-outreach.php",
       "php tests/crm-outreach-routes.php",
       "php tests/crm-page.php get",
       "php tests/crm-page.php list",
       "php tests/crm-page.php new",
+      "php tests/crm-page.php lookup-new",
+      "php tests/crm-page.php lookup-existing",
+      "php tests/crm-page.php lookup-expired",
+      "php tests/crm-page.php select-existing",
+      "php tests/crm-page.php select-invalid",
       "php tests/crm-page.php guest",
       "php tests/crm-page.php observer",
       "php tests/crm-page.php producer",

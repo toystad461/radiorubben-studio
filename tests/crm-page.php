@@ -24,12 +24,24 @@ if ($mode === 'activity') $_POST = ['csrf'=>'fixture-token','action'=>'activity'
 if ($mode === 'invalid') { $_POST['email']='invalid'; $_POST['opportunity']='Behold dette utkastet'; }
 if ($mode === 'conflict') { $_POST['revision']=9; $_POST['nextStep']='Behold neste steg'; }
 if ($mode === 'forged') $_POST['action']='send_email';
+
+if(in_array($mode,['lookup-new','lookup-existing','lookup-expired'],true)) {
+ $_SESSION['crm_lookup']=['fields'=>['orgNumber'=>'999999999','company'=>$fields['company'],'website'=>'https://example.test','businessAddress'=>'Testvegen 2'],'fetchedAt'=>$mode==='lookup-expired'?'2000-01-01T00:00:00Z':gmdate('c')];
+ $_GET=($mode==='lookup-new'?['new'=>'1']:['id'=>$id])+['from_lookup'=>'999999999'];
+}
+if($mode==='select-existing') {
+ $_SERVER['REQUEST_METHOD']='POST';$_POST=['csrf'=>'fixture-token','action'=>'select_company','choice'=>'card:'.$id];
+}
+if($mode==='select-invalid') {
+ $_SERVER['REQUEST_METHOD']='POST';$_POST=['csrf'=>'fixture-token','action'=>'select_company','choice'=>'card:../../file'];
+}
 ob_start();
 register_shutdown_function(static function () use ($mode,$tmp,$path,$before,$id): void {
     $html = (string)ob_get_clean(); $after = studio_crm_read($path); $ok = true;
     if (in_array($mode,['observer','producer','presenter','csrf'],true)) $ok = http_response_code()===403 && !str_contains($html,'alert(1)');
     elseif ($mode==='method') $ok = http_response_code()===405;
     elseif ($mode==='guest') $ok = http_response_code()===303 && !str_contains($html,'alert(1)');
+    elseif ($mode==='select-existing') $ok=http_response_code()===303;
     elseif ($mode==='save') $ok = http_response_code()===303 && $after['records'][0]['contact']==='Kari Test';
     elseif ($mode==='activity') $ok = http_response_code()===303 && $after['records'][0]['lastContact']==='2026-01-26';
     else {
@@ -37,6 +49,9 @@ register_shutdown_function(static function () use ($mode,$tmp,$path,$before,$id)
         if ($mode==='get') $ok = $ok && str_contains($html,'&lt;script&gt;') && str_contains($html,'Logg en samtale') && str_contains($html,'OneDrive');
         if ($mode==='invalid') $ok = $ok && http_response_code()===422 && str_contains($html,'Behold dette utkastet');
         if ($mode==='conflict') $ok = $ok && http_response_code()===422 && str_contains($html,'value="9"') && str_contains($html,'Behold neste steg');
+        if(in_array($mode,['lookup-new','lookup-existing'],true)) $ok=$ok && str_contains($html,'value="999999999"') && str_contains($html,'value="Testvegen 2"') && str_contains($html,$mode==='lookup-new'?'Ny potensiell kunde.':'Bedriften er allerede registrert.');
+        if($mode==='lookup-expired') $ok=$ok && !str_contains($html,'value="Testvegen 2"');
+        if($mode==='select-invalid') $ok=$ok && http_response_code()===422;
         if ($mode==='forged') $ok = $ok && http_response_code()===422;
     }
     if (!in_array($mode,['save','activity'],true)) $ok = $ok && file_get_contents($path)===$before;
