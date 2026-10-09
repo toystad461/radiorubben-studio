@@ -16,7 +16,7 @@ foreach (['app', 'public', 'vendor', 'docs'] as $folder) {
         $allowed = ['app'=>['php'], 'public'=>['php','css','mjs','js','png','svg','ico'], 'docs'=>['md']];
         if (isset($allowed[$folder]) && !in_array(strtolower($file->getExtension()), $allowed[$folder], true)
             && !($folder === 'public' && $within === '.htaccess')) continue;
-        $relative = substr($file->getPathname(), strlen($root)+1);
+        $relative = str_replace('\\', '/', substr($file->getPathname(), strlen($root)+1));
         if ($folder === 'public') {
             $content = file_get_contents($file->getPathname());
             if ($file->getExtension() === 'php') {

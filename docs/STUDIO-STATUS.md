@@ -684,3 +684,23 @@ Innlogget Studio er åpnet med eksisterende Microsoft-konto. Før endring er Nyh
 Thomas bestilte mindre omskriving og bedre rettskriving etter at genererte påstander ble stoppet i faktakontroll. Nettets 120–200-ordmål og krav om to–tre avsnitt, samt radioens 20–40-sekundersmål, erstattes med korte oppsummeringer uten minstemål. Felles instruksjon gir et kildeavhengig ordtak (inntil 120 ord nett / 75 ord radio), få dokumenterte fakta og sikker språkvask uten sterkere skadegrad, sikkerhet, forklaringer eller oppfølging. Ordtaket er en modellinstruksjon, ikke en serverbasert lengdesperre eller garanti mot nye påstander.
 
 Uavhengig språk-/kildekontroll, urørt originalgrunnlag, revisjon og manuell godkjenning beholdes. Ingen nye automatiske regenereringer; eksisterende utkast omskrives ikke. Tester med injiserte modellsvar dekker begge kanaler, trofast bokmål og fortsatt blokkering av oppdiktet alvorlig skade/oppfølging. De måler kontrakten og kontrollsperren, ikke en faktisk modellfeilrate. Full CI og PR dokumenteres ved levering. Ingen betalt livegenerering eller redaksjonell publisering er utført i denne endringen. Neste steg er kontrollert sammenligning mot et lite, fast utvalg ekte kilder før bredere endringer i nyhetspuls/artikler.
+
+## Windows board-lagring – 09.10.2026
+
+Branch fix/windows-board-permissions-test bygger på kontrollert origin/main:
+1aff7adeb2b90c9576265c70f06bab141a1519a0. Thomas ba deretter om selvstendig ferdigstilling med commit, push, PR og Linux CI. Merge og deploy er utenfor denne leveransen.
+
+Windows bruker nå chmod av eksisterende målfil og inntil ti rename-forsøk
+med 20 ms mellomrom. Målfilen slettes aldri først: mislykket erstatning bevarer
+forrige board. Ikke-Windows beholder direkte rename, separat skrivelås og
+0600-rettigheter. Eksisterende ZIP path-normalisering og Windows-unntaket
+for Unix 0600-testen er bevart. Nye tester dekker skrivebeskyttet Windows-mål
+og bevaring ved mislykket erstatning.
+
+PHP 8.4.25 på Windows: php -l bestod for alle tre berørte PHP-filer;
+Composer-testpakken bestod med exit 0 og avsluttet med
+"Package structure, private paths and data exclusions OK".
+Den opprinnelige pakken bestod også lokalt; tidligere code 5 ble ikke
+reprodusert i fullpakken. Vendor gir eksisterende PHP 8.4-deprecation-varsler.
+Linux/produksjon og vedvarende Windows ACL-/fillåsfeil er ikke live-testet.
+Sluttgjennomgangen rettet også eksisterende tegnkodingsfeil i Bømlo-testdata. Ingen lokale Linux-tester kan kjøres: WSL er ikke installert og Docker er ikke tilgjengelig. Linux verifiseres i GitHub Actions for PR-en; endelig CI-status dokumenteres i PR-en og leveringsrapporten.
