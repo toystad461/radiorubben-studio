@@ -112,7 +112,10 @@ jobs:
           }
           if (file_get_contents($statePath) !== $raw) throw new RuntimeException('State changed during read');
           ksort($rows); ksort($extras);
-          echo json_encode(['commit'=>$state['commit'], 'recorded_at'=>gmdate('c'), 'managed_count'=>count($rows), 'preserved_count'=>$preserved, 'drift_count'=>$drift, 'files'=>$rows, 'untracked_code'=>$extras], JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
+          echo 'INVENTORY_SUMMARY '.json_encode(['commit'=>$state['commit'], 'recorded_at'=>gmdate('c'), 'managed_count'=>count($rows), 'preserved_count'=>$preserved, 'drift_count'=>$drift, 'extra_count'=>count($extras)], JSON_THROW_ON_ERROR)."\n";
+          foreach ($rows as $p=>$v) echo 'INVENTORY_FILE '.json_encode(['path'=>$p]+$v, JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
+          foreach ($extras as $p=>$v) echo 'INVENTORY_EXTRA '.json_encode(['path'=>$p,'actual'=>$v], JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
+          echo "INVENTORY_COMPLETE\n";
           flock($lock, LOCK_UN); fclose($lock);
           } catch (Throwable $e) { echo 'INVENTORY_ERROR: '.get_class($e).' '.$e->getMessage().PHP_EOL; exit(1); }
           INVENTORY_PHP
