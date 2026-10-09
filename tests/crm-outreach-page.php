@@ -2,7 +2,7 @@
 declare(strict_types=1);
 $mode=$argv[1]??'view';$root=dirname(__DIR__);$tmp=sys_get_temp_dir().'/crm-demo-page-'.bin2hex(random_bytes(5));
 foreach(['app/views','app/integrations','public','config']as$dir)mkdir($tmp.'/'.$dir,0700,true);
-foreach(['crm.php','crm-brreg.php','crm-outreach.php','audio-storage.php','audio-profiles.php','programs.php','helpers.php','users.php']as$file)copy($root.'/app/'.$file,$tmp.'/app/'.$file);
+foreach(['crm.php','crm-brreg.php','crm-outreach.php','crm-website.php','producer.php','audio-storage.php','audio-profiles.php','programs.php','helpers.php','users.php']as$file)copy($root.'/app/'.$file,$tmp.'/app/'.$file);
 copy($root.'/app/integrations/ElevenLabs.php',$tmp.'/app/integrations/ElevenLabs.php');
 foreach(['head.php','sidebar.php','account.php']as$file)copy($root.'/app/views/'.$file,$tmp.'/app/views/'.$file);
 foreach(['crm-outreach.php','crm-demo.php','crm-demo-job.php','crm-register.php']as$file)copy($root.'/public/'.$file,$tmp.'/public/'.$file);
@@ -20,16 +20,28 @@ if(str_contains($mode,'csrf')||in_array($mode,['invalid','save'],true)){
  'subject'=>'Testemne','intro'=>'Behold denne e-postteksten.','script'=>'Et kort reklamemanus til kontroll.','sponsor'=>'Et uforpliktende programsamarbeid.'];
  if($mode==='invalid')$_POST['subject']='';
 }
+
+if(in_array($mode,['website-csrf','website-missing-config','text-approve'],true)){
+ $_SERVER['REQUEST_METHOD']='POST';
+ $_POST=['csrf'=>$mode==='website-csrf'?'wrong':'fixture','id'=>$id,'revision'=>'2','action'=>$mode==='text-approve'?'approve_text':'website_draft','confirmed'=>'1','recipient'=>'1'];
+}
+if($mode==='text-export'){
+ studio_crm_outreach_apply('approve_text',['id'=>$id,'revision'=>'2','confirmed'=>'1','recipient'=>'1'],$admin,$path);
+ $before=file_get_contents($path);$_SERVER['REQUEST_METHOD']='POST';$_POST=['csrf'=>'fixture','id'=>$id,'revision'=>'3','action'=>'export_text'];
+}
 ob_start();register_shutdown_function(static function()use($tmp,$path,$mode,$before):void{
  $html=ob_get_clean();$code=http_response_code()?:200;$ok=true;
  if(str_contains($mode,'denied')||str_contains($mode,'csrf'))$ok=$code===403;
  elseif($mode==='guest')$ok=$code===303;
  elseif($mode==='job-method'||$mode==='lookup-method')$ok=$code===405;
  elseif($mode==='audio-missing')$ok=$code===404;
+ elseif($mode==='website-missing-config') $ok=$code===422;
+ elseif($mode==='text-approve') $ok=$code===303&&!empty(studio_crm_read($path)['records'][0]['proposal']['textApproval']);
+ elseif($mode==='text-export') $ok=$code===200&&str_contains($html,'X-Unsent: 1')&&!str_contains($html,'audio/wav');
  elseif($mode==='save')$ok=$code===303&&studio_crm_read($path)['records'][0]['proposal']['version']===2;
  elseif($mode==='invalid')$ok=$code===422&&str_contains($html,'Behold denne e-postteksten.');
  else $ok=$code===200&&str_contains($html,'Fiktiv bedrift &lt;test&gt;')&&str_contains($html,'Introduksjonsmail')&&str_contains($html,'ikke aktivert');
- if($mode!=='save')$ok=$ok&&file_get_contents($path)===$before;
+ if(!in_array($mode,['save','text-approve'],true))$ok=$ok&&file_get_contents($path)===$before;
  if(getenv('CRM_OUTREACH_PREVIEW')&&$mode==='view')file_put_contents(getenv('CRM_OUTREACH_PREVIEW'),$html);
  foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tmp,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST)as$f)$f->isDir()?rmdir($f->getPathname()):unlink($f->getPathname());rmdir($tmp);
  if(!$ok){fwrite(STDERR,"FAIL outreach route $mode HTTP $code\n".substr($html,0,300));exit(1);}echo "PASS outreach route $mode\n";

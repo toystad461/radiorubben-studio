@@ -173,7 +173,7 @@ function studio_crm_apply(string $action, array $input, array $user, ?string $pa
                 foreach ($fields as $key=>$value) if (($row[$key] ?? '') !== $value) $changes[$key] = ['before'=>$row[$key] ?? '', 'after'=>$value];
                 if (!$changes) return $id;
                 if (isset($row['proposal'])) {
-                    $row['proposal']['scriptApproval']=null; $row['proposal']['approval']=null;
+                    $row['proposal']['textApproval']=null; $row['proposal']['scriptApproval']=null; $row['proposal']['approval']=null;
                     if (isset($row['proposal']['demo']) && !in_array($row['proposal']['demo']['status']??'', ['queued','generating','unknown'], true)) $row['proposal']['demo']['status']='stale';
                 }
                 if (($row['orgNumber']??'') !== $fields['orgNumber']) unset($row['registryEvidence']);

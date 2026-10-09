@@ -11,3 +11,5 @@
 .crm-company-search input, .crm-company-search select { width: 100%; min-width: 0; max-width: 100%; box-sizing: border-box; }
 .crm-company-search [data-company-results]:not([hidden]) { display: grid; gap: .75rem; }
 .crm-company-search p { overflow-wrap: anywhere; }
+
+[data-message-preview] { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; }

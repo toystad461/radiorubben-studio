@@ -33,6 +33,9 @@ const root=path.resolve(__dirname,'..'),tmp=fs.mkdtempSync(path.join(os.tmpdir()
   assert.equal(await page.getByRole('button',{name:'Last ned Outlook-utkast med lydvedlegg'}).count(),0,'Unapproved export hidden');
   await page.getByRole('textbox',{name:'Introduksjonsmail',exact:true}).fill('En ulaget endring');
   assert.equal(await page.getByRole('button',{name:'Godkjenn manus for lydprøve',exact:true}).isEnabled(),false,'Unsaved edits block approval');
+  await page.locator('[name=script]').fill('Felles manus til melding og TTS.');
+  assert.equal(await page.locator('[data-message-preview]').innerText().then(t=>t.includes('Felles manus til melding og TTS.')),true,'Message follows canonical script');
+  assert.equal(await page.getByRole('button',{name:'Godkjenn melding uten lyd',exact:true}).isEnabled(),false,'Unsaved edits block text export approval');
   assert.deepEqual(errors,[]);await page.close();console.log('PASS CRM lookup and proposal '+width+'px');
  }
 }finally{if(browser)await browser.close();fs.rmSync(tmp,{recursive:true,force:true});}})().catch(e=>{console.error(e);process.exitCode=1;});

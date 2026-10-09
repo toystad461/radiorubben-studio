@@ -1092,3 +1092,18 @@ før brukerens lagrehandling. Duplikater, identitetskonflikt og foreldede revisj
 håndteres uten automatisk overskriving/sammenslåing. TTS forblir deaktivert.
 Tester og endelig PR-status dokumenteres i PR. Ingen merge eller deploy av denne
 utvidelsen er utført. Neste steg etter grønn kontroll er brukerens produksjonsgodkjenning.
+
+## Hjemmeside til felles reklame-/meldings-/TTS-manus – 10.10.2026
+
+#61 er publisert som 4392facc via Actions 38004922103. Thomas presiserer at
+forslaget skal være et faktisk første reklameutkast basert på hjemmesiden,
+inni introduksjonsmeldingen, og samme manus skal brukes til TTS.
+Gren feat/crm-website-script bygger på denne produksjonsmain.
+
+Ny eksplisitt innhenting/generering lagrer kildegrunnlag og originalmanus,
+bevarer eksisterende opplysninger og krever menneskelig kontroll. Samlet
+meldingsforhåndsvisning og teksteksport bruker samme manusfelt som TTS.
+Tekstutkast kan eksporteres uten lyd etter egen godkjenning av tekst/mottaker.
+TTS/budsjett/stemme er uendret og deaktivert. Kildesjekker og revisjonssperrer
+omfatter også endringer mens nettside/generator arbeider. Ingen produksjonsdeploy
+eller kundekontakt i denne utviklingsleveransen. Testbevis føres i PR.
