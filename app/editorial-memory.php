@@ -72,9 +72,21 @@ function studio_memory_change(string $action, array $input, array $user, ?string
             return;
         }
         if ($action === 'propose') {
-            $text = trim((string)($input['text'] ?? ''));
-            if (strlen($text) < 10 || studio_board_length($text) > 500 || preg_match('/[\x00-\x1f\x7f]/', $text))
-                throw new InvalidArgumentException('Skriv en språk- eller stilregel på 10–500 tegn, uten linjeskift.');
+            $raw = $input['text'] ?? '';
+            if (!is_string($raw) || strlen($raw) > 40000)
+                throw new InvalidArgumentException('Skriv høyst 20 instrukser, én per linje.');
+            $texts = [];
+            foreach (preg_split('/\r\n|\r|\n/', $raw) as $line) {
+                $text = trim(preg_replace('/^\s*[-*•]\s+/u', '', $line));
+                if ($text === '') continue;
+                if (studio_board_length($text) < 10 || studio_board_length($text) > 500 || preg_match('/[\x00-\x1f\x7f]/', $text))
+                    throw new InvalidArgumentException('Hver instruks må ha 10–500 tegn. Skriv én instruks per linje.');
+                if (in_array($text, $texts, true))
+                    throw new InvalidArgumentException('Samme instruks står flere ganger i listen.');
+                $texts[] = $text;
+            }
+            if (!$texts || count($texts) > 20)
+                throw new InvalidArgumentException('Skriv 1–20 instrukser, én per linje.');
             if (($input['styleOnly'] ?? '') !== '1')
                 throw new InvalidArgumentException('Bekreft at regelen gjelder språk eller form, ikke fakta eller unntak fra kildekontroll.');
             $evidence = null;
@@ -96,12 +108,12 @@ function studio_memory_change(string $action, array $input, array $user, ?string
                 if (!$evidence) throw new InvalidArgumentException('Fant ikke manuset.');
             }
             foreach ($board['editorialRules'] as $rule) {
-                if (in_array($rule['status'], ['pending','approved'], true) && $rule['text'] === $text)
+                if (in_array($rule['status'], ['pending','approved'], true) && in_array($rule['text'], $texts, true))
                     throw new InvalidArgumentException('Denne regelen finnes allerede.');
             }
-            if (count($board['editorialRules']) >= 300)
+            if (count($board['editorialRules']) + count($texts) > 300)
                 throw new InvalidArgumentException('Regelregisteret er fullt. Kontakt administrator.');
-            $board['editorialRules'][] = ['id'=>bin2hex(random_bytes(8)), 'program'=>'god-morgen-vestland',
+            foreach ($texts as $text) $board['editorialRules'][] = ['id'=>bin2hex(random_bytes(8)), 'program'=>'god-morgen-vestland',
                 'text'=>$text, 'status'=>'pending', 'revision'=>1, 'evidence'=>$evidence,
                 'createdAt'=>gmdate('c'), 'createdBy'=>$actor,
                 'history'=>[['action'=>'propose', 'at'=>gmdate('c'), 'actor'=>$actor]]];

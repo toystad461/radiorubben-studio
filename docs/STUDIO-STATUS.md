@@ -1,5 +1,24 @@
 # Studio – felles status og arbeidsliste
 
+## Direkte skriveinstrukser – 08.10.2026
+
+Thomas bestiller klarspråk, LIX-mål 40–50, korte og mellomlange setninger,
+aktivt språk, folkelige ord og nøktern tone uten klisjeer eller selvskryt.
+Læringssiden får disse rådene som redigerbar starttekst ved generelle regler.
+En liste på 1–20 instrukser lagres atomisk som individuelle ventende forslag;
+alle linjer valideres før lagring. Eksisterende administratorgodkjenning,
+roller, CSRF, revisjoner, historikk og programisolasjon beholdes.
+LIX er et skrivemål, ikke en implementert måling eller en garantert verdi.
+Ingen private produksjonsregler endres eller aktiveres av kodeendringen.
+Base er main 1aff7adeb2b90c9576265c70f06bab141a1519a0. PR #51 for
+Nyhetsdesk-kommentarer og videre bruk av læring er en separat avhengighet;
+denne endringen gjelder dagens God morgen Vestland-manus i Sending.
+PR #53: kodehead 3c4bf75. PHP 8.2/8.4 og mobil/desktop-testene besto
+i Actions 37778353718 og 37778353772. Ingen produksjonsdeploy eller
+aktivering av private regler. Dokumentasjonsoppfølging endrer ingen runtime.
+Neste steg etter godkjent kode: kontrollere instrukslisten i Studio og
+godkjenne ønskede regler individuelt før de brukes i nye manus.
+
 ## CRM – krav om tilpasning til Radio Rubben, 07.10.2026
 
 Thomas presiserer at CRM-et må være tilpasset Radio Rubben. Dette er lagt inn
@@ -763,3 +782,7 @@ PR #48 er merget som ce69b24 etter grønne Windows-, Linux- og mobiltester. Depl
 ## Videre læring etter CRM – 09.10.2026
 
 CRM #48 og cache-retting #59 er publisert som d8ea7fa i vellykket Actions 37993724444, med åtte selektive filendringer og godkjent hash-/HTTPS-kontroll. #47 er utsatt. Thomas ba om å fortsette anbefalt rekkefølge; #51 er avstemt mot denne main-versjonen. Bare statusjournalen hadde konflikt, og begge oppføringer er bevart. Ingen skriveråd aktiveres og ingen saker genereres eller publiseres som del av denne kodeutrullingen.
+
+## Skriveinstrukser avstemt med kommentarer – 09.10.2026
+
+#53 er avstemt med testet #51 og publisert CRM/cache-retting. Konflikten i læringssiden er løst slik at flere instruksforslag beholdes, mens godkjenningsmeldingen korrekt beskriver nett- og radioutkast. Begge statusjournaler er bevart. Ingen eksisterende skriveråd aktiveres. Full testpakke og fersk Linux-/mobil-CI skal bestå før eventuell produksjonsmerge.
