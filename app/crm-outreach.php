@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/crm.php';
+require_once __DIR__.'/crm-website.php';
 require_once __DIR__.'/audio-storage.php';
 require_once __DIR__.'/audio-profiles.php';
 require_once __DIR__.'/integrations/ElevenLabs.php';
@@ -12,10 +13,12 @@ function studio_crm_business_hash(array $row): string {
 }
 function studio_crm_proposal_hash(array $row): string {
     $p=$row['proposal']??[];
-    return studio_crm_digest([studio_crm_business_hash($row),$p['version']??0,$p['subject']??'',$p['intro']??'', $p['script']??'', $p['sponsor']??'',rr_audio_disclosure()]);
+    $parts=[studio_crm_business_hash($row),$p['version']??0,$p['subject']??'',$p['intro']??'', $p['script']??'', $p['sponsor']??'',rr_audio_disclosure()];
+    if(isset($p['generation']))$parts[]=$p['generation'];
+    return studio_crm_digest($parts);
 }
 function studio_crm_proposal_current(array $row): bool {
-    return isset($row['proposal']) && ($row['proposal']['businessHash']??'')===studio_crm_business_hash($row)
+    return isset($row['proposal']) && studio_crm_website_source_current($row) && ($row['proposal']['businessHash']??'')===studio_crm_business_hash($row)
         && !in_array($row['stage'],['declined','archived','paused'],true);
 }
 function studio_crm_demo_current(array $row): bool {
@@ -31,11 +34,11 @@ function studio_crm_proposal_defaults(array $row): array {
         'sponsor'=>"Forslag til programsamarbeid: {$name} kan få en kort, tydelig merket sponsoromtale rundt en avtalt programflate. Program, periode og omfang avtales nærmere. Ingen sponsoravtale er inngått."];
 }
 /** All decisions happen under the existing CRM lock, using the card's revision. */
-function studio_crm_outreach_apply(string $action,array $input,array $user,?string $path=null): void {
+function studio_crm_outreach_apply(string $action,array $input,array $user,?string $path=null,?array $prepared=null): void {
     if(!studio_crm_allowed($user))throw new InvalidArgumentException('Ingen tilgang.');
     $id=studio_crm_text($input,'id',16); $revision=studio_crm_text($input,'revision',12);
     if(!preg_match('/^[1-9][0-9]*$/D',$revision))throw new InvalidArgumentException('Last siden på nytt.');
-    studio_crm_change(static function(&$data)use($action,$input,$user,$id,$revision,$path){
+    studio_crm_change(static function(&$data)use($action,$input,$user,$id,$revision,$path,$prepared){
         foreach($data['records'] as &$row){
             if($row['id']!==$id)continue;
             if($row['revision']!==(int)$revision)throw new InvalidArgumentException('Kortet er endret. Last siden på nytt før du fortsetter.');
@@ -43,14 +46,25 @@ function studio_crm_outreach_apply(string $action,array $input,array $user,?stri
             if(in_array($row['stage'],['declined','archived','paused'],true))throw new InvalidArgumentException('Kortet er på vent, avslått eller arkivert. Ingen forslag klargjøres.');
             $p=$row['proposal']??[]; $job=$p['demo']??[];
             if(in_array($job['status']??'',['queued','generating','unknown'],true)&&$action!=='resolve')throw new InvalidArgumentException('Lydjobben må fullføres eller avklares først.');
-            if($action==='draft'||$action==='save'){
+            if(in_array($action,['draft','save','generated'],true)){
                 if($action==='draft'&&$p)throw new InvalidArgumentException('Et utkast finnes allerede. Rediger det nedenfor.');
-                $fields=$action==='draft'?studio_crm_proposal_defaults($row):[
+                $fields=in_array($action,['draft','generated'],true)?studio_crm_proposal_defaults($row):[
                     'subject'=>studio_crm_text($input,'subject',180),'intro'=>studio_crm_text($input,'intro',4000,true),
                     'script'=>studio_crm_text($input,'script',1500,true),'sponsor'=>studio_crm_text($input,'sponsor',2000,true)];
+                if($action==='generated'){
+                    if(!$prepared||empty($prepared['generation'])||empty($prepared['script']))throw new InvalidArgumentException('Utkastet må lages fra hjemmesiden.');
+                    $fields['script']=$prepared['script'];
+                    if($p)foreach(['subject','intro','sponsor']as$key)$fields[$key]=$p[$key];
+                }
                 foreach($fields as $v)if(trim($v)==='')throw new InvalidArgumentException('Alle tekstfeltene må fylles ut.');
                 if($p)$row['proposalHistory'][]=$p;
                 $row['proposal']=$fields+['version'=>($p['version']??0)+1,'businessHash'=>studio_crm_business_hash($row),'at'=>gmdate('c'),'templateVersion'=>'1.0','scriptApproval'=>null,'approval'=>null];
+                if($action==='generated')$row['proposal']['generation']=$prepared['generation'];
+                elseif($action==='save'&&isset($p['generation']))$row['proposal']['generation']=$p['generation'];
+            }elseif($action==='approve_text'){
+                if(!studio_crm_proposal_current($row)||($input['confirmed']??'')!=='1'||($input['recipient']??'')!=='1'||!filter_var($row['email'],FILTER_VALIDATE_EMAIL))
+                    throw new InvalidArgumentException('Kontroller gjeldende tekst, kildegrunnlag og mottaker før teksteksport.');
+                $row['proposal']['textApproval']=['hash'=>studio_crm_proposal_hash($row),'actor'=>$user['name']??'Administrator','at'=>gmdate('c')];
             }elseif($action==='approve_script'){
                 if(!studio_crm_proposal_current($row)||($input['confirmed']??'')!=='1')throw new InvalidArgumentException('Kontroller fakta, nettside og hele teksten før manusgodkjenning.');
                 $row['proposal']['scriptApproval']=['hash'=>studio_crm_proposal_hash($row),'actor'=>$user['name']??'Administrator','at'=>gmdate('c')];
@@ -139,9 +153,27 @@ function studio_crm_eml(array $row,?string $path=null,?array $config=null):strin
         if ($job['voiceHash'] !== studio_crm_digest($config['voices'][$job['voice']])) throw new InvalidArgumentException('Stemmegodkjenningen er endret. Lag og godkjenn en ny prøve.');
     }
     $wav=file_get_contents(rr_audio_asset($job['asset'],$path??studio_crm_path()));$boundary='rr-'.bin2hex(random_bytes(16));
-    $text=$p['intro']."\n\nFORSLAG TIL REKLAMEMANUS\n".$p['script']."\n\n".$p['sponsor']."\n\nVedlegg: uforpliktende demonstrasjonsutkast med KI-generert stemme. Ingen avtale eller sending er bestilt.";
+    $text=studio_crm_message($p,true);
     $b64=static fn(string $s):string=>rtrim(chunk_split(base64_encode($s),76,"\r\n"));
     return "X-Unsent: 1\r\nTo: ".$row['email']."\r\nSubject: ".mb_encode_mimeheader($p['subject'],'UTF-8','B',"\r\n",9)."\r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed; boundary=\"{$boundary}\"\r\n\r\n"
         ."--{$boundary}\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n".$b64($text)."\r\n"
         ."--{$boundary}\r\nContent-Type: audio/wav\r\nContent-Disposition: attachment; filename=\"Radio-Rubben-demoforslag.wav\"\r\nContent-Transfer-Encoding: base64\r\n\r\n".$b64($wav)."\r\n--{$boundary}--\r\n";
+}
+
+/** One canonical script feeds both the email body and the existing TTS job. */
+function studio_crm_message(array $p,bool $audio=false):string
+{
+    return $p['intro']."\n\nFORSLAG TIL REKLAMEMANUS\n".$p['script']."\n\n".$p['sponsor']
+        .(!empty($p['generation'])?"\n\nReklameutkastet er laget med KI-støtte og er et uforpliktende forslag.":"")
+        .($audio?"\n\nVedlegg: uforpliktende demonstrasjonsutkast med KI-generert stemme. Ingen avtale eller sending er bestilt.":"");
+}
+function studio_crm_text_eml(array $row):string
+{
+    $p=$row['proposal']??[];
+    if(!studio_crm_proposal_current($row)||($p['textApproval']['hash']??'')!==studio_crm_proposal_hash($row))
+        throw new InvalidArgumentException('Godkjenn gjeldende melding og mottaker før eksport.');
+    if(!filter_var($row['email'],FILTER_VALIDATE_EMAIL)||preg_match('/[\r\n]/',$row['email']))throw new InvalidArgumentException('Ugyldig mottaker.');
+    return "X-Unsent: 1\r\nTo: ".$row['email']."\r\nSubject: ".mb_encode_mimeheader($p['subject'],'UTF-8','B',"\r\n",9)
+        ."\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\nContent-Transfer-Encoding: base64\r\n\r\n"
+        .chunk_split(base64_encode(studio_crm_message($p)),76,"\r\n");
 }

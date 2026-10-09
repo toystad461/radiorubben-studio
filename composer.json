@@ -19,6 +19,7 @@
     "test": [
       "php tests/crm.php",
       "php tests/crm-search.php",
+      "php tests/crm-website.php",
       "php tests/crm-outreach.php",
       "php tests/crm-outreach-routes.php",
       "php tests/crm-page.php get",

@@ -111,3 +111,37 @@ Ulagrede endringer varsles før et annet treff åpnes.
 API: https://data.brreg.no/enhetsregisteret/api/dokumentasjon/no/index.html
 Navneparameter på enheter, avgrenset størrelse. Ingen person-/rolleoppslag.
 TTS og private budsjett-/stemmeinnstillinger endres ikke.
+
+## Hjemmesidebasert reklameutkast – 10.10.2026
+
+«Hent hjemmeside og lag reklameutkast» leser den lagrede offentlige HTTPS-siden
+og ber Studios eksisterende tekstgenerator skrive et første reklamemanus.
+Denne leveransen leser én side, med inntil to videresendinger på samme domene
+(www-variant tillatt), ikke et helt nettsted. JavaScript-sider, innlogging og
+mangelfull/for omfattende tekst stopper med beskjed; ingen generisk tekst
+presenteres som et vellykket hjemmesideutkast. Gamle utkast bevares ved feil.
+
+Generatoren mottar bare bedriftsnavn, offentlig hjemmeside og hentet tekst,
+ikke CRM-notater, kontaktperson, e-post eller historikk. Ett begrenset modellkall
+per klikk; ingen automatiske forsøk eller TTS. Eksisterende OpenAI-konfigurasjon
+gjenbrukes. Nettinnhold er ubetrodde data. Adressekontroll, offentlig IPv4,
+DNS-binding per kall, verifisert TLS, ingen proxy/credentials, begrenset svarkropp
+og manuell redirectkontroll beskytter innhentingen.
+
+Manus, originalutkast, modell, URL, hentetid, kildehash og kildeutdrag lagres
+sammen. Utdrag sjekkes mot hentet tekst. Dette garanterer ikke sannhet eller at
+alle påstander er dekket: operatøren må kontrollere riktig bedrift og innhold.
+Grunnlaget utløper etter 24 timer og må da hentes/genereres på nytt.
+Endret grunnlag, nettside eller manus krever ny godkjenning; tekstendringer
+beholder opprinnelig kilde og manus i historikken.
+
+Ett reklamefelt brukes i samlet meldingsforhåndsvisning, eksport og TTS.
+TTS legger kun til den obligatoriske hørbare KI-merkingen foran manuset.
+Manuell godkjenning av melding og mottaker gir .eml-eksport uten lyd mens TTS
+er deaktivert. Dette er ikke manusgodkjenning for TTS eller lyttegodkjenning.
+Eksport sender ingen mail eller registrerer kundekontakt. Utkastet merkes
+KI-støttet i meldingsteksten. Lydversjonen beholder separat godkjenning.
+
+Responses/strukturert svar følger:
+https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses
+Ingen betalt AI-/TTS-kjøring eller produksjonsdata brukes i testene.

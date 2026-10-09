@@ -90,3 +90,16 @@ if(companySearch) {
   });
   document.querySelector('.crm-edit')?.addEventListener('input',event=>{event.currentTarget.dataset.dirty='true';});
 }
+
+const websiteDraft=document.querySelector('[data-website-draft]');
+if(websiteDraft)websiteDraft.addEventListener('submit',()=>{
+  websiteDraft.querySelector('button').disabled=true;
+  websiteDraft.querySelector('[role=status]').textContent='Leser hjemmesiden og lager reklameutkast. Vent på resultatet før du prøver igjen …';
+});
+const messagePreview=document.querySelector('[data-message-preview]');
+if(proposalEditor&&messagePreview)proposalEditor.addEventListener('input',()=>{
+  const f=proposalEditor.elements;
+  // The source disclosure remains visible; there is never a second editable copy of the script.
+  const disclosure=messagePreview.textContent.includes('Reklameutkastet er laget med KI-støtte')?'\n\nReklameutkastet er laget med KI-støtte og er et uforpliktende forslag.':'';
+  messagePreview.textContent=f.intro.value+'\n\nFORSLAG TIL REKLAMEMANUS\n'+f.script.value+'\n\n'+f.sponsor.value+disclosure;
+});
