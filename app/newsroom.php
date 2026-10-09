@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/case-workflow.php';
+require_once __DIR__.'/editorial-memory.php';
 
 const STUDIO_NEWSROOM_VERSION='2026-10-04.1';
 
@@ -41,24 +42,25 @@ function studio_newsroom_prepare(string $id,int $revision,array $user,array $con
     if(($item['web']['delivery']['status']??'')==='publish')throw new InvalidArgumentException('En publisert sak må redigeres manuelt.');
     studio_web_save($id,$revision,'invalidate',[],$user,$path);
     $token=bin2hex(random_bytes(12));
-    studio_board_change(static function(array &$b)use($id,$token,$comment,$revision){foreach($b['items'] as &$i)if($i['id']===$id){if($i['revision']!==$revision+1)throw new InvalidArgumentException('Saken ble endret.');$i['newsroom']=['state'=>'working','token'=>$token,'startedAt'=>gmdate('c'),'request'=>$comment];return;}},$path);
+    $editorial=studio_memory_context(studio_board_read($path),(string)($item['program']??''));
+    studio_board_change(static function(array &$b)use($id,$token,$comment,$revision,$editorial){foreach($b['items'] as &$i)if($i['id']===$id){if($i['revision']!==$revision+1)throw new InvalidArgumentException('Saken ble endret.');$i['newsroom']=['state'=>'working','token'=>$token,'startedAt'=>gmdate('c'),'request'=>$comment,'editorial'=>$editorial];return;}},$path);
     try{
         $item['revisionRequest']=$comment;
         $channel=studio_board_channel($item); $nextRevision=$revision+1;
         $source=studio_news_source($item,$fetch);
         if($channel!=='radio'){
             if($recheck)$result=['check'=>studio_news_review($item,studio_web_text($item['web']),$source,$config,$request??'producer_request')];
-            else $result=studio_web_prepare($item,$config,[],$request,$fetch,$source);
+            else $result=studio_web_prepare($item,$config,$editorial,$request,$fetch,$source);
             studio_web_save($id,$nextRevision,$recheck?'check':'generated',$result,$user,$path);
             $nextRevision++;
         }
         // Both uses share one original; existing radio edits are never rewritten.
         if($channel!=='web' && (trim((string)($item['script']??''))==='' || $channel==='radio')){
             $existing=trim((string)($item['script']??''))===''?null:(string)$item['script'];
-            $radio=studio_news_prepare($item,$config,[],$existing,$request,$fetch,$source);
+            $radio=studio_news_prepare($item,$config,$editorial,$existing,$request,$fetch,$source);
             studio_board_update($id,$nextRevision,$existing===null?'generated':'source_checked',
                 ['script'=>$radio['script'],'sourceCheck'=>$radio['check'],'generation'=>['model'=>$config['openai_model'],
-                'sourceSha256'=>$source['sha256']]],$user,$path);
+                'sourceSha256'=>$source['sha256'],'editorial'=>$editorial]],$user,$path);
         }
         studio_board_change(static function(array &$b)use($id,$token){foreach($b['items'] as &$i)if($i['id']===$id&&($i['newsroom']['token']??'')===$token){$i['newsroom']['state']='prepared';$i['newsroom']['finishedAt']=gmdate('c');return;}},$path);
     }catch(Throwable $e){

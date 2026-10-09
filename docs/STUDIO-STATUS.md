@@ -722,6 +722,16 @@ Thomas bestilte mindre omskriving og bedre rettskriving etter at genererte påst
 
 Uavhengig språk-/kildekontroll, urørt originalgrunnlag, revisjon og manuell godkjenning beholdes. Ingen nye automatiske regenereringer; eksisterende utkast omskrives ikke. Tester med injiserte modellsvar dekker begge kanaler, trofast bokmål og fortsatt blokkering av oppdiktet alvorlig skade/oppfølging. De måler kontrakten og kontrollsperren, ikke en faktisk modellfeilrate. Full CI og PR dokumenteres ved levering. Ingen betalt livegenerering eller redaksjonell publisering er utført i denne endringen. Neste steg er kontrollert sammenligning mot et lite, fast utvalg ekte kilder før bredere endringer i nyhetspuls/artikler.
 
+
+## Kommentarer fra Nyhetsdesk til videre læring – 08.10.2026
+
+Foregående rettelse er deployet: PR #50, merge 1aff7adeb2b90c9576265c70f06bab141a1519a0, grønn PHP 8.2/8.4, mobil og selektiv deployment i Actions 37739713565. Serverresultatet bekrefter fire endrede filer og privat backup ~/.radiorubben-studio-deploy/backups/selective-37739713565-1. Modellens faktiske feilrate er ikke målt.
+
+Thomas bestilte enkel kommentarbasert læring direkte fra RSS-saken. Nyhetsdesk får «Kommentar til Robåten», med lagring av sak-ID, revisjon, vist netttekst, radiomanus og tilgjengelig originalgrunnlag/kontrollstatus. Kommentarer kan lagres før saken er godkjent. Administrator kan uttrykkelig aktivere kommentaren som skriveråd for språk/kildebruk; andre medarbeideres og uaktiverte kommentarer blir forslag i eksisterende læringsregister. Maks 20 aktive råd, eksisterende administrasjon/deaktivering og historikk beholdes.
+
+Automatisk og manuell Nyhetsdesk-klargjøring sender nå aktive programråd med til både nett- og radiogeneratoren og registrerer brukt regelversjon på jobben. Dette var tidligere utelatt i Nyhetsdesk. Kommenterte kildefakta og gamle eksempeltekster sendes ikke som faktagrunnlag til nye saker; fakta-/språkkontroll mottar fortsatt bare gjeldende original og utkast. Lagrede utkast omskrives ikke når en kommentar lagres, og kommentaren gir ikke godkjenning eller publisering.
+
+Avgrensning: God morgen Vestland / Studio sine RSS-saker. Fotballrobotens WordPress-saker og værmanus har egne skriveråd og får ikke skjulte endringer. Dette er vedvarende redaksjonell hukommelse i genereringskonteksten, ikke trening av modellvekter. Tester dekker versjonskobling, kildegrunnlag, roller, dobbel innsending, godkjenning/deaktivering, isolasjon og gjennomslag i begge faktiske genereringskall med injiserte svar. CI, utrulling og innlogget UI kontrolleres ved levering. Ingen prøvekommentar aktiveres på produksjonsdata.
 ## Windows board-lagring – 09.10.2026
 
 Branch fix/windows-board-permissions-test bygger på kontrollert origin/main:
@@ -749,3 +759,7 @@ Thomas valgte å ferdigstille og publisere PR #48, med #47 utsatt. Branchen er a
 ## CRM-deploy: fersk CSS-kontroll – 09.10.2026
 
 PR #48 er merget som ce69b24 etter grønne Windows-, Linux- og mobiltester. Deploy 37993107818 stoppet før publisering fordi webhotellets Varnish-cache returnerte gammel studio.css (Age 1568). En unik query ga Age 0 og SHA-256 identisk med gjeldende main-fil i LF-format. Preflight bruker nå deployens validerte run-ID i CSS-adressen. Eksakt sammenligning mot serverfil, TLS, verts-/mappekontroll og øvrige deploysperrer beholdes. Rettelsen er nødvendig for den autoriserte CRM-utrullingen. Endelig kjøring dokumenteres på PR-en.
+
+## Videre læring etter CRM – 09.10.2026
+
+CRM #48 og cache-retting #59 er publisert som d8ea7fa i vellykket Actions 37993724444, med åtte selektive filendringer og godkjent hash-/HTTPS-kontroll. #47 er utsatt. Thomas ba om å fortsette anbefalt rekkefølge; #51 er avstemt mot denne main-versjonen. Bare statusjournalen hadde konflikt, og begge oppføringer er bevart. Ingen skriveråd aktiveres og ingen saker genereres eller publiseres som del av denne kodeutrullingen.
