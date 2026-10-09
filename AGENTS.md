@@ -48,3 +48,13 @@ Bruk verifiserte eksisterende mapper/filreferanser; ikke konstruer lenker.
 Skill lokal eksport fra faktisk overføring. Ikke påstå synk uten implementert
 og testet integrasjon. Første TTS-spor er ElevenLabs etter brukerens prioritering.
 Lydproduksjon, playout og publisering er separate handlinger med synlig status.
+
+## CRM for Radio Rubben
+Thomas har uttrykkelig prioritert et CRM tilpasset Radio Rubben (07.10.2026).
+Les docs/CRM-RADIO-RUBBEN.md før videre CRM-utvikling. Kontaktregisteret er
+første grunnlag; videre arbeid skal støtte lokale partnerrelasjoner, konkrete
+reklame-/sponsoravtaler, leveranser og fornyelse. Skill avtalt, godkjent,
+planlagt og faktisk sendt. Ikke presenter planlagte funksjoner som levert.
+Ved klargjøring av leads og utsending, les også docs/CRM-OUTREACH.md.
+Thomas ønsker manuell godkjenning av de første 10–20 før eventuell
+automatikk. Pilottelleren skal aldri alene aktivere kundesending.

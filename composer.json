@@ -17,6 +17,21 @@
   },
   "scripts": {
     "test": [
+      "php tests/crm.php",
+      "php tests/crm-page.php get",
+      "php tests/crm-page.php list",
+      "php tests/crm-page.php new",
+      "php tests/crm-page.php guest",
+      "php tests/crm-page.php observer",
+      "php tests/crm-page.php producer",
+      "php tests/crm-page.php presenter",
+      "php tests/crm-page.php method",
+      "php tests/crm-page.php csrf",
+      "php tests/crm-page.php save",
+      "php tests/crm-page.php activity",
+      "php tests/crm-page.php invalid",
+      "php tests/crm-page.php conflict",
+      "php tests/crm-page.php forged",
       "php tests/entra-preflight.php",
       "php tests/run.php"
     ],

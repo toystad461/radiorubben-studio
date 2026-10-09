@@ -24,6 +24,7 @@ $menuGroups = [
   ['rode','/ai-studio.php#rode','AudioLines','RØDE-kontroll','rode'],
  ],
  'Administrasjon' => [
+  ['crm','/crm.php','FileText','Samarbeid / CRM',''],
   ['learning','/learning.php','FileText','Robåt – læring',''],
   ['settings','/ai-studio.php#innstillinger','SlidersHorizontal','Innstillinger','settings'],
   ['users','/users.php','ShieldCheck','Brukere',''],
@@ -33,6 +34,7 @@ foreach ($menuGroups as $groupLabel => $groupItems):
  $visibleItems = array_filter($groupItems, static function ($item) use ($user) {
   if (in_array($item[0], ['rode','settings'], true)) return studio_can($user ?? null, 'settings');
   if ($item[0] === 'users') return studio_can($user ?? null, 'users');
+  if ($item[0] === 'crm') return ($user['role'] ?? '') === 'admin';
   return true;
  });
  if (!$visibleItems) continue;
