@@ -1065,3 +1065,18 @@ føres på PR-ene. Private innstillinger og testmodus skal bevares.
 Ingen betalt TTS, menneskelig høreprøve eller ordinær utsending er utført.
 Uniwebs begrensning på proc_open og manglende ordinær lydarbeider består.
 #47 er fortsatt utsatt.
+## Organisasjonsoppslag og Outlook-forslag – 10.10.2026
+
+Thomas ønsker organisasjonsnummer med autofyll, hjemmeside, reklame-/sponsorforslag
+og TTS som vedlegg i introduksjonsmail. Han valgte å åpne utkastet i Outlook og
+sende selv. Ny uavhengig gren bygger på produksjonsmain f10fbff etter #55/#57;
+#47 er fortsatt utsatt. Se CRM-COMPANY-OUTLOOK.md for implementasjon og begrensninger.
+
+Brønnøysund-oppslag fyller tomme felt og bevarer eksisterende. Private kilder,
+versjonerte maltekster, manuelt startet ElevenLabs-jobb og godkjent .eml/WAV-eksport
+ligger i samme CRM-register med eksisterende låsing, roller og revisjoner.
+Full Windows-test består; ekte lesende registeroppslag er kontrollert med TLS.
+Linux-/mobil-CI og endelig PR-status dokumenteres i leveransen. Ingen kundemail,
+betalt TTS, privat konfigurasjonsendring, merge eller deploy er utført.
+Neste steg er review, produksjonsgodkjenning og konfigurert CRM-pilot med eierens
+budsjett/stemmevalg. Outlook-redigering og ekte lydkvalitet er ikke bekreftet.

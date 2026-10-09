@@ -11,7 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!is_string($_POST['csrf'] ?? null) || !hash_equals($_SESSION['csrf'], $_POST['csrf'])) { http_response_code(403); exit('Last siden på nytt før du lagrer.'); }
     try {
         $postedAction = studio_crm_text($_POST, 'action', 20);
-        $saved = studio_crm_apply($postedAction, $_POST, $user);
+        $evidence = $_SESSION['crm_lookup'] ?? null;
+        if ($evidence && (strtotime($evidence['fetchedAt']??'')?:0)<time()-3600) $evidence=null;
+        $saved = studio_crm_apply($postedAction, $_POST, $user, null, $evidence);
         $_SESSION['crm_message'] = match ($postedAction) {
             'seed'=>'Startlisten er lagt til. Bedrifter som allerede finnes, er beholdt.',
             'activity'=>'Notatet er lagret i historikken.', default=>'Bedriftskortet er lagret.',
@@ -35,7 +37,7 @@ $rows = studio_crm_list($registry['records'], $query, $stage, $due);
 $filters = array_filter(['q'=>$query, 'stage'=>$stage, 'due'=>$due ? '1' : ''], static fn($v) => $v !== '');
 $listUrl = '/crm.php'.($filters ? '?'.http_build_query($filters) : '');
 $defaults = ['company'=>'', 'contact'=>'', 'phone'=>'', 'email'=>'', 'website'=>'', 'owner'=>$user['name'] ?? '',
-    'stage'=>'candidate', 'priority'=>'2', 'opportunity'=>'', 'nextStep'=>'', 'followUp'=>'', 'oneDriveUrl'=>''];
+    'orgNumber'=>'', 'businessAddress'=>'', 'industry'=>'', 'organizationForm'=>'', 'stage'=>'candidate', 'priority'=>'2', 'opportunity'=>'', 'nextStep'=>'', 'followUp'=>'', 'oneDriveUrl'=>''];
 $form = $selected ?? $defaults;
 if ($error && in_array($postedAction, ['create', 'save'], true)) {
     foreach (array_keys($defaults) as $key) if (is_string($_POST[$key] ?? null)) $form[$key] = $_POST[$key];
@@ -52,9 +54,9 @@ foreach ($registry['records'] as $row) {
     if (!in_array($row['stage'], ['paused', 'declined', 'archived', 'active'], true)) $stats['open']++;
 }
 $labels = ['company'=>'Bedrift', 'contact'=>'Kontaktperson', 'phone'=>'Telefon', 'email'=>'E-post', 'website'=>'Nettside',
-    'owner'=>'Ansvarlig', 'stage'=>'Status', 'priority'=>'Prioritet', 'opportunity'=>'Samarbeidsidé',
+    'orgNumber'=>'Organisasjonsnummer', 'businessAddress'=>'Adresse', 'industry'=>'Bransje', 'organizationForm'=>'Organisasjonsform', 'owner'=>'Ansvarlig', 'stage'=>'Status', 'priority'=>'Prioritet', 'opportunity'=>'Samarbeidsidé',
     'nextStep'=>'Neste steg', 'followUp'=>'Oppfølgingsdato', 'oneDriveUrl'=>'OneDrive-lenke'];
-$extraStylesheet = '/assets/crm.css?v=1'; require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet = '/assets/crm.css?v=2'; require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell crm-shell">
 <?php $activePage = 'crm'; require dirname(__DIR__).'/app/views/sidebar.php'; ?>
@@ -121,6 +123,11 @@ $extraStylesheet = '/assets/crm.css?v=1'; require dirname(__DIR__).'/app/views/h
 <div class="crm-two"><label>Oppfølgingsdato<input type="date" name="followUp" value="<?= escape($form['followUp']) ?>"></label><label>Ansvarlig<input name="owner" maxlength="140" value="<?= escape($form['owner']) ?>"></label></div>
 <p class="crm-muted crm-help">Datoen vises under «Til oppfølging» når den er nådd. På vent, avslåtte og arkiverte kort er unntatt. Ingen varsler sendes.</p>
 <h3>Bedrift og kontakt</h3>
+<label>Organisasjonsnummer<input name="orgNumber" inputmode="numeric" maxlength="20" value="<?= escape($form['orgNumber']??'') ?>" placeholder="9 siffer"></label>
+<button type="button" data-crm-lookup>Hent fra Brønnøysundregistrene</button>
+<p data-lookup-status role="status" class="crm-muted">Fyller tomme felt. Kontroller at opplysningene gjelder riktig bedrift.</p>
+<label>Forretningsadresse<input name="businessAddress" maxlength="500" value="<?= escape($form['businessAddress']??'') ?>"></label>
+<div class="crm-two"><label>Registrert bransje<input name="industry" maxlength="500" value="<?= escape($form['industry']??'') ?>"></label><label>Organisasjonsform<input name="organizationForm" maxlength="200" value="<?= escape($form['organizationForm']??'') ?>"></label></div>
 <label>Bedriftsnavn<input name="company" maxlength="180" required value="<?= escape($form['company']) ?>" autocomplete="organization"></label>
 <label>Kontaktperson<input name="contact" maxlength="140" value="<?= escape($form['contact']) ?>" autocomplete="name"></label>
 <div class="crm-two"><label>Telefon<input type="tel" name="phone" maxlength="40" value="<?= escape($form['phone']) ?>"></label><label>E-post<input type="email" name="email" maxlength="200" value="<?= escape($form['email']) ?>"></label></div>
@@ -130,7 +137,7 @@ $extraStylesheet = '/assets/crm.css?v=1'; require dirname(__DIR__).'/app/views/h
 <p class="crm-muted crm-help">Lenken åpner filen eller mappen i OneDrive. Filer og tilgangsrettigheter håndteres der.</p>
 <button class="primary" type="submit"><?= $creating ? 'Opprett bedriftskort' : 'Lagre bedriftskort' ?></button>
 </form>
-<?php if ($selected && !$creating): ?><section class="crm-history"><h3>Historikk</h3><ol>
+<?php if ($selected && !$creating): ?><p><a class="crm-button primary" href="/crm-outreach.php?id=<?= escape($selected['id']) ?>">Lag introduksjonsmail og lydforslag</a></p><section class="crm-history"><h3>Historikk</h3><ol>
 <?php foreach (array_reverse($selected['history']) as $event): ?><li>
 <p class="crm-muted"><?= escape((new DateTimeImmutable($event['at']))->setTimezone(new DateTimeZone('Europe/Oslo'))->format('d.m.Y H:i').' · '.$event['actor']) ?></p>
 <?php if ($event['kind'] === 'activity'): ?><strong><?= escape(studio_crm_channels()[$event['channel']].' · '.$event['date']) ?></strong><?php endif; ?>
@@ -139,4 +146,4 @@ $extraStylesheet = '/assets/crm.css?v=1'; require dirname(__DIR__).'/app/views/h
 </li><?php endforeach; ?></ol></section><?php endif; ?>
 <?php endif; ?>
 </section></div>
-</main></div></div></body></html>
+<script src="/assets/crm.js?v=1" defer></script></main></div></div></body></html>

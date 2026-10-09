@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/crm-brreg.php';
 
 /** Private partner registry. The entry point uses Studio's verified current_user(). */
 function studio_crm_allowed(?array $user): bool { return ($user['role'] ?? '') === 'admin'; }
@@ -102,7 +103,7 @@ function studio_crm_fields(array $input): array
     $fields = [];
     foreach (['company'=>180, 'contact'=>140, 'phone'=>40, 'email'=>200, 'website'=>1000,
         'owner'=>140, 'nextStep'=>500, 'followUp'=>10, 'opportunity'=>2000, 'oneDriveUrl'=>2000,
-        'stage'=>20, 'priority'=>1] as $key=>$max) $fields[$key] = studio_crm_text($input, $key, $max, $key === 'opportunity');
+        'stage'=>20, 'priority'=>1, 'orgNumber'=>20, 'businessAddress'=>500, 'industry'=>500, 'organizationForm'=>200] as $key=>$max) $fields[$key] = studio_crm_text($input, $key, $max, $key === 'opportunity');
     if ($fields['company'] === '') throw new InvalidArgumentException('Skriv et bedriftsnavn.');
     if (!isset(studio_crm_stages()[$fields['stage']]) || !in_array($fields['priority'], ['1', '2', '3'], true))
         throw new InvalidArgumentException('Velg status og prioritet.');
@@ -112,6 +113,7 @@ function studio_crm_fields(array $input): array
     $fields['oneDriveUrl'] = studio_crm_url($fields['oneDriveUrl'], true);
     $fields['followUp'] = studio_crm_date($fields['followUp']);
     if ($fields['followUp'] !== '' && $fields['nextStep'] === '') throw new InvalidArgumentException('Beskriv neste steg når du setter en oppfølgingsdato.');
+    $fields['orgNumber'] = studio_crm_org_number($fields['orgNumber']);
     return $fields;
 }
 function studio_crm_normalize(string $name): string
@@ -121,7 +123,7 @@ function studio_crm_normalize(string $name): string
 }
 function studio_crm_duplicate(array $records, array $fields, string $except = ''): bool
 {
-    foreach ($records as $row) if ($row['id'] !== $except && studio_crm_normalize($row['company']) === studio_crm_normalize($fields['company'])) return true;
+    foreach ($records as $row) if ($row['id'] !== $except && (studio_crm_normalize($row['company']) === studio_crm_normalize($fields['company']) || (!empty($fields['orgNumber']) && ($row['orgNumber']??'') === $fields['orgNumber']))) return true;
     return false;
 }
 function studio_crm_insert(array &$data, array $fields, array $user, string $reason = 'Bedrift opprettet'): string
@@ -135,11 +137,12 @@ function studio_crm_insert(array &$data, array $fields, array $user, string $rea
     return $id;
 }
 /** No email, network calls or editorial changes. Every mutation requires an administrator. */
-function studio_crm_apply(string $action, array $input, array $user, ?string $path = null): string
+function studio_crm_apply(string $action, array $input, array $user, ?string $path = null, ?array $registryEvidence = null): string
 {
     if (!studio_crm_allowed($user)) throw new InvalidArgumentException('CRM er bare tilgjengelig for administrator.');
     if ($action === 'create') {
         $fields = studio_crm_fields($input);
+        if ($registryEvidence && ($registryEvidence['fields']['orgNumber']??'') === $fields['orgNumber']) $fields['registryEvidence'] = $registryEvidence;
         return studio_crm_change(static fn(array &$data): string => studio_crm_insert($data, $fields, $user), $path);
     }
     if ($action === 'seed') {
@@ -157,7 +160,7 @@ function studio_crm_apply(string $action, array $input, array $user, ?string $pa
     $id = studio_crm_text($input, 'id', 16);
     $revision = $input['revision'] ?? '';
     if ((!is_int($revision) && !is_string($revision)) || !preg_match('/^[1-9][0-9]*$/D', (string)$revision)) throw new InvalidArgumentException('Ugyldig revisjon. Last siden på nytt.');
-    return studio_crm_change(static function (array &$data) use ($action, $input, $user, $id, $revision): string {
+    return studio_crm_change(static function (array &$data) use ($action, $input, $user, $id, $revision, $registryEvidence): string {
         foreach ($data['records'] as &$row) {
             if ($row['id'] !== $id) continue;
             if ($row['revision'] !== (int)$revision) throw new InvalidArgumentException('Bedriftskortet er endret i en annen fane. Kopier teksten din og last siden på nytt.');
@@ -169,7 +172,13 @@ function studio_crm_apply(string $action, array $input, array $user, ?string $pa
                 $changes = [];
                 foreach ($fields as $key=>$value) if (($row[$key] ?? '') !== $value) $changes[$key] = ['before'=>$row[$key] ?? '', 'after'=>$value];
                 if (!$changes) return $id;
+                if (isset($row['proposal'])) {
+                    $row['proposal']['scriptApproval']=null; $row['proposal']['approval']=null;
+                    if (isset($row['proposal']['demo']) && !in_array($row['proposal']['demo']['status']??'', ['queued','generating','unknown'], true)) $row['proposal']['demo']['status']='stale';
+                }
+                if (($row['orgNumber']??'') !== $fields['orgNumber']) unset($row['registryEvidence']);
                 $row = array_replace($row, $fields);
+                if ($registryEvidence && ($registryEvidence['fields']['orgNumber']??'') === $fields['orgNumber']) $row['registryEvidence'] = $registryEvidence;
                 $event = ['kind'=>'updated', 'text'=>'Bedriftskort oppdatert', 'changes'=>$changes];
             } else {
                 $channel = studio_crm_text($input, 'channel', 20);
@@ -199,7 +208,7 @@ function studio_crm_list(array $records, string $query = '', string $stage = '',
     $rows = array_values(array_filter($records, static function ($row) use ($query, $stage, $due): bool {
         if ($stage !== '' ? $row['stage'] !== $stage : $row['stage'] === 'archived') return false;
         if ($due && !studio_crm_due($row)) return false;
-        return $query === '' || str_contains(studio_crm_normalize($row['company'].' '.$row['contact'].' '.$row['email'].' '.$row['phone']), $query);
+        return $query === '' || str_contains(studio_crm_normalize($row['company'].' '.$row['contact'].' '.$row['email'].' '.$row['phone'].' '.($row['orgNumber']??'')), $query);
     }));
     usort($rows, static fn($a, $b) => [!studio_crm_due($a), $a['followUp'] ?: '9999', $a['priority'], studio_crm_normalize($a['company'])]
         <=> [!studio_crm_due($b), $b['followUp'] ?: '9999', $b['priority'], studio_crm_normalize($b['company'])]);

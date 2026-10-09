@@ -55,3 +55,4 @@ jobs:
       - run: node tests/recovered/test-bulletin-mobile.cjs
 
       - run: node tests/crm-mobile.cjs
+      - run: node tests/crm-outreach-mobile.cjs

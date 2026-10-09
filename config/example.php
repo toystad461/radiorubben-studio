@@ -11,6 +11,9 @@ return [
     'openai_api_key' => '',
     'openai_model' => '',
     'rr_audio' => [
+        'crm_demo_enabled' => false, // Separate commercial preview flow; never enables broadcasting.
+        'crm_demo_daily_character_limit' => 0, // Separate, deliberate CRM budget.
+        'crm_demo_voice_ids' => [], // Explicitly approve rights for commercial customer demos.
         'enabled' => false,
         'test_only' => true, // Preview only; no rundown/send-file access.
         'api_key' => '', // private elevenlabs.key, local.php or ELEVENLABS_API_KEY; never browser input

@@ -4,7 +4,7 @@ declare(strict_types=1);
 $mode = $argv[1] ?? 'get'; $root = dirname(__DIR__);
 $tmp = sys_get_temp_dir().'/crm-page-'.bin2hex(random_bytes(5));
 foreach (['app/views', 'public', 'config'] as $dir) mkdir($tmp.'/'.$dir, 0700, true);
-foreach (['crm.php','crm-candidates.php','helpers.php','users.php'] as $file) copy($root.'/app/'.$file, $tmp.'/app/'.$file);
+foreach (['crm.php','crm-brreg.php','crm-candidates.php','helpers.php','users.php'] as $file) copy($root.'/app/'.$file, $tmp.'/app/'.$file);
 foreach (['head.php','sidebar.php','account.php'] as $file) copy($root.'/app/views/'.$file, $tmp.'/app/views/'.$file);
 copy($root.'/public/crm.php', $tmp.'/public/crm.php');
 file_put_contents($tmp.'/app/bootstrap.php', '<?php require __DIR__."/helpers.php"; require __DIR__."/users.php"; function current_user(){return $GLOBALS["mode"]==="guest"?null:["name"=>"Testbruker","role"=>in_array($GLOBALS["mode"],["observer","producer","presenter"],true)?$GLOBALS["mode"]:"admin"];} $config=[];');

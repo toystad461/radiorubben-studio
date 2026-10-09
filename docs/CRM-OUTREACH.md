@@ -139,3 +139,11 @@ leverandøradaptere. Deretter kobles faktisk søk/generering, TTS og avsender
 til under pilotreglene. Integrasjoner testes uten å sende til virkelige
 leads før Thomas godkjenner den konkrete pakken. Automatisk kundesending
 er en senere, særskilt aktivering etter pilotgjennomgangen.
+
+## Oppdatert kodeleveranse 10.10.2026
+
+Organisasjonsnummer med Brønnøysund-oppslag, redigerbare malforslag og godkjent
+TTS-/Outlook-eksport er implementert til review på egen gren. Dette oppdaterer
+statusen over; automatisk nettsideanalyse og kundeutsending er fortsatt ikke
+implementert. Ekte CRM-TTS er av til privat budsjett og kommersiell stemme er
+valgt. Se [detaljert leveransestatus](CRM-COMPANY-OUTLOOK.md).
