@@ -18,6 +18,22 @@ function studio_board_read(?string $path = null): array
     return $data;
 }
 
+/** Replace under the board lock without ever deleting the previous board first. */
+function studio_board_replace(string $temp, string $path): bool
+{
+    if (PHP_OS_FAMILY !== 'Windows') return rename($temp, $path);
+
+    // Windows cannot replace a read-only target; chmod only changes that attribute.
+    if (is_file($path) && !chmod($path, 0600)) return false;
+    // Readers or virus scanners may briefly hold a handle without delete sharing.
+    for ($attempt = 0; $attempt < 10; $attempt++) {
+        if (@rename($temp, $path)) return true;
+        if ($attempt < 9) usleep(20000);
+    }
+    // Keep the old board intact if replacement remains unavailable.
+    return false;
+}
+
 /** Lock a separate file so atomic rename never invalidates another writer's lock. */
 function studio_board_change(callable $change, ?string $path = null): mixed
 {
@@ -33,7 +49,7 @@ function studio_board_change(callable $change, ?string $path = null): mixed
         $temp = tempnam(dirname($path), '.sending-');
         if (!$temp || !chmod($temp, 0600)
             || file_put_contents($temp, json_encode($board, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE)) === false
-            || !rename($temp, $path)) throw new RuntimeException('Sendelisten kunne ikke lagres.');
+            || !studio_board_replace($temp, $path)) throw new RuntimeException('Sendelisten kunne ikke lagres.');
         return $result;
     } finally {
         if ($temp && is_file($temp)) unlink($temp);
