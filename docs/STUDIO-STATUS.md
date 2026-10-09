@@ -1045,3 +1045,23 @@ Funn: manglende referert favicon og manglende direkte CRM-mobilmeny. Neste steg
 er avgrensede rettelser; faktisk lyd, sending og produksjonsskriving er ikke
 testet. Engangs-workflowen til inventering er tilbakeført. Ingen deploy eller
 merge er gjort; #47 forblir utsatt.
+
+## Samlet klargjøring av #55 og #57 – 10.10.2026
+
+#52 er publisert som b427e6ef253b41dccb105213b62d3318213e13e0 via
+Actions 37999369647. #53 er allerede i main og produksjon. Thomas har bedt
+om også å ta #55 og #57; de klargjøres samlet før autorisert produksjonsmerge.
+#55 er avstemt med main. Flerlinjeinstrukser, nett-/radiovalg, CRM,
+Windows-lagring og samtlige mobiltester er bevart. #57 bygger på dette og
+binder hørbar KI-merking til manus, lyd og separat lyttegodkjenning.
+
+Full Composer-test på Windows/PHP 8.4 består og avslutter med
+"Package structure, private paths and data exclusions OK". Eksisterende
+mbstring-utvidelse er aktivert i lokal PHP. Nøkkelfiltesten forventer trygg
+avvisning når Windows ikke kan bekrefte Unix-rettigheter; produksjonskoden
+og Linux-testene for 0600/symlenker er uendret. Fersk Linux 8.2/8.4 og
+mobil-CI må være grønn før merge. Endelig commit og selektiv deploykvittering
+føres på PR-ene. Private innstillinger og testmodus skal bevares.
+Ingen betalt TTS, menneskelig høreprøve eller ordinær utsending er utført.
+Uniwebs begrensning på proc_open og manglende ordinær lydarbeider består.
+#47 er fortsatt utsatt.
