@@ -63,6 +63,7 @@ jobs:
           php <<'INVENTORY_PHP'
           <?php
           declare(strict_types=1);
+          try {
           // Read-only inventory: no application bootstrap, config or runtime data is read.
           $root = '/customers/9/3/1/cptk37ymg/webroots/r1417157';
           $work = getenv('HOME').'/.radiorubben-studio-deploy';
@@ -113,6 +114,7 @@ jobs:
           ksort($rows); ksort($extras);
           echo json_encode(['commit'=>$state['commit'], 'recorded_at'=>gmdate('c'), 'managed_count'=>count($rows), 'preserved_count'=>$preserved, 'drift_count'=>$drift, 'files'=>$rows, 'untracked_code'=>$extras], JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
           flock($lock, LOCK_UN); fclose($lock);
+          } catch (Throwable $e) { echo 'INVENTORY_ERROR: '.get_class($e).' '.$e->getMessage().PHP_EOL; exit(1); }
           INVENTORY_PHP
           REMOTE
           echo 'SSH connection and prerequisites passed. No deployment or write-permission test performed.' >> "$GITHUB_STEP_SUMMARY"
