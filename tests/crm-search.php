@@ -7,7 +7,7 @@ $payload=['page'=>['totalElements'=>12],'_embedded'=>['enheter'=>[
  ['organisasjonsnummer'=>'974760673','navn'=>'Avviklet eksempel','underAvvikling'=>true]
 ]]];
 $hits=studio_crm_brreg_search('Fiktiv & Test',static function($url)use($payload){
- search_check(str_contains($url,'navn=Fiktiv+%26+Test')&&str_contains($url,'size=10'),'Name encoded and search bounded');
+ search_check(str_contains($url,'navn=Fiktiv+%26+Test')&&str_contains($url,'size=10')&&str_contains($url,'navnMetodeForSoek=FORTLOEPENDE'),'Name encoded and search bounded');
  return [200,json_encode($payload)];
 });
 search_check(count($hits['results'])===1 && $hits['more'],'Inactive businesses excluded, more results indicated');

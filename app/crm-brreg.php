@@ -67,7 +67,7 @@ function studio_crm_brreg_search(string $name, ?callable $transport = null): arr
 {
     $name = trim($name);
     if (mb_strlen($name)<2 || mb_strlen($name)>180 || preg_match('/[\x00-\x1f\x7f]/',$name)) throw new InvalidArgumentException('Skriv mellom 2 og 180 tegn.');
-    $url='https://data.brreg.no/enhetsregisteret/api/enheter?'.http_build_query(['navn'=>$name,'size'=>10,'sort'=>'navn,asc']);
+    $url='https://data.brreg.no/enhetsregisteret/api/enheter?'.http_build_query(['navn'=>$name,'navnMetodeForSoek'=>'FORTLOEPENDE','size'=>10,'sort'=>'navn,asc']);
     [$status,$body]=studio_crm_brreg_request($url,$transport);
     if ($status!==200 || strlen($body)>200000) throw new RuntimeException('Navnesøket er utilgjengelig.');
     $data=json_decode($body,true,32,JSON_THROW_ON_ERROR);
