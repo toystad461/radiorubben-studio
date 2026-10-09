@@ -31,3 +31,12 @@ if (job) job.addEventListener('submit', async event => {
     location.reload();
   } catch(error) { status.textContent=(error.message || 'Forbindelsen ble brutt.')+' Last siden på nytt for å se lagret status. Ingen automatisk gjentakelse.'; }
 });
+
+// Approval always concerns persisted text. Do not let visible unsaved edits appear approved.
+const proposalEditor=document.querySelector('[data-proposal-edit]');
+if(proposalEditor) proposalEditor.addEventListener('input',()=>{
+  document.querySelector('[data-proposal-edit-status]').textContent='Du har ulagrede endringer. Lagre tekstene før godkjenning, lydprøve eller eksport.';
+  for(const form of document.forms){
+    if(form!==proposalEditor&&form.elements.namedItem('action'))for(const button of form.querySelectorAll('button'))button.disabled=true;
+  }
+});

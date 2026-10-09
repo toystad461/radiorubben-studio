@@ -56,7 +56,7 @@ foreach ($registry['records'] as $row) {
 $labels = ['company'=>'Bedrift', 'contact'=>'Kontaktperson', 'phone'=>'Telefon', 'email'=>'E-post', 'website'=>'Nettside',
     'orgNumber'=>'Organisasjonsnummer', 'businessAddress'=>'Adresse', 'industry'=>'Bransje', 'organizationForm'=>'Organisasjonsform', 'owner'=>'Ansvarlig', 'stage'=>'Status', 'priority'=>'Prioritet', 'opportunity'=>'Samarbeidsidé',
     'nextStep'=>'Neste steg', 'followUp'=>'Oppfølgingsdato', 'oneDriveUrl'=>'OneDrive-lenke'];
-$extraStylesheet = '/assets/crm.css?v=1'; require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet = '/assets/crm.css?v=2'; require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell crm-shell">
 <?php $activePage = 'crm'; require dirname(__DIR__).'/app/views/sidebar.php'; ?>

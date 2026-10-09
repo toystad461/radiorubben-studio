@@ -20,6 +20,8 @@ const root=path.resolve(__dirname,'..'),tmp=fs.mkdtempSync(path.join(os.tmpdir()
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Proposal fits '+width);
   assert.equal(await page.getByRole('textbox',{name:'Introduksjonsmail',exact:true}).isVisible(),true);
   assert.equal(await page.getByRole('button',{name:'Last ned Outlook-utkast med lydvedlegg'}).count(),0,'Unapproved export hidden');
+  await page.getByRole('textbox',{name:'Introduksjonsmail',exact:true}).fill('En ulaget endring');
+  assert.equal(await page.getByRole('button',{name:'Godkjenn manus for lydprøve',exact:true}).isEnabled(),false,'Unsaved edits block approval');
   assert.deepEqual(errors,[]);await page.close();console.log('PASS CRM lookup and proposal '+width+'px');
  }
 }finally{if(browser)await browser.close();fs.rmSync(tmp,{recursive:true,force:true});}})().catch(e=>{console.error(e);process.exitCode=1;});

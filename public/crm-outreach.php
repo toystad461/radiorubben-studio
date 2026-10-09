@@ -47,7 +47,7 @@ $extraStylesheet='/assets/crm.css?v=2';require dirname(__DIR__).'/app/views/head
 <?php if($p):?>
 <section class="crm-panel"><h2>2. Tekstforslag · versjon <?=(int)$p['version']?></h2>
 <?php if(!studio_crm_proposal_current($row)):?><p role="alert">Bedriftsgrunnlaget er endret eller kortet er satt på vent. Kontroller og lagre tekstene på nytt før godkjenning.</p><?php endif;?>
-<form method="post" class="crm-form"><?php $hidden('save');?>
+<p data-proposal-edit-status role="status"></p><form method="post" class="crm-form" data-proposal-edit><?php $hidden('save');?>
 <label>Emne<input name="subject" maxlength="180" required value="<?=escape($fields['subject'])?>"></label>
 <label>Introduksjonsmail<textarea name="intro" rows="8" maxlength="4000" required><?=escape($fields['intro'])?></textarea></label>
 <label>Reklamemanus · mål 15–20 sekunder<textarea name="script" rows="5" maxlength="1500" required><?=escape($fields['script'])?></textarea></label>
