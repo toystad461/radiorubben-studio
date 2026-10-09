@@ -1080,3 +1080,15 @@ Linux-/mobil-CI og endelig PR-status dokumenteres i leveransen. Ingen kundemail,
 betalt TTS, privat konfigurasjonsendring, merge eller deploy er utført.
 Neste steg er review, produksjonsgodkjenning og konfigurert CRM-pilot med eierens
 budsjett/stemmevalg. Outlook-redigering og ekte lydkvalitet er ikke bekreftet.
+
+## CRM-navnesøk og gjenbruk av kundekort – 10.10.2026
+
+#60 er publisert som e6144756bda909f6b0a79e485623465bb1f864bb via
+Actions 38003421369. Thomas bestiller navnesøk, treffliste og oppdatering av
+eksisterende kort. Ny gren feat/crm-company-search bygger direkte på denne main.
+Navnesøk kombinerer lokale kort (inkludert arkiv) og offentlig register, markerer
+eksisterende kort og klargjør nye kandidater eller oppdateringsforslag uten lagring
+før brukerens lagrehandling. Duplikater, identitetskonflikt og foreldede revisjoner
+håndteres uten automatisk overskriving/sammenslåing. TTS forblir deaktivert.
+Tester og endelig PR-status dokumenteres i PR. Ingen merge eller deploy av denne
+utvidelsen er utført. Neste steg etter grønn kontroll er brukerens produksjonsgodkjenning.

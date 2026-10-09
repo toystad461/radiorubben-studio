@@ -86,3 +86,28 @@ Avslåtte, arkiverte og pausede kort klargjøres ikke. Tidligere utkast bevares.
 
 Neste steg: grønn Linux-/mobil-CI, review og eksplisitt produksjonsgodkjenning.
 Deretter privat CRM-budsjett/stemmevalg og én kontrollert lyd-/Outlook-prøve.
+
+## Navnesøk og eksisterende kort – 10.10.2026
+
+«Finn og legg til bedrift» søker etter minst to tegn i CRM og Brønnøysundregistrene.
+Trefflisten viser inntil 20 lokale treff (inkludert arkiv) og 10 registertreff med
+navn, organisasjonsnummer, sted og merking for allerede registrert bedrift.
+Ved flere registertreff bes brukeren avgrense navnet. Ved registerfeil er lokale
+treff fortsatt tilgjengelige med tydelig feilmelding. Endrede søk fjerner gamle
+valg; forsinkede svar kan ikke erstatte et nyere søkeresultat.
+
+Velg treff og «Åpne valgt bedrift». Lokale treff åpner kortet. Registertreff hentes
+på nytt med organisasjonsnummer og matches på nummer eller normalisert navn etter
+samme regler som duplikatsperren. Flere identitetsmatch eller samme navn med et
+annet organisasjonsnummer krever manuell avklaring. Ingen automatisk sammenslåing.
+
+Nye treff klargjør kandidatkort. Eksisterende registertreff foreslår nye,
+ikke-tomme registerfelt på samme kort. Kontaktperson, telefon, e-post, notater,
+status og oppfølging beholdes. Brukeren kontrollerer og lagrer. Ingen CRM-data
+skrives av søket eller valget. Lagring beholder lås, revisjonssperre,
+duplikatkontroll og historikk. Registergrunnlaget utløper etter én time.
+Ulagrede endringer varsles før et annet treff åpnes.
+
+API: https://data.brreg.no/enhetsregisteret/api/dokumentasjon/no/index.html
+Navneparameter på enheter, avgrenset størrelse. Ingen person-/rolleoppslag.
+TTS og private budsjett-/stemmeinnstillinger endres ikke.

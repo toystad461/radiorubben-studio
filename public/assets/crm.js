@@ -40,3 +40,53 @@ if(proposalEditor) proposalEditor.addEventListener('input',()=>{
     if(form!==proposalEditor&&form.elements.namedItem('action'))for(const button of form.querySelectorAll('button'))button.disabled=true;
   }
 });
+
+// Native select keeps keyboard and touch selection familiar. Old responses never replace newer results.
+const companySearch=document.querySelector('[data-company-search]');
+if(companySearch) {
+  const query=companySearch.querySelector('[data-company-query]');
+  const choices=companySearch.querySelector('[data-company-choices]');
+  const results=companySearch.querySelector('[data-company-results]');
+  const status=companySearch.querySelector('[role=status]');
+  const open=companySearch.querySelector('[data-company-open]');
+  let timer, sequence=0, controller;
+  function clearResults() {
+    choices.replaceChildren(new Option('Velg et treff',''));
+    results.hidden=true; open.disabled=true;
+  }
+  async function search() {
+    clearTimeout(timer);
+    const current=++sequence; controller?.abort(); clearResults();
+    const value=query.value.trim();
+    if(value.length<2) {status.textContent='Skriv minst to tegn.';return;}
+    controller=new AbortController(); status.textContent='Søker etter bedrifter …';
+    try {
+      const response=await fetch('/crm-register.php',{method:'POST',signal:controller.signal,body:new URLSearchParams({csrf:companySearch.elements.csrf.value,action:'search',query:value})});
+      const data=await response.json();
+      if(current!==sequence)return;
+      if(!response.ok)throw new Error(data.error||'Søket mislyktes.');
+      for(const hit of data.results) choices.add(new Option(hit.label,hit.value));
+      results.hidden=!data.results.length;
+      status.textContent=(data.warning?data.warning+' ':'')+(data.results.length?'Velg en bedrift. Registrerte kort åpnes for oppdatering.':'Ingen treff. Prøv et annet navn eller opprett kort manuelt.')+(data.more?' Viser de første registertreffene. Skriv et mer presist navn for å avgrense.':'');
+    } catch(error) {
+      if(current===sequence && error.name!=='AbortError')status.textContent=error.message||'Søket mislyktes. Prøv igjen.';
+    }
+  }
+  query.addEventListener('input',()=>{
+    clearTimeout(timer); ++sequence; controller?.abort(); clearResults();
+    status.textContent=query.value.trim().length<2?'Skriv minst to tegn.':'Venter på søket …';
+    if(query.value.trim().length>=2)timer=setTimeout(search,650);
+  });
+  query.addEventListener('keydown',event=>{
+    if(event.key==='Enter'){event.preventDefault();search();}
+    if(event.key==='Escape'){clearTimeout(timer);++sequence;controller?.abort();clearResults();status.textContent='Søket er lukket.';}
+  });
+  companySearch.querySelector('[data-company-search-button]').addEventListener('click',search);
+  choices.addEventListener('change',()=>{open.disabled=!choices.value;});
+  companySearch.addEventListener('submit',event=>{
+    if(!choices.value){event.preventDefault();return;}
+    const edited=document.querySelector('.crm-edit');
+    if(edited?.dataset.dirty==='true' && !confirm('Du har ulagrede endringer i bedriftskortet. Vil du forlate dem og åpne valgt bedrift?'))event.preventDefault();
+  });
+  document.querySelector('.crm-edit')?.addEventListener('input',event=>{event.currentTarget.dataset.dirty='true';});
+}

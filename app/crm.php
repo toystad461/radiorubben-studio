@@ -214,3 +214,23 @@ function studio_crm_list(array $records, string $query = '', string $stage = '',
         <=> [!studio_crm_due($b), $b['followUp'] ?: '9999', $b['priority'], studio_crm_normalize($b['company'])]);
     return $rows;
 }
+
+/** Match using the same rule as the locked duplicate guard, including archived cards. */
+function studio_crm_matches(array $records, array $fields): array
+{
+    return array_values(array_filter($records, static fn($row) => studio_crm_duplicate([$row], $fields)));
+}
+function studio_crm_search_results(array $records, string $query, array $remote): array
+{
+    $results=[];
+    foreach($records as $row) {
+        if (!str_contains(studio_crm_normalize($row['company'].' '.($row['orgNumber']??'')),studio_crm_normalize($query))) continue;
+        $results[]=['value'=>'card:'.$row['id'],'label'=>$row['company'].' · Allerede registrert · '.studio_crm_stages()[$row['stage']]];
+        if(count($results)===20) break;
+    }
+    foreach($remote as $hit) {
+        $matches=studio_crm_matches($records,$hit);
+        $results[]=['value'=>'org:'.$hit['orgNumber'],'label'=>$hit['company'].' · '.$hit['orgNumber'].' · '.$hit['place'].' · '.($matches?'Allerede registrert – oppdater kort':'Ny potensiell kunde')];
+    }
+    return $results;
+}
