@@ -86,8 +86,8 @@ ob_start();require dirname(__DIR__).'/app/views/newsroom.php';$html=ob_get_clean
 $url=studio_newsroom_url($selected,$filter);
 if($fragment){header('Content-Type: application/json; charset=utf-8');header('Cache-Control: no-store');if($error)http_response_code(409);echo json_encode(['ok'=>!$error,'error'=>$error,'html'=>$html,'url'=>$url,'advance'=>$advance&&!$error,'selected'=>$selected,'notice'=>$notice],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);exit;}
 if($_SERVER['REQUEST_METHOD']==='POST'&&!$error){$_SESSION['newsroom_notice']=$notice;redirect($url);}
-$extraStylesheet='/assets/newsroom.css?v=20261005-mobile-1';require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet='/assets/newsroom.css?v=20261008-reject';require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell newsroom-shell"><?php $activePage='newsdesk';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace">
 <header class="topbar"><span>Radio Rubben / <strong>Nyhetsdesk</strong></span><details class="nr-site-menu"><summary>Studio-meny</summary><nav><a href="/control.php">Kontrollsenter</a><a href="/sending.php">Sendeliste</a></nav><?php require dirname(__DIR__).'/app/views/account.php';?></details></header>
-<?php echo $html; ?></div></div><p id="newsroom-progress" role="status" aria-live="polite" hidden></p><script src="/assets/newsroom.js?v=20261005-mobile-1" defer></script></body></html>
+<?php echo $html; ?></div></div><p id="newsroom-progress" role="status" aria-live="polite" hidden></p><script src="/assets/newsroom.js?v=20261008-reject" defer></script></body></html>

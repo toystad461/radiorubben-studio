@@ -16,7 +16,7 @@
  function retryLink(){const button=document.createElement('button');button.type='button';button.dataset.newsroomReload='1';button.textContent='Kontroller status';progress.append(' ',button);}
  async function load(url,options={},mode='read'){
   if(busy)return;busy=true;lock(true);
-  message(options.method==='POST'?(mode==='approve'?'Lagrer godkjenningen …':mode==='revise'?'Bearbeider og kontrollerer teksten. Du blir her …':'Lagrer …'):'Henter saken …');
+  message(options.method==='POST'?(mode==='approve'?'Lagrer godkjenningen …':mode==='reject'?'Forkaster forslaget og åpner neste sak …':mode==='revise'?'Bearbeider og kontrollerer teksten. Du blir her …':'Lagrer …'):'Henter saken …');
   const scrollY=window.scrollY;
   try{
    const response=await fetch(url,{credentials:'same-origin',...options});

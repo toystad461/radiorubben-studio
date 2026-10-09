@@ -32,6 +32,17 @@ function studio_crm_read(?string $path = null): array
     }
     return $data;
 }
+/** Replace under the CRM lock, preserving the previous register on failure. */
+function studio_crm_replace(string $temp, string $path): bool
+{
+    if (PHP_OS_FAMILY !== 'Windows') return rename($temp, $path);
+    if (is_file($path) && !chmod($path, 0600)) return false;
+    for ($attempt = 0; $attempt < 10; $attempt++) {
+        if (@rename($temp, $path)) return true;
+        if ($attempt < 9) usleep(20000);
+    }
+    return false;
+}
 function studio_crm_change(callable $change, ?string $path = null): mixed
 {
     $path ??= studio_crm_path();
@@ -46,7 +57,7 @@ function studio_crm_change(callable $change, ?string $path = null): mixed
         $json = json_encode($data, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
         $temp = tempnam(dirname($path), '.crm-');
         if (!$temp || !chmod($temp, 0600) || file_put_contents($temp, $json) !== strlen($json)
-            || !rename($temp, $path)) throw new RuntimeException('CRM kunne ikke lagres.');
+            || !studio_crm_replace($temp, $path)) throw new RuntimeException('CRM kunne ikke lagres.');
         return $result;
     } finally {
         if ($temp && is_file($temp)) unlink($temp);

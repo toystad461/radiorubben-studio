@@ -37,6 +37,16 @@ i [CRM.md](CRM.md), men integrasjon, tidsstyring og varsling er ikke aktivert.
 Tester og fersk CI-status dokumenteres i PR-en. Videre prioritering er
 presisert i CRM-kravene over; Microsoft-konto avklares før integrasjon.
 Ingen merge eller produksjonsdeploy er utført i denne oppgaven.
+## Tydelig forkasting i Nyhetsdesk – 08.10.2026
+
+Thomas har bedt om tydeligere og enklere forkasting av robotforslag.
+«Forkast forslag» flyttes fra skjult «Flere valg» til en synlig knapp under
+sakens overskrift og i handlingsfeltet, også på mobil. Samme eksisterende
+POST-handling, rolle, CSRF og revisjon/token brukes. Historikk beholdes og
+neste sak åpnes med eksisterende køflyt. Publiserte artikler får ikke
+forkastingsknapp. WordPress-forkasting vises bare for administrator.
+Ingen faktiske forslag forkastes som del av utrulling eller testing.
+Tester og selektiv utrulling dokumenteres på leverings-PR etter kontroll.
 
 ## Værmanus og DATEX – 07.10.2026
 
@@ -704,3 +714,34 @@ Avgrenset oppgave: fjern offentlig robot.php og gamle Artikkelutkast-lenker fra 
 Fersk produksjonsavstemming: Actions 37464303567 og 37464726711; selektiv serverstatus b73d6646e69723c79521f81ee6d7ef68d0ee4445 / 37434976731-1. Ingen robot-news.json eller robot-inbox.json finnes i de to kontrollerte gamle/private konfigurasjonsområdene. De aktive sidebar-dimensjonene 2172×724 bevares i Git-endringen; main-varianten 2400×1073 skal ikke overskrive den nåværende logoen.
 
 Innlogget Studio er åpnet med eksisterende Microsoft-konto. Før endring er Nyhetsdesk og kontrollsenter sett i nettleseren. Godkjenningsknapper er ikke brukt. Endringen går via PR, grønne PHP-/mobiltester og den eksisterende, autoriserte selektive main-deployen med driftkontroll og privat backup. Endelig server-/visuelt resultat dokumenteres etter utrulling.
+
+
+## Mer kildetro generering – 08.10.2026
+
+Thomas bestilte mindre omskriving og bedre rettskriving etter at genererte påstander ble stoppet i faktakontroll. Nettets 120–200-ordmål og krav om to–tre avsnitt, samt radioens 20–40-sekundersmål, erstattes med korte oppsummeringer uten minstemål. Felles instruksjon gir et kildeavhengig ordtak (inntil 120 ord nett / 75 ord radio), få dokumenterte fakta og sikker språkvask uten sterkere skadegrad, sikkerhet, forklaringer eller oppfølging. Ordtaket er en modellinstruksjon, ikke en serverbasert lengdesperre eller garanti mot nye påstander.
+
+Uavhengig språk-/kildekontroll, urørt originalgrunnlag, revisjon og manuell godkjenning beholdes. Ingen nye automatiske regenereringer; eksisterende utkast omskrives ikke. Tester med injiserte modellsvar dekker begge kanaler, trofast bokmål og fortsatt blokkering av oppdiktet alvorlig skade/oppfølging. De måler kontrakten og kontrollsperren, ikke en faktisk modellfeilrate. Full CI og PR dokumenteres ved levering. Ingen betalt livegenerering eller redaksjonell publisering er utført i denne endringen. Neste steg er kontrollert sammenligning mot et lite, fast utvalg ekte kilder før bredere endringer i nyhetspuls/artikler.
+
+## Windows board-lagring – 09.10.2026
+
+Branch fix/windows-board-permissions-test bygger på kontrollert origin/main:
+1aff7adeb2b90c9576265c70f06bab141a1519a0. Thomas ba deretter om selvstendig ferdigstilling med commit, push, PR og Linux CI. Merge og deploy er utenfor denne leveransen.
+
+Windows bruker nå chmod av eksisterende målfil og inntil ti rename-forsøk
+med 20 ms mellomrom. Målfilen slettes aldri først: mislykket erstatning bevarer
+forrige board. Ikke-Windows beholder direkte rename, separat skrivelås og
+0600-rettigheter. Eksisterende ZIP path-normalisering og Windows-unntaket
+for Unix 0600-testen er bevart. Nye tester dekker skrivebeskyttet Windows-mål
+og bevaring ved mislykket erstatning.
+
+PHP 8.4.25 på Windows: php -l bestod for alle tre berørte PHP-filer;
+Composer-testpakken bestod med exit 0 og avsluttet med
+"Package structure, private paths and data exclusions OK".
+Den opprinnelige pakken bestod også lokalt; tidligere code 5 ble ikke
+reprodusert i fullpakken. Vendor gir eksisterende PHP 8.4-deprecation-varsler.
+Linux/produksjon og vedvarende Windows ACL-/fillåsfeil er ikke live-testet.
+Sluttgjennomgangen rettet også eksisterende tegnkodingsfeil i Bømlo-testdata. Ingen lokale Linux-tester kan kjøres: WSL er ikke installert og Docker er ikke tilgjengelig. Linux verifiseres i GitHub Actions for PR-en; endelig CI-status dokumenteres i PR-en og leveringsrapporten.
+
+## CRM klar for utrulling – 09.10.2026
+
+Thomas valgte å ferdigstille og publisere PR #48, med #47 utsatt. Branchen er avstemt mot main dc8635a. Begge statusjournalene er bevart. CRM får samme avgrensede Windows-håndtering av atomisk filbytte som board; Unix-rettigheter og rename beholdes på Linux. Tester dekker skrivebeskyttet Windows-mål og bevaring ved feil. Privat CRM-register, innlogging, kundekontakt og redaksjonell publisering endres ikke av utrullingen. Endelig CI- og deploykvittering dokumenteres på PR #48.

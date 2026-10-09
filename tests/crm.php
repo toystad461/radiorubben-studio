@@ -17,7 +17,16 @@ try {
     $id = studio_crm_apply('create', $fields, $admin, $path);
     $row = studio_crm_read($path)['records'][0];
     crm_check($row['id'] === $id && $row['number'] === 1 && $row['revision'] === 1, 'Persist new card and stable identity');
-    crm_check((fileperms($path) & 0777) === 0600 && (fileperms($path.'.lock') & 0777) === 0600, 'Private file permissions');
+    if (PHP_OS_FAMILY !== 'Windows') {
+        crm_check((fileperms($path) & 0777) === 0600 && (fileperms($path.'.lock') & 0777) === 0600, 'Private file permissions');
+    } else {
+        crm_check(chmod($path, 0400), 'Make Windows target read-only');
+        studio_crm_change(static function (array &$data): void { $data['replacementProbe'] = true; }, $path);
+        crm_check(studio_crm_read($path)['replacementProbe'] === true, 'Replace read-only Windows register');
+        $saved = file_get_contents($path);
+        crm_check(!studio_crm_replace($tmp.'/missing.json', $path), 'Replacement failure reported');
+        crm_check(file_get_contents($path) === $saved, 'Failed replacement preserves register');
+    }
     $before = file_get_contents($path);
     crm_reject(fn()=>studio_crm_apply('create', array_replace($fields, ['company'=>' testbedrift æøå ']), $admin, $path), 'Duplicate company rejected');
     crm_check(file_get_contents($path) === $before, 'Duplicate failure preserves exact bytes');
