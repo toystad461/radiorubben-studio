@@ -91,7 +91,7 @@ jobs:
           if (!preg_match('/^[a-f0-9]{40}$/D', $state['commit'] ?? '') || !is_array($state['files'] ?? null)) throw new RuntimeException('Invalid state');
           $rows = []; $preserved = 0; $drift = 0;
           foreach ($state['files'] as $p => $v) {
-              foreach (['source', 'live'] as $key) if (!preg_match('/^[a-f0-9]{64}$/D', $v[$key] ?? '')) throw new RuntimeException('Invalid digest');
+              foreach (['source', 'live'] as $key) if (!array_key_exists($key, $v) || ($v[$key] !== null && !preg_match('/^[a-f0-9]{64}$/D', $v[$key]))) throw new RuntimeException('Invalid digest');
               $path = inventoryPath($root, $p);
               $actual = is_file($path) ? hash_file('sha256', $path) : null;
               $preserved += (int)($v['source'] !== $v['live']);
