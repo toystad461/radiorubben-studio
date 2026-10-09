@@ -1,5 +1,42 @@
 # Studio – felles status og arbeidsliste
 
+## CRM – krav om tilpasning til Radio Rubben, 07.10.2026
+
+Thomas presiserer at CRM-et må være tilpasset Radio Rubben. Dette er lagt inn
+som førende produktkrav i [CRM-RADIO-RUBBEN.md](CRM-RADIO-RUBBEN.md) og
+arbeidsreglene. PR #48 gir kontaktgrunnlaget. Avtaler, kampanjer, oppfølging
+av manus/lyd/godkjenning, faktisk levering og fornyelse gjenstår.
+Neste utviklingsleveranse er strukturerte samarbeidsmuligheter/avtaler per
+bedrift og oversikt over neste handling; bruk dokumentets akseptansekriterier.
+Thomas har deretter foreslått automatisk klargjøring av første kontakt:
+nettsøk, faste maler, 15–20 sekunders reklameforslag, programsamarbeid og
+TTS-demo lagret i Studio før eventuell utsending. [CRM-OUTREACH.md](CRM-OUTREACH.md)
+beskriver dette, med foreslått 20-leads-pilot innenfor ønsket om 10–20 manuelle
+godkjenninger. Automatisk sending krever et eget senere aktiveringsvalg;
+den slås ikke på av pilottelleren. Neste steg etter avtalemodellen er
+klargjørings- og godkjenningsflaten. Integrasjoner er ikke implementert.
+Teams-varsling kommer etter at denne arbeidsflyten er på plass.
+
+Runtime-commit fdc0a38b83f5262f0049a38df07c098e913002ff besto PHP 8.2/8.4
+og CRM-mobilkontrollen i Actions 37686489844. Denne presiseringen endrer
+bare dokumentasjon og arbeidsregler; ingen nye runtime-tester er nødvendig.
+Ingen produksjonsdeploy eller Microsoft-integrasjon er utført.
+
+## Samarbeid / CRM – første kodeversjon 07.10.2026
+
+Egen avgrenset gren fra main 81c1423, uavhengig av iPhone-PR #47. Ny
+administratorflate på `/crm.php` med bedriftskort, status, kontaktlogg,
+oppfølgingsdato og OneDrive-lenke. Privat, atomisk register med historikk,
+CSRF og revisjonssperre. Fem offentlige kandidater kan legges til manuelt;
+tidligere kontakt er uttrykkelig uavklart. Ingen kunder kontaktes automatisk.
+Eksisterende redaksjon og publiseringsflyt er urørt.
+
+Microsoft-forslag: Studio som CRM, Teams Workflows for samlevarsler,
+OneDrive for filer, OneNote som valgfri notatbok senere. Dette er beskrevet
+i [CRM.md](CRM.md), men integrasjon, tidsstyring og varsling er ikke aktivert.
+Tester og fersk CI-status dokumenteres i PR-en. Videre prioritering er
+presisert i CRM-kravene over; Microsoft-konto avklares før integrasjon.
+Ingen merge eller produksjonsdeploy er utført i denne oppgaven.
 ## Tydelig forkasting i Nyhetsdesk – 08.10.2026
 
 Thomas har bedt om tydeligere og enklere forkasting av robotforslag.
@@ -695,3 +732,34 @@ Thomas bestilte enkel kommentarbasert læring direkte fra RSS-saken. Nyhetsdesk 
 Automatisk og manuell Nyhetsdesk-klargjøring sender nå aktive programråd med til både nett- og radiogeneratoren og registrerer brukt regelversjon på jobben. Dette var tidligere utelatt i Nyhetsdesk. Kommenterte kildefakta og gamle eksempeltekster sendes ikke som faktagrunnlag til nye saker; fakta-/språkkontroll mottar fortsatt bare gjeldende original og utkast. Lagrede utkast omskrives ikke når en kommentar lagres, og kommentaren gir ikke godkjenning eller publisering.
 
 Avgrensning: God morgen Vestland / Studio sine RSS-saker. Fotballrobotens WordPress-saker og værmanus har egne skriveråd og får ikke skjulte endringer. Dette er vedvarende redaksjonell hukommelse i genereringskonteksten, ikke trening av modellvekter. Tester dekker versjonskobling, kildegrunnlag, roller, dobbel innsending, godkjenning/deaktivering, isolasjon og gjennomslag i begge faktiske genereringskall med injiserte svar. CI, utrulling og innlogget UI kontrolleres ved levering. Ingen prøvekommentar aktiveres på produksjonsdata.
+## Windows board-lagring – 09.10.2026
+
+Branch fix/windows-board-permissions-test bygger på kontrollert origin/main:
+1aff7adeb2b90c9576265c70f06bab141a1519a0. Thomas ba deretter om selvstendig ferdigstilling med commit, push, PR og Linux CI. Merge og deploy er utenfor denne leveransen.
+
+Windows bruker nå chmod av eksisterende målfil og inntil ti rename-forsøk
+med 20 ms mellomrom. Målfilen slettes aldri først: mislykket erstatning bevarer
+forrige board. Ikke-Windows beholder direkte rename, separat skrivelås og
+0600-rettigheter. Eksisterende ZIP path-normalisering og Windows-unntaket
+for Unix 0600-testen er bevart. Nye tester dekker skrivebeskyttet Windows-mål
+og bevaring ved mislykket erstatning.
+
+PHP 8.4.25 på Windows: php -l bestod for alle tre berørte PHP-filer;
+Composer-testpakken bestod med exit 0 og avsluttet med
+"Package structure, private paths and data exclusions OK".
+Den opprinnelige pakken bestod også lokalt; tidligere code 5 ble ikke
+reprodusert i fullpakken. Vendor gir eksisterende PHP 8.4-deprecation-varsler.
+Linux/produksjon og vedvarende Windows ACL-/fillåsfeil er ikke live-testet.
+Sluttgjennomgangen rettet også eksisterende tegnkodingsfeil i Bømlo-testdata. Ingen lokale Linux-tester kan kjøres: WSL er ikke installert og Docker er ikke tilgjengelig. Linux verifiseres i GitHub Actions for PR-en; endelig CI-status dokumenteres i PR-en og leveringsrapporten.
+
+## CRM klar for utrulling – 09.10.2026
+
+Thomas valgte å ferdigstille og publisere PR #48, med #47 utsatt. Branchen er avstemt mot main dc8635a. Begge statusjournalene er bevart. CRM får samme avgrensede Windows-håndtering av atomisk filbytte som board; Unix-rettigheter og rename beholdes på Linux. Tester dekker skrivebeskyttet Windows-mål og bevaring ved feil. Privat CRM-register, innlogging, kundekontakt og redaksjonell publisering endres ikke av utrullingen. Endelig CI- og deploykvittering dokumenteres på PR #48.
+
+## CRM-deploy: fersk CSS-kontroll – 09.10.2026
+
+PR #48 er merget som ce69b24 etter grønne Windows-, Linux- og mobiltester. Deploy 37993107818 stoppet før publisering fordi webhotellets Varnish-cache returnerte gammel studio.css (Age 1568). En unik query ga Age 0 og SHA-256 identisk med gjeldende main-fil i LF-format. Preflight bruker nå deployens validerte run-ID i CSS-adressen. Eksakt sammenligning mot serverfil, TLS, verts-/mappekontroll og øvrige deploysperrer beholdes. Rettelsen er nødvendig for den autoriserte CRM-utrullingen. Endelig kjøring dokumenteres på PR-en.
+
+## Videre læring etter CRM – 09.10.2026
+
+CRM #48 og cache-retting #59 er publisert som d8ea7fa i vellykket Actions 37993724444, med åtte selektive filendringer og godkjent hash-/HTTPS-kontroll. #47 er utsatt. Thomas ba om å fortsette anbefalt rekkefølge; #51 er avstemt mot denne main-versjonen. Bare statusjournalen hadde konflikt, og begge oppføringer er bevart. Ingen skriveråd aktiveres og ingen saker genereres eller publiseres som del av denne kodeutrullingen.

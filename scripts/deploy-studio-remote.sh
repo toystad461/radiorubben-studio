@@ -61,8 +61,9 @@ if (!$z->extractTo($argv[2])) exit(1); $z->close();
 php -r 'require $argv[1]."/studio-private/vendor/autoload.php";' "$stage/unpacked"
 find "$stage/unpacked" -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null
 # Verify HTTPS and that this hostname serves the existing Studio CSS from this path.
-# No --insecure and no redirects to another hostname are permitted.
-code=$(curl -sS --proto '=https' --max-time 25 -o "$stage/current.css" -w '%{http_code}' "$url/assets/studio.css")
+# A per-run query avoids a cached CSS version from before the last deployment.
+# The exact server-file hash must still match; TLS and redirect checks remain.
+code=$(curl -sS --proto '=https' --max-time 25 -o "$stage/current.css" -w '%{http_code}' "$url/assets/studio.css?deploy-check=$run")
 [[ "$code" == 200 ]]
 [[ "$(sha256sum "$stage/current.css" | cut -d' ' -f1)" == "$(sha256sum "$public/assets/studio.css" | cut -d' ' -f1)" ]] || {
   echo 'STOP: Hostname/document-root verification failed.' >&2; exit 1;
