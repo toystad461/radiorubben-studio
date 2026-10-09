@@ -1,3 +1,50 @@
+# Studio – produksjonsavstemming, oppdatert 9. oktober 2026
+
+## Nyeste kontrollerte produksjon
+Denne oppdateringen erstatter nåtidsbeskrivelsene i den historiske rapporten
+nedenfor. PR #52 gjelder dokumentasjon; den er avstemt mot main
+`f601a370caf2beacd40da21ad62545a4151445ad` etter publisering av #53.
+CRM #48, Windows-rettelser #58, deployrettelse #59 og læring #51/#53 er nå
+inkludert i main. #47 er uttrykkelig utsatt. #55/#57 inngår ikke i denne
+avstemmingen, og Web #67 er ikke kontrollert på nytt her.
+
+[Deploy 37994986637](https://github.com/toystad461/radiorubben-studio/actions/runs/37994986637)
+besto PHP 8.2, PHP 8.4, mobil og deploy. Deployjobben er 114039748821 og
+fullførte 2026-10-09T21:46:14Z (23:46:14 Europe/Oslo). Resultatet rapporterte
+fire endrede filer fra committen ovenfor, med backup-id
+`selective-37994986637-1`. Den offentlige release-markøren ble også lest og
+bekreftet samme commit etter utrullingen.
+
+Den kontrollerte selektive publiseringskoden sjekker faktisk hash mot
+registrert live-hash før endringer, sikkerhetskopierer endrede filer, og
+kontrollerer alle administrerte filer samt HTTPS/innlogging og release-markør
+etterpå. Grønn deploy er derfor bevis for disse kontrollene på kjøretidspunktet.
+Det er ikke en eksport eller manuell gjennomgang av hvert bevart kilde/live-avvik,
+heller ikke bevis for at hele serveren er identisk med GitHub.
+
+## Gjenstående avstemming og neste steg
+- Hent en autorisert, dataminimert oversikt over administrerte filbaner og
+  source/live-hasher fra gjeldende servertilstand, uten private data eller nøkler.
+- Forklar hvert bevart avvik og fastslå korrekt Git-kilde før noen normalisering.
+- Kontroller aktive jobb-/WordPress-avhengigheter og innlogget brukerflyt.
+- Avstem eventuelle deler fra #55/#57 separat. Ikke last opp en hel feature-gren.
+
+Ingen ny serverinventering eller innlogget funksjonstest er gjennomført i denne
+oppdateringen. Tidligere preflight-forskjeller nedenfor er historiske kandidater
+for kontroll, ikke en påstand om dagens avvik. Avstemmingen er fortsatt ufullstendig.
+
+## Publiseringskonsekvens for denne PR-en
+Endringene mot dagens main er bare dokumentasjon. Workflow og runtime er urørt.
+En merge til main vil likevel starte det eksisterende automatiske deployløpet;
+utgivelsesmetadata kan endres selv ved dokumentasjonsendringer. Selektiv
+publisering administrerer ikke docs-filene. Klargjøringen av #52 starter ingen
+ny deploy og gir ingen tillatelse til fullpakke-opplasting.
+
+## Historisk rapport fra 8. oktober – beholdt som datert bevis
+Alt nedenfor beskriver kontrollene og avgrensningene 8. oktober. Referanser til
+«gjeldende», «siste», ikke-importerte PR-er og manglende HTTP-bevis gjelder dette
+tidspunktet, ikke statusen ovenfor.
+
 # Studio – produksjonsavstemming 8. oktober 2026
 
 ## Gjeldende kilde og mandat

@@ -786,3 +786,16 @@ CRM #48 og cache-retting #59 er publisert som d8ea7fa i vellykket Actions 379937
 ## Skriveinstrukser avstemt med kommentarer – 09.10.2026
 
 #53 er avstemt med testet #51 og publisert CRM/cache-retting. Konflikten i læringssiden er løst slik at flere instruksforslag beholdes, mens godkjenningsmeldingen korrekt beskriver nett- og radioutkast. Begge statusjournaler er bevart. Ingen eksisterende skriveråd aktiveres. Full testpakke og fersk Linux-/mobil-CI skal bestå før eventuell produksjonsmerge.
+
+
+## PR #52: oppdatert produksjonsrapport – 09.10.2026
+
+Dokumentasjonsgrenen er avstemt mot main f601a370caf2beacd40da21ad62545a4151445ad.
+#51 er publisert via Actions 37994453839; #53 via 37994986637 med grønne
+PHP-/mobilkontroller, fire filendringer og bekreftet offentlig release-markør.
+Rapporten beholder bevisene fra 8. oktober som historikk og oppdaterer JSON-
+referansen til siste kontrollerte deploy. Den skiller deployens hashkontroller
+fra en fortsatt manglende gjennomgang av bevarte source/live-avvik.
+Neste steg er dataminimert serverinventering, avviksforklaring og innlogget
+funksjonskontroll. #47 forblir utsatt. Denne dokumentasjonsoppdateringen endrer
+ikke runtime eller workflows og starter ingen ny produksjonsutrulling.
