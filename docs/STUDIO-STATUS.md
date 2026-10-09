@@ -786,3 +786,32 @@ CRM #48 og cache-retting #59 er publisert som d8ea7fa i vellykket Actions 379937
 ## Skriveinstrukser avstemt med kommentarer – 09.10.2026
 
 #53 er avstemt med testet #51 og publisert CRM/cache-retting. Konflikten i læringssiden er løst slik at flere instruksforslag beholdes, mens godkjenningsmeldingen korrekt beskriver nett- og radioutkast. Begge statusjournaler er bevart. Ingen eksisterende skriveråd aktiveres. Full testpakke og fersk Linux-/mobil-CI skal bestå før eventuell produksjonsmerge.
+
+
+## PR #52: oppdatert produksjonsrapport – 09.10.2026
+
+Dokumentasjonsgrenen er avstemt mot main f601a370caf2beacd40da21ad62545a4151445ad.
+#51 er publisert via Actions 37994453839; #53 via 37994986637 med grønne
+PHP-/mobilkontroller, fire filendringer og bekreftet offentlig release-markør.
+Rapporten beholder bevisene fra 8. oktober som historikk og oppdaterer JSON-
+referansen til siste kontrollerte deploy. Den skiller deployens hashkontroller
+fra en fortsatt manglende gjennomgang av bevarte source/live-avvik.
+Neste steg er dataminimert serverinventering, avviksforklaring og innlogget
+funksjonskontroll. #47 forblir utsatt. Denne dokumentasjonsoppdateringen endrer
+ikke runtime eller workflows og starter ingen ny produksjonsutrulling.
+
+
+## PR #52: serveravvik forklart og innlogget kontroll – 10.10.2026
+
+Lesende SSH-inventering 37996893036 kontrollerte 495 registrerte filer: seks
+bevarte source/live-forskjeller, null uventet drift og null ekstra kodefiler i
+undersøkte kodeområder. De tre PHP-avvikene er bare logo-dimensjoner, PNG er
+identisk med eldre Git-versjon, SVG og favicon er registrert fraværende.
+Innlogget administratorflyt, CRM-søk, læring, Nyhetsdesk, radioliste og øvrige
+hovedsider er kontrollert uten testinnsendinger. Lesende WordPress-kontroll ga
+HTTP 200 og bekreftet autentisering. Utloggede besøk til fem beskyttede sider
+ble sendt til innlogging. Detaljer: docs/PRODUCTION-AUDIT-2026-10-10.md.
+Funn: manglende referert favicon og manglende direkte CRM-mobilmeny. Neste steg
+er avgrensede rettelser; faktisk lyd, sending og produksjonsskriving er ikke
+testet. Engangs-workflowen til inventering er tilbakeført. Ingen deploy eller
+merge er gjort; #47 forblir utsatt.

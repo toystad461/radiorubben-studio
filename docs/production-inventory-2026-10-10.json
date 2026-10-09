@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "source_commit": "f601a370caf2beacd40da21ad62545a4151445ad",
+  "recorded_at": "2026-10-10T00:01:41+02:00",
+  "workflow_run": 37996893036,
+  "managed_count": 495,
+  "preserved_count": 6,
+  "unexpected_drift_count": 0,
+  "untracked_code_count": 0,
+  "scope": "Registered managed files and extra code in studio-public, studio-private/app and studio-private/vendor. Config, data, cache, backups and symlinks excluded.",
+  "differences": [
+    {
+      "path": "studio-private/app/bootstrap.php",
+      "source": "3729c9b5456f61071a14ef72b5e338dc6ca57b16dedf8de925377b3f513826f9",
+      "recorded_live": "1489ea60be6dc9004617913e0bd8530b78d2d07b277e58d4b9e2edbff771d88a",
+      "observed": "1489ea60be6dc9004617913e0bd8530b78d2d07b277e58d4b9e2edbff771d88a"
+    },
+    {
+      "path": "studio-public/assets/favicon.ico",
+      "source": "e0fd49e2258bdd0306457a575e369336be698113f7d970bfd9761414dc92c672",
+      "recorded_live": null,
+      "observed": null
+    },
+    {
+      "path": "studio-public/assets/radio-rubben-logo.png",
+      "source": "2d136234a5b1c5efd3132f743f5ed811c7732d862430e0aaf4b647ae9e3f0463",
+      "recorded_live": "570f9cdb921a4cd8cecca3825a3858f4596eaa8b4138cebc8b615d508e289ad5",
+      "observed": "570f9cdb921a4cd8cecca3825a3858f4596eaa8b4138cebc8b615d508e289ad5"
+    },
+    {
+      "path": "studio-public/assets/radio-rubben-logo.svg",
+      "source": "3b368cae55a90940cb22a6b4a896ecd0284bf0e2c6566a4a6545dc2022bea0d5",
+      "recorded_live": null,
+      "observed": null
+    },
+    {
+      "path": "studio-public/local/login.php",
+      "source": "35184412d7948a70f7a8f7ab4d27d27585ae05f9b78f79b3b43c06ea15a47740",
+      "recorded_live": "b1b8b596998e74f8a86e86353af4ca6a408044a768a8e1995d244084548a8d97",
+      "observed": "b1b8b596998e74f8a86e86353af4ca6a408044a768a8e1995d244084548a8d97"
+    },
+    {
+      "path": "studio-public/login.php",
+      "source": "723be75218b5c2349712fe22510d0544a0c3945bf6e2b476f63467bc2d939d33",
+      "recorded_live": "709dd1d2b925483760c438986f5bbb30f35db85b9e3b88751b4e739a805156d6",
+      "observed": "709dd1d2b925483760c438986f5bbb30f35db85b9e3b88751b4e739a805156d6"
+    }
+  ]
+}
