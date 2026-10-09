@@ -745,3 +745,7 @@ Sluttgjennomgangen rettet også eksisterende tegnkodingsfeil i Bømlo-testdata. 
 ## CRM klar for utrulling – 09.10.2026
 
 Thomas valgte å ferdigstille og publisere PR #48, med #47 utsatt. Branchen er avstemt mot main dc8635a. Begge statusjournalene er bevart. CRM får samme avgrensede Windows-håndtering av atomisk filbytte som board; Unix-rettigheter og rename beholdes på Linux. Tester dekker skrivebeskyttet Windows-mål og bevaring ved feil. Privat CRM-register, innlogging, kundekontakt og redaksjonell publisering endres ikke av utrullingen. Endelig CI- og deploykvittering dokumenteres på PR #48.
+
+## CRM-deploy: fersk CSS-kontroll – 09.10.2026
+
+PR #48 er merget som ce69b24 etter grønne Windows-, Linux- og mobiltester. Deploy 37993107818 stoppet før publisering fordi webhotellets Varnish-cache returnerte gammel studio.css (Age 1568). En unik query ga Age 0 og SHA-256 identisk med gjeldende main-fil i LF-format. Preflight bruker nå deployens validerte run-ID i CSS-adressen. Eksakt sammenligning mot serverfil, TLS, verts-/mappekontroll og øvrige deploysperrer beholdes. Rettelsen er nødvendig for den autoriserte CRM-utrullingen. Endelig kjøring dokumenteres på PR-en.
