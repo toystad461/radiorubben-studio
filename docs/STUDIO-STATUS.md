@@ -1,5 +1,61 @@
 # Studio – felles status og arbeidsliste
 
+## Direkte skriveinstrukser – 08.10.2026
+
+Thomas bestiller klarspråk, LIX-mål 40–50, korte og mellomlange setninger,
+aktivt språk, folkelige ord og nøktern tone uten klisjeer eller selvskryt.
+Læringssiden får disse rådene som redigerbar starttekst ved generelle regler.
+En liste på 1–20 instrukser lagres atomisk som individuelle ventende forslag;
+alle linjer valideres før lagring. Eksisterende administratorgodkjenning,
+roller, CSRF, revisjoner, historikk og programisolasjon beholdes.
+LIX er et skrivemål, ikke en implementert måling eller en garantert verdi.
+Ingen private produksjonsregler endres eller aktiveres av kodeendringen.
+Base er main 1aff7adeb2b90c9576265c70f06bab141a1519a0. PR #51 for
+Nyhetsdesk-kommentarer og videre bruk av læring er en separat avhengighet;
+denne endringen gjelder dagens God morgen Vestland-manus i Sending.
+PR #53: kodehead 3c4bf75. PHP 8.2/8.4 og mobil/desktop-testene besto
+i Actions 37778353718 og 37778353772. Ingen produksjonsdeploy eller
+aktivering av private regler. Dokumentasjonsoppfølging endrer ingen runtime.
+Neste steg etter godkjent kode: kontrollere instrukslisten i Studio og
+godkjenne ønskede regler individuelt før de brukes i nye manus.
+
+## CRM – krav om tilpasning til Radio Rubben, 07.10.2026
+
+Thomas presiserer at CRM-et må være tilpasset Radio Rubben. Dette er lagt inn
+som førende produktkrav i [CRM-RADIO-RUBBEN.md](CRM-RADIO-RUBBEN.md) og
+arbeidsreglene. PR #48 gir kontaktgrunnlaget. Avtaler, kampanjer, oppfølging
+av manus/lyd/godkjenning, faktisk levering og fornyelse gjenstår.
+Neste utviklingsleveranse er strukturerte samarbeidsmuligheter/avtaler per
+bedrift og oversikt over neste handling; bruk dokumentets akseptansekriterier.
+Thomas har deretter foreslått automatisk klargjøring av første kontakt:
+nettsøk, faste maler, 15–20 sekunders reklameforslag, programsamarbeid og
+TTS-demo lagret i Studio før eventuell utsending. [CRM-OUTREACH.md](CRM-OUTREACH.md)
+beskriver dette, med foreslått 20-leads-pilot innenfor ønsket om 10–20 manuelle
+godkjenninger. Automatisk sending krever et eget senere aktiveringsvalg;
+den slås ikke på av pilottelleren. Neste steg etter avtalemodellen er
+klargjørings- og godkjenningsflaten. Integrasjoner er ikke implementert.
+Teams-varsling kommer etter at denne arbeidsflyten er på plass.
+
+Runtime-commit fdc0a38b83f5262f0049a38df07c098e913002ff besto PHP 8.2/8.4
+og CRM-mobilkontrollen i Actions 37686489844. Denne presiseringen endrer
+bare dokumentasjon og arbeidsregler; ingen nye runtime-tester er nødvendig.
+Ingen produksjonsdeploy eller Microsoft-integrasjon er utført.
+
+## Samarbeid / CRM – første kodeversjon 07.10.2026
+
+Egen avgrenset gren fra main 81c1423, uavhengig av iPhone-PR #47. Ny
+administratorflate på `/crm.php` med bedriftskort, status, kontaktlogg,
+oppfølgingsdato og OneDrive-lenke. Privat, atomisk register med historikk,
+CSRF og revisjonssperre. Fem offentlige kandidater kan legges til manuelt;
+tidligere kontakt er uttrykkelig uavklart. Ingen kunder kontaktes automatisk.
+Eksisterende redaksjon og publiseringsflyt er urørt.
+
+Microsoft-forslag: Studio som CRM, Teams Workflows for samlevarsler,
+OneDrive for filer, OneNote som valgfri notatbok senere. Dette er beskrevet
+i [CRM.md](CRM.md), men integrasjon, tidsstyring og varsling er ikke aktivert.
+Tester og fersk CI-status dokumenteres i PR-en. Videre prioritering er
+presisert i CRM-kravene over; Microsoft-konto avklares før integrasjon.
+Ingen merge eller produksjonsdeploy er utført i denne oppgaven.
 ## Tydelig forkasting i Nyhetsdesk – 08.10.2026
 
 Thomas har bedt om tydeligere og enklere forkasting av robotforslag.
@@ -902,3 +958,68 @@ kanalstatus-funksjonen består helsesjekken. Redaksjonelle data er ikke endret.
 CI-kjøring 37824716010 består på deployet kodecommit: PHP 8.2, PHP 8.4 og mobil.
 Eksisterende testmodus beholdes. Ingen merge til main eller ordinær utsending.
 Innlogget visuell kontroll av brukerens ekte saker er ikke utført her.
+
+## Windows board-lagring – 09.10.2026
+
+Branch fix/windows-board-permissions-test bygger på kontrollert origin/main:
+1aff7adeb2b90c9576265c70f06bab141a1519a0. Thomas ba deretter om selvstendig ferdigstilling med commit, push, PR og Linux CI. Merge og deploy er utenfor denne leveransen.
+
+Windows bruker nå chmod av eksisterende målfil og inntil ti rename-forsøk
+med 20 ms mellomrom. Målfilen slettes aldri først: mislykket erstatning bevarer
+forrige board. Ikke-Windows beholder direkte rename, separat skrivelås og
+0600-rettigheter. Eksisterende ZIP path-normalisering og Windows-unntaket
+for Unix 0600-testen er bevart. Nye tester dekker skrivebeskyttet Windows-mål
+og bevaring ved mislykket erstatning.
+
+PHP 8.4.25 på Windows: php -l bestod for alle tre berørte PHP-filer;
+Composer-testpakken bestod med exit 0 og avsluttet med
+"Package structure, private paths and data exclusions OK".
+Den opprinnelige pakken bestod også lokalt; tidligere code 5 ble ikke
+reprodusert i fullpakken. Vendor gir eksisterende PHP 8.4-deprecation-varsler.
+Linux/produksjon og vedvarende Windows ACL-/fillåsfeil er ikke live-testet.
+Sluttgjennomgangen rettet også eksisterende tegnkodingsfeil i Bømlo-testdata. Ingen lokale Linux-tester kan kjøres: WSL er ikke installert og Docker er ikke tilgjengelig. Linux verifiseres i GitHub Actions for PR-en; endelig CI-status dokumenteres i PR-en og leveringsrapporten.
+
+## CRM klar for utrulling – 09.10.2026
+
+Thomas valgte å ferdigstille og publisere PR #48, med #47 utsatt. Branchen er avstemt mot main dc8635a. Begge statusjournalene er bevart. CRM får samme avgrensede Windows-håndtering av atomisk filbytte som board; Unix-rettigheter og rename beholdes på Linux. Tester dekker skrivebeskyttet Windows-mål og bevaring ved feil. Privat CRM-register, innlogging, kundekontakt og redaksjonell publisering endres ikke av utrullingen. Endelig CI- og deploykvittering dokumenteres på PR #48.
+
+## CRM-deploy: fersk CSS-kontroll – 09.10.2026
+
+PR #48 er merget som ce69b24 etter grønne Windows-, Linux- og mobiltester. Deploy 37993107818 stoppet før publisering fordi webhotellets Varnish-cache returnerte gammel studio.css (Age 1568). En unik query ga Age 0 og SHA-256 identisk med gjeldende main-fil i LF-format. Preflight bruker nå deployens validerte run-ID i CSS-adressen. Eksakt sammenligning mot serverfil, TLS, verts-/mappekontroll og øvrige deploysperrer beholdes. Rettelsen er nødvendig for den autoriserte CRM-utrullingen. Endelig kjøring dokumenteres på PR-en.
+
+## Videre læring etter CRM – 09.10.2026
+
+CRM #48 og cache-retting #59 er publisert som d8ea7fa i vellykket Actions 37993724444, med åtte selektive filendringer og godkjent hash-/HTTPS-kontroll. #47 er utsatt. Thomas ba om å fortsette anbefalt rekkefølge; #51 er avstemt mot denne main-versjonen. Bare statusjournalen hadde konflikt, og begge oppføringer er bevart. Ingen skriveråd aktiveres og ingen saker genereres eller publiseres som del av denne kodeutrullingen.
+
+## Skriveinstrukser avstemt med kommentarer – 09.10.2026
+
+#53 er avstemt med testet #51 og publisert CRM/cache-retting. Konflikten i læringssiden er løst slik at flere instruksforslag beholdes, mens godkjenningsmeldingen korrekt beskriver nett- og radioutkast. Begge statusjournaler er bevart. Ingen eksisterende skriveråd aktiveres. Full testpakke og fersk Linux-/mobil-CI skal bestå før eventuell produksjonsmerge.
+
+
+## PR #52: oppdatert produksjonsrapport – 09.10.2026
+
+Dokumentasjonsgrenen er avstemt mot main f601a370caf2beacd40da21ad62545a4151445ad.
+#51 er publisert via Actions 37994453839; #53 via 37994986637 med grønne
+PHP-/mobilkontroller, fire filendringer og bekreftet offentlig release-markør.
+Rapporten beholder bevisene fra 8. oktober som historikk og oppdaterer JSON-
+referansen til siste kontrollerte deploy. Den skiller deployens hashkontroller
+fra en fortsatt manglende gjennomgang av bevarte source/live-avvik.
+Neste steg er dataminimert serverinventering, avviksforklaring og innlogget
+funksjonskontroll. #47 forblir utsatt. Denne dokumentasjonsoppdateringen endrer
+ikke runtime eller workflows og starter ingen ny produksjonsutrulling.
+
+
+## PR #52: serveravvik forklart og innlogget kontroll – 10.10.2026
+
+Lesende SSH-inventering 37996893036 kontrollerte 495 registrerte filer: seks
+bevarte source/live-forskjeller, null uventet drift og null ekstra kodefiler i
+undersøkte kodeområder. De tre PHP-avvikene er bare logo-dimensjoner, PNG er
+identisk med eldre Git-versjon, SVG og favicon er registrert fraværende.
+Innlogget administratorflyt, CRM-søk, læring, Nyhetsdesk, radioliste og øvrige
+hovedsider er kontrollert uten testinnsendinger. Lesende WordPress-kontroll ga
+HTTP 200 og bekreftet autentisering. Utloggede besøk til fem beskyttede sider
+ble sendt til innlogging. Detaljer: docs/PRODUCTION-AUDIT-2026-10-10.md.
+Funn: manglende referert favicon og manglende direkte CRM-mobilmeny. Neste steg
+er avgrensede rettelser; faktisk lyd, sending og produksjonsskriving er ikke
+testet. Engangs-workflowen til inventering er tilbakeført. Ingen deploy eller
+merge er gjort; #47 forblir utsatt.

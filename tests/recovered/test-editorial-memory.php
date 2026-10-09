@@ -53,6 +53,21 @@ try {
     studio_board_update('legacy',1,'save',['title'=>'Old','script'=>'Edited'],$presenter,$dir.'/legacy.json');
     $legacy=studio_board_read($dir.'/legacy.json')['items'][0];
     check(($legacy['program'] ?? '') === '' && $legacy['history'][0]['before']['script']==='Old script','legacy items preserved and remain unassigned');
+    $batchPath=$dir.'/batch.json';
+    $batch=['text'=>"- Skriv i klarspråk.\r\n• Bruk aktivt språk.\n\n* Vær nøktern i teksten.",'styleOnly'=>'1'];
+    studio_memory_change('propose',$batch,$presenter,$batchPath);
+    $batchBoard=studio_board_read($batchPath);
+    check(array_column($batchBoard['editorialRules'],'text')===['Skriv i klarspråk.','Bruk aktivt språk.','Vær nøktern i teksten.'],'bullet list becomes separate instructions');
+    check(studio_memory_context($batchBoard,'god-morgen-vestland')['rules']===[],'batch requires individual approval');
+    $before=file_get_contents($batchPath);
+    rejected(fn()=>studio_memory_change('propose',['text'=>"En gyldig ny instruks.\nKort",'styleOnly'=>'1'],$presenter,$batchPath),'invalid line rejects whole batch');
+    rejected(fn()=>studio_memory_change('propose',['text'=>"En gyldig ny instruks.\nBruk aktivt språk.",'styleOnly'=>'1'],$presenter,$batchPath),'existing duplicate rejects whole batch');
+    rejected(fn()=>studio_memory_change('propose',['text'=>"Samme instruks to ganger.\nSamme instruks to ganger.",'styleOnly'=>'1'],$presenter,$batchPath),'duplicate within list rejected');
+    rejected(fn()=>studio_memory_change('propose',['text'=>implode("\n",array_map(fn($i)=>"Instruks nummer $i for roboten.",range(1,21))),'styleOnly'=>'1'],$presenter,$batchPath),'batch limit enforced');
+    check(file_get_contents($batchPath)===$before,'failed batches preserve register without partial writes');
+    $first=$batchBoard['editorialRules'][0];
+    studio_memory_change('approve',['id'=>$first['id'],'revision'=>1],$admin,$batchPath);
+    check(count(studio_memory_context(studio_board_read($batchPath),'god-morgen-vestland')['rules'])===1,'only approved instruction becomes active');
     echo "Editorial memory workflow passed\n";
 } finally { foreach (glob($dir.'/*') as $file) unlink($file); rmdir($dir); }
 

@@ -38,7 +38,17 @@ try {
     try { studio_board_change(static function (array &$board): void { throw new InvalidArgumentException('no write'); }, $path); }
     catch (InvalidArgumentException $e) { $stale = true; }
     board_check($stale && count(studio_board_active(studio_board_read($path))) === 1, 'rejected mutation preserved data');
-    board_check((fileperms($path) & 0777) === 0600, 'private file permissions');
+    if (PHP_OS_FAMILY !== 'Windows') {
+        board_check((fileperms($path) & 0777) === 0600, 'private file permissions');
+    }
+    if (PHP_OS_FAMILY === 'Windows') {
+        chmod($path, 0400);
+        studio_board_change(static function (array &$board): void { $board['replacementProbe'] = true; }, $path);
+        board_check(studio_board_read($path)['replacementProbe'] === true, 'read-only Windows target replaced');
+        $before = (string)file_get_contents($path);
+        board_check(!studio_board_replace($dir . '/missing.json', $path), 'failed replacement reported');
+        board_check((string)file_get_contents($path) === $before, 'failed replacement preserves previous board');
+    }
     echo "Shared board storage OK\n";
 } finally {
     @unlink($path); @unlink($path . '.lock'); @rmdir($dir);

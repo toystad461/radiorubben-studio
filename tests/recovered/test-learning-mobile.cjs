@@ -9,7 +9,7 @@ const render=(view,role='admin',channel='radio')=>execFileSync(process.env.PHP_B
    const page=await browser.newPage({viewport:{width,height:900}});
    await page.route('**/*',route=>{
     const url=new URL(route.request().url());
-    if(url.pathname==='/learning.php')return route.fulfill({contentType:'text/html',body:render(url.searchParams.get('view')||'pending',url.searchParams.get('role')||'admin',url.searchParams.get('channel')||'radio')});
+    if(url.pathname==='/learning.php')return route.fulfill({contentType:'text/html',body:render(url.searchParams.get('view')||'pending',url.searchParams.get('role')||'admin',url.searchParams.get('mode')||url.searchParams.get('channel')||'radio')});
     const local=path.join(root,'public',url.pathname);
     if(url.pathname.startsWith('/assets/')&&fs.existsSync(local))return route.fulfill({body:fs.readFileSync(local),contentType:url.pathname.endsWith('.css')?'text/css':'image/png'});
     return route.fulfill({status:404,body:''});
@@ -34,7 +34,12 @@ const render=(view,role='admin',channel='radio')=>execFileSync(process.env.PHP_B
    await page.goto('http://fixture.test/learning.php?view=pending&role=observer');
    assert.equal(await page.locator('#rule-text').count(),0);
    assert.equal(await page.locator('#learning-rules button').count(),0,'Observer cannot decide');
-   await page.goto('http://fixture.test/learning.php');
+   await page.goto('http://fixture.test/learning.php?mode=general');
+   const instructions=await page.locator('#rule-text').inputValue();
+   assert.equal(instructions.split('\n').length,7,'Direct writing advice preset');
+   assert.ok(instructions.includes('40–50')&&instructions.includes('klarspråk'));
+   assert.equal(await page.getByRole('button',{name:'Send instrukser til godkjenning'}).isVisible(),true);
+   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Direct instructions fit mobile');
    if(process.env.LEARNING_SCREENSHOT_DIR){fs.mkdirSync(process.env.LEARNING_SCREENSHOT_DIR,{recursive:true});await page.screenshot({path:path.join(process.env.LEARNING_SCREENSHOT_DIR,`learning-${width}.png`),fullPage:true});}
    await page.close();console.log(`PASS learning flow ${width}px: correction selection, approval lists and observer view`);
   }

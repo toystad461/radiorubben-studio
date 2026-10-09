@@ -60,3 +60,13 @@ Syntetisk tale og AI-bilder krever egen merking og sporbarhet etter policyen.
 Rettelser kan gi versjonerte, separat godkjente læringsforslag, aldri automatisk
 faktagrunnlag eller svakere kontroll. Ikke deploy, publiser eller merge til en
 automatisk deploygren uten eksplisitt godkjenning. Bevar annet pågående arbeid.
+
+## CRM for Radio Rubben
+Thomas har uttrykkelig prioritert et CRM tilpasset Radio Rubben (07.10.2026).
+Les docs/CRM-RADIO-RUBBEN.md før videre CRM-utvikling. Kontaktregisteret er
+første grunnlag; videre arbeid skal støtte lokale partnerrelasjoner, konkrete
+reklame-/sponsoravtaler, leveranser og fornyelse. Skill avtalt, godkjent,
+planlagt og faktisk sendt. Ikke presenter planlagte funksjoner som levert.
+Ved klargjøring av leads og utsending, les også docs/CRM-OUTREACH.md.
+Thomas ønsker manuell godkjenning av de første 10–20 før eventuell
+automatikk. Pilottelleren skal aldri alene aktivere kundesending.
