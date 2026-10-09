@@ -1,3 +1,5 @@
+> Ny kontroll: Se [serveravstemming og innlogget funksjonstest 10. oktober](PRODUCTION-AUDIT-2026-10-10.md). De seks bevarte forskjellene er nå forklart; teksten nedenfor bevarer tidligere kontrollstatus.
+
 # Studio – produksjonsavstemming, oppdatert 9. oktober 2026
 
 ## Nyeste kontrollerte produksjon

@@ -8,7 +8,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   check:
-    if: github.ref == 'refs/heads/reconcile/production-20261008'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     environment: studio-production
@@ -60,64 +60,5 @@ jobs:
           done
           php -r 'if (PHP_VERSION_ID < 80200) {fwrite(STDERR, "PHP CLI 8.2+ required\n"); exit(1);} foreach (["curl","json","openssl","session","zip"] as $ext) {if (!extension_loaded($ext)) {fwrite(STDERR, "Missing PHP extension: ".$ext."\n"); exit(1);}} echo "PHP prerequisites OK\n";'
           echo 'SSH connection and Studio directory checks passed. No files uploaded.'
-          php <<'INVENTORY_PHP'
-          <?php
-          declare(strict_types=1);
-          try {
-          // Read-only inventory: no application bootstrap, config or runtime data is read.
-          $root = '/customers/9/3/1/cptk37ymg/webroots/r1417157';
-          $work = getenv('HOME').'/.radiorubben-studio-deploy';
-          function inventoryManaged(string $p): bool {
-              return !str_contains($p, '..') && !str_contains($p, '\\')
-                  && !preg_match('~(^|/)(config|cache|data|backups?|\.git)(/|$)~i', $p)
-                  && (bool)preg_match('~^(studio-public/(?:[a-zA-Z0-9_./-]+\.(?:php|css|js|mjs|png|svg|ico)|\.htaccess|release\.json)|studio-private/(?:app/[a-zA-Z0-9_./-]+\.php|vendor/[a-zA-Z0-9_./-]+|composer\.(?:json|lock)|\.htaccess))$~D', $p);
-          }
-          function inventoryPath(string $root, string $p): string {
-              if (!inventoryManaged($p)) throw new RuntimeException('Unmanaged manifest path');
-              $at = $root;
-              foreach (explode('/', $p) as $part) {
-                  $at .= '/'.$part;
-                  if (is_link($at)) throw new RuntimeException('Symlink in managed path');
-              }
-              return $at;
-          }
-          if (realpath('/run/webroots/r1417157') !== $root) throw new RuntimeException('Root mismatch');
-          $lock = fopen($work.'/deploy.lock', 'rb');
-          if (!$lock || !flock($lock, LOCK_SH | LOCK_NB)) throw new RuntimeException('Deploy active or lock unavailable');
-          $statePath = $work.'/selective-state.json';
-          if (is_link($statePath)) throw new RuntimeException('State symlink');
-          $raw = file_get_contents($statePath);
-          $state = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
-          if (!preg_match('/^[a-f0-9]{40}$/D', $state['commit'] ?? '') || !is_array($state['files'] ?? null)) throw new RuntimeException('Invalid state');
-          $rows = []; $preserved = 0; $drift = 0;
-          foreach ($state['files'] as $p => $v) {
-              foreach (['source', 'live'] as $key) if (!array_key_exists($key, $v) || ($v[$key] !== null && !preg_match('/^[a-f0-9]{64}$/D', $v[$key]))) throw new RuntimeException('Invalid digest');
-              $path = inventoryPath($root, $p);
-              $actual = is_file($path) ? hash_file('sha256', $path) : null;
-              $preserved += (int)($v['source'] !== $v['live']);
-              $drift += (int)($actual !== $v['live']);
-              $rows[$p] = ['source'=>$v['source'], 'live'=>$v['live'], 'actual'=>$actual];
-          }
-          $extras = [];
-          foreach (['studio-public', 'studio-private/app', 'studio-private/vendor'] as $dir) {
-              $base = $root.'/'.$dir;
-              if (is_link($base) || realpath($base) !== $base) throw new RuntimeException('Scan directory mismatch');
-              $iterator = new RecursiveIteratorIterator(new RecursiveCallbackFilterIterator(new RecursiveDirectoryIterator($base, FilesystemIterator::SKIP_DOTS), static function($entry) {
-                  return !$entry->isLink() && !preg_match('/^(config|cache|data|backups?|\.git)$/i', $entry->getFilename());
-              }));
-              foreach ($iterator as $entry) {
-                  $p = substr($entry->getPathname(), strlen($root)+1);
-                  if ($entry->isFile() && inventoryManaged($p) && !isset($rows[$p])) $extras[$p] = hash_file('sha256', inventoryPath($root, $p));
-              }
-          }
-          if (file_get_contents($statePath) !== $raw) throw new RuntimeException('State changed during read');
-          ksort($rows); ksort($extras);
-          echo 'INVENTORY_SUMMARY '.json_encode(['commit'=>$state['commit'], 'recorded_at'=>gmdate('c'), 'managed_count'=>count($rows), 'preserved_count'=>$preserved, 'drift_count'=>$drift, 'extra_count'=>count($extras)], JSON_THROW_ON_ERROR)."\n";
-          foreach ($rows as $p=>$v) echo 'INVENTORY_FILE '.json_encode(['path'=>$p]+$v, JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
-          foreach ($extras as $p=>$v) echo 'INVENTORY_EXTRA '.json_encode(['path'=>$p,'actual'=>$v], JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR)."\n";
-          echo "INVENTORY_COMPLETE\n";
-          flock($lock, LOCK_UN); fclose($lock);
-          } catch (Throwable $e) { echo 'INVENTORY_ERROR: '.get_class($e).' '.$e->getMessage().PHP_EOL; exit(1); }
-          INVENTORY_PHP
           REMOTE
           echo 'SSH connection and prerequisites passed. No deployment or write-permission test performed.' >> "$GITHUB_STEP_SUMMARY"

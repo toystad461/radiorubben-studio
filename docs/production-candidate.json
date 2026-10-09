@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
-  "recorded_date": "2026-10-09",
+  "recorded_date": "2026-10-10",
   "repository": "toystad461/radiorubben-studio",
-  "status": "verified-selective-deployment-with-preserved-differences-not-individually-reconciled",
+  "status": "preserved-code-differences-explained-with-authenticated-read-only-smoke-test",
   "runtime_source_commit": "f601a370caf2beacd40da21ad62545a4151445ad",
   "base_tree": "03799cb7a51ed48295561c8be7b15436df98276e",
   "changes_in_this_branch": "documentation-only",
   "new_production_deployment_authorized": false,
-  "fresh_server_inventory_performed": false,
+  "fresh_server_inventory_performed": true,
   "coordinating_web_pull_request": 67,
   "release_evidence": {
     "run_id": 37994986637,
@@ -48,5 +48,13 @@
     53,
     58,
     59
-  ]
+  ],
+  "inventory_evidence": {
+    "run_id": 37996893036,
+    "managed_count": 495,
+    "preserved_differences": 6,
+    "unexpected_drift": 0,
+    "untracked_code": 0,
+    "report": "PRODUCTION-AUDIT-2026-10-10.md"
+  }
 }
