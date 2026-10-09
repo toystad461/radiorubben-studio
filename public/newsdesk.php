@@ -31,12 +31,12 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $notice=$enabled?'Automatisk klargjøring er slått på. Du godkjenner publisering.':'Automatisk klargjøring er satt på pause.';
         }elseif($action==='open_source'){
             $source=$sources[(string)($_POST['source']??'')]??null;if(!$source)throw new InvalidArgumentException('Saken er ikke lenger i RSS-innboksen.');
-            if(studio_board_has_source($board['items'],$source)){
-                $item=studio_case_source_item($board['items'],$source);
-                if($item['status']==='archived')throw new InvalidArgumentException('Denne saken er allerede forkastet eller arkivert.');
-            }else{studio_board_add_source($source,$user);$item=studio_case_source_item(studio_board_active(studio_board_read()),$source);}
+            $existing=studio_board_has_source($board['items'],$source);
+            $channel=$_POST['channel']??'both';
+            if(!is_string($channel))throw new InvalidArgumentException('Velg Radio, Nett eller Begge.');
+            $item=studio_newsroom_intake($source,$channel,$user);
             $selected='studio:'.$item['id'];
-            if(empty($item['web']['body']))studio_newsroom_prepare($item['id'],$item['revision'],$user,$config);
+            if(!$existing)studio_newsroom_prepare($item['id'],$item['revision'],$user,$config);
         }elseif(preg_match('/^wp:([1-9][0-9]*)$/D',$selected,$match)){
             if(!$admin)throw new InvalidArgumentException('Bare administrator kan behandle WordPress-saker.');
             if(!in_array($action,['approve','reject','revise'],true))throw new InvalidArgumentException('Ukjent handling.');
@@ -93,7 +93,7 @@ ob_start();require dirname(__DIR__).'/app/views/newsroom.php';$html=ob_get_clean
 $url=studio_newsroom_url($selected,$filter);
 if($fragment){header('Content-Type: application/json; charset=utf-8');header('Cache-Control: no-store');if($error)http_response_code(409);echo json_encode(['ok'=>!$error,'error'=>$error,'html'=>$html,'url'=>$url,'advance'=>$advance&&!$error,'selected'=>$selected,'notice'=>$notice],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);exit;}
 if($_SERVER['REQUEST_METHOD']==='POST'&&!$error){$_SESSION['newsroom_notice']=$notice;redirect($url);}
-$extraStylesheet='/assets/newsroom.css?v=20261008-reject';require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet='/assets/newsroom.css?v=20261008-channels';require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell newsroom-shell"><?php $activePage='newsdesk';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace">
 <header class="topbar"><span>Radio Rubben / <strong>Nyhetsdesk</strong></span><details class="nr-site-menu"><summary>Studio-meny</summary><nav><a href="/control.php">Kontrollsenter</a><a href="/sending.php">Sendeliste</a></nav><?php require dirname(__DIR__).'/app/views/account.php';?></details></header>

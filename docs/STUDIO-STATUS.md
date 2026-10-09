@@ -751,6 +751,236 @@ Thomas bestilte enkel kommentarbasert læring direkte fra RSS-saken. Nyhetsdesk 
 Automatisk og manuell Nyhetsdesk-klargjøring sender nå aktive programråd med til både nett- og radiogeneratoren og registrerer brukt regelversjon på jobben. Dette var tidligere utelatt i Nyhetsdesk. Kommenterte kildefakta og gamle eksempeltekster sendes ikke som faktagrunnlag til nye saker; fakta-/språkkontroll mottar fortsatt bare gjeldende original og utkast. Lagrede utkast omskrives ikke når en kommentar lagres, og kommentaren gir ikke godkjenning eller publisering.
 
 Avgrensning: God morgen Vestland / Studio sine RSS-saker. Fotballrobotens WordPress-saker og værmanus har egne skriveråd og får ikke skjulte endringer. Dette er vedvarende redaksjonell hukommelse i genereringskonteksten, ikke trening av modellvekter. Tester dekker versjonskobling, kildegrunnlag, roller, dobbel innsending, godkjenning/deaktivering, isolasjon og gjennomslag i begge faktiske genereringskall med injiserte svar. CI, utrulling og innlogget UI kontrolleres ved levering. Ingen prøvekommentar aktiveres på produksjonsdata.
+
+## AI-journalist 2.0 – arbeidsbranch 08.10.2026
+
+`feature/ai-journalist-2` bygger på PR #51, head 7edbf808a9abfc9e99405066edf907acf5e2b260, etter kartlegging av main og faktisk Uniweb-runtime 1aff7ad. 491 serverfiler kontrollert; null drift fra deploymanifestet. Se `docs/ai-journalist/INVENTORY.md` og sanitert runtime-audit.
+
+Stylebook 1.0.0 og sju RR-ansvarsområder integreres i eksisterende RSS-nett/radio-flyt. Skriverens egenkontroll, separat kilde-/etikkontroll, proveniens og KI-merking. Eksisterende læringsregister utvides med manuelt godkjente nettrettelser og uforanderlige før/etter-eksempler; bare godkjente skriveråd sendes til generatoren. Faktakontrollen får ingen læringsregler. Ingen selvtrening, publisering eller automatisk regelaktivering.
+
+Automatiske tester dekker sperrer, etiske issues, læring, versjoner, kontrollutløp, endret tekst og historiske leveringshasher. To tidligere publiserte artikler er sammenlignet med nye redaksjonelle eksempler fra offentlige originalutdrag; dette er ikke live modellmåling. Privat kildeuttrekk ble avvist av automatisk sikkerhetskontroll og ble ikke utført. Se arkitektur, stylebook og sammenligning i `docs/ai-journalist/`.
+
+Ikke deployet. Ikke merge til main uten ny godkjenning: main har automatisk selektiv deploy. PR #53 overlapper læringsflaten og må avstemmes senere. WordPress-fotballgeneratoren, vær, lyd og Render er uendret. Endelig test-/CI-status og eksakt head føres i leveransens PR. Neste steg er review, avstemming av avhengigheter og målt modellprøve før eventuell godkjent utrulling.
+
+## RR Audio integrert i AI-journalist 2.0 – 08.10.2026
+
+Utvidelsen i issue #54 fortsetter på samme `feature/ai-journalist-2` og draft-PR #55. Stylebook er nå 1.1.0 med lydtillegg. Eksisterende Sak får separate, kildekontrollerte radiomanusprofiler, manuell manusgodkjenning, ElevenLabs-adapter, privat forhåndslytting, FFmpeg-behandling og egen manuell lydgodkjenning. Godkjent sendefil knyttes til samme sendelistepunkt. Versjonert uttaleordbok gjenbruker board-lås, roller og historikk. Lokal programmodul gjenbrukes fra tidligere utviklingsbranch uten å flette inn gamle overlay-filer.
+
+Stemmen `azrGjm6gYkR15bxb9cVv` er eierbekreftet; programtilknytning og konkrete stasjonsnivåer mangler. TTS er avslått. Mock-kjede, HTTP-sperrer og mobile maler testes; faktisk FFmpeg 7.1 er prøvd lokalt med syntetisk lyd som både WAV og MP3. Ingen ElevenLabs-kostnad, produksjonsendring eller radio.co-opplasting. Den tidligere teksten om «lyd uendret» beskriver første del-leveranse; denne utvidelsen endrer bare utviklingsbranchen.
+
+Se `docs/ai-journalist/RR-AUDIO.md` for status, fagkilder og resterende avhengigheter. WordPress/NFF-faktapakke, hostingens web-SAPI/FFmpeg, leverandørtilgang og Radio.co Studio API må avklares før bredere aktivering. Ikke merge eller deploy uten eksplisitt godkjenning.
+
+
+## AI-erklæring v1.0 – separat PR, 08.10.2026
+
+`policy/ai-v1` er avstemt mot AI-journalist #55 med RR Audio (`6b6b768`).
+Felles policy og utviklingsinstruksjoner er lagt til. Ny generering får
+policyversjon; nettets godkjenning bindes til genereringsmetadata. Lydposten
+registrerer syntetisk opphav og policyversjon; manglende/endrede verdier sperrer
+lydkøen. Negative tester dekker menneskelig godkjenning og endret proveniens.
+Se `docs/AI-POLICY-IMPLEMENTATION.md` for base, tester og gjenstående arbeid.
+Lytterinformasjon i sending og full AI-bildemetadatakjede gjenstår.
+Ingen merge til hovedgren, deploy eller publisering er utført.
+
+
+## Godkjent RR Audio-prøveprofil og felles stemme
+
+Eier godkjente prøveprofilen og stemmen i alle sammenhenger. `rr-tale-trial-0.1.0` er registrert i utviklingskonfigurasjonen: −18 LUFS, −2 dBTP, 44,1 kHz mono WAV-master (PCM16), MP3 192 kbps CBR og ett sekund som stillhetsgrense. `scope=all` gir stemmetilgang også til eksisterende saker uten program, men endrer ikke programtilordning, læring, kilder eller manuell sluttgodkjenning. Ukjente program-ID-er avvises fortsatt.
+
+Nyeste remote #55 (`fc3d134`, inkludert AI-policy #56) ble hentet inn før endringen. Policy-/syntesemetadata og sperrer er bevart. Skjult lokal nøkkelinnlegging er klargjort med et brukerbetjent Python-skript; nøkkel er ikke mottatt eller lagret av agenten. Privat filstøtte krever rettighet 600 og har ingen automatisk aktivering. Faktisk FFmpeg med syntetisk lyd består med den godkjente prøveprofilen. Ingen nøkkel er testet mot ElevenLabs, ingen produksjonsdata er endret, og TTS/budsjett er fortsatt av/0. Neste steg er brukerens lokale nøkkelinnlegging, deretter kontrollert tilkobling og høreprøve. Produksjonsdeploy krever fortsatt eksplisitt godkjenning.
+
+## Første autoriserte ElevenLabs-prøve – avvist
+
+Eier bekreftet lokal nøkkellagring og autoriserte ekte test. Ett TTS-kall med en kort tekst som eksplisitt sier at stemmen er KI-generert, ble avvist; ingen lydfil ble produsert og ingen automatisk gjentakelse ble gjort. Den daværende adapteren beholdt ikke konkret HTTP-status/leverandørkode, så årsaken til selve TTS-avslaget er ikke fastslått.
+
+Et separat, skrivefritt GET-kall til den oppgitte stemmen ga HTTP 401 / `missing_permissions` med `voices_read`. Dette bekrefter manglende diagnostisk lesetilgang, ikke at samme rettighet var årsaken til TTS-avslaget. Eier er bedt om å kontrollere TTS-tilgang og aktivere Voices Read på eksisterende nøkkel. Nøkkelen er ikke vist eller tatt inn i Git.
+
+Adapteren bevarer nå HTTP-status og en begrenset liste faste feilkoder ved avvisning, uten rårespons eller privat manus i feilmeldingen. Studio viser den sikre feilmeldingen. Målrettede lyd- og sidetester består, inkludert avslag og hemmelig tekst som ikke skal lekke. Ingen produksjonsendring eller sendelistegodkjenning. Nytt betalt prøveforsøk venter på avklart nøkkeltilgang.
+
+## Ny prøvestemme etter eiers valg
+
+Eier ba om å bruke `xF681s0UeE04gsf0mVsJ` i stedet. Den er registrert som valgt prøvestemme for alle kontekster; tidligere `azrGjm6gYkR15bxb9cVv` er deaktivert for nye genereringer, uten å slette historikk. Ett autorisert TTS-forsøk med den nye stemmen ble avvist med HTTP 402. Ingen lyd ble produsert, ingen automatisk gjentakelse eller produksjonsendring. HTTP-status er kjent, men detaljert leverandørårsak ble klassifisert som ukjent; abonnement/stemmetilgang må avklares før nytt forsøk. Nøkkel-/scope-testene består, inkludert sperre for den tidligere stemmen. Den godkjente prøveprofilen er uendret.
+
+## Eleven v4 og original stemme – 08.10.2026
+
+Etter eiers nye valg er `eleven_v4` standard i utviklingskonfigurasjonen og
+`azrGjm6gYkR15bxb9cVv` igjen valgt prøvestemme. Tidligere alternativ er deaktivert
+uten sletting av historikk. Modell-ID og eksisterende TTS-endepunkt er bekreftet i
+[ElevenLabs v4-dokumentasjonen](https://elevenlabs.io/v4). V2 støttes fortsatt ved
+uttrykkelig eldre konfigurasjon, men brukes aldri som automatisk reserve ved feil.
+Eksisterende modellbinding sperrer tidligere godkjent lyd etter modellbytte.
+
+Ett ekte, autorisert v4-kall med 212 tegn ga 17,04 sekunder lyd. WAV-master besto
+prøveprofilens tekniske kontroll (−18,42 LUFS, −2,00 dBTP, ingen klipping).
+MP3 målte −18,68 LUFS og ble korrekt avvist av lydstyrketoleransen; videre
+lydbehandling må justeres før sendefilen kan godkjennes. Filene og rapporten er
+lagret privat utenfor repoet. Uttale og fremføring er ikke menneskelig godkjent.
+Målrettede mock-tester av både v4 og v2 besto, inkludert manglende manusgodkjenning,
+ukjent modell, modellbytte og sperret sendeliste. TTS for Studio er fortsatt av,
+dagsbudsjett 0. Ingen produksjonsdeploy, publisering eller endring i sendelisten.
+
+Full lokal PHP-testpakke og pakkekontroll besto etter modellbyttet.
+
+## Autorisert Studio-test med ekte saker – 08.10.2026
+
+Eier ba om publisering i Studio for testing av ekte saker etter v4-høreprøven.
+Fersk audit kl. 17:31 UTC: 491 produksjonsfiler, ingen drift, manifest `1aff7ad`.
+Aktiv web-runtime er PHP 8.2.34 CGI/FastCGI, curl/mbstring tilgjengelig,
+300 sekunders tidsgrense. `proc_open` er deaktivert i web-runtime, selv om
+CLI har funksjonen. Ingen FFmpeg i serverens PATH. En midlertidig tokenbeskyttet
+runtimekontroll ble fjernet etter målingen.
+
+Avgrenset utrulling: samme Sak og kildekontroll, radiomanus, manuell
+manusgodkjenning, Eleven v4 og privat rålyd-forhåndslytting. `test_only=true`
+sperrer både enqueue-POST og sendefiltilgang, også for tidligere godkjent lyd.
+UI forklarer teststatus og manglende automatisk lydbehandling. Ingen ny
+lydarbeider, radio.co-overføring, ekte artikkelpublisering eller lydgodkjenning.
+Privat `config/audio-local.php` kan konfigurere Audio uten å skrive om eksisterende
+autentisering eller hemmeligheter i local.php. Planlagt tegnbudsjett: 3000 per døgn.
+Den lokale ElevenLabs-nøkkelen skal overføres kryptert til privat fil med modus 600.
+
+Full lokal PHP-/pakketest og RR Audio-mobilkontroll (375/390/1280) består.
+Produksjonstilpasset head.php uten favicon beholdes med ny CSS-versjon.
+Selektiv utrulling bruker eksisterende hash-/backup-/rollbackmekanisme.
+Eksakt commit, filplan, CI og faktisk etterkontroll føres ved fullført utrulling.
+
+## RR Audio-test publisert – 08.10.2026 kl. 19:38 Oslo
+
+Selektivt deployet `baac6aab2ff777e85044091cf37290da8a9f8539`: 27 kodefiler.
+Eksakt før-/etterplan og pakkehash: `docs/ai-journalist/STUDIO-PILOT-DEPLOY.json`.
+Eksisterende Composer-metadata ble beholdt; ingen vendor-oppgradering.
+Privat backup: `~/.radiorubben-studio-deploy/backups/selective-rr-audio-baac6aa`.
+Tilbakeføring følger backupens manifest med hashkontroll; de to nye private
+Audio-filene kan fjernes bare hvis hashene fortsatt samsvarer med separat
+`audio-config-created.json`. Ingen redaksjonelle data skal tilbakeføres.
+
+Etterkontroll: 499 registrerte kodefiler, null drift. Web-SAPI bekrefter TTS på,
+`test_only=true`, `eleven_v4`, godkjent originalstemme, nøkkel lastet og dagsgrense
+3000 tegn. Eksisterende local.php har identisk hash. Uautentisert forsøk på
+Sak/lyd/private key-rute gir innloggingsredirect, CSS gir 200. Midlertidige
+kontrollfiler er fjernet. Faktisk konto-/rollebasert gjennomgang av en ekte sak
+og avspilling i innlogget nettleser gjenstår; ingen redaksjonell sluttgodkjenning,
+betalt TTS eller artikkelpublisering ble kjørt som produksjonssmoketest.
+
+CI på deployet SHA: PHP 8.2/8.4 og mobil er grønne i kjøring `37817684748`.
+Lokal full PHP-/pakketest og mobil består. Normalisering er ikke aktivert:
+webhotellet sperrer proc_open. Ingen FFmpeg-binær ble installert på serveren.
+Tilgang: `/case.php` → velg sak → RR Audio → profil → kontroller/godkjenn manus
+→ Generer lyd → forhåndslytting. Testmodus tillater ikke sendelistelevering.
+
+PR #55 er fortsatt en avhengig utviklingsgren; ingen merge til main er utført.
+Neste main-release må avstemmes mot dette nye selektive produksjonsgrunnlaget,
+ellers kan eldre hovedgrenkode tilbakeføre pilotfunksjonene. Lydarbeider og
+normaliseringsforbedring må fullføres før vanlig sending aktiveres.
+
+## Samlet nyhetssending fra radiolisten – 08.10.2026
+
+Etter eiers «Flott da går vi videre»: samme branch/PR #55 utvides med «Lag
+nyhetssending» i eksisterende radioliste. Valgte saker beholder listens rekkefølge.
+Én til fem ferdig kildekontrollerte og manuelt klarmerkede saker kan samles med
+Bømlo-vær (alternativt Stord/Haugesund eller uten vær). Programtilknytning blandes
+ikke. Korte, deterministiske overganger legger ikke til journalistiske fakta.
+
+Sendetid foreslås som neste hele time, velges inntil åtte timer fram og vises med
+Oslo-tidssone. Intro følger eiers ordlyd: «Det er torsdag kveld, klokken er åtte,
+og her er nyhetene på Radio Rubben.» Midnatt og begge DST-overganger er testet.
+Værprognosen velges for sendingen; ferskhet regnes mot faktisk nåtid, ikke fremtid.
+Stylebook 1.2.0 versjonerer disse reglene; faktakrav er uendret.
+
+Samlet sending lagres som et radiopunkt med kilde-/manussnapshots på samme board.
+Manuell samlet manusgodkjenning, TTS-reservasjon, budsjett, leverandørfeil,
+privat rålydlager og avspilling gjenbruker RR Audio. Endring/arkivering av en
+kildesak ugyldiggjør varig samlet godkjenning, også dersom gammel tekst gjenopprettes.
+Utløpt kontroll/vær og passert sendetid sperrer ny generering. Uttale- og
+lydgodkjenning beholdes separat. Testmodus gir fortsatt ingen sendefil eller playout.
+
+Lokale negative tester, eksisterende PHP-/pakketest og nye mobile visninger
+(375/390/1280) består. Ingen ekte saker er redigert, godkjent eller sendt av agenten.
+Pilotoppdateringen er deployet som `5ecfd7b39d14e0f935169d0da27a38483ad2a955`.
+CI-kjøring `37821189701` består på denne SHA-en (PHP 8.2, PHP 8.4 og mobil).
+Selektiv deploy endret 12 filer. Etterkontroll 18:04:33 UTC fant null drift i
+501 registrerte filer. Seks tidligere dokumenterte runtimeforskjeller er bevart.
+Privat konfigurasjon, nøkler, innlogging og redaksjonelle data er ikke endret.
+Eksakte før-/etterhasher finnes i `ai-journalist/BULLETIN-PILOT-DEPLOY.json`.
+Backup: `~/.radiorubben-studio-deploy/backups/selective-rr-bulletin-5ecfd7b`.
+
+Innlogget visuell kontroll i brukerens nettleser ble hindret av nettleserens
+sikkerhetskontroll; ingen omgåelse ble forsøkt. Mobile fixture-visninger er
+kontrollert lokalt. En komplett prøve med brukerens to ekte saker, manuell
+manusgodkjenning og avspilling gjenstår. Testmodus og sperre mot playout beholdes.
+
+
+## Manuslæring etter høreprøve – 08.10.2026
+
+Eiers ønske om å bruke læringen videre er registrert som RR-AUDIO-L01 v1 i
+`ai-journalist/RR-AUDIO.md`: færre faste overganger, naturlig muntlig rytme og
+mindre overflødig kildegjentakelse. Faktakrav, nødvendig attribusjon og manuell
+godkjenning er uendret. Neste steg er versjonert manusforbedring med separat
+kontroll av eventuell omskriving og sammenligning mot samme faktagrunnlag.
+Kun dokumentasjon er endret; ingen runtime-endring, TTS-kall, ny stemme eller
+deploy. Dokumentasjonsdiff kontrollert; runtime-tester er ikke nødvendige.
+
+
+## Nyhetsdesk: kanalvalg og neste handling – 08.10.2026
+
+På samme utviklingsbranch utvides eksisterende inntak med Radio, Nett eller
+Radio og nett. Valget lagres ved opprettelse i samme board; forberedelsen
+bruker eksisterende kanalstyrte generator og separate kontroller. Åpning av
+en eksisterende sak endrer ikke kanalvalg, manus eller godkjenninger.
+
+Sakslisten og leseflaten viser status per kanal. Radiosaker får radiomanus,
+relevant kildegrunnlag og lenke til neste handling i eksisterende saksside,
+uten nettartikkelens redigerings-/publiseringsknapper. Manusgodkjenning merkes
+uttrykkelig som separat fra lydgodkjenning. Kanalendring skjer fortsatt på
+sakssiden gjennom eksisterende revisjons- og godkjenningssperrer.
+
+Validering: full lokal PHP-/pakketest består. Kanaltester dekker inntak,
+ugyldig valg/rolle, gjenåpning uten endring, riktig antall mock-kall, felles
+kildegrunnlag og ingen falsk manusgodkjenning etter tekstendring, utløpt
+kontroll eller manglende godkjenner. Nye mobiltester dekker radio/begge ved
+375, 390 og 1280 piksler, kanalvalg og fravær av nettgodkjenning for radio.
+Ingen ekte saker eller eksterne genereringstjenester er brukt.
+
+Status: implementert for gjennomgang; ikke deployet til Studio. Aktiv pilot
+beholder forrige kodeversjon. Ingen merge eller ny produksjonsutrulling.
+
+
+### Nyhetsdesk deployet etter eksplisitt godkjenning
+
+Eier ba om «deploy». Kanalvalg og neste handling er nå lagt ut med kodecommit
+`b59cee0077966cb6c892f4f339d46cb8ee7fad6b`. Seks avstemte kode-/versjonsfiler ble
+oppdatert selektivt. Privat deployplan, backup og rollbackgrunnlag er lagret i
+eksisterende deploysystem; ingen private driftsfiler legges til dette notatet.
+Etterkontroll 08.10.2026 kl. 18:32 UTC: 501 registrerte filer, null drift.
+Offentlig versjonsmarkør stemmer med kildecommit. Innloggingssperren og
+kanalstatus-funksjonen består helsesjekken. Redaksjonelle data er ikke endret.
+
+CI-kjøring 37824716010 består på deployet kodecommit: PHP 8.2, PHP 8.4 og mobil.
+Eksisterende testmodus beholdes. Ingen merge til main eller ordinær utsending.
+Innlogget visuell kontroll av brukerens ekte saker er ikke utført her.
+
+## Hørbar AI-merking – egen leveranse etter pilotdeploy
+
+Base: #55 ved `65a9bbd`, hvor `baac6aa` er bekreftet aktiv runtime.
+Ny gren `feat/audible-ai-disclosure` bevarer pilotens testmodus og annet arbeid.
+Fast opplysning om KI-stemme legges først i TTS, bindes til hele
+godkjenningskjeden og vises før manusgodkjenning. Ferdig lyd krever uttrykkelig
+lyttebekreftelse på merkingen. Tidligere lyd uten binding blir ikke sendeklar.
+Målrettede lyd-/rutetester, full PHP-/pakketest og mobilkontroll består.
+Ingen produksjonsendring eller betalt TTS-test. Neste steg er review,
+autorisert utrulling og menneskelig høreprøve.
+
+
+### Hørbar merking satt i produksjon 08.10.2026
+
+Etter «sett endringene i produksjon» er `28df44f035cfad383e3cf15ade182ad2ba0bfd94`
+lagt ut selektivt. Nyere nyhetssending og nyhetsdesk er bevart. Fem filer er
+oppdatert med privat sikkerhetskopi og automatisk tilbakeføring ved kontrollfeil.
+Etterkontroll: 501 registrerte filer, null drift; HTTPS-innlogging, offentlig
+versjonsmarkør og fast talestreng bestod. Fotballrobotens filer er uendret.
+PHP 8.2/8.4 og mobilkontroll var grønne på levert kode. Testmodus beholdes;
+ingen betalt TTS, menneskelig høreprøve eller faktisk utsending er utført.
+
 ## Windows board-lagring – 09.10.2026
 
 Branch fix/windows-board-permissions-test bygger på kontrollert origin/main:
@@ -815,3 +1045,23 @@ Funn: manglende referert favicon og manglende direkte CRM-mobilmeny. Neste steg
 er avgrensede rettelser; faktisk lyd, sending og produksjonsskriving er ikke
 testet. Engangs-workflowen til inventering er tilbakeført. Ingen deploy eller
 merge er gjort; #47 forblir utsatt.
+
+## Samlet klargjøring av #55 og #57 – 10.10.2026
+
+#52 er publisert som b427e6ef253b41dccb105213b62d3318213e13e0 via
+Actions 37999369647. #53 er allerede i main og produksjon. Thomas har bedt
+om også å ta #55 og #57; de klargjøres samlet før autorisert produksjonsmerge.
+#55 er avstemt med main. Flerlinjeinstrukser, nett-/radiovalg, CRM,
+Windows-lagring og samtlige mobiltester er bevart. #57 bygger på dette og
+binder hørbar KI-merking til manus, lyd og separat lyttegodkjenning.
+
+Full Composer-test på Windows/PHP 8.4 består og avslutter med
+"Package structure, private paths and data exclusions OK". Eksisterende
+mbstring-utvidelse er aktivert i lokal PHP. Nøkkelfiltesten forventer trygg
+avvisning når Windows ikke kan bekrefte Unix-rettigheter; produksjonskoden
+og Linux-testene for 0600/symlenker er uendret. Fersk Linux 8.2/8.4 og
+mobil-CI må være grønn før merge. Endelig commit og selektiv deploykvittering
+føres på PR-ene. Private innstillinger og testmodus skal bevares.
+Ingen betalt TTS, menneskelig høreprøve eller ordinær utsending er utført.
+Uniwebs begrensning på proc_open og manglende ordinær lydarbeider består.
+#47 er fortsatt utsatt.

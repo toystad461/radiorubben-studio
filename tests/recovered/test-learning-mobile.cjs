@@ -1,7 +1,7 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),{execFileSync}=require('node:child_process');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'../..');
-const render=(view,role='admin',mode='')=>execFileSync(process.env.PHP_BIN||'php',[path.join(root,'tests/fixtures/learning-page.php'),view,role,mode],{encoding:'utf8'});
+const render=(view,role='admin',channel='radio')=>execFileSync(process.env.PHP_BIN||'php',[path.join(root,'tests/fixtures/learning-page.php'),view,role,channel],{encoding:'utf8'});
 (async()=>{
  const browser=await chromium.launch();
  try{
@@ -9,7 +9,7 @@ const render=(view,role='admin',mode='')=>execFileSync(process.env.PHP_BIN||'php
    const page=await browser.newPage({viewport:{width,height:900}});
    await page.route('**/*',route=>{
     const url=new URL(route.request().url());
-    if(url.pathname==='/learning.php')return route.fulfill({contentType:'text/html',body:render(url.searchParams.get('view')||'pending',url.searchParams.get('role')||'admin',url.searchParams.get('mode')||'')});
+    if(url.pathname==='/learning.php')return route.fulfill({contentType:'text/html',body:render(url.searchParams.get('view')||'pending',url.searchParams.get('role')||'admin',url.searchParams.get('mode')||url.searchParams.get('channel')||'radio')});
     const local=path.join(root,'public',url.pathname);
     if(url.pathname.startsWith('/assets/')&&fs.existsSync(local))return route.fulfill({body:fs.readFileSync(local),contentType:url.pathname.endsWith('.css')?'text/css':'image/png'});
     return route.fulfill({status:404,body:''});
@@ -26,6 +26,11 @@ const render=(view,role='admin',mode='')=>execFileSync(process.env.PHP_BIN||'php
    assert.equal(await page.locator('#learning-rules button').filter({hasText:'Deaktiver'}).count(),1);
    await page.locator('.learning-tabs a').filter({hasText:'Historikk'}).click();
    assert.equal(await page.locator('#learning-rules button').count(),0);
+   await page.goto('http://fixture.test/learning.php?channel=web');
+   assert.equal(await page.locator('#learning-channel').inputValue(),'web');
+   assert.equal(await page.locator('#learning-item option').count(),2,'Web correction plus general rule');
+   assert.match(await page.locator('.learning-comparison').first().innerText(),/Et tidligere nettutkast/);
+   assert.equal(await page.locator('input[name=channel]').inputValue(),'web','Proposal binds web correction channel');
    await page.goto('http://fixture.test/learning.php?view=pending&role=observer');
    assert.equal(await page.locator('#rule-text').count(),0);
    assert.equal(await page.locator('#learning-rules button').count(),0,'Observer cannot decide');

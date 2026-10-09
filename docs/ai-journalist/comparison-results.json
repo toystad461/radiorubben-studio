@@ -1,0 +1,55 @@
+{
+    "stylebook": "1.1.0",
+    "mode": "editorial_fixture_comparison",
+    "limitations": [
+        "Candidates are editorial examples, not runtime model responses.",
+        "Public source excerpts may differ from the historical publication source.",
+        "LIX/counts do not verify truth or ethical acceptability."
+    ],
+    "articles": [
+        {
+            "postId": 1283,
+            "url": "https://www.radiorubben.no/studio-881809fd2615496a/",
+            "candidateOrigin": "Editorial candidate authored in this development task; not a recorded runtime model response.",
+            "before": {
+                "words": 105,
+                "sentences": 9,
+                "lixApprox": 47.9
+            },
+            "after": {
+                "words": 37,
+                "sentences": 3,
+                "lixApprox": 47.5
+            },
+            "assessment": "Bevarer mulig/skal ha; fjerner gjentakelser, bloddetalj og påstanden om fortsatt tilstedeværelse for videre avklaring.",
+            "candidate": {
+                "title": "Politiet undersøker mulig slagsmål ved Krohnengen skole",
+                "intro": "Politiet rykket ut etter en melding om mulig slagsmål ved skolen, melder NRK.",
+                "body": "Ifølge NRK skal politiet ha kontroll på én mistenkt og to fornærmede.\nBakgrunnen for hendelsen er ukjent."
+            },
+            "automaticApproval": false
+        },
+        {
+            "postId": 1271,
+            "url": "https://www.radiorubben.no/studio-63afd93367530283/",
+            "candidateOrigin": "Editorial candidate authored in this development task; not a recorded runtime model response.",
+            "before": {
+                "words": 121,
+                "sentences": 13,
+                "lixApprox": 53.9
+            },
+            "after": {
+                "words": 40,
+                "sentences": 6,
+                "lixApprox": 51.7
+            },
+            "assessment": "Prioriterer budsjettprosessen, datoene og høringen. Fjerner gjentakelser og generell bakgrunn; fremstiller ikke planlagte informasjonsmøter som gjennomført.",
+            "candidate": {
+                "title": "Bømlo legger fram budsjettforslaget 26. oktober",
+                "intro": "Kommunedirektør Kjetil Aga Gjøsæter presenterer forslaget til budsjett for 2027 og økonomiplan for 2027–2030, opplyser Bømlo kommune.",
+                "body": "Formannskapet behandler forslaget 26. november og legger det ut til offentlig høring.\nKommunestyrets budsjettmøte er 14. desember."
+            },
+            "automaticApproval": false
+        }
+    ]
+}

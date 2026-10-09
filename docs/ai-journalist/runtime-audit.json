@@ -1,0 +1,19 @@
+{
+    "checkedAt": "2026-10-08T14:36:27+00:00",
+    "phpCli": "8.4.26",
+    "commit": "1aff7adeb2b90c9576265c70f06bab141a1519a0",
+    "run": "37739713565-1",
+    "checkedFiles": 491,
+    "drift": [],
+    "preservedDifferences": [
+        "studio-private/app/bootstrap.php",
+        "studio-private/app/views/head.php",
+        "studio-private/vendor/paragonie/random_compat/dist/random_compat.phar.pubkey",
+        "studio-private/vendor/paragonie/random_compat/dist/random_compat.phar.pubkey.asc",
+        "studio-public/assets/favicon.ico",
+        "studio-public/assets/radio-rubben-logo.png",
+        "studio-public/assets/radio-rubben-logo.svg",
+        "studio-public/local/login.php",
+        "studio-public/login.php"
+    ]
+}

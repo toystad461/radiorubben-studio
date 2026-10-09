@@ -26,6 +26,7 @@ jobs:
           node tests/recovered/test-case-flow.mjs
       - name: Check full-package deployment stop before any server access
         run: bash tests/test-deploy-block.sh
+      - run: python3 tests/test-audio-key.py
       - run: composer test
       - if: matrix.php == '8.4'
         run: php scripts/package.php
@@ -48,4 +49,9 @@ jobs:
       - run: npm install --no-save --package-lock=false playwright@1.62.1
       - run: npx playwright install --with-deps chromium
       - run: node tests/recovered/test-newsroom-mobile.cjs
+      - run: node tests/recovered/test-newsroom-channel-mobile.cjs
+      - run: node tests/recovered/test-learning-mobile.cjs
+      - run: node tests/recovered/test-audio-mobile.cjs
+      - run: node tests/recovered/test-bulletin-mobile.cjs
+
       - run: node tests/crm-mobile.cjs

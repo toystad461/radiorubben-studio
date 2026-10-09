@@ -48,7 +48,8 @@ function studio_web_html(array $item): string {
     foreach (studio_news_reading_paragraphs($w['body']) as $p) $html.='<p>'.$esc($p).'</p>';
     $nrk=parse_url($item['sourceUrl']??'',PHP_URL_HOST)==='www.nrk.no';
     $label=$nrk?'Les hele saken hos NRK':'Les mer hos '.$item['sourceName'];
-    return '<p>Basert på opplysninger fra '.($nrk?'NRK':$esc($item['sourceName'])).'. <a href="'.$esc($item['sourceUrl']).'" rel="noopener">'.$esc($label).'</a></p><p><strong>'.$esc($w['intro']).'</strong></p>'.$html;
+    $disclosure=!empty($w['generation']['aiAssisted']) ? '<p class="rr-transparency">Denne teksten er utarbeidet med KI-støtte. Radio Rubben har redaksjonelt ansvar.</p>' : '';
+    return $disclosure.'<p>Basert på opplysninger fra '.($nrk?'NRK':$esc($item['sourceName'])).'. <a href="'.$esc($item['sourceUrl']).'" rel="noopener">'.$esc($label).'</a></p><p><strong>'.$esc($w['intro']).'</strong></p>'.$html;
 }
 /** Reserve durably before network I/O. An unknown outcome is never retried automatically. */
 function studio_web_publish(string $id,int $revision,string $status,array $user,array $config,?callable $request=null,?string $path=null): array {

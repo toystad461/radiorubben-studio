@@ -6,8 +6,9 @@ if (!$user) redirect('/login.php');
 if (!in_array($_SERVER['REQUEST_METHOD'], ['GET', 'POST'], true)) {
     http_response_code(405); header('Allow: GET, POST'); exit;
 }
-require dirname(__DIR__) . '/app/board.php';
+require_once dirname(__DIR__) . '/app/board.php';
 require dirname(__DIR__) . '/app/story-script.php';
+require_once dirname(__DIR__).'/app/audio-processing.php';
 require dirname(__DIR__) . '/app/editorial-memory.php';
 require dirname(__DIR__) . '/app/producer.php';
 $canPrepare = studio_can($user, 'produce');
@@ -25,7 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = is_string($_POST['action'] ?? null) ? $_POST['action'] : '';
     $id = is_string($_POST['id'] ?? null) ? $_POST['id'] : '';
     try {
-        if ($action === 'add') studio_board_add_manual((string)($_POST['title'] ?? ''), $user);
+        if ($action === 'bulletin_create') {
+            if(!is_array($_POST['selected']??null))throw new InvalidArgumentException('Velg saker i listen først.');
+            $id=rr_bulletin_create($_POST['selected'],(int)($_POST['air_at']??0),(string)($_POST['weather_area']??'bomlo'),$user);
+        } elseif($action==='bulletin_approve') {
+            rr_audio_change($id,(int)($_POST['revision']??0),'approve_script',['profile'=>'bulletin','confirmed'=>$_POST['confirmed']??''],$user);
+        } elseif($action==='bulletin_tts') {
+            $bi=studio_case_get($id);if(!isset($bi['bulletin']))throw new InvalidArgumentException('Velg en samlet sending.');
+            $hour=(int)rr_bulletin_time($bi['bulletin']['airAt'])->format('G');
+            rr_audio_generate($id,(int)($_POST['revision']??0),'bulletin',(string)($_POST['voice']??''),['speed'=>$hour>=5&&$hour<10?0.95:1.0],$user,$config['rr_audio']??[]);
+        } elseif($action==='bulletin_resolve') {
+            rr_audio_resolve($id,(int)($_POST['revision']??0),'bulletin',$_POST,$user);
+        } elseif ($action === 'add') studio_board_add_manual((string)($_POST['title'] ?? ''), $user);
         elseif ($action === 'clear_all') {
             if (($_POST['confirm_clear'] ?? '') !== '1') throw new InvalidArgumentException('Bekreft at du vil arkivere alle punktene.');
             $_SESSION['sending_undo_clear'] = studio_board_clear((string)($_POST['snapshot'] ?? ''), $user);
@@ -56,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     studio_board_update($id, $revision, 'source_checked', ['sourceCheck'=>$result['check']], $user);
                 } else {
                     studio_board_update($id, $revision, 'generated', ['script'=>$result['script'],
-                        'generation'=>['model'=>$config['openai_model'], 'editorial'=>$editorial],
+                        'generation'=>['model'=>$config['openai_model'], 'editorial'=>$editorial,'journalist'=>$result['generation']??null],
                         'sourceCheck'=>$result['check']], $user);
                 }
                 $_SESSION['sending_message'] = $result['check']['status'] === 'passed'
@@ -119,7 +131,7 @@ require dirname(__DIR__) . '/app/views/head.php';
 <div class="workspace">
 <header class="topbar"><span>Arbeidsrom / <strong>Sending</strong></span><span>Redaksjonell sendeliste</span><?php require dirname(__DIR__) . '/app/views/account.php'; ?></header>
 <main id="main" class="control-page">
-  <div class="control-heading"><div><p class="eyebrow">RADIO RUBBEN / PRODUKSJON</p><h1>Sending</h1><p class="control-intro">Felles sendeliste for medarbeiderne. Ingen punkter sendes automatisk på lufta.</p></div><div class="control-heading-actions"><a class="control-link" href="/desk.php">Innkomne saker – radio og nett ↗</a><?php if ($canPrepare && $items): ?><a class="control-link" href="/sending.php?export=1">Last ned sendeliste</a><?php endif; ?></div></div>
+  <div class="control-heading"><div><p class="eyebrow">RADIO RUBBEN / PRODUKSJON</p><h1>Sending</h1><p class="control-intro">Felles sendeliste for medarbeiderne. Ingen punkter sendes automatisk på lufta.</p></div><div class="control-heading-actions"><a class="control-link" href="#remove-selected">Lag nyhetssending ↓</a><a class="control-link" href="/desk.php">Innkomne saker – radio og nett ↗</a><?php if ($canPrepare && $items): ?><a class="control-link" href="/sending.php?export=1">Last ned sendeliste</a><?php endif; ?></div></div>
   <?php if ($message): ?><p class="control-alert" role="status"><?= escape($message) ?></p><?php endif; ?>
   <?php if ($error || isset($readError)): ?><p class="control-alert error" role="alert"><?= escape($error ?? 'Sendelisten er utilgjengelig. Prøv igjen senere.') ?></p><?php endif; ?>
   <div class="control-stats"><span><strong><?= count($items) ?></strong> punkter</span><span><strong><?= $readyCount ?></strong> klare</span><span><strong><?= count($items) - $readyCount ?></strong> utkast</span></div>
@@ -128,16 +140,17 @@ require dirname(__DIR__) . '/app/views/head.php';
   <div class="sending-layout">
     <section class="control-panel sending-list" aria-labelledby="sending-list-title"><div class="panel-top"><h2 id="sending-list-title">Rekkefølge</h2><span class="control-muted">Felles arbeidsliste</span></div>
       <?php if (!$items): ?><p class="control-empty">Listen er tom. Legg til en sak fra Nyhetsdesk eller opprett et eget punkt.</p><?php endif; ?>
-      <?php if ($canPrepare && $items): ?><form id="remove-selected" method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="remove_selected"><input type="hidden" name="snapshot" value="<?= escape(studio_board_snapshot($board)) ?>"><p>Velg én eller flere saker nedenfor. Fjerning arkiverer dem og bevarer manus og historikk.</p><button type="submit">Fjern valgte fra sendelisten</button></form><?php endif; ?>
+      <?php if ($canPrepare && $items): ?><form id="remove-selected" method="post" class="editor-form"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="snapshot" value="<?= escape(studio_board_snapshot($board)) ?>"><p>Velg nyhetssakene nedenfor. Rekkefølgen i listen brukes i sendingen.</p><label>Sendetid (norsk tid)<select name="air_at"><?php for($slot=rr_bulletin_next_hour();$slot<=time()+8*3600;$slot+=3600):?><option value="<?=$slot?>"><?=escape(rr_bulletin_time($slot)->format('d.m.Y H:i T'))?></option><?php endfor;?></select></label><label>Vær for området<select name="weather_area"><option value="bomlo">Bømlo · Bremnes</option><option value="stord">Stord · Leirvik</option><option value="haugesund">Haugesund</option><option value="none">Uten vær</option></select></label><p>Omtrent to minutter. Sakene må være kildekontrollert og merket klare. Ingen automatisk utsending.</p><button type="submit" name="action" value="bulletin_create">Lag nyhetssending</button><button type="submit" name="action" value="remove_selected" class="quiet">Fjern valgte fra sendelisten</button></form><?php endif; ?>
       <ol class="sending-items"><?php foreach ($items as $position=>$item): ?><li><?php if ($canPrepare): ?><label><input type="checkbox" form="remove-selected" name="selected[]" value="<?= escape($item['id']) ?>"> Velg sak <?= $position + 1 ?></label><?php endif; ?><a class="sending-item <?= $selected && $selected['id'] === $item['id'] ? 'selected' : '' ?>" href="/sending.php?item=<?= escape($item['id']) ?>"><span class="sending-position"><?= $position + 1 ?></span><span><strong><?= escape($item['title']) ?></strong><small><?= escape($item['sourceName']) ?></small></span><span class="status-pill <?= escape($item['status']) ?>"><?= $item['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span></a></li><?php endforeach; ?></ol>
       <?php if ($canPrepare): ?><form class="manual-add" method="post"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="add"><label for="new-title">Nytt punkt</label><div><input id="new-title" name="title" maxlength="180" required placeholder="For eksempel: Værmelding kl. 12"><button type="submit">Legg til</button></div></form><?php endif; ?>
     </section>
     <section class="control-panel sending-editor" aria-labelledby="editor-title">
-      <?php if ($selected): ?>
+      <?php if($selected&&isset($selected['bulletin'])):require dirname(__DIR__).'/app/views/bulletin.php';elseif ($selected): ?>
       <p><a class="control-link" href="/case.php?item=<?= escape($selected['id']) ?>">Åpne saken – radio og nettside ↗</a></p>
       <div class="panel-top"><div><p class="eyebrow">PUNKT <?= array_search($selected, $items, true) + 1 ?></p><h2 id="editor-title">Manus og kontroll</h2><p class="control-muted"><?= escape($selected['title']) ?></p></div><span class="status-pill <?= escape($selected['status']) ?>"><?= $selected['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span></div><a class="sending-jump" href="#sending-list-title">Velg annet punkt ↓</a>
       <p class="control-muted">Fra <?= escape($selected['sourceName']) ?> · <?= escape(sending_time($selected['sourceAt'])) ?><?php if ($selected['sourceUrl']): ?> · <a href="<?= escape($selected['sourceUrl']) ?>" target="_blank" rel="noopener noreferrer">Kontroller original ↗</a><?php endif; ?></p>
       <?php if ($selected['summary']): ?><details class="source-summary"><summary>Vis kildeomtale</summary><p><?= escape($selected['summary']) ?></p></details><?php endif; ?>
+      <?php if($queued=rr_audio_queued($selected,$board,$config['rr_audio']??[])):?><p>Godkjent lyd i sendelisten: <?=escape(rr_audio_profile($queued['profile'])['name'])?></p><audio controls preload="none" src="/audio-file.php?item=<?=escape($selected['id'])?>&amp;profile=<?=escape($queued['profile'])?>&amp;kind=send"></audio><a href="/audio-file.php?item=<?=escape($selected['id'])?>&amp;profile=<?=escape($queued['profile'])?>&amp;kind=send">Hent godkjent sendefil</a><?php elseif(!empty($selected['audioQueue'])):?><p>Lyden er sperret fordi manus, kildekontroll eller godkjenning er endret. Åpne saken for ny kontroll.</p><?php endif;?>
       <?php if ($canPrepare && !empty($selected['originId'])): ?><form method="post" class="script-generate"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="generate"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><button type="submit"><?= studio_news_allowed_url((string)$selected['sourceUrl']) ? 'Lag og kildekontroller nyhetsmanus' : 'Generer manusutkast fra omtale' ?></button><span class="control-muted"><?= studio_news_allowed_url((string)$selected['sourceUrl']) ? 'Henter originaltekst og kjører separat AI-kontroll. ' : 'Bruker lagret kildeomtale uten automatisk originalkontroll. ' ?><?= $selected['script'] ? 'Lagrer forrige versjon i historikken. ' : '' ?></span></form><?php endif; ?>
       <?php if ($canPrepare && $selected['script'] && studio_news_allowed_url((string)$selected['sourceUrl'])): ?>
       <form method="post" class="script-generate"><input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="recheck"><input type="hidden" name="id" value="<?= escape($selected['id']) ?>"><input type="hidden" name="revision" value="<?= (int)$selected['revision'] ?>"><button type="submit">Kontroller lagret manus på nytt</button><span class="control-muted">Lagre tekstendringer først. Henter originalen på nytt.</span></form>
