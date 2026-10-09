@@ -47,7 +47,14 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         }elseif(preg_match('/^studio:([a-f0-9]{16})$/D',$selected,$match)){
             $id=$match[1];$item=studio_case_get($id);
             if($item['revision']!==$revision)throw new InvalidArgumentException('Saken er endret. Last siden på nytt og les siste versjon.');
-            if($action==='approve'){
+            if($action==='feedback'){
+                studio_memory_change('feedback',['item'=>$id,'itemRevision'=>$revision,
+                    'text'=>(string)($_POST['comment']??''),'apply'=>(string)($_POST['apply']??''),
+                    'styleOnly'=>(string)($_POST['styleOnly']??'')],$user);
+                $notice=($_POST['apply']??'')==='1'
+                    ? 'Kommentaren er lagret som et aktivt skriveråd. Den brukes i nye nett- og radioutkast for God morgen Vestland.'
+                    : 'Kommentaren er lagret med tekstversjon og kildegrunnlag. Den venter på godkjenning i Robåt – læring.';
+            }elseif($action==='approve'){
                 if(!$admin||($_POST['confirmed']??'')!=='1')throw new InvalidArgumentException('Administrator må lese og bekrefte saken.');
                 studio_web_save($id,$revision,'approve',['confirmed'=>'1'],$user);
                 studio_web_publish($id,$revision+1,'publish',$user,studio_wp_config());$notice='Saken er publisert på radiorubben.no.';$advance=true;

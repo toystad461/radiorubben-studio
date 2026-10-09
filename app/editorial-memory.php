@@ -21,16 +21,72 @@ function studio_memory_change(string $action, array $input, array $user, ?string
 {
     $role = $user['role'] ?? '';
     if (!in_array($role, ['admin', 'producer', 'presenter'], true)
-        || ($action !== 'propose' && $role !== 'admin')) {
+        || (!in_array($action, ['propose','feedback'], true) && $role !== 'admin')) {
         throw new InvalidArgumentException('Rollen har ikke tilgang til denne handlingen.');
     }
     studio_board_change(static function (array &$board) use ($action, $input, $user): void {
         $actor = $user['name'] ?? 'Medarbeider';
         $board['editorialRules'] ??= [];
-        if ($action === 'propose') {
+        if ($action === 'feedback') {
             $text = trim((string)($input['text'] ?? ''));
-            if (strlen($text) < 10 || studio_board_length($text) > 500 || preg_match('/[\x00-\x1f\x7f]/', $text))
-                throw new InvalidArgumentException('Skriv en språk- eller stilregel på 10–500 tegn, uten linjeskift.');
+            if (studio_board_length($text) < 10 || studio_board_length($text) > 500
+                || $text !== strip_tags($text) || preg_match('/[\\x00-\\x08\\x0b\\x0c\\x0e-\\x1f\\x7f]/', $text))
+                throw new InvalidArgumentException('Skriv en kommentar på 10–500 tegn uten HTML.');
+            $itemId = (string)($input['item'] ?? '');
+            $item = null;
+            foreach ($board['items'] as $candidate) if (($candidate['id'] ?? '') === $itemId) $item = $candidate;
+            if (!$item || ($item['status'] ?? '') === 'archived')
+                throw new InvalidArgumentException('Saken finnes ikke i den aktive listen.');
+            if (($item['revision'] ?? 0) !== (int)($input['itemRevision'] ?? 0))
+                throw new InvalidArgumentException('Saken ble endret. Les siste versjon før du kommenterer.');
+            if (($item['program'] ?? '') !== 'god-morgen-vestland')
+                throw new InvalidArgumentException('Kommentarbasert læring støtter foreløpig God morgen Vestland.');
+            $activate = ($input['apply'] ?? '') === '1';
+            if ($activate && ($user['role'] ?? '') !== 'admin')
+                throw new InvalidArgumentException('Bare administrator kan aktivere et skriveråd.');
+            if ($activate && ($input['styleOnly'] ?? '') !== '1')
+                throw new InvalidArgumentException('Bekreft at skriverådet gjelder språk og kildebruk, aldri nye fakta eller unntak fra kontroll.');
+            foreach ($board['editorialRules'] as $rule)
+                if (($rule['evidence']['kind'] ?? '') === 'feedback'
+                    && ($rule['evidence']['itemId'] ?? '') === $itemId
+                    && ($rule['evidence']['revision'] ?? 0) === $item['revision']
+                    && $rule['text'] === $text)
+                    throw new InvalidArgumentException('Denne kommentaren er allerede lagret.');
+            if (count($board['editorialRules']) >= 300)
+                throw new InvalidArgumentException('Læringsregisteret er fullt.');
+            if ($activate && count(array_filter($board['editorialRules'], static fn($r) => ($r['status'] ?? '') === 'approved')) >= 20)
+                throw new InvalidArgumentException('Maksimalt 20 aktive skriveråd. Deaktiver et gammelt råd i Robåt – læring.');
+            $source = $item['web']['check']['source'] ?? $item['sourceCheck']['source'] ?? [];
+            $board['editorialRules'][] = [
+                'id'=>bin2hex(random_bytes(8)), 'program'=>$item['program'], 'text'=>$text,
+                'status'=>$activate ? 'approved' : 'pending', 'revision'=>1,
+                'evidence'=>['kind'=>'feedback', 'itemId'=>$itemId, 'revision'=>$item['revision'],
+                    'title'=>$item['title'], 'before'=>studio_memory_feedback_text($item),
+                    'after'=>$text, 'radio'=>(string)($item['script'] ?? ''),
+                    'sourceUrl'=>$item['sourceUrl'] ?? '', 'sourceAt'=>$item['sourceAt'] ?? null,
+                    'source'=>$source, 'webCheckStatus'=>$item['web']['check']['status'] ?? null,
+                    'radioCheckStatus'=>$item['sourceCheck']['status'] ?? null],
+                'createdAt'=>gmdate('c'), 'createdBy'=>$actor,
+                'history'=>[['action'=>$activate ? 'feedback_activate' : 'feedback', 'at'=>gmdate('c'), 'actor'=>$actor]],
+            ];
+            return;
+        }
+        if ($action === 'propose') {
+            $raw = $input['text'] ?? '';
+            if (!is_string($raw) || strlen($raw) > 40000)
+                throw new InvalidArgumentException('Skriv høyst 20 instrukser, én per linje.');
+            $texts = [];
+            foreach (preg_split('/\r\n|\r|\n/', $raw) as $line) {
+                $text = trim(preg_replace('/^\s*[-*•]\s+/u', '', $line));
+                if ($text === '') continue;
+                if (studio_board_length($text) < 10 || studio_board_length($text) > 500 || preg_match('/[\x00-\x1f\x7f]/', $text))
+                    throw new InvalidArgumentException('Hver instruks må ha 10–500 tegn. Skriv én instruks per linje.');
+                if (in_array($text, $texts, true))
+                    throw new InvalidArgumentException('Samme instruks står flere ganger i listen.');
+                $texts[] = $text;
+            }
+            if (!$texts || count($texts) > 20)
+                throw new InvalidArgumentException('Skriv 1–20 instrukser, én per linje.');
             if (($input['styleOnly'] ?? '') !== '1')
                 throw new InvalidArgumentException('Bekreft at regelen gjelder språk eller form, ikke fakta eller unntak fra kildekontroll.');
             $evidence = null;
@@ -52,12 +108,12 @@ function studio_memory_change(string $action, array $input, array $user, ?string
                 if (!$evidence) throw new InvalidArgumentException('Fant ikke manuset.');
             }
             foreach ($board['editorialRules'] as $rule) {
-                if (in_array($rule['status'], ['pending','approved'], true) && $rule['text'] === $text)
+                if (in_array($rule['status'], ['pending','approved'], true) && in_array($rule['text'], $texts, true))
                     throw new InvalidArgumentException('Denne regelen finnes allerede.');
             }
-            if (count($board['editorialRules']) >= 300)
+            if (count($board['editorialRules']) + count($texts) > 300)
                 throw new InvalidArgumentException('Regelregisteret er fullt. Kontakt administrator.');
-            $board['editorialRules'][] = ['id'=>bin2hex(random_bytes(8)), 'program'=>'god-morgen-vestland',
+            foreach ($texts as $text) $board['editorialRules'][] = ['id'=>bin2hex(random_bytes(8)), 'program'=>'god-morgen-vestland',
                 'text'=>$text, 'status'=>'pending', 'revision'=>1, 'evidence'=>$evidence,
                 'createdAt'=>gmdate('c'), 'createdBy'=>$actor,
                 'history'=>[['action'=>'propose', 'at'=>gmdate('c'), 'actor'=>$actor]]];
@@ -86,4 +142,12 @@ function studio_memory_change(string $action, array $input, array $user, ?string
         }
         throw new InvalidArgumentException('Regelen finnes ikke.');
     }, $path);
+}
+
+/** Persist the displayed draft as evidence, without introducing it into other stories. */
+function studio_memory_feedback_text(array $item): string
+{
+    $w = $item['web'] ?? [];
+    return implode("\n", array_filter([(string)($w['title'] ?? $item['title'] ?? ''),
+        (string)($w['intro'] ?? ''), (string)($w['body'] ?? '')], static fn($v) => $v !== ''));
 }
