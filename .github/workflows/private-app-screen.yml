@@ -1,0 +1,38 @@
+name: Private iPhone screen regression
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  private-app-screen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install isolated screen-test dependencies
+        run: |
+          python -m pip install playwright==1.57.0 beautifulsoup4==4.14.3
+          python -m playwright install --with-deps chromium
+      - name: Test private app with synthetic content only
+        env:
+          RR_SCREEN_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python tests/private-app-screen/run.py "${{ runner.temp }}/private-app-screen"
+      - name: Keep screen results without config or sessions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: private-app-screen
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/private-app-screen/screen-results.json
+            ${{ runner.temp }}/private-app-screen/screenshots/*.png
