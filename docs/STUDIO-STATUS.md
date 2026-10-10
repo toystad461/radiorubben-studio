@@ -1127,3 +1127,19 @@ tidspunkt og kontrollsummer i docs/RSS-RELEVANCE-PREVIEW-2026-10-10.md.
 Før produksjon: modellprøve med godkjent konfigurasjon, privat historikksjekk,
 kontroll av aktiv WordPress-worker/plugin og eksplisitt utrullingsgodkjenning.
 NRKs nye /artikkel/-lenker venter fortsatt på støttet originalhenting.
+
+## Forkastingsgrunn og ny relevansvurdering – 10.10.2026
+
+Avgrenset gren fra main 3649564 (deployet PR #63). Nyhetsdesk krever en
+konkret forkastingsgrunn og lagrer den atomisk med aktør, tidspunkt, revisjon
+og historikk for Studio-saker. Eksisterende WordPress-bro mottar begrunnelsen
+som kommentar; ingen WordPress-kode endres eller generell læringsregel aktiveres.
+Senere RSS-utvalg ser forkastingsgrunnen blant siste 60 sammenligningssaker,
+bare innen samme program. Dette er eksempler, aldri faktakilder eller faste regler.
+Ny vurdering henter originalen på nytt og inkluderer saksbundne kommentarer,
+ny beskjed, tidligere vurdering og årsakene i avklaringskortet. Vurderingsgrunnlag
+og historikk vises; artikkeltekst og publiseringsstatus endres ikke automatisk.
+Uavklart levering og publiserte saker stoppes før modellkall. Rollen, CSRF,
+revisjon og krav om ny menneskelig godkjenning beholdes.
+Tester bruker syntetiske modeller og saker. Reell modellkvalitet er uprøvd.
+Neste steg: PR/CI og deretter eksplisitt merge-/deploygodkjenning.

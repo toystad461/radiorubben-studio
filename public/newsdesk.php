@@ -56,11 +56,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 studio_relevance_override($id,$revision,(string)($_POST['relevance_channel']??''),(string)($_POST['reason']??''),$user);
                 $notice='Overstyringen er logget. Publisering og sending krever fortsatt godkjenning.';
             }elseif($action==='assess'){
-                if(($item['web']['delivery']['status']??'')==='publish')throw new InvalidArgumentException('Publiserte saker skal redigeres manuelt.');
-                $original=studio_news_source($item);
-                $assessment=studio_relevance_assess($item,$original,$board['items'],$config);
-                studio_relevance_record($id,$revision,$assessment,$user);
-                $notice='Relevansvurderingen er oppdatert.';
+                studio_newsroom_reassess($id,$revision,(string)($_POST['comment']??''),$user,$config);
+                $notice='Saken er vurdert på nytt med kommentarer og avklaringsgrunner. Les vurderingen; tekst og publisering krever fortsatt kontroll og godkjenning.';
             }elseif($action==='feedback'){
                 studio_memory_change('feedback',['item'=>$id,'itemRevision'=>$revision,
                     'text'=>(string)($_POST['comment']??''),'apply'=>(string)($_POST['apply']??''),
@@ -74,7 +71,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 studio_web_publish($id,$revision+1,'publish',$user,studio_wp_config());$notice='Saken er publisert på radiorubben.no.';$advance=true;
             }elseif($action==='reject'){
                 if(in_array($item['web']['delivery']['state']??'',['pending','unknown'],true)||($item['web']['delivery']['status']??'')==='publish')throw new InvalidArgumentException('Publisering må avklares før saken kan forkastes.');
-                studio_board_update($id,$revision,'archive',[],$user);$notice='Saken er forkastet og historikken er bevart.';$advance=true;
+                studio_board_update($id,$revision,'reject',['comment'=>(string)($_POST['comment']??'')],$user);$notice='Saken er forkastet og historikken er bevart.';$advance=true;
             }elseif($action==='revise'){
                 $comment=trim((string)($_POST['comment']??''));if($comment==='')throw new InvalidArgumentException('Skriv hva du ønsker endret.');
                 studio_newsroom_prepare($id,$revision,$user,$config,$comment);$notice='Nytt utkast og ny kontroll er klare.';
@@ -111,4 +108,4 @@ $extraStylesheet='/assets/newsroom.css?v=20261008-channels';require dirname(__DI
 ?>
 <div class="shell newsroom-shell"><?php $activePage='newsdesk';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace">
 <header class="topbar"><span>Radio Rubben / <strong>Nyhetsdesk</strong></span><details class="nr-site-menu"><summary>Studio-meny</summary><nav><a href="/control.php">Kontrollsenter</a><a href="/sending.php">Sendeliste</a></nav><?php require dirname(__DIR__).'/app/views/account.php';?></details></header>
-<?php echo $html; ?></div></div><p id="newsroom-progress" role="status" aria-live="polite" hidden></p><script src="/assets/newsroom.js?v=20261008-reject" defer></script></body></html>
+<?php echo $html; ?></div></div><p id="newsroom-progress" role="status" aria-live="polite" hidden></p><script src="/assets/newsroom.js?v=20261010-feedback" defer></script></body></html>

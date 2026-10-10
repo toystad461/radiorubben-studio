@@ -8,9 +8,10 @@
 <p>Radio: <?=escape($relevance['radioReason'])?><br>Nett: <?=escape($relevance['webReason'])?></p>
 <?php if(!empty($relevance['relatedId'])):?><p><a href="/case.php?item=<?=rawurlencode($relevance['relatedId'])?>">Tidligere sak</a>: <?=escape($relevance['relationReason']??'')?></p><?php endif;?>
 <?php if(!empty($relevance['override'])):?><p>Overstyrt av <?=escape($relevance['override']['actor'])?>: <?=escape($relevance['override']['reason'])?></p><?php endif;?>
+<?php if(!empty($relevance['editorial'])):?><details><summary>Grunnlaget for ny vurdering</summary><p>Tidligere: <?=escape($relevance['editorial']['previousReason']??'')?></p><?php foreach($relevance['editorial']['clarificationReasons']??[] as $reason):?><p><?=escape($reason)?></p><?php endforeach;?><p>Ny kommentar: <?=escape($relevance['editorial']['request']??'')?></p><?php foreach($relevance['editorial']['comments']??[] as $comment):?><p><?=escape($comment['text'])?></p><?php endforeach;?></details><?php endif;?>
 <?php else:?><p>Lokal relevans er ikke vurdert. Generering venter.</p><?php endif;?>
 <?php if($can&&($item['web']['delivery']['status']??'')!=='publish'):?>
-<form method="post" data-newsroom><?php newsroom_fields($selected,$card);?><input type="hidden" name="action" value="assess"><button>Hent original og vurder på nytt</button></form>
+<form method="post" data-newsroom><?php newsroom_fields($selected,$card);?><input type="hidden" name="action" value="assess"><label>Hva skal undersøkes på nytt?<textarea name="comment" maxlength="2000" rows="3" placeholder="For eksempel: Undersøk om dette påvirker ferjesambandet til Bømlo."></textarea></label><p>Originalen leses på nytt med lagrede kommentarer og avklaringsgrunner. Dette endrer ikke artikkelteksten og godkjenner ikke publisering.</p><button>Vurder saken på nytt</button></form>
 <?php if($relevance&&studio_board_channel($item)==='radio'):?><form method="post" data-newsroom><?php newsroom_fields($selected,$card);?><input type="hidden" name="action" value="prepare"><button>Klargjør radiomanus</button></form><?php endif;?>
 <?php if($relevance):?><details><summary>Overstyr utvalget</summary>
 <p>Begrunnelsen logges for denne saken. Faste regler, kildekrav og publiseringsgodkjenning endres ikke. Valgt kanal brukes også til klargjøringen.</p>

@@ -243,6 +243,13 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                 $item['status'] = 'ready'; $item['approvedBy'] = $user['name'] ?? 'Medarbeider';
             } elseif ($action === 'draft') {
                 $item['status'] = 'draft'; $item['approvedBy'] = null;
+            } elseif ($action === 'reject') {
+                if (!in_array($user['role'] ?? '', ['admin','producer','presenter'], true)) throw new InvalidArgumentException('Ingen skrivetilgang.');
+                if (in_array($item['web']['delivery']['state'] ?? '', ['pending','unknown'], true) || ($item['web']['delivery']['status'] ?? '') === 'publish') throw new InvalidArgumentException('Publisering må avklares før forkasting.');
+                $reason=trim((string)($input['comment']??''));
+                if (mb_strlen($reason)<10 || mb_strlen($reason)>1000 || strip_tags($reason)!==$reason) throw new InvalidArgumentException('Skriv en konkret forkastingsgrunn (10–1000 tegn).');
+                $item['rejection']=['reason'=>$reason,'actor'=>$user['name']??'Medarbeider','at'=>gmdate('c'),'revision'=>$revision];
+                $item['status']='archived'; $item['verified']=false; $item['approvedBy']=null; $item['web']['approvedHash']=null;
             } elseif ($action === 'archive') {
                 $item['status'] = 'archived'; $item['approvedBy'] = null;
             } elseif ($action === 'up' || $action === 'down') {

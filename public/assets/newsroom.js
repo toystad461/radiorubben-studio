@@ -43,6 +43,7 @@
  document.addEventListener('focusout',()=>{setTimeout(()=>{if(!document.activeElement?.matches('textarea,input[type=text],input:not([type])'))document.body.classList.remove('nr-editing');},0);});
  document.addEventListener('click',event=>{
   if(event.target.closest('[data-open-queue]')){const queue=document.querySelector('#nr-queue');queue.open=true;queue.scrollIntoView({block:'start'});queue.querySelector('summary')?.focus();return;}
+  if(event.target.closest('[data-open-reject]')){const details=document.querySelector('#nr-rejection');if(details){details.open=true;details.scrollIntoView({block:'center'});details.querySelector('textarea')?.focus({preventScroll:true});}return;}
   if(event.target.closest('[data-open-changes]')){const details=document.querySelector('#nr-changes');if(details){details.open=true;details.scrollIntoView({block:'center'});details.querySelector('textarea')?.focus({preventScroll:true});}return;}
   const reload=event.target.closest('[data-newsroom-reload]'),link=event.target.closest('a[data-newsroom-link]');
   if(!reload&&!link)return;if(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();
