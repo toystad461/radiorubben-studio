@@ -39,6 +39,8 @@ if($render){
     $item['script']='Dette melder Bømlo kommune. Kommunen inviterer til møte om biblioteket.';$item['status']='ready';$item['verified']=true;$item['approvedBy']='Test editor';
     $text=str_repeat('Kommunen inviterer til møte om biblioteket. ',5);
     $item['sourceCheck']=['status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,$item['script']),'source'=>['url'=>$item['sourceUrl'],'text'=>$text,'sha256'=>hash('sha256',$text),'fetchedAt'=>gmdate('c'),'kind'=>'original_article']];
+    require_once __DIR__.'/relevance-fixture.php';
+    $item=relevance_fixture($item,$item['sourceCheck']['source']);
     $second=$item;$second['id']='2222222222222222';$second['title']='Andre nyhet';$second['sourceCheck']['fingerprint']=studio_news_fingerprint($second,$second['script']);
     file_put_contents($path,json_encode(['items'=>[$item,$second]]));
     if($mode==='render-bulletin')$bulletinId=rr_bulletin_create([$item['id'],$second['id']],rr_bulletin_next_hour(),'none',['name'=>'Test editor','role'=>'admin'],$path);
