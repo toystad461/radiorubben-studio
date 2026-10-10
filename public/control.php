@@ -69,9 +69,9 @@ require dirname(__DIR__) . '/app/views/head.php';
 <div class="shell">
 <?php $activePage = 'overview'; require dirname(__DIR__) . '/app/views/sidebar.php'; ?>
 <div class="workspace">
-<header class="topbar"><span>Arbeidsrom / <strong>Kontrollsenter</strong></span><span>Radio Rubben Studio</span><?php require dirname(__DIR__) . '/app/views/account.php'; ?></header>
+<header class="topbar"><span>Arbeidsrom / <strong>Studiooversikt</strong></span><span>Radio Rubben Studio</span><?php require dirname(__DIR__) . '/app/views/account.php'; ?></header>
 <main id="main" class="control-page control-dashboard">
-  <header class="dashboard-heading"><div><p class="eyebrow">RADIO RUBBEN / STUDIO</p><h1>Studiooversikt</h1><p class="control-muted">Velg en sak, velg bruksområde og gjør den klar til din godkjenning.</p></div><div class="dashboard-heading-actions"><span class="dashboard-air-state"><span class="status-led unknown" aria-hidden="true"></span> Sendestatus ukjent</span><a class="dashboard-primary-link" href="/sending.php">Åpne Sending <span aria-hidden="true">↗</span></a></div></header>
+  <header class="dashboard-heading"><div><p class="eyebrow">RADIO RUBBEN / STUDIO</p><h1>Studiooversikt</h1><p class="control-muted">Velg en sak, velg bruksområde og gjør den klar til din godkjenning.</p></div><div class="dashboard-heading-actions"><span class="dashboard-air-state"><span class="status-led unknown" aria-hidden="true"></span> Sendestatus ukjent</span><a class="dashboard-primary-link" href="/sending.php">Åpne Sendeliste <span aria-hidden="true">↗</span></a></div></header>
   <?php if ($message): ?><p class="control-alert" role="status"><?= escape($message) ?></p><?php endif; ?>
   <?php if ($error): ?><p class="control-alert error" role="alert"><?= escape($error) ?></p><?php endif; ?>
   <?php if ($canPrepare && !empty($_SESSION['control_undo'])): ?><form method="post"><?php control_fields($selected ?? ['id'=>'0000000000000000', 'revision'=>0]); ?><button name="action" value="undo">Angre forkasting</button></form><?php endif; ?>
@@ -92,8 +92,8 @@ require dirname(__DIR__) . '/app/views/head.php';
   </nav>
   <div class="dashboard-columns">
     <section class="control-panel dashboard-rundown" aria-labelledby="today-title">
-      <div class="panel-top"><div><p class="eyebrow">REDAKSJON</p><h2 id="today-title">Saker til behandling <span class="dashboard-count"><?= count($items) ?></span></h2></div><a href="/desk.php">Nyhetsdesk ↗</a></div>
-      <?php if (!$items): ?><p class="control-empty">Listen er tom. Velg en sak i Nyhetsdesk eller legg til et punkt i Sending.</p><?php endif; ?>
+      <div class="panel-top"><div><p class="eyebrow">REDAKSJON</p><h2 id="today-title">Saker til behandling <span class="dashboard-count"><?= count($items) ?></span></h2></div><a href="/desk.php">Åpne saksarbeid ↗</a></div>
+      <?php if (!$items): ?><p class="control-empty">Listen er tom. Velg en sak i Nyhetsdesk eller legg til et punkt i Sendeliste.</p><?php endif; ?>
       <ol class="control-rundown"><?php foreach ($items as $position=>$item): ?><li class="<?= $selected && $selected['id'] === $item['id'] ? 'selected' : '' ?>"><span class="dashboard-position"><?= $position + 1 ?></span><a href="/control.php?item=<?= escape($item['id']) ?>#case-treatment" <?= $selected && $selected['id'] === $item['id'] ? 'aria-current="true"' : '' ?>><strong><?= escape($item['title']) ?></strong><small><?= escape($item['sourceName']) ?> · <?= ['radio'=>'Radio', 'web'=>'Nett', 'both'=>'Radio og nett'][studio_board_channel($item)] ?></small></a><span class="status-pill <?= escape($item['status']) ?>"><?= $item['status'] === 'ready' ? 'Klar' : 'Utkast' ?></span></li><?php endforeach; ?></ol>
     </section>
     <section class="control-panel dashboard-treatment" id="case-treatment" aria-labelledby="treatment-title">
@@ -122,8 +122,8 @@ require dirname(__DIR__) . '/app/views/head.php';
   </div>
   <div class="dashboard-bottom">
     <section class="control-panel dashboard-weather" aria-labelledby="weather-title"><div><p class="eyebrow">BREMNES / MET NORGE</p><h2 id="weather-title"><a href="/weather-script.php">Vær</a></h2></div><?php if ($weather): ?><p class="control-temperature"><?= escape((string)$weather['temperature']) ?>°</p><p class="control-muted">Prognose · <?= escape((string)$weather['time']) ?></p><?php else: ?><p class="control-muted">Værdata utilgjengelige.</p><?php endif; ?><a href="/weather-script.php">Lag værmanus ↗</a></section>
-    <section class="control-panel dashboard-traffic" aria-labelledby="traffic-title"><div class="panel-top"><div><p class="eyebrow">STATENS VEGVESEN</p><h2 id="traffic-title">På vegen</h2></div><a href="/newsdesk.php">Alle meldinger ↗</a></div><?php if ($traffic['items']): ?><ul class="control-news"><?php foreach (array_slice($traffic['items'], 0, 2) as $event): ?><li><?= escape($event['title']) ?></li><?php endforeach; ?></ul><?php else: ?><p class="control-muted"><?= $traffic['status'] === 'unavailable' ? 'Vegmeldinger utilgjengelige.' : 'Ingen registrerte hendelser i området.' ?></p><?php endif; ?><p class="dashboard-caution">Kontroller tidspunkt og status før omtale.</p></section>
-    <section class="control-panel dashboard-tools" aria-labelledby="tools-title"><p class="eyebrow">PRODUSER VIDERE</p><h2 id="tools-title">Verktøy</h2><div><a href="/newsdesk.php">Nyhetsdesk <span>↗</span></a><a href="/ai-studio.php#music-title">Musikk og lyd <span>↗</span></a><a href="/workspace.php?section=social">Sosiale medier <span>↗</span></a></div></section>
+    <section class="control-panel dashboard-traffic" aria-labelledby="traffic-title"><div class="panel-top"><div><p class="eyebrow">STATENS VEGVESEN</p><h2 id="traffic-title">På vegen</h2></div><a href="/newsdesk.php">Åpne Nyhetsdesk ↗</a></div><?php if ($traffic['items']): ?><ul class="control-news"><?php foreach (array_slice($traffic['items'], 0, 2) as $event): ?><li><?= escape($event['title']) ?></li><?php endforeach; ?></ul><?php else: ?><p class="control-muted"><?= $traffic['status'] === 'unavailable' ? 'Vegmeldinger utilgjengelige.' : 'Ingen registrerte hendelser i området.' ?></p><?php endif; ?><p class="dashboard-caution">Kontroller tidspunkt og status før omtale.</p></section>
+    <section class="control-panel dashboard-tools" aria-labelledby="tools-title"><p class="eyebrow">PRODUSER VIDERE</p><h2 id="tools-title">Verktøy</h2><div><a href="/newsdesk.php">Nyhetsdesk <span>↗</span></a><a href="/ai-studio.php#music-title">Musikk og lyd <span>↗</span></a></div></section>
   </div>
   <p class="dashboard-footnote">«Klar» er redaksjonell status. Studio bekrefter ikke om lyden faktisk er på lufta.</p>
 </main></div></div></body></html>

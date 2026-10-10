@@ -294,8 +294,8 @@ renderMapping(); renderPads(); renderMonitor(); bus.emit('STUDIO_READY',{log:'Ma
 function showView(settings) {
   $('producer-view').hidden = settings;
   $('settings-view').hidden = !settings;
-  $('studio-page-title').textContent = settings ? 'Innstillinger' : 'AI Studio';
-  document.title = `${settings ? 'Innstillinger' : 'AI Studio'} – Radio Rubben Studio`;
+  $('studio-page-title').textContent = settings ? 'Innstillinger' : 'Studio';
+  document.title = `${settings ? 'Innstillinger' : 'Studio'} – Radio Rubben Studio`;
   for (const link of document.querySelectorAll('[data-studio-nav]')) {
     const active = link.dataset.studioNav === ({'#innstillinger':'settings','#rode':'rode','#music-title':'music','#producer-title':'scripts'}[location.hash] || 'board');
     link.classList.toggle('active', active);

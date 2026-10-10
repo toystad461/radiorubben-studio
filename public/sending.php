@@ -129,9 +129,9 @@ require dirname(__DIR__) . '/app/views/head.php';
 <div class="shell">
 <?php $activePage = 'sending'; require dirname(__DIR__) . '/app/views/sidebar.php'; ?>
 <div class="workspace">
-<header class="topbar"><span>Arbeidsrom / <strong>Sending</strong></span><span>Redaksjonell sendeliste</span><?php require dirname(__DIR__) . '/app/views/account.php'; ?></header>
+<header class="topbar"><span>Arbeidsrom / <strong>Sendeliste</strong></span><span>Redaksjonell sendeliste</span><?php require dirname(__DIR__) . '/app/views/account.php'; ?></header>
 <main id="main" class="control-page">
-  <div class="control-heading"><div><p class="eyebrow">RADIO RUBBEN / PRODUKSJON</p><h1>Sending</h1><p class="control-intro">Felles sendeliste for medarbeiderne. Ingen punkter sendes automatisk på lufta.</p></div><div class="control-heading-actions"><a class="control-link" href="#remove-selected">Lag nyhetssending ↓</a><a class="control-link" href="/desk.php">Innkomne saker – radio og nett ↗</a><?php if ($canPrepare && $items): ?><a class="control-link" href="/sending.php?export=1">Last ned sendeliste</a><?php endif; ?></div></div>
+  <div class="control-heading"><div><p class="eyebrow">RADIO RUBBEN / PRODUKSJON</p><h1>Sendeliste</h1><p class="control-intro">Felles sendeliste for medarbeiderne. Ingen punkter sendes automatisk på lufta.</p></div><div class="control-heading-actions"><a class="control-link" href="#remove-selected">Lag nyhetssending ↓</a><a class="control-link" href="/desk.php">Åpne saksarbeid – radio og nett ↗</a><?php if ($canPrepare && $items): ?><a class="control-link" href="/sending.php?export=1">Last ned sendeliste</a><?php endif; ?></div></div>
   <?php if ($message): ?><p class="control-alert" role="status"><?= escape($message) ?></p><?php endif; ?>
   <?php if ($error || isset($readError)): ?><p class="control-alert error" role="alert"><?= escape($error ?? 'Sendelisten er utilgjengelig. Prøv igjen senere.') ?></p><?php endif; ?>
   <div class="control-stats"><span><strong><?= count($items) ?></strong> punkter</span><span><strong><?= $readyCount ?></strong> klare</span><span><strong><?= count($items) - $readyCount ?></strong> utkast</span></div>
