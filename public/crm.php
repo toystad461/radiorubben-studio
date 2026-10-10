@@ -81,7 +81,7 @@ foreach ($registry['records'] as $row) {
 $labels = ['company'=>'Bedrift', 'contact'=>'Kontaktperson', 'phone'=>'Telefon', 'email'=>'E-post', 'website'=>'Nettside',
     'orgNumber'=>'Organisasjonsnummer', 'businessAddress'=>'Adresse', 'industry'=>'Bransje', 'organizationForm'=>'Organisasjonsform', 'owner'=>'Ansvarlig', 'stage'=>'Status', 'priority'=>'Prioritet', 'opportunity'=>'Samarbeidsidé',
     'nextStep'=>'Neste steg', 'followUp'=>'Oppfølgingsdato', 'oneDriveUrl'=>'OneDrive-lenke'];
-$extraStylesheet = '/assets/crm.css?v=4'; require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet = '/assets/crm.css?v=20261010-autocomplete'; require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell crm-shell">
 <?php $activePage = 'crm'; require dirname(__DIR__).'/app/views/sidebar.php'; ?>
@@ -186,4 +186,4 @@ $extraStylesheet = '/assets/crm.css?v=4'; require dirname(__DIR__).'/app/views/h
 </li><?php endforeach; ?></ol></section><?php endif; ?>
 <?php endif; ?>
 </section></div>
-<script src="/assets/crm.js?v=3" defer></script></main></div></div></body></html>
+<script src="/assets/crm.js?v=20261010-autocomplete" defer></script></main></div></div></body></html>
