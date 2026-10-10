@@ -1,13 +1,14 @@
 <?php
 declare(strict_types=1);
 require dirname(__DIR__,2).'/app/newsroom.php';
+require __DIR__.'/relevance-fixture.php';
 function feedback_check(bool $ok,string $label):void{if(!$ok)throw new RuntimeException($label);echo "PASS $label\n";}
 function feedback_reject(callable $fn,string $label):void{try{$fn();}catch(InvalidArgumentException $e){feedback_check(true,$label);return;}throw new RuntimeException($label);}
 $dir=sys_get_temp_dir().'/feedback-'.bin2hex(random_bytes(5));mkdir($dir,0700);$path=$dir.'/board.json';
 $admin=['name'=>'Thomas','role'=>'admin'];$producer=['name'=>'Editor','role'=>'producer'];
 $config=['openai_api_key'=>'fixture','openai_model'=>'fixture'];
-$text='Kommunen arrangerer et åpent møte på biblioteket 8. oktober. Møtet handler om trafikksikkerhet. Alle innbyggere kan delta og stille spørsmål.';
-$source=['id'=>'fixture','title'=>'Møte','sourceName'=>'NRK','url'=>'https://www.nrk.no/vestland/mote-1.12345678','publishedAt'=>gmdate('c')];
+$text='Bømlo kommune arrangerer et åpent møte på biblioteket 8. oktober. Møtet handler om trafikksikkerhet. Alle innbyggere kan delta og stille spørsmål.';
+$source=['id'=>'fixture','title'=>'Møte','sourceName'=>'NRK','publishedAt'=>gmdate('c'),'url'=>'https://www.nrk.no/vestland/mote-1.12345678','publishedAt'=>gmdate('c')];
 try{
     studio_board_add_source($source,$admin,$path);$item=studio_board_read($path)['items'][0];
     studio_board_change(static function(&$b)use($text,$source){$b['items'][0]['web']=['title'=>'Møte','intro'=>'Kommunen inviterer.','body'=>'Alle kan delta.','check'=>['status'=>'needs_review','source'=>['url'=>$source['url'],'text'=>$text,'sha256'=>hash('sha256',$text)]]];},$path);
@@ -29,6 +30,7 @@ try{
     $seen=[];$reads=0;
     $fetch=static function($url)use($text,&$reads){$reads++;return '<html><head><link rel="canonical" href="'.$url.'"></head><body><article><p>'.$text.'</p></article></body></html>';};
     $request=static function($c,$p)use(&$seen,$activeText,$text){
+        if(($p['text']['format']['name']??'')==='rss_relevance')return relevance_fixture_response();
         $input=json_decode($p['input'],true);
         if(isset($input['segments'])){
             feedback_check(!isset($input['editorial']),'learning cannot influence factual evidence verdicts');

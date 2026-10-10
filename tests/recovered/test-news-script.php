@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require __DIR__.'/relevance-fixture.php';
 require dirname(__DIR__, 2) . '/app/board.php';
 $tests = 0;
 function expect_news(bool $condition, string $label): void {
@@ -42,6 +43,7 @@ $request = function ($config, $payload) use (&$calls, $sentence): string {
     if (!isset($input['segments'])) return $sentence;
     return json_encode(['segments'=>[['index'=>0, 'verdict'=>'supported', 'evidence'=>$sentence, 'reason'=>'Dato og invitasjon står i kilden.']], 'issues'=>[]]);
 };
+$item=relevance_fixture($item,studio_news_source($item,$fetch));
 $result = studio_news_prepare($item, $config, [], null, $request, $fetch);
 expect_news($calls === 2 && $result['check']['status'] === 'passed', 'separate generation and check');
 expect_news($result['check']['source']['text'] === $text, 'snapshot retained');

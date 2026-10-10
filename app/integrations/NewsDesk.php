@@ -9,7 +9,7 @@ function newsdesk_recent_sources(array $items, ?int $now = null): array
     return array_values(array_filter($items, static function($item) use ($now): bool {
         if (!is_array($item)) return false;
         $at = is_string($item['publishedAt'] ?? null) ? strtotime($item['publishedAt']) : false;
-        return $at !== false && $at > $now - 172800 && $at <= $now + 300;
+        return $at !== false && $at > $now - 30 * 86400 && $at <= $now + 300;
     }));
 }
 

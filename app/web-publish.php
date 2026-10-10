@@ -40,6 +40,7 @@ function studio_web_text(array $web): string {
 }
 function studio_web_checked(array $item): bool {
     $w=$item['web']??[];
+    if(isset($item['relevance'])){try{studio_relevance_require($item,$w['check']['source']??[],'web');}catch(InvalidArgumentException){return false;}}
     return studio_news_original_read($item,$w['check']??[]) && studio_news_check_current(array_replace($item,['script'=>studio_web_text($w),'sourceCheck'=>$w['check']??[]]));
 }
 function studio_web_html(array $item): string {

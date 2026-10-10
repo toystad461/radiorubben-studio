@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/source-identity.php';
+require_once __DIR__.'/news-relevance.php';
 require_once __DIR__.'/stylebook.php';
 require_once __DIR__.'/audio-profiles.php';
 
@@ -235,6 +236,8 @@ function studio_news_prepare(array $item, array $config, array $editorial = [], 
     if ($source !== null && !studio_news_original_read($item, ['source'=>$source]))
         throw new StudioNewsPreparationException('Felles originalgrunnlag er ugyldig.');
     $source ??= studio_news_source($item, $fetch);
+    studio_relevance_require($item,$source,'radio');
+    if ($existingScript === null && ($item['web']['delivery']['status']??'')==='publish') throw new InvalidArgumentException('En publisert sak kan ikke genereres på nytt.');
     $script = $existingScript;
     if ($script === null) {
         $script = trim($request($config, ['model'=>$config['openai_model'], 'store'=>false, 'max_output_tokens'=>700,

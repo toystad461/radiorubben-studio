@@ -5,7 +5,7 @@ $render=$mode==='render';
 if($render)$mode='get';
 $root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/case-page-'.bin2hex(random_bytes(4));
 foreach(['/app/views','/app/integrations','/config','/public']as$dir)mkdir($tmp.$dir,0700,true);
-foreach(['board','source-identity','programs','audio-profiles','stylebook','news-script','web-publish','news-publication','case-workflow','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage']as$name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
+foreach(['board','source-identity','programs','audio-profiles','stylebook','news-script','news-relevance','web-publish','news-publication','case-workflow','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage']as$name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
 copy($root.'/app/integrations/ElevenLabs.php',$tmp.'/app/integrations/ElevenLabs.php');
 copy($root.'/app/views/case-audio.php',$tmp.'/app/views/case-audio.php');
 copy($root.'/public/case.php',$tmp.'/public/case.php');

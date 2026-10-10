@@ -48,6 +48,7 @@ function studio_newsroom_card(array $item): array {
     if(($d['state']??'')==='confirmed'&&($d['status']??'')==='publish'&&($d['hash']??'')===studio_web_approval_hash($item))$status='published';
     else {
         if(in_array($d['state']??'',['unknown','pending'],true))$reasons[]='WordPress-overføringen må avklares før nytt forsøk.';
+        if(isset($item['relevance']['recommendation'])&&!in_array($item['relevance']['override']['channel']??$item['relevance']['recommendation'],['web','both'],true))$reasons[]=$item['relevance']['reason'];
         if(empty($w['title'])||empty($w['intro'])||empty($w['body']))$reasons[]='Nettsaken er ikke ferdig skrevet.';
         if(!studio_news_original_read($item,$check))$reasons[]='Originalartikkelen må hentes og leses. RSS-omtalen er ikke nok.';
         if(!studio_web_checked($item)){
@@ -71,11 +72,25 @@ function studio_newsroom_card(array $item): array {
 }
 
 /** Durable preparation job, not an approval. Human edits invalidate the reserved revision. */
-function studio_newsroom_prepare(string $id,int $revision,array $user,array $config,string $comment='',?string $path=null,?callable $request=null,?callable $fetch=null,bool $recheck=false): void {
+function studio_newsroom_prepare(string $id,int $revision,array $user,array $config,string $comment='',?string $path=null,?callable $request=null,?callable $fetch=null,bool $recheck=false,?array $original=null): void {
     if(!in_array($user['role']??'',['admin','producer','presenter'],true))throw new InvalidArgumentException('Ingen skrivetilgang.');
     $comment=trim($comment);if(strlen($comment)>3000||$comment!==strip_tags($comment))throw new InvalidArgumentException('Skriv et kort endringsønske uten HTML.');
     $item=studio_case_get($id,$path);if($item['revision']!==$revision)throw new InvalidArgumentException('Saken er endret. Last siden på nytt.');
     if(($item['web']['delivery']['status']??'')==='publish')throw new InvalidArgumentException('En publisert sak må redigeres manuelt.');
+    try {
+    $source=$original??studio_news_source($item,$fetch);
+    if (!studio_relevance_current($item,$source)) {
+        $assessment=studio_relevance_assess($item,$source,studio_board_read($path)['items'],$config,$request);
+        $item=studio_relevance_record($id,$revision,$assessment,$user,$path);$revision=$item['revision'];
+    }
+    $channel=studio_board_channel($item);
+    if($channel!=='radio')studio_relevance_require($item,$source,'web');
+    if($channel!=='web')studio_relevance_require($item,$source,'radio');
+    } catch(Throwable $e) {
+        $safe=$e instanceof InvalidArgumentException?$e->getMessage():'Originalen eller relevansvurderingen er utilgjengelig.';
+        studio_board_change(static function(array &$b)use($id,$safe){foreach($b['items'] as &$i)if($i['id']===$id){$i['newsroom']['state']='failed';$i['newsroom']['error']=$safe;return;}},$path);
+        throw new InvalidArgumentException($safe);
+    }
     studio_web_save($id,$revision,'invalidate',[],$user,$path);
     $token=bin2hex(random_bytes(12));
     $editorial=studio_memory_context(studio_board_read($path),(string)($item['program']??''));
@@ -83,7 +98,6 @@ function studio_newsroom_prepare(string $id,int $revision,array $user,array $con
     try{
         $item['revisionRequest']=$comment;
         $channel=studio_board_channel($item); $nextRevision=$revision+1;
-        $source=studio_news_source($item,$fetch);
         if($channel!=='radio'){
             if($recheck)$result=['check'=>studio_news_review($item,studio_web_text($item['web']),$source,$config,$request??'producer_request')];
             else $result=studio_web_prepare($item,$config,$editorial,$request,$fetch,$source);
@@ -134,14 +148,32 @@ function studio_newsroom_tick(array $feeds,array $config,?string $path=null,?cal
         $candidates=[];
         foreach($feeds as $feed)if(($feed['status']??'')==='updated')foreach($feed['items'] as $source){
             $at=strtotime($source['publishedAt']??'')?:0;
-            if($at<time()-86400||$at>time()+300||!studio_news_allowed_url($source['url']??'')||studio_board_has_source($board['items'],$source))continue;
-            $identity=studio_source_identity($source['url']);if($identity!==null)$candidates[$identity]=$source;
+            if($at<time()-STUDIO_RELEVANCE_LOOKBACK||$at>time()+300||!studio_news_allowed_url($source['url']??'')||studio_board_has_source($board['items'],$source))continue;
+            $identity=studio_source_identity($source['url']);
+            if($identity!==null && !isset($board['newsSelections'][$identity]))$candidates[$identity]=$source;
         }
-        usort($candidates,static fn($a,$b)=>(strtotime($b['publishedAt'])<=>strtotime($a['publishedAt'])));
+        // A local source/title can prioritize reading, but never grants relevance.
+        $priority=static fn($s)=>parse_url($s['url'],PHP_URL_HOST)==='www.bomlo.kommune.no'?2:(preg_match('/\bBømlo\b/iu',($s['title']??'').' '.($s['summary']??''))?1:0);
+        usort($candidates,static fn($a,$b)=>($priority($b)<=>$priority($a))?:(strtotime($b['publishedAt'])<=>strtotime($a['publishedAt'])));
         if(!$candidates)return ['state'=>'idle'];
-        $source=$candidates[0];studio_board_add_source($source,$user,$path);
+        $source=$candidates[0];
+        $candidate=['originId'=>$source['id'],'title'=>$source['title'],'sourceUrl'=>$source['url'],'sourceAt'=>$source['publishedAt']];
+        try {
+            $original=studio_news_source($candidate,$fetch);
+            $assessment=studio_relevance_assess($candidate,$original,$board['items'],$config,$request);
+        } catch(Throwable $e) {
+            $assessment=studio_relevance_empty($candidate,$e instanceof InvalidArgumentException?$e->getMessage():'Originalen eller relevansvurderingen er utilgjengelig.');
+        }
+        $identity=studio_source_identity($source['url']);
+        studio_board_change(static function(array &$b)use($identity,$source,$assessment){
+            $b['newsSelections'][$identity]=['source'=>$source,'assessment'=>$assessment];
+            foreach($b['newsSelections'] as $key=>$row)if((strtotime($row['assessment']['assessedAt']??'')?:0)<time()-STUDIO_RELEVANCE_LOOKBACK)unset($b['newsSelections'][$key]);
+        },$path);
+        if(!in_array($assessment['recommendation'],['radio','web','both'],true))return ['state'=>'assessed','recommendation'=>$assessment['recommendation']];
+        $source['relevance']=$assessment;
+        studio_board_add_source($source,$user,$path,$assessment['recommendation']);
         $i=studio_case_source_item(studio_board_active(studio_board_read($path)),$source);
-        studio_newsroom_prepare($i['id'],$i['revision'],$user,$config,'',$path,$request,$fetch);
+        studio_newsroom_prepare($i['id'],$i['revision'],$user,$config,'',$path,$request,$fetch,false,$original);
         return ['state'=>'prepared'];
     }finally{
         if(isset($i)&&isset($source))studio_board_change(static function(array &$b)use($i,$today){foreach($b['items'] as &$row)if($row['id']===$i['id'])$row['newsroom']['automaticDay']=$today;},$path);

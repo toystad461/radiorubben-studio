@@ -114,6 +114,7 @@ function rr_audio_generate(string $id,int $revision,string $profile,string $voic
         foreach($b['items']as&$i)if(($i['id']??'')===$id){
             if(($i['revision']??0)!==$revision||($i['status']??'')==='archived'||studio_board_channel($i)==='web')throw new InvalidArgumentException('Saken ble endret eller er ikke valgt for radio.');
             $v=&$i['audioScripts'][$profile];if(!rr_audio_script_approved($i,$v??[])||(isset($i['bulletin'])&&!rr_bulletin_checked($i,$v??[],$b)))throw new InvalidArgumentException('Manuset må kildekontrolleres og sluttgodkjennes før TTS.');
+            if(!empty($i['originId'])&&studio_news_allowed_url($i['sourceUrl']??''))studio_relevance_require($i,$v['check']['source']??[],'radio');
             $vp=rr_audio_voice($config,$voice,(string)($i['program']??''));$d=rr_pronunciation_context($b);$text=rr_audio_spoken_text($v,$d);$count=mb_strlen($text);
             $today=gmdate('Y-m-d');$used=(int)($b['audioUsage'][$today]??0);$limit=(int)($config['daily_character_limit']??0);
             if($count>3000||$count+$used>$limit)throw new InvalidArgumentException('TTS-budsjettet er brukt opp eller ikke angitt.');

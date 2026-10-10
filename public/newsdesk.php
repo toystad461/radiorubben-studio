@@ -36,7 +36,12 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             if(!is_string($channel))throw new InvalidArgumentException('Velg Radio, Nett eller Begge.');
             $item=studio_newsroom_intake($source,$channel,$user);
             $selected='studio:'.$item['id'];
-            if(!$existing)studio_newsroom_prepare($item['id'],$item['revision'],$user,$config);
+            if(!$existing) {
+                $original=studio_news_source($item);
+                $assessment=studio_relevance_assess($item,$original,$board['items'],$config);
+                $item=studio_relevance_record($item['id'],$item['revision'],$assessment,$user);
+                $notice='Originalen er vurdert. Les utvalget før klargjøring.';
+            }
         }elseif(preg_match('/^wp:([1-9][0-9]*)$/D',$selected,$match)){
             if(!$admin)throw new InvalidArgumentException('Bare administrator kan behandle WordPress-saker.');
             if(!in_array($action,['approve','reject','revise'],true))throw new InvalidArgumentException('Ukjent handling.');
@@ -47,7 +52,16 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         }elseif(preg_match('/^studio:([a-f0-9]{16})$/D',$selected,$match)){
             $id=$match[1];$item=studio_case_get($id);
             if($item['revision']!==$revision)throw new InvalidArgumentException('Saken er endret. Last siden på nytt og les siste versjon.');
-            if($action==='feedback'){
+            if($action==='relevance_override'){
+                studio_relevance_override($id,$revision,(string)($_POST['relevance_channel']??''),(string)($_POST['reason']??''),$user);
+                $notice='Overstyringen er logget. Publisering og sending krever fortsatt godkjenning.';
+            }elseif($action==='assess'){
+                if(($item['web']['delivery']['status']??'')==='publish')throw new InvalidArgumentException('Publiserte saker skal redigeres manuelt.');
+                $original=studio_news_source($item);
+                $assessment=studio_relevance_assess($item,$original,$board['items'],$config);
+                studio_relevance_record($id,$revision,$assessment,$user);
+                $notice='Relevansvurderingen er oppdatert.';
+            }elseif($action==='feedback'){
                 studio_memory_change('feedback',['item'=>$id,'itemRevision'=>$revision,
                     'text'=>(string)($_POST['comment']??''),'apply'=>(string)($_POST['apply']??''),
                     'styleOnly'=>(string)($_POST['styleOnly']??'')],$user);

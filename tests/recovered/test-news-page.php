@@ -7,7 +7,7 @@ mkdir($tmp . '/app/views', 0700, true);
 mkdir($tmp . '/app/integrations', 0700, true);
 mkdir($tmp . '/config', 0700, true);
 mkdir($tmp . '/public', 0700, true);
-foreach (['board', 'programs','audio-profiles','stylebook','news-script', 'story-script', 'source-identity','case-workflow','web-publish','news-publication','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage'] as $name)
+foreach (['board', 'programs','audio-profiles','stylebook','news-script','news-relevance', 'story-script', 'source-identity','case-workflow','web-publish','news-publication','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage'] as $name)
     copy(dirname(__DIR__, 2) . '/app/' . $name . '.php', $tmp . '/app/' . $name . '.php');
 copy(dirname(__DIR__,2).'/app/integrations/ElevenLabs.php',$tmp.'/app/integrations/ElevenLabs.php');
 copy(dirname(__DIR__, 2) . '/public/sending.php', $tmp . '/public/sending.php');
@@ -39,6 +39,8 @@ if($render){
     $item['script']='Dette melder Bømlo kommune. Kommunen inviterer til møte om biblioteket.';$item['status']='ready';$item['verified']=true;$item['approvedBy']='Test editor';
     $text=str_repeat('Kommunen inviterer til møte om biblioteket. ',5);
     $item['sourceCheck']=['status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,$item['script']),'source'=>['url'=>$item['sourceUrl'],'text'=>$text,'sha256'=>hash('sha256',$text),'fetchedAt'=>gmdate('c'),'kind'=>'original_article']];
+    require_once __DIR__.'/relevance-fixture.php';
+    $item=relevance_fixture($item,$item['sourceCheck']['source']);
     $second=$item;$second['id']='2222222222222222';$second['title']='Andre nyhet';$second['sourceCheck']['fingerprint']=studio_news_fingerprint($second,$second['script']);
     file_put_contents($path,json_encode(['items'=>[$item,$second]]));
     if($mode==='render-bulletin')$bulletinId=rr_bulletin_create([$item['id'],$second['id']],rr_bulletin_next_hour(),'none',['name'=>'Test editor','role'=>'admin'],$path);
