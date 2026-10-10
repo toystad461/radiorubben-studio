@@ -81,7 +81,7 @@ foreach ($registry['records'] as $row) {
 $labels = ['company'=>'Bedrift', 'contact'=>'Kontaktperson', 'phone'=>'Telefon', 'email'=>'E-post', 'website'=>'Nettside',
     'orgNumber'=>'Organisasjonsnummer', 'businessAddress'=>'Adresse', 'industry'=>'Bransje', 'organizationForm'=>'Organisasjonsform', 'owner'=>'Ansvarlig', 'stage'=>'Status', 'priority'=>'Prioritet', 'opportunity'=>'Samarbeidsidé',
     'nextStep'=>'Neste steg', 'followUp'=>'Oppfølgingsdato', 'oneDriveUrl'=>'OneDrive-lenke'];
-$extraStylesheet = '/assets/crm.css?v=3'; require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet = '/assets/crm.css?v=4'; require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell crm-shell">
 <?php $activePage = 'crm'; require dirname(__DIR__).'/app/views/sidebar.php'; ?>
@@ -96,11 +96,13 @@ $extraStylesheet = '/assets/crm.css?v=3'; require dirname(__DIR__).'/app/views/h
 <h2 id="company-search-title">Finn og legg til bedrift</h2>
 <form method="post" data-company-search>
 <input type="hidden" name="csrf" value="<?= escape($_SESSION['csrf']) ?>"><input type="hidden" name="action" value="select_company">
-<label>Søk på bedriftsnavn<input type="search" name="query" maxlength="180" autocomplete="off" data-company-query aria-describedby="company-search-status"></label>
-<button type="button" data-company-search-button>Søk etter bedrift</button>
-<p id="company-search-status" role="status">Søk i CRM og Brønnøysundregistrene. Skriv minst to tegn.</p>
-<div data-company-results hidden><label>Velg bedrift<select name="choice" required data-company-choices><option value="">Velg et treff</option></select></label>
-<button type="submit" data-company-open disabled>Åpne valgt bedrift</button></div>
+<label for="company-query">Søk på bedriftsnavn</label>
+<p id="company-search-status" role="status" aria-live="polite">Søk i CRM og Brønnøysundregistrene. Skriv minst to tegn.</p>
+<div class="crm-autocomplete">
+<input id="company-query" type="search" name="query" maxlength="180" autocomplete="off" data-company-query role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="company-results" aria-describedby="company-search-status">
+<ul id="company-results" role="listbox" aria-label="Bedriftstreff" data-company-results hidden></ul>
+</div>
+<input type="hidden" name="choice" value="">
 <noscript>Navnesøk krever JavaScript. Du kan fortsatt bruke CRM-listen og opprette kort manuelt.</noscript>
 </form></section>
 <div class="crm-stats" aria-label="Statusoversikt">
@@ -184,4 +186,4 @@ $extraStylesheet = '/assets/crm.css?v=3'; require dirname(__DIR__).'/app/views/h
 </li><?php endforeach; ?></ol></section><?php endif; ?>
 <?php endif; ?>
 </section></div>
-<script src="/assets/crm.js?v=2" defer></script></main></div></div></body></html>
+<script src="/assets/crm.js?v=3" defer></script></main></div></div></body></html>

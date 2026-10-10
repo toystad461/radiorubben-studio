@@ -12,7 +12,7 @@ try {
     if (($_POST['action']??'')==='search') {
         $query=studio_crm_text($_POST,'query',180);
         if(mb_strlen($query)<2) throw new InvalidArgumentException('Skriv minst to tegn.');
-        if(microtime(true)-(float)($_SESSION['crm_search_at']??0)<0.5) throw new InvalidArgumentException('Vent litt før neste søk.');
+        if(microtime(true)-(float)($_SESSION['crm_search_at']??0)<0.25) throw new InvalidArgumentException('Vent litt før neste søk.');
         $_SESSION['crm_search_at']=microtime(true);
         $records=studio_crm_read()['records'];
         $warning=''; $remote=['results'=>[],'more'=>false];
