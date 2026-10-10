@@ -4,7 +4,7 @@ $mode=$argv[1]??'view';$root=dirname(__DIR__);$tmp=sys_get_temp_dir().'/crm-demo
 foreach(['app/views','app/integrations','public','config']as$dir)mkdir($tmp.'/'.$dir,0700,true);
 foreach(['crm.php','crm-brreg.php','crm-outreach.php','crm-website.php','producer.php','audio-storage.php','audio-profiles.php','programs.php','helpers.php','users.php']as$file)copy($root.'/app/'.$file,$tmp.'/app/'.$file);
 copy($root.'/app/integrations/ElevenLabs.php',$tmp.'/app/integrations/ElevenLabs.php');
-foreach(['head.php','sidebar.php','account.php']as$file)copy($root.'/app/views/'.$file,$tmp.'/app/views/'.$file);
+foreach(['head.php','sidebar.php','navigation.php','account.php']as$file)copy($root.'/app/views/'.$file,$tmp.'/app/views/'.$file);
 foreach(['crm-outreach.php','crm-demo.php','crm-demo-job.php','crm-register.php']as$file)copy($root.'/public/'.$file,$tmp.'/public/'.$file);
 file_put_contents($tmp.'/app/bootstrap.php','<?php require __DIR__."/helpers.php"; require __DIR__."/users.php"; function current_user(){return $GLOBALS["mode"]==="guest"?null:["name"=>"Test","role"=>str_contains($GLOBALS["mode"],"denied")?"observer":"admin"];} $config=[];');
 require $tmp.'/app/crm-outreach.php';$path=$tmp.'/config/crm.private.json';$admin=['role'=>'admin','name'=>'Test'];

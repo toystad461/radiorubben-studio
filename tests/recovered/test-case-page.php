@@ -22,7 +22,7 @@ function studio_roles(){return ["admin"=>"Administrator"];}
 file_put_contents($tmp.'/app/integrations/NewsDesk.php','<?php function newsdesk_all($path){return [["items"=>[["id"=>"new-feed-id","title"=>"Ny tittel","sourceName"=>"NRK","summary"=>"Kort omtale","url"=>"https://www.nrk.no/vestland/endret-1.12345678"]]]];}');
 foreach(['editorial-memory','producer']as$name)file_put_contents($tmp.'/app/'.$name.'.php','<?php');
 foreach(['head','sidebar']as$name)file_put_contents($tmp.'/app/views/'.$name.'.php','');
-if($render)foreach(['head','sidebar','account']as$name)copy($root.'/app/views/'.$name.'.php',$tmp.'/app/views/'.$name.'.php');
+if($render)foreach(['head','sidebar','navigation','account']as$name)copy($root.'/app/views/'.$name.'.php',$tmp.'/app/views/'.$name.'.php');
 file_put_contents($tmp.'/config/wordpress.php','<?php return ["username"=>"fixture","application_password"=>"fixture"];');
 require $tmp.'/app/case-workflow.php';
 $item=['id'=>'1234567890abcdef','originId'=>'old-feed-id','title'=>'Opprinnelig tittel','sourceName'=>'NRK',
