@@ -84,3 +84,19 @@ lokal kontroll; rå originaler skal ikke legges i offentlig PR.
 Se RSS-RELEVANCE-PREVIEW-2026-10-10.md for faktisk prøve og åpne verifikasjonspunkter.
 
 Ingen produksjonsutrulling er autorisert i denne bestillingen.
+
+## Redaksjonell tilbakemelding og ny vurdering
+
+«Forkast forslag» åpner nå et felt med påkrevd begrunnelse (10–1000 tegn).
+Studio lagrer begrunnelse, aktør, tidspunkt og versjon sammen med arkiveringen.
+Siste 60 sammenligningssaker kan gi forkastingsgrunner som eksempler i samme
+program. Det er ikke modelltrening og oppretter ingen godkjent generell regel.
+
+«Vurder saken på nytt» leser originalen og inkluderer siste 20 saksbundne
+kommentarer fra læringsflaten og tidligere vurderinger, avklaringsgrunnene,
+forrige vurdering og en eventuell ny kommentar (maks 2000 tegn). Deaktiverte
+eller avviste læringskommentarer tas ikke med. Nytt vurderingsgrunnlag vises
+med forrige begrunnelse; tidligere vurderinger bevares i historikken.
+Kommentarer er undersøkelsespunkter, aldri dokumentasjon som erstatter originalen.
+Handlingen produserer ingen artikkel, TTS eller publisering. Godkjenninger
+nullstilles. Tekniske leveringsavvik må løses separat.

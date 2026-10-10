@@ -38,18 +38,18 @@ assert.ok(!render('observer').includes('nr-reject-button'),'Observer cannot reje
    assert.equal(await page.locator('.nr-reject-shortcut button').isVisible(),true,'Reject is visible beside the story');
    assert.equal(await page.locator('.nr-dock>.nr-reject-button').isVisible(),true,'Reject is visible in the action dock');
    await page.locator('[data-open-changes]').click();assert.equal(await page.locator('#nr-changes').getAttribute('open'),'');
-   await page.locator('[name=comment]').fill('Gjør ingressen kortere');
+   await page.locator('#nr-changes [name=comment]').fill('Gjør ingressen kortere');
    if(width<=800)assert.equal(await page.locator('.nr-dock').isVisible(),false,'Keyboard editing hides action dock');
-   page.once('dialog',dialog=>dialog.dismiss());await page.locator('.nr-refresh').click();assert.equal(await page.locator('[name=comment]').inputValue(),'Gjør ingressen kortere','Cancelled navigation preserves text');
+   page.once('dialog',dialog=>dialog.dismiss());await page.locator('.nr-refresh').click();assert.equal(await page.locator('#nr-changes [name=comment]').inputValue(),'Gjør ingressen kortere','Cancelled navigation preserves text');
    await page.locator('[name=confirmed]').check();
-   fail=true;await primary.click();await page.locator('#newsroom-progress').filter({hasText:'Saken er endret'}).waitFor();assert.equal(await page.locator('[name=comment]').inputValue(),'Gjør ingressen kortere','Conflict keeps entered text');
+   fail=true;await primary.click();await page.locator('#newsroom-progress').filter({hasText:'Saken er endret'}).waitFor();assert.equal(await page.locator('#nr-changes [name=comment]').inputValue(),'Gjør ingressen kortere','Conflict keeps entered text');
    fail=false;networkFail=true;await primary.click();await page.locator('[data-newsroom-reload]').waitFor();assert.equal(await primary.isDisabled(),true,'Unknown result prevents duplicate post');
    networkFail=false;page.once('dialog',dialog=>dialog.accept());await page.locator('[data-newsroom-reload]').click();await page.waitForFunction(()=>document.querySelector('#newsroom-progress').hidden);
    await page.locator('[name=confirmed]').check();await primary.click();await page.locator('.nr-title').filter({hasText:'Neste eksempelsak'}).waitFor();
    assert.equal(documents,1,'Actions replace fragment without a page reload');assert.equal(posts,3);assert.equal(await page.locator('[name=confirmed]').isChecked(),false,'Next story requires fresh approval');assert.equal(await primary.isDisabled(),true);
-   fail=true;await page.locator('.nr-dock>.nr-reject-button').click();await page.locator('#newsroom-progress').filter({hasText:'Saken er endret'}).waitFor();
+   fail=true;await page.locator('.nr-dock>.nr-reject-button').click();assert.equal(await page.locator('#nr-rejection').getAttribute('open'),'');await page.locator('#nr-reject-form textarea').fill('Saken er allerede omtalt uten nye opplysninger.');await page.locator('#nr-reject-form button').click();await page.locator('#newsroom-progress').filter({hasText:'Saken er endret'}).waitFor();
    assert.equal(await page.locator('.nr-title').textContent(),'Neste eksempelsak er klar','Conflict keeps the proposal visible');
-   fail=false;await page.locator('.nr-dock>.nr-reject-button').click();await page.locator('.nr-notice').filter({hasText:'Forslaget er forkastet'}).waitFor();
+   fail=false;await page.locator('#nr-reject-form button').click();await page.locator('.nr-notice').filter({hasText:'Forslaget er forkastet'}).waitFor();
    assert.equal(await page.locator('.nr-title').count(),0,'Rejected proposal leaves the queue');assert.equal(posts,5);assert.equal(documents,1,'Reject does not reload the page');
    assert.deepEqual(errors,[]);
    if(width===390){await page.goto('http://fixture.test/newsdesk.php');await page.screenshot({path:process.env.MOBILE_SCREENSHOT||'/tmp/newsroom-mobile.png',fullPage:false});}

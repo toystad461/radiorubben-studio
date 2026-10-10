@@ -180,3 +180,21 @@ function studio_newsroom_tick(array $feeds,array $config,?string $path=null,?cal
         flock($lock,LOCK_UN);fclose($lock);
     }
 }
+
+/** Re-read source with case-bound comments; never writes text or grants approval. */
+function studio_newsroom_reassess(string $id,int $revision,string $comment,array $user,array $config,?string $path=null,?callable $request=null,?callable $fetch=null): array {
+    if(!in_array($user['role']??'', ['admin','producer','presenter'],true))throw new InvalidArgumentException('Ingen skrivetilgang.');
+    $comment=trim($comment);
+    if(mb_strlen($comment)>2000 || strip_tags($comment)!==$comment)throw new InvalidArgumentException('Kommentaren må være ren tekst på høyst 2000 tegn.');
+    $board=studio_board_read($path);$item=studio_case_get($id,$path);
+    if($item['revision']!==$revision || ($item['status']??'')==='archived' || in_array($item['web']['delivery']['state']??'', ['pending','unknown'],true) || ($item['web']['delivery']['status']??'')==='publish')throw new InvalidArgumentException('Saken er endret, publisert eller har uavklart levering.');
+    $comments=[];
+    foreach($board['editorialRules']??[] as $rule)if(($rule['evidence']['kind']??'')==='feedback' && ($rule['evidence']['itemId']??'')===$id && !in_array($rule['status']??'', ['disabled','rejected'],true))$comments[]=['text'=>mb_substr($rule['text'],0,500),'revision'=>$rule['evidence']['revision']??null];
+    foreach($item['relevanceHistory']??[] as $entry){$old=$entry['assessment']['editorial']['request']??'';if($old!=='')$comments[]=['text'=>$old];}
+    $last=$item['relevance']['editorial']['request']??'';if($last!=='')$comments[]=['text'=>$last];
+    $context=['previousRecommendation'=>$item['relevance']['recommendation']??null,'previousReason'=>$item['relevance']['reason']??'',
+        'clarificationReasons'=>studio_newsroom_card($item)['reasons'],'comments'=>array_slice($comments,-20),'request'=>$comment];
+    $original=studio_news_source($item,$fetch);
+    $assessment=studio_relevance_assess($item,$original,$board['items'],$config,$request,$context);
+    return studio_relevance_record($id,$revision,$assessment,$user,$path);
+}
