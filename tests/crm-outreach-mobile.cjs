@@ -4,7 +4,7 @@ const root=path.resolve(__dirname,'..'),tmp=fs.mkdtempSync(path.join(os.tmpdir()
 (async()=>{let browser;try{
  const file=path.join(tmp,'outreach.html');execFileSync(process.env.PHP_BIN||'php',[path.join(__dirname,'crm-outreach-page.php'),'view'],{env:{...process.env,CRM_OUTREACH_PREVIEW:file}});
  const newFile=path.join(tmp,'new.html');execFileSync(process.env.PHP_BIN||'php',[path.join(__dirname,'crm-page.php'),'new'],{env:{...process.env,CRM_PREVIEW_FILE:newFile}});
- browser=await chromium.launch();
+ browser=await chromium.launch(process.env.CHROMIUM_BIN?{executablePath:process.env.CHROMIUM_BIN}:{});
  for(const width of [320,390,800,1280]){
   const page=await browser.newPage({viewport:{width,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>{const u=new URL(r.request().url());
@@ -18,15 +18,15 @@ const root=path.resolve(__dirname,'..'),tmp=fs.mkdtempSync(path.join(os.tmpdir()
   assert.equal(await page.locator('[name=company]').inputValue(),'Eget navn');assert.equal(await page.locator('[name=website]').inputValue(),'https://example.test');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Lookup fits '+width);
 
-  await page.getByRole('searchbox',{name:'Søk på bedriftsnavn',exact:true}).fill('Fiktiv');
-  await page.getByText(/Velg en bedrift. Registrerte kort/).waitFor();
-  assert.equal(await page.getByRole('combobox',{name:'Velg bedrift',exact:true}).isVisible(),true);
-  assert.equal(await page.getByRole('button',{name:'Åpne valgt bedrift',exact:true}).isEnabled(),false);
-  await page.getByRole('combobox',{name:'Velg bedrift',exact:true}).selectOption('card:aaaaaaaaaaaaaaaa');
-  assert.equal(await page.getByRole('button',{name:'Åpne valgt bedrift',exact:true}).isEnabled(),true);
+  const search=page.getByRole('combobox',{name:'Søk på bedriftsnavn',exact:true});
+  await search.fill('Fiktiv');
+  await page.getByRole('option').filter({hasText:'Eksisterende AS'}).waitFor();
+  assert.equal(await search.getAttribute('aria-expanded'),'true');
+  await search.press('ArrowDown');await search.press('ArrowDown');
+  assert.equal(await page.locator('#company-results [aria-selected=true]').textContent(),'Eksisterende AS · Allerede registrert · Arkivert');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Search fits '+width);
-  await page.getByRole('searchbox',{name:'Søk på bedriftsnavn',exact:true}).fill('X');
-  assert.equal(await page.getByRole('combobox',{name:'Velg bedrift',exact:true}).isVisible(),false,'Stale choices removed');
+  await search.fill('X');
+  assert.equal(await page.locator('#company-results').isVisible(),false,'Stale choices removed');
   await page.goto('https://crm.test/crm-outreach.php');
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'Proposal fits '+width);
   assert.equal(await page.getByRole('textbox',{name:'Introduksjonsmail',exact:true}).isVisible(),true);
