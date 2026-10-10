@@ -15,6 +15,7 @@ function rr_bulletin_places():array {
     return ['bomlo'=>['name'=>'Bømlo · Bremnes','lat'=>59.793,'lon'=>5.172], 'stord'=>['name'=>'Stord · Leirvik','lat'=>59.7798,'lon'=>5.5005], 'haugesund'=>['name'=>'Haugesund','lat'=>59.4136,'lon'=>5.268]];
 }
 function rr_bulletin_source_valid(array $i):bool {
+    try {studio_relevance_require($i,$i['sourceCheck']['source']??[],'radio');} catch(InvalidArgumentException) {return false;}
     return empty($i['bulletin'])&&($i['status']??'')==='ready'&&!empty($i['verified'])&&!empty($i['approvedBy'])
         &&studio_board_channel($i)!=='web'&&studio_news_check_current($i)&&studio_news_original_read($i,$i['sourceCheck']??[])
         &&studio_news_radio_credit($i)&&(strtotime($i['sourceCheck']['source']['fetchedAt']??'')?:0)>=time()-3600;

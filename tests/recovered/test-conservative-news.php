@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require __DIR__.'/relevance-fixture.php';
 require dirname(__DIR__, 2) . '/app/case-workflow.php';
 function conservative_expect(bool $ok, string $label): void {
     if (!$ok) throw new RuntimeException($label);
@@ -8,6 +9,7 @@ $config = ['openai_api_key'=>'mock-only', 'openai_model'=>'mock'];
 $item = ['title'=>'Trafikkuhell', 'originId'=>'fixture', 'sourceUrl'=>'https://www.nrk.no/vestland/test-1.12345'];
 $raw = 'Ein bil har køyrt inn i ein fjellvegg. Føraren har smertar i rygg og bein og blir frakta til legevakt, melder politiet. Vegen var stengd, men skal no vere open igjen.';
 $source = ['url'=>$item['sourceUrl'], 'text'=>$raw, 'sha256'=>hash('sha256', $raw), 'fetchedAt'=>gmdate('c'), 'kind'=>'original_article'];
+$item=relevance_fixture($item,$source);
 $corrected = 'Føreren har smerter i rygg og bein og blir fraktet til legevakt, melder politiet.';
 $unsupported = 'Føreren er alvorlig skadet og politiet følger opp saken.';
 foreach (['radio', 'web'] as $channel) {

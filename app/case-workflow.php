@@ -60,6 +60,8 @@ function studio_web_prepare(array $item,array $config,array $editorial=[],?calla
     if(empty($config['openai_api_key']) || empty($config['openai_model'])) throw new InvalidArgumentException('Manusgeneratoren er ikke konfigurert.');
     if($source!==null&&!studio_news_original_read($item,['source'=>$source]))throw new StudioNewsPreparationException('Felles originalgrunnlag er ugyldig.');
     $source??=studio_news_source($item,$fetch); $request??='producer_request';
+    studio_relevance_require($item,$source,'web');
+    if (($item['web']['delivery']['status']??'')==='publish') throw new InvalidArgumentException('En publisert sak kan ikke genereres på nytt.');
     $context=['source'=>$source,'editorial'=>$editorial];
     if(!empty($item['revisionRequest']))$context['style_request']=$item['revisionRequest'];
     $payload=['model'=>$config['openai_model'],'store'=>false,'max_output_tokens'=>1800,

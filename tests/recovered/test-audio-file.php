@@ -3,7 +3,7 @@ declare(strict_types=1);
 if(empty($argv[1])){foreach(['guest','preview','unapproved','approved','missing-policy','missing-synthetic','missing-disclosure','unheard-disclosure','changed-spoken-text','tampered','archived','method','range','range-invalid']as$mode){passthru(escapeshellarg(PHP_BINARY).' '.escapeshellarg(__FILE__).' '.escapeshellarg($mode),$code);if($code)exit($code);}exit;}
 $mode=$argv[1];$root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/audio-route-'.bin2hex(random_bytes(6));
 foreach(['/app/integrations','/public','/config']as$d)mkdir($tmp.$d,0700,true);
-foreach(['board','programs','audio-profiles','stylebook','news-script','source-identity','case-workflow','web-publish','news-publication','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage']as$n)copy($root.'/app/'.$n.'.php',$tmp.'/app/'.$n.'.php');
+foreach(['board','programs','audio-profiles','stylebook','news-script','news-relevance','source-identity','case-workflow','web-publish','news-publication','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage']as$n)copy($root.'/app/'.$n.'.php',$tmp.'/app/'.$n.'.php');
 copy($root.'/app/integrations/ElevenLabs.php',$tmp.'/app/integrations/ElevenLabs.php');copy($root.'/public/audio-file.php',$tmp.'/public/audio-file.php');
 file_put_contents($tmp.'/app/bootstrap.php','<?php function current_user(){return $GLOBALS["mode"]==="guest"?null:["role"=>"presenter"];} function redirect($url){$GLOBALS["redirected"]=$url;exit;}');
 require $tmp.'/app/audio-processing.php';

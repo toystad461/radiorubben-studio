@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require __DIR__.'/relevance-fixture.php';
 require dirname(__DIR__,2).'/app/audio-processing.php';
 function audio_ok(bool $ok,string $label):void{if(!$ok)throw new RuntimeException($label);echo "PASS Audio: $label\n";}
 function audio_reject(callable $fn,string $label):void{try{$fn();}catch(InvalidArgumentException|RuntimeException){audio_ok(true,$label);return;}throw new RuntimeException('Expected rejection: '.$label);}
@@ -8,6 +9,7 @@ $admin=['name'=>'Testredaktør','role'=>'admin'];$script='Dette melder Bømlo ko
 $item=['id'=>'1234567890abcdef','revision'=>1,'title'=>'Møte i kommunen','sourceName'=>'Bømlo kommune','originId'=>'fixture','program'=>'god-morgen-vestland','sourceUrl'=>'https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/mote.123.aspx','sourceAt'=>gmdate('c'),'status'=>'draft','script'=>$script];
 $text='Bømlo kommune inviterer til et åpent møte på biblioteket 8. oktober. Møtet handler om trafikksikkerhet. Alle innbyggere kan delta og stille spørsmål.';
 $source=['url'=>$item['sourceUrl'],'text'=>$text,'sha256'=>hash('sha256',$text),'fetchedAt'=>gmdate('c'),'kind'=>'original_article'];
+$item=relevance_fixture($item,$source);
 $review=['source'=>$source,'status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($item,$script)];$item['sourceCheck']=$review;
 $voice='azrGjm6gYkR15bxb9cVv';$profile='news-short';
 // These are synthetic test settings, NOT the station's approved audio profile.

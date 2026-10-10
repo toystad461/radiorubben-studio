@@ -25,7 +25,7 @@ function studio_board_audio_identity(array $item): array
     return [$item['title'] ?? '', $item['script'] ?? '', $item['program'] ?? '',
         $item['sourceUrl'] ?? '', $item['sourceAt'] ?? '', $item['channel'] ?? 'both',
         ($item['status'] ?? '') === 'archived',
-        $item['sourceCheck']['source']['sha256'] ?? '', $item['web']['check']['source']['sha256'] ?? ''];
+        $item['sourceCheck']['source']['sha256'] ?? '', $item['web']['check']['source']['sha256'] ?? '', $item['relevance'] ?? null];
 }
 
 /** Relevant source changes invalidate composite approvals permanently, including edit/restore. */
@@ -141,7 +141,7 @@ function studio_board_add_source(array $source, array $user, ?string $path = nul
 {
     if (!in_array($channel, ['radio','web','both'], true)) throw new InvalidArgumentException('Velg Radio, Nett eller Begge.');
     studio_board_change(static function (array &$board) use ($source, $user, $channel): void {
-        if (studio_board_has_source(studio_board_active($board), $source)) return;
+        if (studio_board_has_source($board['items'], $source)) return;
         if (count(studio_board_active($board)) >= 30) throw new InvalidArgumentException('Sendelisten har plass til 30 aktive punkter. Arkiver et punkt først.');
         if (!is_string($source['id'] ?? null) || !is_string($source['title'] ?? null)) throw new InvalidArgumentException('Ugyldig kildesak.');
         $board['items'][] = [
@@ -150,6 +150,7 @@ function studio_board_add_source(array $source, array $user, ?string $path = nul
             'sourceUrl'=>$source['url'] ?? '', 'sourceAt'=>$source['publishedAt'] ?? null,
             'capturedAt'=>$source['fetchedAt'] ?? gmdate('c'), 'summary'=>$source['summary'] ?? '',
             'sourceFeeds'=>$source['feedIds'] ?? [],
+            'relevance'=>$source['relevance'] ?? null,
             'program'=>'god-morgen-vestland', 'script'=>'', 'notes'=>'', 'status'=>'draft', 'verified'=>false,
             'createdAt'=>gmdate('c'), 'updatedAt'=>gmdate('c'),
             'createdBy'=>$user['name'] ?? 'Medarbeider', 'approvedBy'=>null, 'revision'=>1,
@@ -232,6 +233,7 @@ function studio_board_update(string $id, int $revision, string $action, array $i
                 $item['verified'] = false;
                 $item['status'] = 'draft'; $item['approvedBy'] = null;
             } elseif ($action === 'ready') {
+                if(isset($item['relevance']))studio_relevance_require($item,$item['sourceCheck']['source']??[],'radio');
                 if (!studio_news_radio_credit($item)) throw new InvalidArgumentException('NRK må krediteres tidlig i radiomanuset før godkjenning.');
                 if (studio_board_channel($item) === 'web') throw new InvalidArgumentException('Velg radiomateriale før godkjenning til sending.');
                 if (isset($item['sourceCheck']) && !studio_news_check_current($item))

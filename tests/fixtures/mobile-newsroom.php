@@ -16,6 +16,7 @@ if($mode==='observer')$admin=$can=false;
 if(in_array($mode,['radio','both'],true)){
  require_once dirname(__DIR__,2).'/app/newsroom.php';
  $item=['id'=>'1234567890abcdef','originId'=>'fixture','title'=>'Eksempelsak for radio og nett','sourceName'=>'NRK','sourceUrl'=>'https://www.nrk.no/vestland/test-1.12345678','revision'=>1,'channel'=>$mode,'status'=>'draft','script'=>'Et radiomanus til kontroll.'];
+ $item['relevance']=['recommendation'=>'both','reason'=>'Oppdiktet lokal frivillighetssak: naboer på Bømlo inviteres til dugnad.','radioReason'=>'Kort praktisk informasjon til deltakerne.','webReason'=>'Tid, sted og aktivitet gir grunnlag for en kort nettsak.','eventDate'=>'2026-10-15','localEvidence'=>['Dette er syntetisk kildebelegg: Frivillige på Bømlo samles til dugnad.']];
  $card=studio_newsroom_card($item);$counts=['ready'=>0,'attention'=>1,'working'=>0,'published'=>0];$selected='studio:'.$item['id'];$cards=$visible=[$selected=>$card];$nextKey='';$board=['items'=>[$item]];
  $sources=[['id'=>'incoming','title'=>'Ny eksempelsak','sourceName'=>'NRK','url'=>'https://www.nrk.no/vestland/test-1.87654321','summary'=>'Kildeomtale','publishedAt'=>gmdate('c')]];
 }

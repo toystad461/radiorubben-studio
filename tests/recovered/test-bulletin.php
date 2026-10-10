@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require __DIR__.'/relevance-fixture.php';
 require dirname(__DIR__,2).'/app/audio-processing.php';
 function bulletin_ok(bool $ok,string $label):void {if(!$ok)throw new RuntimeException($label);echo "PASS Bulletin: $label\n";}
 function bulletin_reject(callable $f,string $label):void {try{$f();}catch(InvalidArgumentException|RuntimeException){bulletin_ok(true,$label);return;}throw new RuntimeException('Expected rejection '.$label);}
@@ -18,7 +19,7 @@ $dir=sys_get_temp_dir().'/rr-bulletin-'.bin2hex(random_bytes(5));mkdir($dir,0700
 $sourceText=str_repeat('Kommunen inviterer til et møte om biblioteket. ',4);$sources=[];
 foreach(['1111111111111111','2222222222222222']as$n=>$id){
  $i=['id'=>$id,'revision'=>1,'originId'=>'fixture-'.$n,'title'=>'Sak '.$n,'sourceName'=>'Bømlo kommune','sourceUrl'=>'https://www.bomlo.kommune.no/aktuelt-og-kunngjeringar/mote.123.aspx','sourceAt'=>gmdate('c'),'program'=>'','script'=>'Dette melder Bømlo kommune. Kommunen inviterer til et møte.','status'=>'ready','verified'=>true,'approvedBy'=>'Fixture editor','channel'=>'radio'];
- $i['sourceCheck']=['status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($i,$i['script']),'source'=>['url'=>$i['sourceUrl'],'text'=>$sourceText,'sha256'=>hash('sha256',$sourceText),'fetchedAt'=>gmdate('c'),'kind'=>'original_article']];$sources[]=$i;
+ $i['sourceCheck']=['status'=>'passed','policy'=>STUDIO_NEWS_POLICY,'checkedAt'=>gmdate('c'),'fingerprint'=>studio_news_fingerprint($i,$i['script']),'source'=>['url'=>$i['sourceUrl'],'text'=>$sourceText,'sha256'=>hash('sha256',$sourceText),'fetchedAt'=>gmdate('c'),'kind'=>'original_article']];$i=relevance_fixture($i,$i['sourceCheck']['source']);$sources[]=$i;
 }
 $weather=static function($p,$t)use($data,$now){return studio_weather_summary($data,$now,$t)+['place'=>$p['name']];};
 $ids=array_column($sources,'id');$get=fn($id)=>studio_case_get($id,$path);

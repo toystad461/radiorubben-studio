@@ -1,11 +1,12 @@
 <?php
 declare(strict_types=1);
 require dirname(__DIR__,2).'/app/newsroom.php';
+require __DIR__.'/relevance-fixture.php';
 function channel_check(bool $ok,string $label):void{if(!$ok)throw new RuntimeException($label);echo "PASS $label\n";}
 $dir=sys_get_temp_dir().'/newsroom-channels-'.bin2hex(random_bytes(5));mkdir($dir,0700);
 $user=['name'=>'Fixture','role'=>'admin'];$config=['openai_api_key'=>'fixture','openai_model'=>'fixture'];
-$text='Kommunen arrangerer et åpent møte på biblioteket 8. oktober. Møtet handler om trafikksikkerhet. Alle innbyggere kan delta i møtet og stille spørsmål.';
-$source=['id'=>'fixture','title'=>'Et møte','sourceName'=>'NRK','url'=>'https://www.nrk.no/vestland/test-1.12345678'];
+$text='Bømlo kommune arrangerer et åpent møte på biblioteket 8. oktober. Møtet handler om trafikksikkerhet. Alle innbyggere kan delta i møtet og stille spørsmål.';
+$source=['id'=>'fixture','title'=>'Et møte','sourceName'=>'NRK','publishedAt'=>gmdate('c'),'url'=>'https://www.nrk.no/vestland/test-1.12345678'];
 try{
     foreach(['radio'=>2,'web'=>2,'both'=>4] as $channel=>$expected){
         $path=$dir.'/'.$channel.'.json';$calls=0;$reads=0;
@@ -19,7 +20,7 @@ try{
             channel_check(file_get_contents($path)===$before,'invalid intake cannot mutate story: '.$bad);
         }
         $fetch=static function($url)use(&$reads,$text){$reads++;return '<html><head><link rel="canonical" href="'.$url.'"></head><body><article><p>'.$text.'</p></article></body></html>';};
-        $request=static function($config,$payload)use(&$calls,$text){
+        $request=static function($config,$payload)use(&$calls,$text){if(($payload['text']['format']['name']??'')==='rss_relevance')return relevance_fixture_response();
             $calls++;$input=json_decode($payload['input'],true);
             if(isset($input['segments'])){
                 $segments=[];foreach($input['segments'] as $i=>$segment)$segments[]=['index'=>$i,'verdict'=>'supported','evidence'=>[$text],'reason'=>'Belegg.'];

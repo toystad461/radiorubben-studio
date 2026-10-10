@@ -1,15 +1,16 @@
 <?php
 declare(strict_types=1);
 require dirname(__DIR__,2).'/app/newsroom.php';
+require __DIR__.'/relevance-fixture.php';
 function check($ok,$label){if(!$ok)throw new RuntimeException($label);echo "OK $label\n";}
 function reject($f,$label){try{$f();}catch(InvalidArgumentException $e){echo "OK $label\n";return;}throw new RuntimeException($label);}
 $dir=sys_get_temp_dir().'/newsroom-'.bin2hex(random_bytes(4));mkdir($dir);$path=$dir.'/board.json';
 $user=['role'=>'admin','name'=>'Test'];$config=['openai_api_key'=>'mock','openai_model'=>'mock'];$calls=0;$reads=0;
-$text='Kommunen inviterer innbyggerne til et åpent møte om trafikksikkerhet. Møtet arrangeres på biblioteket 8. oktober. Alle som ønsker det kan delta på møtet.';
-$source=['id'=>'fixture','title'=>'RSS er bare en pekepinn','sourceName'=>'NRK','url'=>'https://www.nrk.no/vestland/mote-1.12345678','publishedAt'=>gmdate('c')];
-$fetch=function($url)use(&$reads,$text){$reads++;return '<html><head><link rel="canonical" href="'.$url.'"></head><body><article><p>'.$text.'</p></article></body></html>';};
-$request=function($c,$payload)use(&$calls,$text){$calls++;$input=json_decode($payload['input'],true);
-    check(($input['source']['text']??'')===$text,'model sees fetched original, never RSS summary');
+$text='Bømlo kommune inviterer innbyggerne til et åpent møte om trafikksikkerhet. Møtet arrangeres på biblioteket 8. oktober. Alle som ønsker det kan delta på møtet.';
+$source=['id'=>'fixture','title'=>'RSS er bare en pekepinn','sourceName'=>'NRK','publishedAt'=>gmdate('c'),'url'=>'https://www.nrk.no/vestland/mote-1.12345678','publishedAt'=>gmdate('c')];
+$fetch=function($url)use(&$reads,$text){$reads++;return '<html><head><link rel="canonical" href="'.$url.'"></head><body><article><p>'.$text.'</p><p>Kildesak: '.$url.'</p></article></body></html>';};
+$request=function($c,$payload)use(&$calls,$text){if(($payload['text']['format']['name']??'')==='rss_relevance')return relevance_fixture_response();$calls++;$input=json_decode($payload['input'],true);
+    check(($input['source']['text']??'')===$text."\nKildesak: ".$input['source']['url'],'model sees fetched original, never RSS summary');
     if(str_starts_with($payload['instructions'],'Skriv ett nyhetsmanus'))return 'Kommunen inviterer innbyggerne til et åpent møte om trafikksikkerhet.';
     if(!isset($input['segments']))return json_encode(['title'=>'Åpent møte på biblioteket','intro'=>'Kommunen inviterer til et åpent møte.','body'=>"Møtet handler om trafikksikkerhet.\nDette melder NRK."]);
     $segments=[];foreach($input['segments'] as $i=>$segment)$segments[]=['index'=>$i,'verdict'=>'supported','evidence'=>[$text],'reason'=>'Belegg i originalen.'];
@@ -34,7 +35,7 @@ try{
     $unknown=$item;$unknown['web']['delivery']=['state'=>'unknown'];check(!studio_newsroom_card($unknown)['canApprove'],'ambiguous delivery needs resolution');
     reject(fn()=>studio_newsroom_prepare($item['id'],$item['revision']-1,$user,$config,'',$path,$request,$fetch),'stale preparation rejected');
     reject(fn()=>studio_newsroom_prepare($item['id'],$item['revision'],['role'=>'observer'],$config,'',$path,$request,$fetch),'observer cannot prepare');
-    reject(fn()=>studio_news_source($item,fn()=>'<link rel="canonical" href="https://www.nrk.no/vestland/other-1.99999999"><article><p>'.$text.'</p></article>'),'wrong NRK original is rejected');
+    reject(fn()=>studio_news_source($item,fn($url)=>'<link rel="canonical" href="https://www.nrk.no/vestland/other-1.99999999"><article><p>'.$text.'</p><p>Kildesak: '.$url.'</p></article>'),'wrong NRK original is rejected');
     studio_board_change(static function(&$b){$b['items'][0]['web']['check']['checkedAt']=gmdate('c',time()-3601);},$path);
     check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='rechecked','expired check is renewed without rewriting');
     $item=studio_case_get($item['id'],$path);check(studio_web_approval_hash($item)===$hash&&$calls===5,'renewed check preserves text and notification identity');
@@ -52,8 +53,10 @@ try{
     studio_board_update($item['id'],$item['revision'],'archive',[],$user,$path);
     check(studio_newsroom_tick($feed,$config,$path,$request,$fetch)['state']==='idle','rejected source cannot return via RSS');
     $next=$source;$next['id']='failure';$next['url']='https://www.nrk.no/vestland/next-1.12345679';
-    reject(fn()=>studio_newsroom_tick([['status'=>'updated','items'=>[$next]]],$config,$path,$request,fn()=>throw new StudioNewsPreparationException('Originalen er utilgjengelig.')),'unreadable source stops writing');
-    $failed=studio_board_active(studio_board_read($path))[0];check(studio_newsroom_card($failed)['status']==='attention'&&isset($failed['newsroom']['automaticDay']),'failed preparation visible and counts toward daily cap');
+    $waiting=studio_newsroom_tick([['status'=>'updated','items'=>[$next]]],$config,$path,$request,fn()=>throw new StudioNewsPreparationException('Originalen er utilgjengelig.'));
+    check($waiting['recommendation']==='needs_source'&&count(studio_board_active(studio_board_read($path)))===0,'unreadable source waits without creating production item');
+    $selections=studio_board_read($path)['newsSelections'];
+    check(end($selections)['assessment']['recommendation']==='needs_source','failed selection visible in inbox');
     check(studio_newsroom_tick([['status'=>'updated','items'=>[$next]]],$config,$path,$request,$fetch)['state']==='idle','failed automatic jobs do not retry paid generation');
     $partial=$source;$partial['id']='partial';$partial['url']='https://www.nrk.no/vestland/partial-1.12345680';
     $radioFails=function($c,$p)use($request){

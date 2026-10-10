@@ -7,7 +7,7 @@ mkdir($tmp . '/app/views', 0700, true);
 mkdir($tmp . '/app/integrations', 0700, true);
 mkdir($tmp . '/config', 0700, true);
 mkdir($tmp . '/public', 0700, true);
-foreach (['board', 'programs','audio-profiles','stylebook','news-script', 'story-script', 'source-identity','case-workflow','web-publish','news-publication','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage'] as $name)
+foreach (['board', 'programs','audio-profiles','stylebook','news-script','news-relevance', 'story-script', 'source-identity','case-workflow','web-publish','news-publication','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage'] as $name)
     copy(dirname(__DIR__, 2) . '/app/' . $name . '.php', $tmp . '/app/' . $name . '.php');
 copy(dirname(__DIR__,2).'/app/integrations/ElevenLabs.php',$tmp.'/app/integrations/ElevenLabs.php');
 copy(dirname(__DIR__, 2) . '/public/sending.php', $tmp . '/public/sending.php');

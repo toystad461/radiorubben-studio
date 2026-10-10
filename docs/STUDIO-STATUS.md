@@ -1107,3 +1107,23 @@ Tekstutkast kan eksporteres uten lyd etter egen godkjenning av tekst/mottaker.
 TTS/budsjett/stemme er uendret og deaktivert. Kildesjekker og revisjonssperrer
 omfatter også endringer mens nettside/generator arbeider. Ingen produksjonsdeploy
 eller kundekontakt i denne utviklingsleveransen. Testbevis føres i PR.
+
+## RSS-utvalg med lokal begrunnelse – 10.10.2026, til GitHub-gjennomgang
+
+Arbeidsgren feat/rss-local-relevance fra main 231be69. Ingen merge eller deploy.
+Eksisterende RSS/originalhenter, modelltransport, nyhetsmotor og godkjenningsflate
+er videreført med et kildebasert utvalgssteg før produksjon. Radio/nett vurderes
+separat. Bømlo-belegg, aktualitet, dubletter, revisjonssperrer og logget overstyring
+er implementert; direkte generatorer, TTS og samlet sending har utvalgssperrer.
+Full beskrivelse og avgrensninger: docs/RSS-RELEVANCE.md.
+
+Målrettede syntetiske tester og hele Composer-pakken besto lokalt på PHP 8.4.
+Mobil-/kanalvisning besto isolert Chrome ved 375, 390 og 1280 piksler.
+Tolv faktiske RSS-peker ble lest, med ti støttede originaler. Lokal modell/API
+er ikke konfigurert, så faktisk kjørt produksjonsmodell er ikke verifisert.
+Codex sin separate redaksjonelle prøvevurdering er dokumentert med kildelenker,
+tidspunkt og kontrollsummer i docs/RSS-RELEVANCE-PREVIEW-2026-10-10.md.
+
+Før produksjon: modellprøve med godkjent konfigurasjon, privat historikksjekk,
+kontroll av aktiv WordPress-worker/plugin og eksplisitt utrullingsgodkjenning.
+NRKs nye /artikkel/-lenker venter fortsatt på støttet originalhenting.
