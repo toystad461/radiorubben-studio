@@ -225,11 +225,21 @@ function studio_crm_search_results(array $records, string $query, array $remote)
     $results=[];
     foreach($records as $row) {
         if (!str_contains(studio_crm_normalize($row['company'].' '.($row['orgNumber']??'')),studio_crm_normalize($query))) continue;
-        $results[]=['value'=>'card:'.$row['id'],'label'=>$row['company'].' · Allerede registrert · '.studio_crm_stages()[$row['stage']]];
+        $results[]=['value'=>'card:'.$row['id'],'label'=>$row['company'].' · Allerede registrert · '.studio_crm_stages()[$row['stage']].(!empty($row['orgNumber'])?' · '.$row['orgNumber']:'').(!empty($row['businessAddress'])?' · '.$row['businessAddress']:'')];
         if(count($results)===20) break;
     }
     foreach($remote as $hit) {
         $matches=studio_crm_matches($records,$hit);
+        if(count($matches)===1 && (empty($matches[0]['orgNumber']) || $matches[0]['orgNumber']===$hit['orgNumber'])) {
+            $row=$matches[0]; $value='card:'.$row['id'];
+            $index=array_search($value,array_column($results,'value'),true);
+            if($index===false)$results[]=['value'=>$value,'label'=>$row['company'].' · Allerede registrert · '.studio_crm_stages()[$row['stage']].' · '.$hit['orgNumber'].' · '.$hit['place']];
+            else {
+                if(empty($row['orgNumber']))$results[$index]['label'].=' · '.$hit['orgNumber'];
+                if(empty($row['businessAddress']) && $hit['place']!=='')$results[$index]['label'].=' · '.$hit['place'];
+            }
+            continue;
+        }
         $results[]=['value'=>'org:'.$hit['orgNumber'],'label'=>$hit['company'].' · '.$hit['orgNumber'].' · '.$hit['place'].' · '.($matches?'Allerede registrert – oppdater kort':'Ny potensiell kunde')];
     }
     return $results;

@@ -1143,3 +1143,26 @@ Uavklart levering og publiserte saker stoppes før modellkall. Rollen, CSRF,
 revisjon og krav om ny menneskelig godkjenning beholdes.
 Tester bruker syntetiske modeller og saker. Reell modellkvalitet er uprøvd.
 Neste steg: PR/CI og deretter eksplisitt merge-/deploygodkjenning.
+
+## CRM – automatisk treffliste, 10.10.2026
+
+Gren feat/crm-autocomplete fra main b3f4ebe. Ett søkefelt erstatter søkeknapp,
+separat nedtrekksfelt og åpneknapp. Treff fra eksisterende CRM og Brønnøysund
+vises etter 300 ms pause med status, organisasjonsnummer og sted der tilgjengelig.
+Registrerte treff åpner samme kort; nye bruker eksisterende select_company-POST
+og forhåndsutfylling. Rolle, CSRF, duplikatsperrer og endelig lagring beholdes.
+Combobox med piltaster, Enter, Escape, tydelig venting/feil/tom liste og sperre
+mot foreldede svar. Mørk, mobiltilpasset liste og vern av ulagrede kortendringer.
+Søkegrensen på serveren er justert fra 500 til 250 ms for å støtte 300 ms pause.
+Tester bruker bare fiktive data. Ingen produksjonsdeploy eller kunderegistrering.
+Validering: PHP/JS-syntaks og full Composer-testpakke besto. Nettlesertesten
+kontrollerer 320/390/800/1280 px, tastatur/berøring, eksisterende og nye valg,
+300 ms venting, gamle svar, feil/tom liste og bevaring av ulagrede endringer.
+Mobilvisningen er visuelt kontrollert med syntetiske data. Endringen er lokal;
+push, PR og produksjonsutrulling er ikke utført som del av denne bestillingen.
+Presisering: Trefflisten åpnes direkte fra søkefeltet med felles kant og bakgrunn,
+som en integrert nedtrekksliste. Statusmeldingen ligger over feltet og dekkes ikke.
+
+Thomas godkjente publisering av CRM-endringen i chatten. Push, PR, merge og
+selektiv deploy følges gjennom eksisterende pipeline. Endelig kvittering og
+innlogget etterkontroll dokumenteres på PR-en.

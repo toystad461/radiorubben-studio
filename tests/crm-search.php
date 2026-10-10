@@ -28,6 +28,15 @@ $matches=studio_crm_matches($records,$hits['results'][0]);
 search_check(count($matches)===2,'Matches organisation and legacy name, including archive');
 $results=studio_crm_search_results($records,'Tidligere',$hits['results']);
 search_check(str_contains($results[0]['label'],'Arkivert') && str_contains($results[1]['label'],'Allerede registrert'),'Existing and archived cards labelled');
+$single=[['id'=>'cccccccccccccccc','company'=>'Fiktiv & Test AS','orgNumber'=>'999999999','businessAddress'=>'Testvegen 1, Bømlo','stage'=>'active']];
+$merged=studio_crm_search_results($single,'Fiktiv',$hits['results']);
+search_check(count($merged)===1 && $merged[0]['value']==='card:cccccccccccccccc','Registered remote match opens existing card without duplicate result');
+search_check(str_contains($merged[0]['label'],'999999999') && str_contains($merged[0]['label'],'Bømlo'),'Local hit retains organisation and location');
+$conflicting=$single;$conflicting[0]['orgNumber']='974760673';
+$conflict=studio_crm_search_results($conflicting,'Fiktiv',$hits['results']);
+search_check($conflict[1]['value']==='org:999999999','Conflicting organisation keeps existing registration conflict check');
+$new=studio_crm_search_results([],'Fiktiv',$hits['results']);
+search_check($new[0]['value']==='org:999999999','New company uses existing registration selector');
 $path=sys_get_temp_dir().'/crm-search-'.bin2hex(random_bytes(5)).'.json';$admin=['role'=>'admin','name'=>'Test'];
 try {
  $fields=['company'=>'Fiktiv & Test AS','orgNumber'=>'999999999','stage'=>'candidate','priority'=>'2','contact'=>'Kari','nextStep'=>'Ring'];

@@ -8,6 +8,13 @@ foreach (['crm.php','crm-brreg.php','crm-candidates.php','helpers.php','users.ph
 foreach (['head.php','sidebar.php','account.php'] as $file) copy($root.'/app/views/'.$file, $tmp.'/app/views/'.$file);
 copy($root.'/public/crm.php', $tmp.'/public/crm.php');
 file_put_contents($tmp.'/app/bootstrap.php', '<?php require __DIR__."/helpers.php"; require __DIR__."/users.php"; function current_user(){return $GLOBALS["mode"]==="guest"?null:["name"=>"Testbruker","role"=>in_array($GLOBALS["mode"],["observer","producer","presenter"],true)?$GLOBALS["mode"]:"admin"];} $config=[];');
+if($mode==='select-new') {
+ $brreg=$tmp.'/app/crm-brreg.php';
+ $code=file_get_contents($brreg);
+ $code=str_replace('function studio_crm_brreg(', 'function fixture_unused_brreg(', $code);
+ $code.='\nfunction studio_crm_brreg(string $org): array { if($org!=="974760673")throw new RuntimeException("Wrong selection"); return ["fields"=>["orgNumber"=>$org,"company"=>"Ny testbedrift AS"],"fetchedAt"=>gmdate("c")]; }';
+ file_put_contents($brreg,str_replace('\\nfunction', "\nfunction", $code));
+}
 require $tmp.'/app/crm.php';
 $path = $tmp.'/config/crm.private.json';
 $admin = ['role'=>'admin', 'name'=>'Testadministrator'];
@@ -32,6 +39,7 @@ if(in_array($mode,['lookup-new','lookup-existing','lookup-expired'],true)) {
 if($mode==='select-existing') {
  $_SERVER['REQUEST_METHOD']='POST';$_POST=['csrf'=>'fixture-token','action'=>'select_company','choice'=>'card:'.$id];
 }
+if($mode==='select-new') { $_SERVER['REQUEST_METHOD']='POST';$_POST=['csrf'=>'fixture-token','action'=>'select_company','choice'=>'org:974760673']; }
 if($mode==='select-invalid') {
  $_SERVER['REQUEST_METHOD']='POST';$_POST=['csrf'=>'fixture-token','action'=>'select_company','choice'=>'card:../../file'];
 }
@@ -41,7 +49,8 @@ register_shutdown_function(static function () use ($mode,$tmp,$path,$before,$id)
     if (in_array($mode,['observer','producer','presenter','csrf'],true)) $ok = http_response_code()===403 && !str_contains($html,'alert(1)');
     elseif ($mode==='method') $ok = http_response_code()===405;
     elseif ($mode==='guest') $ok = http_response_code()===303 && !str_contains($html,'alert(1)');
-    elseif ($mode==='select-existing') $ok=http_response_code()===303;
+    elseif ($mode==='select-existing') $ok=http_response_code()===303 && file_get_contents($path)===$before;
+    elseif ($mode==='select-new') $ok=http_response_code()===303 && ($_SESSION['crm_lookup']['fields']['orgNumber']??'')==='974760673' && file_get_contents($path)===$before;
     elseif ($mode==='save') $ok = http_response_code()===303 && $after['records'][0]['contact']==='Kari Test';
     elseif ($mode==='activity') $ok = http_response_code()===303 && $after['records'][0]['lastContact']==='2026-01-26';
     else {

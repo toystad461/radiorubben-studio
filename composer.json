@@ -29,6 +29,7 @@
       "php tests/crm-page.php lookup-existing",
       "php tests/crm-page.php lookup-expired",
       "php tests/crm-page.php select-existing",
+      "php tests/crm-page.php select-new",
       "php tests/crm-page.php select-invalid",
       "php tests/crm-page.php guest",
       "php tests/crm-page.php observer",
