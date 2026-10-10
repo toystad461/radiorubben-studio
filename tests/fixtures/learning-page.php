@@ -4,7 +4,7 @@ declare(strict_types=1);
 $root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/learning-ui-'.bin2hex(random_bytes(5));
 foreach(['/app/views','/public','/config'] as $dir)mkdir($tmp.$dir,0700,true);
 foreach(['web-publish','news-publication','editorial-memory','board','programs','audio-profiles','stylebook','news-script','news-relevance','source-identity'] as $name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
-foreach(['head','sidebar','account'] as $name)copy($root.'/app/views/'.$name.'.php',$tmp.'/app/views/'.$name.'.php');
+foreach(['head','sidebar','navigation','account'] as $name)copy($root.'/app/views/'.$name.'.php',$tmp.'/app/views/'.$name.'.php');
 copy($root.'/public/learning.php',$tmp.'/public/learning.php');
 $role=($argv[2]??'')==='observer'?'observer':'admin';
 file_put_contents($tmp.'/app/bootstrap.php','<?php function current_user(){return ["name"=>"Fixture","role"=>$GLOBALS["role"]];} function studio_can($u,$p){return $u["role"]==="admin";} function studio_roles(){return ["admin"=>"Administrator","observer"=>"Leser"];} function escape($s){return htmlspecialchars((string)$s,ENT_QUOTES,"UTF-8");} function icon(...$a){return "";} function redirect($url){throw new RuntimeException("Unexpected redirect");}');

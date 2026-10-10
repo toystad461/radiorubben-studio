@@ -771,3 +771,17 @@ footer b {
 #audio-material audio, .sending-layout audio { display: block; max-width: 100%; margin-block: .75rem; }
 #audio-material details { margin-block: 1rem; }
 #audio-material form { margin-block: .75rem; }
+
+/* One role-filtered menu on desktop and mobile. */
+.studio-mobile-menu{display:none}
+.studio-navigation .nav-label{display:block;margin:16px 0 6px;font-size:11px;color:#b4c3d5}
+.studio-navigation .nav-item{display:flex;align-items:center;gap:8px;min-height:44px;box-sizing:border-box;white-space:normal;overflow-wrap:anywhere}
+@media(max-width:800px){
+ .sidebar .studio-desktop-menu{display:none}
+ .studio-mobile-menu{display:block;margin-top:12px}
+ .studio-mobile-menu>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:8px 12px;border:1px solid var(--line);border-radius:8px}
+ .sidebar .studio-navigation,.nr-site-menu .studio-navigation{display:grid;gap:3px;margin:10px 0;max-height:60dvh;overflow:auto}
+ .studio-navigation .nav-label{display:block;margin:14px 12px 4px}
+ .studio-navigation .nav-item{font-size:14px;padding:10px 12px}
+ .nr-site-menu[open]{width:min(340px,calc(100vw - 24px))}
+}

@@ -15,12 +15,12 @@ require dirname(__DIR__) . '/app/views/head.php';
 <div class="shell studio-shell">
 <?php $activePage = 'ai-studio'; require dirname(__DIR__) . '/app/views/sidebar.php'; ?>
 <div class="workspace">
-<header class="topbar"><span>Arbeidsrom <span class="slash">/</span> <strong id="studio-page-title">AI Studio</strong></span><span class="version">STUDIO <b>01</b></span><?php require dirname(__DIR__) . '/app/views/account.php'; ?></header>
+<header class="topbar"><span>Arbeidsrom <span class="slash">/</span> <strong id="studio-page-title">Studio</strong></span><span class="version">STUDIO <b>01</b></span><?php require dirname(__DIR__) . '/app/views/account.php'; ?></header>
 <main id="main" class="ai-studio" data-settings-allowed="<?= $canSettings ? 'true':'false' ?>" data-ai-ready="<?= $aiReady ? 'true':'false' ?>" data-csrf="<?= htmlspecialchars($_SESSION['csrf'], ENT_QUOTES, 'UTF-8') ?>" data-midi-enabled="<?= $midiEnabled ? 'true':'false' ?>">
 <?php if ($readOnly): ?><p class="notice">Observatør · Kun lesevisning. Lokale manus, avspilling og MIDI fra andre nettlesere deles ikke i denne versjonen.</p><fieldset disabled class="observer-view"><?php endif; ?>
 <p id="feedback" role="status" class="studio-feedback">Manuell produsent klar. Velg manuell godkjenning eller automatisk kontroll av radiostikk.</p>
 <div id="producer-view">
-<div class="heading-row"><div><p class="eyebrow">RADIO RUBBEN / LIVE-STUDIO</p><h1>Studio <span class="dashboard-title-accent">Dashboard</span></h1><p class="intro">Din musikk. Din stemme. Full oversikt.</p></div><span class="mode"><?= $user ? escape(studio_roles()[$user['role']] ?? 'Medarbeider') : 'Producer' ?> · <?= $user ? 'Innlogget' : 'Demonstrasjon' ?></span></div>
+<div class="heading-row"><div><p class="eyebrow">RADIO RUBBEN / LIVE-STUDIO</p><h1>Studio <span class="dashboard-title-accent">– manus og lyd</span></h1><p class="intro">Din musikk. Din stemme. Full oversikt.</p></div><span class="mode"><?= $user ? escape(studio_roles()[$user['role']] ?? 'Medarbeider') : 'Producer' ?> · <?= $user ? 'Innlogget' : 'Demonstrasjon' ?></span></div>
 <noscript><p class="notice">Aktiver JavaScript for Producer Board og MIDI. Radiosendingen er uavhengig av denne siden.</p></noscript>
 
 <section class="program-header" aria-label="Program og sendestatus"><div><span class="air-status" id="air-status">ON AIR · UKJENT</span><h2 id="program-title">Velg programkontekst</h2><p id="context-source">Ingen sendekilde tilkoblet</p></div><div class="program-right"><div class="program-tools"><span id="studio-date" class="small"></span><time id="studio-clock"></time><span class="clock-zone">Norsk tid · Europe/Oslo</span><label><input id="demo-data" type="checkbox"> Vis testdata</label></div><section class="weather-widget" aria-label="Vær i studioområdet"><p id="weather-place">Bømlo · Bremnes</p><div class="weather-current"><span id="weather-icon" aria-hidden="true">–</span><div><strong id="weather-temperature">—</strong><span id="weather-condition">Henter været …</span></div></div><span id="weather-time">Lokal værprognose</span><small><a href="https://www.met.no/" target="_blank" rel="noopener">MET Norge</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></small></section></div></section>
@@ -44,4 +44,4 @@ require dirname(__DIR__) . '/app/views/head.php';
 </section>
 </div>
 <?php if ($readOnly): ?></fieldset><?php endif; ?><footer><span>Radio Rubben <b>AI Studio</b></span><span>Radiosendingen fungerer uavhengig av AI Studio.</span></footer>
-</main></div></div><?php if (!$readOnly): ?><script type="module" src="/assets/ai-studio/app.mjs?v=roles-1"></script><?php endif; ?></body></html>
+</main></div></div><?php if (!$readOnly): ?><script type="module" src="/assets/ai-studio/app.mjs?v=nav-20261011"></script><?php endif; ?></body></html>

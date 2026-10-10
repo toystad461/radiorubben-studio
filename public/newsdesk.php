@@ -107,5 +107,5 @@ if($_SERVER['REQUEST_METHOD']==='POST'&&!$error){$_SESSION['newsroom_notice']=$n
 $extraStylesheet='/assets/newsroom.css?v=20261008-channels';require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell newsroom-shell"><?php $activePage='newsdesk';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace">
-<header class="topbar"><span>Radio Rubben / <strong>Nyhetsdesk</strong></span><details class="nr-site-menu"><summary>Studio-meny</summary><nav><a href="/control.php">Kontrollsenter</a><a href="/sending.php">Sendeliste</a></nav><?php require dirname(__DIR__).'/app/views/account.php';?></details></header>
+<header class="topbar"><span>Radio Rubben / <strong>Nyhetsdesk</strong></span><details class="nr-site-menu"><summary>Studio-meny</summary><?php require dirname(__DIR__).'/app/views/navigation.php';?><?php require dirname(__DIR__).'/app/views/account.php';?></details></header>
 <?php echo $html; ?></div></div><p id="newsroom-progress" role="status" aria-live="polite" hidden></p><script src="/assets/newsroom.js?v=20261010-feedback" defer></script></body></html>

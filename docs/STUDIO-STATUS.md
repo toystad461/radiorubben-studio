@@ -1175,3 +1175,9 @@ Utkast fra main e39675573c7dcbd2207aa4775baf7dc41b8a382d. Desken viser siste reg
 Lokalt kontrollert: PHP 8.2/8.4 syntaks, 23 målrettede status-/templatekontroller og fire tilstander ved 375/390/1280 px med faktisk desk/CSS/JS og syntetiske data. Eksterne kall og POST sperret. Ingen full runtime-regresjon på PHP 8.4 eller innlogget produksjonskontroll.
 
 Thomas godkjente egen gren og utkast-PR. Ingen merge/deploy. Backupdekning avventer TKT-19054505; VPS/FFmpeg på vent. Neste steg: gjennomgå diff og CI før separat utrullingsbeslutning.
+
+
+## RR-STUDIO-NAV-001 – lokalt forslag, 11.10.2026
+Felles rollefiltrert menykilde for mobil og desktop. Konsekvente navn på Studiooversikt, Sendeliste og Studio. Saksarbeid skilles fra Nyhetsdesk; Sosiale medier merkes Ikke tilkoblet og fjernes fra primære produksjonssnarveier. Base main 6cfeb4dc2d91e754b8f607983aa5c30b7bf7794a. Ingen endring i redaksjonelle handlinger, lagring, avspilling eller rettigheter. Lokalt utkast; ingen gren, PR, merge eller deploy. Produksjonsavvik i workspace.php må avstemmes før utrulling; filen endres ikke.
+
+Videreføring 11.10: Thomas autoriserte utkast-PR. PHP 8.2/8.4 og JS-syntaks kontrollert; 16 syntetiske menyvisninger (390/1280 px og fire roller) besto synlighet, aktiv markering og bredde. Returlenkevariabler bevares. Ingen full runtime- eller innlogget etterkontroll av ny kode. Neste steg er fersk PR-diff og CI; ingen merge eller deploy er autorisert av denne videreføringen.

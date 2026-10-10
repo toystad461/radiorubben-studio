@@ -27,7 +27,7 @@ $item = ['id'=>'1234567890abcdef', 'originId'=>'fixture', 'title'=>'Test news', 
     'status'=>'draft', 'verified'=>false, 'approvedBy'=>null, 'revision'=>1,
     'sourceCheck'=>['status'=>'needs_review', 'issues'=>['<script>alert(1)</script>'], 'segments'=>[]]];
 if($render){
-    foreach(['head','sidebar','account','bulletin']as$name)copy(dirname(__DIR__,2).'/app/views/'.$name.'.php',$tmp.'/app/views/'.$name.'.php');
+    foreach(['head','sidebar','navigation','account','bulletin']as$name)copy(dirname(__DIR__,2).'/app/views/'.$name.'.php',$tmp.'/app/views/'.$name.'.php');
     file_put_contents($tmp.'/app/bootstrap.php', '
 function icon(...$args){return "";} function studio_roles(){return ["admin"=>"Administrator"];}
 ',FILE_APPEND);

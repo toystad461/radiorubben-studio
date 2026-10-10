@@ -15,7 +15,7 @@ $config=[];');
 file_put_contents($tmp.'/app/newsroom-wordpress.php','<?php function studio_newsroom_wp(...$args){$GLOBALS["wpReads"]++;return ["items"=>[],"version"=>"newsroom-1"];}');
 file_put_contents($tmp.'/app/integrations/NewsDesk.php','<?php function newsdesk_all($path){return [];} function newsdesk_sections($feeds){return [];}');
 file_put_contents($tmp.'/app/producer.php','<?php');
-foreach(['head','sidebar','account']as$name)file_put_contents($tmp.'/app/views/'.$name.'.php','');
+foreach(['head','sidebar','navigation','account']as$name)file_put_contents($tmp.'/app/views/'.$name.'.php','');
 $item=['id'=>'1234567890abcdef','originId'=>'fixture','title'=>'<script>bad()</script>','sourceName'=>'NRK','sourceUrl'=>'https://www.nrk.no/vestland/test-1.12345678','sourceAt'=>gmdate('c'),'program'=>'god-morgen-vestland','script'=>'','notes'=>'','status'=>'draft','revision'=>1];
 $path=$tmp.'/config/sending-board.json';file_put_contents($path,json_encode(['items'=>[$item]]));$before=file_get_contents($path);$wpReads=0;
 $_SESSION=['csrf'=>'fixture'];$_GET=$mode==='fragment'?['view'=>'fragment']:[];$_POST=[];$_SERVER['REQUEST_METHOD']=$mode==='method'?'DELETE':(in_array($mode,['observer','csrf','forged','feedback','feedback-stale','feedback-csrf','feedback-observer'],true)?'POST':'GET');
