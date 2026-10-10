@@ -28,3 +28,30 @@ function studio_newsroom_image_url(string $url): bool {
         &&str_starts_with($p['path']??'','/wp-content/uploads/')&&!str_contains(rawurldecode($p['path']??''),'..')
         &&(bool)preg_match('/\.(?:png|jpe?g|webp)$/i',$p['path']??'');
 }
+
+/** Presentation only. Invalid timestamps never become the current time. */
+function studio_newsroom_status_time(mixed $value): ?string {
+    if(!is_string($value)||!preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2})$/D',$value))return null;
+    try{$date=new DateTimeImmutable($value);}catch(Throwable){return null;}
+    $errors=DateTimeImmutable::getLastErrors();
+    if($errors!==false&&($errors['warning_count']||$errors['error_count']))return null;
+    return $date->setTimezone(new DateTimeZone('Europe/Oslo'))->format('d.m.Y H:i');
+}
+function studio_newsroom_operational_status(array $status,bool $available=true): array {
+    if(!$available)return ['preparation'=>['at'=>null,'message'=>'Siste klargjøring kan ikke bekreftes.'],'notification'=>['at'=>null]];
+    $notification=is_array($status['notification']??null)?$status['notification']:[];
+    $last=is_array($notification['lastPreparation']??null)?$notification['lastPreparation']:[];
+    $at=studio_newsroom_status_time($last['at']??null);
+    $state=is_string($last['state']??null)?$last['state']:'';
+    $messages=[
+        'prepared'=>'Et nytt forslag er klargjort. Publisering krever din godkjenning.',
+        'rechecked'=>'En eksisterende tekst er kontrollert på nytt.',
+        'limit'=>'Dagens grense eller grensen for aktive saker er nådd.',
+        'busy'=>'En annen klargjøring pågikk ved siste forsøk.',
+        'paused'=>'Klargjøringen var satt på pause ved siste forsøk.',
+        'idle'=>'Ingen nye aktuelle kandidater ved siste forsøk.',
+        'assessed'=>'En kilde er vurdert. Vurderingen er ikke publiseringsgodkjenning.'
+    ];
+    return ['preparation'=>['at'=>$at,'message'=>$at?($messages[$state]??'Siste klargjøring kan ikke bekreftes.'):'Siste klargjøring kan ikke bekreftes.'],
+        'notification'=>['at'=>studio_newsroom_status_time($notification['acceptedAt']??null)]];
+}
