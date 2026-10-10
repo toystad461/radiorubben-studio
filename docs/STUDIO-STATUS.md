@@ -1166,3 +1166,12 @@ som en integrert nedtrekksliste. Statusmeldingen ligger over feltet og dekkes ik
 Thomas godkjente publisering av CRM-endringen i chatten. Push, PR, merge og
 selektiv deploy følges gjennom eksisterende pipeline. Endelig kvittering og
 innlogget etterkontroll dokumenteres på PR-en.
+
+
+## RR-DESK-STATUS-001 (10.10.2026)
+
+Utkast fra main e39675573c7dcbd2207aa4775baf7dc41b8a382d. Desken viser siste registrerte klargjøringsresultat og bekreftet samlevarsel med Oslo-tid. Ugyldige/manglende data og utilgjengelig WordPress-bro gir ukjent status. limit forklares som dagsgrense eller aktiv køgrense. Godkjenning, scheduler, API og privat konfigurasjon er uendret.
+
+Lokalt kontrollert: PHP 8.2/8.4 syntaks, 23 målrettede status-/templatekontroller og fire tilstander ved 375/390/1280 px med faktisk desk/CSS/JS og syntetiske data. Eksterne kall og POST sperret. Ingen full runtime-regresjon på PHP 8.4 eller innlogget produksjonskontroll.
+
+Thomas godkjente egen gren og utkast-PR. Ingen merge/deploy. Backupdekning avventer TKT-19054505; VPS/FFmpeg på vent. Neste steg: gjennomgå diff og CI før separat utrullingsbeslutning.
