@@ -48,6 +48,7 @@ function studio_newsroom_card(array $item): array {
     if(($d['state']??'')==='confirmed'&&($d['status']??'')==='publish'&&($d['hash']??'')===studio_web_approval_hash($item))$status='published';
     else {
         if(in_array($d['state']??'',['unknown','pending'],true))$reasons[]='WordPress-overføringen må avklares før nytt forsøk.';
+        if(($item['relevance']['intakeReviewStatus']??'')==='clarify'&&empty($item['relevance']['override']))$reasons[]='Originalkontrollen avviker fra vurderingen i nyhetsinngangen. Avklar utvalget før klargjøring.';
         if(isset($item['relevance']['recommendation'])&&!in_array($item['relevance']['override']['channel']??$item['relevance']['recommendation'],['web','both'],true))$reasons[]=$item['relevance']['reason'];
         if(empty($w['title'])||empty($w['intro'])||empty($w['body']))$reasons[]='Nettsaken er ikke ferdig skrevet.';
         if(!studio_news_original_read($item,$check))$reasons[]='Originalartikkelen må hentes og leses. RSS-omtalen er ikke nok.';

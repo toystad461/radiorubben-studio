@@ -195,3 +195,23 @@ function studio_input_save(array $source,array $post,array $user,string $csrf,?s
         return $record;
     },$path);
 }
+
+/** Resolve the reviewed feed server-side; never trust posted channel/reason/actor. */
+function studio_input_handoff(array $feeds,array $post,array $user,string $csrf,?string $path=null):array {
+    if(!studio_can($user,'produce')||!is_string($post['csrf']??null)||!hash_equals($csrf,$post['csrf']))
+        throw new InvalidArgumentException('Ingen tilgang. Last siden på nytt.');
+    $feed=$post['intakeFeed']??null;
+    if(!is_string($feed)||!isset(newsdesk_sources()[$feed]))throw new InvalidArgumentException('Ugyldig RSS-kilde.');
+    $source=studio_input_sources($feeds,$feed)[$post['source']??'']??null;
+    if(!$source||($source['feedStatus']??'')!=='updated')throw new InvalidArgumentException('Vent på fersk RSS før videre behandling.');
+    $review=studio_input_review(studio_board_read($path??studio_input_path()),$source);
+    $revision=filter_var($post['intakeRevision']??null,FILTER_VALIDATE_INT);
+    if(!$review||($post['intakeVersion']??null)!==studio_input_version($source)||$revision!==$review['revision']
+        ||($review['rssFeed']??null)!==$feed||!in_array($review['channel']??'', ['both','radio','web'],true))
+        throw new InvalidArgumentException('Vurderingen eller RSS-kilden er endret. Åpne nyhetsinngangen på nytt.');
+    $provenance=[];
+    foreach(['sourceId','sourceUrl','sourceVersion','sourceTitle','rssText','publishedAt','rssFeed','revision','channel','reason','actor','actorId','at'] as $key)
+        $provenance[$key]=$review[$key]??null;
+    $source['relevance']=['intakeReview'=>$provenance];
+    return ['source'=>$source,'channel'=>$review['channel']];
+}

@@ -1,5 +1,36 @@
 # Studio – felles status og arbeidsliste
 
+## Nyhetsinngang → Nyhetsdesk – rettelse, 11.10.2026
+
+Bestilt: viderefør menneskelig vurdering, begrunnelse og kanal uten dobbeltarbeid.
+Gren fix/news-intake-handoff fra main 33d24baa6caab40047be94822e20b36579904d51.
+Overgangen slår opp lagret vurdering på serveren og kontrollerer RSS-feed,
+innholdshash og vurderingsrevisjon. Vurderingen følger det nye Studio-utkastet
+og originalkontrollen som redaksjonelt innspill. Originalkontroll som støtter
+valget viderefører kanalen; avvik, utilstrekkelig kilde og endret original
+krever avklaring. Ingen publisering, lydproduksjon eller sluttgodkjenning.
+Eksisterende saker/manuelle rettelser gjenbrukes uendret.
+Status: lokal rettelse; målrettet PHP 8.2/8.4 og fersk CI dokumenteres i PR.
+Full lokal pakke mangler Composer-biblioteker; full kontroll kjøres i CI.
+Ikke merget eller utrullet. Neste: grønn PR og konkret utrullingsgodkjenning.
+
+## RSS-oppfølging v1 – verifisert publisert, 11.10.2026
+
+Thomas godkjente konkret merge PR #72 og utrulling med kodebackup/etterkontroll.
+PR #72 er merget som 33d24baa6caab40047be94822e20b36579904d51;
+Actions 38153651089-1 publiserte nøyaktig sju planlagte filer.
+Privat backup selective-38153651089-1 og før/etter-/staging-hasher er verifisert.
+15 kodefiler er kontrollert; fem private driftsfilhash-er er uendret.
+Biblioteker er uendret; Composer-metadata endrer bare to prosjektcommitreferanser.
+Innlogget live-kontroll: 44 RSS-saker, lokale treff først, Forkast-knapp,
+kobling til eksisterende publisert Studio-sak og skrivebeskyttet eksempel
+med før/etter-RSS. Mobilvalg/retur ved 390 px og ingen horisontal overflyt består.
+Ingen ekte vurderinger, publisering eller lydproduksjon er gjort under kontrollen.
+Neste: Thomas prøver inngangen og gir tilbakemelding; læring og automatisk
+innholdspublisering er fortsatt ikke aktivert. Denne statusoppdateringen er
+et lokalt leveringsutkast; PR #72 inneholder faktisk deploykvittering.
+
+
 ## RSS-oppfølging v1 – klargjøring for bestilt live-test, 11.10.2026
 
 Utvider lokal forkast-gren fra main a9f53a9 med forklarte relevansforslag,

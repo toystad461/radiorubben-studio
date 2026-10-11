@@ -8,6 +8,7 @@ require_once dirname(__DIR__).'/app/newsroom-view.php';
 require_once dirname(__DIR__).'/app/newsroom-wordpress.php';
 require_once dirname(__DIR__).'/app/integrations/NewsDesk.php';
 require_once dirname(__DIR__).'/app/producer.php';
+require_once dirname(__DIR__).'/app/news-input.php';
 $can=studio_can($user,'produce');$admin=($user['role']??'')==='admin';$error=null;$notice=null;
 $selected=(string)($_POST['item']??$_GET['item']??'');
 $advance=false;$wpAfterDecision=null;
@@ -31,8 +32,13 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $notice=$enabled?'Automatisk klargjøring er slått på. Du godkjenner publisering.':'Automatisk klargjøring er satt på pause.';
         }elseif($action==='open_source'){
             $source=$sources[(string)($_POST['source']??'')]??null;if(!$source)throw new InvalidArgumentException('Saken er ikke lenger i RSS-innboksen.');
+            $handoff=null;
+            if(array_key_exists('intakeVersion',$_POST)){
+                $handoff=studio_input_handoff($feeds,$_POST,$user,$_SESSION['csrf']);
+                $source=$handoff['source'];
+            }
             $existing=studio_board_has_source($board['items'],$source);
-            $channel=$_POST['channel']??'both';
+            $channel=$handoff['channel']??$_POST['channel']??'both';
             if(!is_string($channel))throw new InvalidArgumentException('Velg Radio, Nett eller Begge.');
             $item=studio_newsroom_intake($source,$channel,$user);
             $selected='studio:'.$item['id'];
@@ -40,7 +46,9 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 $original=studio_news_source($item);
                 $assessment=studio_relevance_assess($item,$original,$board['items'],$config);
                 $item=studio_relevance_record($item['id'],$item['revision'],$assessment,$user);
-                $notice='Originalen er vurdert. Les utvalget før klargjøring.';
+                $notice=isset($assessment['intakeReview'])
+                    ?(($assessment['intakeReviewStatus']??'')==='carried'?'Din vurdering følger saken. Originalen er kontrollert; du kan gå videre til klargjøring.':'Din vurdering følger saken. Originalen viser avvik som må avklares før klargjøring.')
+                    :'Originalen er vurdert. Les utvalget før klargjøring.';
             }
         }elseif(preg_match('/^wp:([1-9][0-9]*)$/D',$selected,$match)){
             if(!$admin)throw new InvalidArgumentException('Bare administrator kan behandle WordPress-saker.');

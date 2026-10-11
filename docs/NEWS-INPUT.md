@@ -151,3 +151,18 @@ Ferdigkriterier: negative kilde-/rolle-/CSRF-/revisjonstester; uendret sendelist
 ved alle inngangsvalg; synlige forskjeller og uavklarte kilder; bevart historikk;
 responsiv visning; grønn CI; fersk produksjonsavstemming, privat kodebackup og
 bekreftet leveranse før det rapporteres live. Publiser aldri prøveartikler eller lyd.
+
+## Videreføring til Nyhetsdesk
+
+«Ta videre med vurderingen min» bruker den lagrede vurderingen, ikke innsendt
+begrunnelse eller kanal fra nettleseren. Feed, RSS-versjon og vurderingsrevisjon
+må fortsatt stemme. Forkastede, uaktuelle eller ikke ferske grunnlag avvises.
+Ved opprettelse lagres vurderer, tidspunkt, begrunnelse, kanal og kildesnapshot
+på Studio-saken. Originalkontrollen får dette som innspill, aldri som fakta.
+Støtter originalen valget, trengs ingen ny begrunnelse. Avvik vises sammen med
+det opprinnelige valget og må avklares. Endret full original kan ikke stille
+fornye den menneskelige vurderingen. Manuell overstyring bruker eksisterende
+utvalgskontroll og kan aldri reparere utilstrekkelig kilde eller dubletter.
+Kontrolldetaljer ligger bak «Kontroll av originalkilden»; den menneskelige
+vurderingen står først. Eksisterende saker endres ikke av et nytt kildevalg.
+Manus-, lyd- og publiseringsgodkjenning er fortsatt separate handlinger.
