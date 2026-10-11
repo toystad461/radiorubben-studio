@@ -25,10 +25,14 @@
 <p>Vurder lokal betydning, nytte, aktualitet og om vi allerede har omtalt saken. En kanalvurdering er ikke tillatelse til gjenbruk eller publisering.</p>
 <?php if($old&&!$review):?><p role="status">RSS-grunnlaget har endret seg. Tidligere vurdering må fornyes.</p><?php endif;?>
 <?php if($review):?><p><strong><?=escape(studio_input_labels()[$review['channel']])?></strong>: <?=escape($review['reason'])?><br><small><?=escape($review['actor'])?> · <?=escape(input_time($review['at']))?></small></p><?php endif;?>
-<?php if($can):?><form method="post" action="<?=escape(input_url($filter,$source['id']))?>#selected-news">
+<?php if($can):
+$formChannel=$review['channel']??'review';$formReason=$review['reason']??'';
+if($error&&is_string($_POST['channel']??null)&&isset(studio_input_labels()[$_POST['channel']]))$formChannel=$_POST['channel'];
+if($error&&is_string($_POST['reason']??null))$formReason=mb_substr($_POST['reason'],0,1000);
+?><form method="post" action="<?=escape(input_url($filter,$source['id']))?>#selected-news">
 <input type="hidden" name="csrf" value="<?=escape($_SESSION['csrf'])?>"><input type="hidden" name="action" value="review"><input type="hidden" name="source" value="<?=escape($source['id'])?>"><input type="hidden" name="sourceVersion" value="<?=escape(studio_input_version($source))?>"><input type="hidden" name="reviewRevision" value="<?=(int)($old['revision']??0)?>">
-<fieldset><legend>Bruksområde</legend><?php foreach(studio_input_labels() as $value=>$label):?><label class="ni-choice"><input type="radio" name="channel" value="<?=$value?>" <?=($review['channel']??'review')===$value?'checked':''?>><?=escape($label)?></label><?php endforeach;?></fieldset>
-<label>Hvorfor er saken aktuell eller ikke aktuell?<textarea name="reason" rows="3" minlength="15" maxlength="1000" required><?=escape($review['reason']??'')?></textarea></label><button>Lagre vurdering</button>
+<fieldset><legend>Bruksområde</legend><?php foreach(studio_input_labels() as $value=>$label):?><label class="ni-choice"><input type="radio" name="channel" value="<?=$value?>" <?=$formChannel===$value?'checked':''?>><?=escape($label)?></label><?php endforeach;?></fieldset>
+<label>Hvorfor er saken aktuell eller ikke aktuell?<textarea name="reason" rows="3" minlength="15" maxlength="1000" required><?=escape($formReason)?></textarea></label><button>Lagre vurdering</button>
 </form><?php else:?><p>Du kan lese sakene. Vurdering krever produksjonstilgang.</p><?php endif;?></section>
 <details><summary>Se grunnlaget</summary><p>Hentet <?=escape(input_time($source['fetchedAt']))?>. RSS-tekst vises som ren tekst; ingen artikkel eller bilde er hentet her.</p><p>Kildeidentitet: <?=escape($source['id'])?></p></details>
 <?php if($can&&$review&&in_array($review['channel'],['both','radio','web'],true)):?><details><summary>Videre behandling i dagens Nyhetsdesk</summary><p>Dette er en separat arbeidsflyt som henter hele originalartikkelen og vurderer den. Det er ikke direkte videreformidling av RSS. Avklar kildebruk før klargjøring.</p><form method="post" action="/newsdesk.php"><input type="hidden" name="csrf" value="<?=escape($_SESSION['csrf'])?>"><input type="hidden" name="action" value="open_source"><input type="hidden" name="source" value="<?=escape($source['id'])?>"><input type="hidden" name="channel" value="<?=escape($review['channel'])?>"><button>Hent hele originalen og vurder videre</button></form></details><?php endif;?>

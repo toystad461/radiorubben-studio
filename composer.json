@@ -27,6 +27,7 @@
       "php tests/news-input-page.php source-changed",
       "php tests/news-input-page.php conflict",
       "php tests/news-input-page.php forged",
+      "php tests/news-input-page.php invalid",
       "php tests/crm.php",
       "php tests/crm-search.php",
       "php tests/crm-website.php",

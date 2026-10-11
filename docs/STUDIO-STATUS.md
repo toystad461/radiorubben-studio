@@ -1,5 +1,19 @@
 # Studio – felles status og arbeidsliste
 
+## PR #69 – gjennomgang og klargjøring, 11.10.2026
+
+PR #69 er åpen draft. Første head f7b7662 besto full PHP 8.2/8.4 og mobil-CI;
+deploy-jobben ble hoppet over. Egen gjennomgang retter tap av innsendt begrunnelse
+og kanalvalg ved avvist lagring; feltene beholdes escaped og den lagrede vurderingen
+endres ikke. Ny negativ controller-test `invalid` består lokalt på begge PHP-versjoner
+og inngår i Composer. Ny head må få egne grønne kontroller før utrullingsvalg.
+Ingen merge, serverendring, redaksjonell publisering eller lydproduksjon.
+
+Selektiv plan omfatter seks runtime-kodefiler, composer.json og generert release.json.
+Ferske serverhasher, fravær av nye mål og aktiv deploystatus må kontrolleres før
+publisering. Sammenlign faktisk plan mot tillatt filsett; avvik stopper utrullingen.
+Merge til main kan utløse automatisk deploy og trenger separat konkret godkjenning.
+
 ## Nyhetsinngang – kodegjennomgang og innlogget lokal test, 11.10.2026
 
 Egen kodegjennomgang rettet lagring av inngangsvurderinger til separat privat

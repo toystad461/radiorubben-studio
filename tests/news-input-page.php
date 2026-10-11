@@ -13,12 +13,13 @@ foreach(newsdesk_sources() as $id=>$spec)file_put_contents($tmp.'/config/newsdes
 $board=['items'=>[]];$path=studio_input_path();file_put_contents($path,json_encode($board));$before=file_get_contents($path);
 $rundown=$tmp.'/config/sending-board.json';file_put_contents($rundown,json_encode(['items'=>[['id'=>'synthetic','revision'=>9,'script'=>'Manuelt testmanus']]]));$rundownBefore=file_get_contents($rundown);
 $_SESSION=['csrf'=>'test-token'];$_GET=['source'=>$source['id']];$_POST=[];
-$_SERVER['REQUEST_METHOD']=in_array($mode,['save','observer','csrf','source-changed','conflict','forged'],true)?'POST':($mode==='method'?'DELETE':'GET');
+$_SERVER['REQUEST_METHOD']=in_array($mode,['save','observer','csrf','source-changed','conflict','forged','invalid'],true)?'POST':($mode==='method'?'DELETE':'GET');
 if($_SERVER['REQUEST_METHOD']==='POST')$_POST=['csrf'=>'test-token','action'=>'review','source'=>$source['id'],'sourceVersion'=>studio_input_version($source),'reviewRevision'=>'0','channel'=>'web','reason'=>'Syntetisk vurdering av nytte for vårt lokale publikum.'];
 if($mode==='csrf')$_POST['csrf']='wrong';
 if($mode==='source-changed')$_POST['sourceVersion']=str_repeat('0',64);
 if($mode==='conflict')$_POST['reviewRevision']='3';
 if($mode==='forged')$_POST['action']='publish';
+if($mode==='invalid'){$_POST['reason']='Dette er <b>mitt utkast</b> som skal beholdes.';$_POST['channel']='radio';}
 ob_start();register_shutdown_function(static function()use($mode,$tmp,$path,$before,$rundown,$rundownBefore):void {
     $html=(string)ob_get_clean();$after=studio_board_read($path);$code=http_response_code();
     $ok=match($mode){
@@ -27,6 +28,7 @@ ob_start();register_shutdown_function(static function()use($mode,$tmp,$path,$bef
         'method'=>$code===405,
         'save'=>$code===303&&count($after['rssIntakeReviews']??[])===1&&$after['items']===[],
         'source-changed','conflict','forged'=>$code===409,
+        'invalid'=>$code===409&&str_contains($html,'Dette er &lt;b&gt;mitt utkast&lt;/b&gt; som skal beholdes.')&&str_contains($html,'value="radio" checked')&&!str_contains($html,'<b>mitt utkast</b>'),
         default=>str_contains($html,'Nyhetsinngang')&&str_contains($html,'&lt;script&gt;')&&!str_contains($html,'<script>alert(1)</script>'),
     };
     if($mode!=='save')$ok=$ok&&file_get_contents($path)===$before;
