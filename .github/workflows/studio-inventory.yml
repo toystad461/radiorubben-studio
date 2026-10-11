@@ -1,0 +1,54 @@
+name: Studio read-only production inventory
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: studio-release
+  cancel-in-progress: false
+jobs:
+  inventory:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: studio-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read fixed production metadata through restricted machine key
+        env:
+          INVENTORY_KEY: ${{ secrets.STUDIO_INVENTORY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STUDIO_DEPLOY_KNOWN_HOSTS }}
+          SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
+          SSH_USER: ${{ vars.STUDIO_INVENTORY_SSH_USER }}
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          for name in INVENTORY_KEY KNOWN_HOSTS SSH_HOST SSH_USER; do
+            [[ -n "${!name}" ]] || { echo "::error::Missing $name"; exit 1; }
+          done
+          [[ "$SSH_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]] || exit 1
+          [[ "$SSH_USER" =~ ^[a-zA-Z0-9_][a-zA-Z0-9_.-]*$ ]] || exit 1
+          ssh_dir=$(mktemp -d)
+          trap 'rm -rf -- "$ssh_dir"' EXIT
+          umask 077
+          printf '%s\n' "$INVENTORY_KEY" > "$ssh_dir/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$ssh_dir/known_hosts"
+          unset INVENTORY_KEY KNOWN_HOSTS
+          ssh-keygen -y -P '' -f "$ssh_dir/key" >/dev/null
+          ssh-keygen -F "$SSH_HOST" -f "$ssh_dir/known_hosts" >/dev/null
+          timeout 120 ssh -F /dev/null -T -i "$ssh_dir/key" \
+            -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o "UserKnownHostsFile=$ssh_dir/known_hosts" -o GlobalKnownHostsFile=/dev/null \
+            -o ConnectTimeout=15 -o ConnectionAttempts=1 \
+            -o ForwardAgent=no -o ClearAllForwardings=yes \
+            "$SSH_USER@$SSH_HOST" rr-studio-inventory-v1 > "$RUNNER_TEMP/studio-inventory.json"
+          python3 scripts/inventory/validate-report.py "$RUNNER_TEMP/studio-inventory.json"
+          echo 'Read-only production inventory validated. No application or data files changed.' >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: studio-inventory
+          path: ${{ runner.temp }}/studio-inventory.json
+          if-no-files-found: error
+          retention-days: 7
