@@ -7,6 +7,7 @@
 <div class="ni-layout">
 <section class="ni-list" id="news-list" aria-label="Innkomne nyheter">
 <h2>Innkommet · <?=count($sources)?></h2>
+<small>Lokale RSS-treff vises først i arbeidslisten. Dette er forslag; ingen saker godkjennes eller forkastes automatisk.</small>
 <form method="get"><?php if(!empty($demo)):?><input type="hidden" name="demo" value="updates"><?php endif;?><label>Vis saker<select name="view"><option value="active" <?=($view??'active')==='active'?'selected':''?>>Arbeidsliste</option><option value="updates" <?=($view??'active')==='updates'?'selected':''?>>Oppdateringer</option><option value="discarded" <?=($view??'active')==='discarded'?'selected':''?>>Forkastet</option><option value="all" <?=($view??'active')==='all'?'selected':''?>>Alle</option></select></label><label>Kilde<select name="feed"><option value="all">Alle kilder</option><?php foreach(newsdesk_sources() as $id=>$spec):?><option value="<?=escape($id)?>" <?=$filter===$id?'selected':''?>><?=escape($spec['name'])?></option><?php endforeach;?></select></label><button>Vis</button></form>
 <details><summary>Kildestatus</summary><?php foreach(newsdesk_sources() as $id=>$spec):?><p><?=escape($spec['name'])?>: <?=escape(['updated'=>'Oppdatert','stale'=>'Eldre kopi – henting feilet','unavailable'=>'Utilgjengelig'][$feeds[$id]['status']]??'Ukjent')?> · <?=escape(input_time($feeds[$id]['fetchedAt']??null))?></p><?php endforeach;?></details>
 <nav class="ni-stories" aria-label="Velg nyhet">

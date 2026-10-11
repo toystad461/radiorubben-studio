@@ -9,7 +9,7 @@ Syntetisk skrivebeskyttet eksempel for live-testing. Ingen automatisk læring,
 fullartikkelovervåking, omskriving av publisert innhold eller lydproduksjon.
 Thomas har bestilt første versjon klar på studio.radiorubben.no; dette gir
 autorisasjon for avgrenset kodeutrulling med avstemming og kontroll.
-Status her: lokal test består: 30 inngangs-, 29 oppdateringskontroller,
+Status her: lokal test består: 30 inngangs-, 31 oppdateringskontroller,
 16 controller-scenarioer på PHP 8.2/8.4 og layout ved 390/768/1280/1920 px.
 Gren feat/rss-followup-v1; fersk CI og produksjonskontroll gjenstår. Se NEWS-INPUT.md for grenser.
 

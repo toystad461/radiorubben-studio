@@ -118,7 +118,7 @@ Behov: prøv relevansvalg, forkasting og oppdaterte kilder i aktivt Studio uten
 å overskrive publisert innhold. Thomas har bestilt levering for live-testing.
 
 - Automatiske, forklarte relevansforslag fra RSS: lokale stedsnavn eller kommunekilde.
-  Andre saker er usikre, aldri automatisk forkastet. Dette er en fast første regel,
+  Lokale treff vises først i arbeidslisten. Andre saker er usikre, aldri automatisk forkastet. Dette er en fast første regel,
   ikke en trent AI-modell. Menneskets valg og begrunnelse registreres med historikk;
   automatisk læring eller godkjenning er ikke aktivert.
 - Filteret Oppdateringer viser endret kilde, uavklart kilde og lagret oppdateringsutkast.

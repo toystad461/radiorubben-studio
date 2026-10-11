@@ -51,12 +51,15 @@ function studio_input_review(array $board,array $source): ?array {
 /** A changed source returns to the working list; discarded source/history is retained. */
 function studio_input_visible_sources(array $sources,array $board,string $view='active'):array {
     if($view==='all')return $sources;
-    return array_filter($sources,static function(array $source)use($board,$view):bool {
+    $visible=array_filter($sources,static function(array $source)use($board,$view):bool {
         $discarded=(studio_input_review($board,$source)['channel']??null)==='skip';
         if($view==='updates')return in_array(studio_input_update($board,$source)['state'],['changed','unverified'],true)
             ||(studio_input_review($board,$source)['updateDecision']??'')==='draft';
         return $view==='discarded'?$discarded:!$discarded;
     });
+    if($view==='active')uasort($visible,static fn(array $a,array $b):int=>
+        (int)(studio_input_suggestion($b)['label']==='Aktuell å vurdere')<=>(int)(studio_input_suggestion($a)['label']==='Aktuell å vurdere'));
+    return $visible;
 }
 
 /** Transparent first-version guidance. No learning, approval or external article fetch. */
