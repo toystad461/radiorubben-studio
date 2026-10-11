@@ -32,6 +32,14 @@ const path=require('path');
   }
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('Horizontal overflow');
   if(errors.length)throw Error(errors.join('\n'));
-  console.log('PASS: layout '+width+' px');await page.close();
+  await page.goto('file:///'+path.join(__dirname,'news-input-updates-preview.html').replace(/\\/g,'/'));
+  if(width<=750)await page.locator('.ni-stories a').first().click();
+  if(await page.getByRole('heading',{name:'Kilden er oppdatert'}).count()!==1)throw Error('Update heading missing');
+  if(await page.getByText('Sist vurdert',{exact:true}).count()!==1||await page.getByText('Nå i RSS',{exact:true}).count()!==1)throw Error('Source difference missing');
+  if(await page.locator('button[name="action"]').count()!==0)throw Error('Read-only example exposes mutation');
+  if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('Update horizontal overflow');
+  const columns=await page.locator('.ni-diff').evaluate(el=>getComputedStyle(el).gridTemplateColumns.split(' ').length);
+  if(columns!==(width<=750?1:2))throw Error('Update comparison columns wrong');
+  console.log('PASS: intake and updates layout '+width+' px');await page.close();
  }}finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1);});

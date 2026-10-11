@@ -39,17 +39,25 @@ try {
     expect(studio_input_review($after,$changed)===null,'changed RSS invalidates current judgement');
     expect(studio_input_review($after,array_replace($source,['fetchedAt'=>'2026-10-11T10:00:00Z']))!==null,'same content refresh does not invalidate judgement');
     reject(fn()=>studio_input_save($source,$post,$user,'test-csrf',$path),'stale review revision rejected');
-    $second=studio_input_save($source,array_replace($post,['reviewRevision'=>'1','channel'=>'skip']),$user,'test-csrf',$path);
+    $second=studio_input_save($source,array_replace($post,['reviewRevision'=>'1','channel'=>'radio','action'=>'discard']),$user,'test-csrf',$path);
     expect($second['revision']===2&&count($second['history'])===1,'judgement history retained');
+    expect($second['channel']==='skip','discard overrides submitted channel');
+    expect(studio_input_visible_sources([$source['id']=>$source],studio_board_read($path))===[],'discard removed from active list');
+    expect(count(studio_input_visible_sources([$source['id']=>$source],studio_board_read($path),'discarded'))===1,'discard remains available');
+    expect(count(studio_input_visible_sources([$changed['id']=>$changed],studio_board_read($path)))===1,'changed source returns to active list');
+    reject(fn()=>studio_input_save($source,array_replace($post,['action'=>'discard','reviewRevision'=>'2','reason'=>'Kort']),$user,'test-csrf',$path),'discard requires concrete reason');
+    $restored=studio_input_save($source,array_replace($post,['reviewRevision'=>'2']),$user,'test-csrf',$path);
+    expect($restored['channel']==='web'&&count($restored['history'])===2&&count(studio_input_visible_sources([$source['id']=>$source],studio_board_read($path)))===1,'reconsideration restores case and keeps discard history');
     $legacy=$source;unset($legacy['rssText'],$legacy['rssTitle']);
     expect(studio_input_version($legacy)!==studio_input_version($source),'legacy short cache is a distinct source version');
     // Real PHP view, synthetic board/source only; browser QA consumes this static output.
-    $sources=[];for($i=0;$i<40;$i++){$row=$source;$row['id']=hash('sha256',(string)$i);$row['title']=$row['rssTitle']='Syntetisk nyhet '.$i;$sources[$row['id']]=$row;}
+    $sources=[];for($i=0;$i<40;$i++){$row=$source;$row['feedStatus']='updated';$row['id']=hash('sha256',(string)$i);$row['title']=$row['rssTitle']='Syntetisk nyhet '.$i;$sources[$row['id']]=$row;}
     $source=reset($sources);$review=null;$old=null;$can=true;$error=$notice=null;$filter='all';$_SESSION=['csrf'=>'synthetic-csrf'];
     function input_url(string $feed,string $source=''):string{return '?'.http_build_query(['feed'=>$feed,'source'=>$source]);}
     function input_time(?string $at):string{return $at??'Ukjent';}
     ob_start();require dirname(__DIR__).'/app/views/news-input.php';$html=ob_get_clean();
     $out=getenv('RR_INPUT_PREVIEW');if($out)file_put_contents($out,'<!doctype html><html lang="nb"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../public/assets/studio.css"><link rel="stylesheet" href="../public/assets/theme-bridge.css"><link rel="stylesheet" href="../public/assets/news-input.css"><body>'.$html.'</body></html>');
     expect(!str_contains($html,'name="action" value="approve"')&&!str_contains($html,'name="action" value="open_source"'),'unassessed intake exposes neither approval nor further generation');
+    expect(str_contains($html,'value="discard">Forkast sak'),'discard available beside judgement');
     expect(str_contains($html,escape($source['rssText'])),'RSS text rendered without AI rewrite');
 }finally{if(is_file($path))unlink($path);if(is_file($path.'.lock'))unlink($path.'.lock');}

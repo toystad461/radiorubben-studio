@@ -1,5 +1,29 @@
 # Studio – felles status og arbeidsliste
 
+## RSS-oppfølging v1 – klargjøring for bestilt live-test, 11.10.2026
+
+Utvider lokal forkast-gren fra main a9f53a9 med forklarte relevansforslag,
+Oppdateringer-filter, før/etter-RSS, overvåking av bortfalte vurderte saker,
+lesekobling til eksisterende Studio-sak og separat oppdateringsutkast.
+Syntetisk skrivebeskyttet eksempel for live-testing. Ingen automatisk læring,
+fullartikkelovervåking, omskriving av publisert innhold eller lydproduksjon.
+Thomas har bestilt første versjon klar på studio.radiorubben.no; dette gir
+autorisasjon for avgrenset kodeutrulling med avstemming og kontroll.
+Status her: lokal test består: 30 inngangs-, 29 oppdateringskontroller,
+16 controller-scenarioer på PHP 8.2/8.4 og layout ved 390/768/1280/1920 px.
+Gren feat/rss-followup-v1; fersk CI og produksjonskontroll gjenstår. Se NEWS-INPUT.md for grenser.
+
+## Forkast i nyhetsinngangen – lokal utvikling, 11.10.2026
+
+Tydelig «Forkast sak» ved vurderingen, med obligatorisk begrunnelse.
+Forkastede vurderinger skjules i arbeidslisten og vises via eget filter;
+normal ny vurdering kan ta saken tilbake. Endret RSS-grunnlag kommer tilbake
+i arbeidslisten. Kildeidentitet og vurderingshistorikk bevares.
+30 modul-/visningskontroller og 12 controller-scenarioer består lokalt
+på PHP 8.2 og 8.4. Sendelisten forblir uendret.
+Status: lokal gren feat/news-input-discard; ikke publisert eller merget.
+Neste: gjennomgåbar PR, CI og responsiv kontroll før eventuell utrulling.
+
 ## Nyhetsinngang og avtalt autorisasjon – 11.10.2026
 
 Thomas godkjente hele merge-/utrullingsløpet for PR #69 og bestilte presisering
