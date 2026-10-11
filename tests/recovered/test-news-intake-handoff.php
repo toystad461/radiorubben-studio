@@ -28,6 +28,7 @@ try{
  hand_no(fn()=>studio_input_handoff($stale,$post,$user,'test',$registry),'failed feed blocked');
  hand_ok(file_get_contents($board)===$before,'handoff validation never creates a case');
  $item=studio_newsroom_intake($handoff['source'],$handoff['channel'],$user,$board);
+ hand_ok(($item['relevance']['intakeReviewStatus']??'')==='pending'&&($item['relevance']['recommendation']??'')==='needs_source','failed original fetch leaves valid pending assessment with preserved review');
  hand_ok($item['relevance']['intakeReview']['sourceVersion']===$review['sourceVersion']&&$item['channel']==='radio','actual intake stores versioned review');
  $original=['url'=>$item['sourceUrl'],'text'=>$text,'sha256'=>hash('sha256',$text),'fetchedAt'=>gmdate('c'),'kind'=>'original_article'];
  $assess=fn($candidate,$changes=[])=>studio_relevance_assess($candidate,$original,[],$config,function($c,$p)use($review,$changes){$input=json_decode($p['input'],true);hand_ok($input['editorial']['intakeReview']['reason']===$review['reason'],'original assessment receives human reason');return relevance_fixture_response($changes);});

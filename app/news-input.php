@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__.'/board.php';
 require_once __DIR__.'/users.php';
+require_once __DIR__.'/news-relevance.php';
 require_once __DIR__.'/integrations/NewsDesk.php';
 
 function studio_input_labels(): array {
@@ -212,6 +213,7 @@ function studio_input_handoff(array $feeds,array $post,array $user,string $csrf,
     $provenance=[];
     foreach(['sourceId','sourceUrl','sourceVersion','sourceTitle','rssText','publishedAt','rssFeed','revision','channel','reason','actor','actorId','at'] as $key)
         $provenance[$key]=$review[$key]??null;
-    $source['relevance']=['intakeReview'=>$provenance];
+    $source['relevance']=studio_relevance_empty([], 'Originalen er ennå ikke kontrollert. Din RSS-vurdering er bevart.')
+        +['intakeReview'=>$provenance,'intakeReviewStatus'=>'pending'];
     return ['source'=>$source,'channel'=>$review['channel']];
 }

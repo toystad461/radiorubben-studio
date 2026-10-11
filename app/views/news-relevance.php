@@ -5,7 +5,7 @@
 <?php if(!empty($relevance['intakeReview'])):$intake=$relevance['intakeReview'];?>
 <p><strong>Din vurdering fra nyhetsinngangen: <?=escape(studio_relevance_labels()[$intake['channel']]??'Venter')?></strong></p>
 <p><?=escape($intake['reason'])?> · <?=escape($intake['actor'])?> · <?=escape(newsroom_time($intake['at']))?></p>
-<p><?=($relevance['intakeReviewStatus']??'')==='carried'?'Vurderingen følger saken. Originalkontrollen støtter valget; samme vurdering trenger ikke gjentas.':'Originalkontrollen viser avvik. Avklar punktene nedenfor før klargjøring.'?></p>
+<p><?=($relevance['intakeReviewStatus']??'')==='carried'?'Vurderingen følger saken. Originalkontrollen støtter valget; samme vurdering trenger ikke gjentas.':(($relevance['intakeReviewStatus']??'')==='pending'?'Vurderingen din er bevart. Originalen må kontrolleres før klargjøring.':'Originalkontrollen viser avvik. Avklar punktene nedenfor før klargjøring.')?></p>
 <details <?=($relevance['intakeReviewStatus']??'')==='clarify'?'open':''?>><summary>Kontroll av originalkilden</summary>
 <?php endif;?>
 <p><strong><?=escape(studio_relevance_labels()[$relevance['override']['channel']??$relevance['recommendation']]??'Venter')?></strong> · Hendelsesdato: <?=escape($relevance['eventDate']??'Ukjent – ikke lik publiseringstid')?></p>
