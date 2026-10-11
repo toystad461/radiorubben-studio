@@ -100,3 +100,54 @@ gjenstår før produksjonsutrulling. Neste steg er en gjennomgåbar utviklings-P
 med full CI; deretter separat autorisert test/utrulling i aktivt Studio og
 avtalt kildebruk og kobling til eksisterende manus-/nettflyt. Backupdekning venter
 fortsatt på Uniweb-sak TKT-19054505. VPS og FFmpeg holdes utenfor dette løpet.
+
+
+## Forkast – lokal oppfølging 11.10.2026
+
+«Forkast sak» bruker samme rolle-, CSRF-, kildeversjon- og revisjonssperrer
+som vurderingen. Begrunnelse kreves. Kanal lagres som skip uansett innsendt
+kanalvalg. Arbeidsliste, Forkastet og Alle er tilgjengelige filtre.
+Velg nytt bruksområde og lagre vurderingen for å ta en sak tilbake.
+Original og historikk beholdes; endret kilde trenger ny vurdering.
+Ingen lyd, generering eller publisering utløses. Foreløpig bare lokal kode.
+
+
+## RSS-oppfølging v1 – bestilt live-test, 11.10.2026
+
+Behov: prøv relevansvalg, forkasting og oppdaterte kilder i aktivt Studio uten
+å overskrive publisert innhold. Thomas har bestilt levering for live-testing.
+
+- Automatiske, forklarte relevansforslag fra RSS: lokale stedsnavn eller kommunekilde.
+  Lokale treff vises først i arbeidslisten. Andre saker er usikre, aldri automatisk forkastet. Dette er en fast første regel,
+  ikke en trent AI-modell. Menneskets valg og begrunnelse registreres med historikk;
+  automatisk læring eller godkjenning er ikke aktivert.
+- Filteret Oppdateringer viser endret kilde, uavklart kilde og lagret oppdateringsutkast.
+  Overskrift, RSS-tekst, kildelenke og publiseringstid sammenlignes med sist vurderte
+  snapshot. Hentetid alene gir ikke ny innholdsversjon. Samlet NRK-visning sammenligner
+  samme feed som ved vurderingen, slik at ulik tekst i Toppsaker/Siste nytt ikke
+  omtales som en faktisk kildeendring.
+- Godtatte saker som faller ut av RSS beholdes som sist vurdert snapshot og merkes
+  som ukontrollerte. Feilet feed og annen feed gir ikke «uendret»-bekreftelse.
+- Eksisterende Studio-saker kobles ved kildeidentitet, uten skriving til sendelisten.
+  Lagret bekreftet leveringsstatus kan vises; det er ikke en fersk WordPress-kontroll.
+  WordPress-saker som ikke har en koblet Studio-sak inngår ikke i denne overvåkingen.
+- Oppdateringsgrunnlag vises side om side. Et redigerbart utkast starter med den
+  faktiske RSS-teksten, uten AI-omskriving. Lagre oppdateringsutkast / Behold eksisterende
+  innhold krever rolle, CSRF, fersk kilde, kildehash, revisjon og begrunnelse.
+  Utkastet lagres i inngangsregisteret, ikke direkte i artikkelen eller radiomanuset.
+  Eksisterende sak åpnes for videre kontroll og manuell overføring. Publiserings-
+  og lydgodkjenning er fortsatt separate; gammel lyd erstattes ikke.
+- /news-input.php?demo=updates&view=updates er et skrivebeskyttet, syntetisk eksempel.
+  Det leser ikke RSS-cache eller ekte redaksjonelt register og har ingen redaksjonelle
+  handlinger. POST avvises. Innlogging kreves som ellers i Studio.
+
+Avgrensning: RSS hentes ved åpning etter eksisterende TTL (NRK 300 sekunder,
+kommune 900 sekunder). Ingen ny kontinuerlig jobb eller nettleser-polling.
+Artikkelendringer som ikke vises i RSS oppdages ikke. Hele artikler, bilder,
+WordPress og TTS hentes ikke av den nye oppfølgingen. Automatisk oppdatering av
+publisert innhold og regler lært automatisk av valg er videre arbeid.
+
+Ferdigkriterier: negative kilde-/rolle-/CSRF-/revisjonstester; uendret sendeliste
+ved alle inngangsvalg; synlige forskjeller og uavklarte kilder; bevart historikk;
+responsiv visning; grønn CI; fersk produksjonsavstemming, privat kodebackup og
+bekreftet leveranse før det rapporteres live. Publiser aldri prøveartikler eller lyd.

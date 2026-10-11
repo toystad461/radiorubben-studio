@@ -8,13 +8,23 @@ foreach($files as $file){$relative=substr($file->getPathname(),strlen($root.'/ap
 copy($root.'/public/news-input.php',$tmp.'/public/news-input.php');
 file_put_contents($tmp.'/app/bootstrap.php','<?php require __DIR__."/helpers.php";require_once __DIR__."/users.php";function current_user(){return $GLOBALS["mode"]==="guest"?null:["id"=>"test-only","name"=>"Test","role"=>$GLOBALS["mode"]==="observer"?"observer":"producer"];} $config=[];');
 require $tmp.'/app/news-input.php';
-$at=gmdate('c');$source=['id'=>hash('sha256','synthetic-source'),'source'=>'nrk','sourceName'=>'NRK Vestland','title'=>'Syntetisk <script>alert(1)</script>','rssTitle'=>'Syntetisk <script>alert(1)</script>','summary'=>'Testutdrag','rssText'=>'Dette er en syntetisk RSS-sak, uten ekte publisering.','url'=>'https://www.nrk.no/vestland/test-1.12345678','publishedAt'=>$at,'fetchedAt'=>$at];
+$at=gmdate('c');$source=['id'=>hash('sha256','synthetic-source'),'source'=>'nrk','rssFeed'=>'nrk_vestland_siste','feedIds'=>['nrk_vestland_siste'],'feedStatus'=>'updated','sourceName'=>'NRK Vestland','title'=>'Syntetisk <script>alert(1)</script>','rssTitle'=>'Syntetisk <script>alert(1)</script>','summary'=>'Testutdrag','rssText'=>'Dette er en syntetisk RSS-sak, uten ekte publisering.','url'=>'https://www.nrk.no/vestland/test-1.12345678','publishedAt'=>$at,'fetchedAt'=>$at];
 foreach(newsdesk_sources() as $id=>$spec)file_put_contents($tmp.'/config/newsdesk-'.$id.'.json',json_encode(['checkedAt'=>time(),'fetchedAt'=>$at,'items'=>$id==='bomlo'?[]:[$source],'failed'=>false]));
 $board=['items'=>[]];$path=studio_input_path();file_put_contents($path,json_encode($board));$before=file_get_contents($path);
 $rundown=$tmp.'/config/sending-board.json';file_put_contents($rundown,json_encode(['items'=>[['id'=>'synthetic','revision'=>9,'script'=>'Manuelt testmanus']]]));$rundownBefore=file_get_contents($rundown);
 $_SESSION=['csrf'=>'test-token'];$_GET=['source'=>$source['id']];$_POST=[];
-$_SERVER['REQUEST_METHOD']=in_array($mode,['save','observer','csrf','source-changed','conflict','forged','invalid'],true)?'POST':($mode==='method'?'DELETE':'GET');
+$_SERVER['REQUEST_METHOD']=in_array($mode,['demo-post','update-draft','update-keep','discard','discard-invalid','save','observer','csrf','source-changed','conflict','forged','invalid'],true)?'POST':($mode==='method'?'DELETE':'GET');
 if($_SERVER['REQUEST_METHOD']==='POST')$_POST=['csrf'=>'test-token','action'=>'review','source'=>$source['id'],'sourceVersion'=>studio_input_version($source),'reviewRevision'=>'0','channel'=>'web','reason'=>'Syntetisk vurdering av nytte for vårt lokale publikum.'];
+if($mode==='demo'||$mode==='demo-post')$_GET['demo']='updates';
+if(str_starts_with($mode,'update-')) {
+ studio_input_save($source,$_POST,['id'=>'test-only','name'=>'Test','role'=>'producer'],'test-token',$path);
+ $source['rssText']='Dette er nye syntetiske opplysninger for testen.';
+ foreach(newsdesk_sources() as $id=>$spec)file_put_contents($tmp.'/config/newsdesk-'.$id.'.json',json_encode(['checkedAt'=>time(),'fetchedAt'=>$at,'items'=>$id==='bomlo'?[]:[$source],'failed'=>false]));
+ $before=file_get_contents($path);$_POST['reviewRevision']='1';$_POST['sourceVersion']=studio_input_version($source);
+ $_POST['action']=$mode==='update-draft'?'draft_update':'keep_published';$_POST['updateDraft']='Et syntetisk oppdateringsutkast for videre kontroll.';
+}
+if(str_starts_with($mode,'discard'))$_POST['action']='discard';
+if($mode==='discard-invalid')$_POST['reason']='Kort';
 if($mode==='csrf')$_POST['csrf']='wrong';
 if($mode==='source-changed')$_POST['sourceVersion']=str_repeat('0',64);
 if($mode==='conflict')$_POST['reviewRevision']='3';
@@ -23,15 +33,20 @@ if($mode==='invalid'){$_POST['reason']='Dette er <b>mitt utkast</b> som skal beh
 ob_start();register_shutdown_function(static function()use($mode,$tmp,$path,$before,$rundown,$rundownBefore):void {
     $html=(string)ob_get_clean();$after=studio_board_read($path);$code=http_response_code();
     $ok=match($mode){
+        'demo-post'=>$code===403,
+        'demo'=>str_contains($html,'Sist vurdert')&&str_contains($html,'Nå i RSS')&&!str_contains($html,'name="action"'),
+        'update-draft','update-keep'=>$code===303&&array_values($after['rssIntakeReviews']??[])[0]['updateDecision']===($mode==='update-draft'?'draft':'keep'),
         'guest'=>$code===303,
         'observer','csrf'=>$code===403,
         'method'=>$code===405,
+        'discard'=>$code===303&&array_values($after['rssIntakeReviews']??[])[0]['channel']==='skip'&&$after['items']===[],
+        'discard-invalid'=>$code===409,
         'save'=>$code===303&&count($after['rssIntakeReviews']??[])===1&&$after['items']===[],
         'source-changed','conflict','forged'=>$code===409,
         'invalid'=>$code===409&&str_contains($html,'Dette er &lt;b&gt;mitt utkast&lt;/b&gt; som skal beholdes.')&&str_contains($html,'value="radio" checked')&&!str_contains($html,'<b>mitt utkast</b>'),
         default=>str_contains($html,'Nyhetsinngang')&&str_contains($html,'&lt;script&gt;')&&!str_contains($html,'<script>alert(1)</script>'),
     };
-    if($mode!=='save')$ok=$ok&&file_get_contents($path)===$before;
+    if(!in_array($mode,['save','discard','update-draft','update-keep'],true))$ok=$ok&&file_get_contents($path)===$before;
     $ok=$ok&&file_get_contents($rundown)===$rundownBefore;
     $files=new RecursiveIteratorIterator(new RecursiveDirectoryIterator($tmp,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST);
     foreach($files as $file)$file->isDir()?rmdir($file->getPathname()):unlink($file->getPathname());rmdir($tmp);

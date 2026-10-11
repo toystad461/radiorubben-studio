@@ -19,3 +19,5 @@
 # Python helper test artifacts.
 __pycache__/
 /tests/news-input-preview.html
+
+/tests/news-input-updates-preview.html
