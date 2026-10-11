@@ -1,5 +1,26 @@
 # Studio – felles status og arbeidsliste
 
+## Permanent lesende driftskontroll – 11.10.2026
+
+Egen gren `ops/read-only-production-inventory` fra main 2a187e0, uavhengig av
+nyhetsinngang PR #69. Manuell Actions-jobb med separat maskinnøkkel, fast PHP-leser
+og validering av leserhash, filbaner, deploylås og filavvik. Fem lokale tester
+med negative kontroller og PHP-syntakskontroll består.
+
+Fersk lesing 11.10.2026 kl. 10:30:43 UTC bekrefter deploycommit
+2a187e070e9950376d1b3e592f9da88015ca2986, kjøring 38092292401-1.
+Ti eksisterende mål/avhengigheter er stabile og samsvarer med registrert livehash;
+fire nye nyhetsinngangsfiler er bekreftet fraværende. Ingen applikasjonsdata endret.
+
+Privat driftsleser er installert i kontoens egen driftsmappe. Dedikert nøkkel ble
+prøvd, men fast kommando kunne ikke verifiseres. Den nye nøkkellinjen er fjernet;
+etterkontroll bekrefter at eksisterende fire nøkkellinjer er beholdt og at den nye
+nøkkelen avvises. Ingen GitHub-secret er registrert og ingen workflow er aktivert.
+Årsaken til SSH-feilen er fortsatt uavklart. Automatisk sikkerhetskontroll har
+stoppet gjentatt registrering uten løst årsak. Neste steg er å avklare serverens
+støtte for forced command før ny registrering og deretter teste GitHub-jobben.
+Ingen merge, applikasjonsdeploy eller nyhets-/lydpublisering inngår i leveransen.
+
 ## Direkte skriveinstrukser – 08.10.2026
 
 Thomas bestiller klarspråk, LIX-mål 40–50, korte og mellomlange setninger,
