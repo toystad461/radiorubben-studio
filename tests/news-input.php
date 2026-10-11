@@ -49,7 +49,7 @@ try {
     function input_url(string $feed,string $source=''):string{return '?'.http_build_query(['feed'=>$feed,'source'=>$source]);}
     function input_time(?string $at):string{return $at??'Ukjent';}
     ob_start();require dirname(__DIR__).'/app/views/news-input.php';$html=ob_get_clean();
-    $out=getenv('RR_INPUT_PREVIEW');if($out)file_put_contents($out,'<!doctype html><html lang="nb"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../public/assets/news-input.css"><body>'.$html.'</body></html>');
+    $out=getenv('RR_INPUT_PREVIEW');if($out)file_put_contents($out,'<!doctype html><html lang="nb"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../public/assets/studio.css"><link rel="stylesheet" href="../public/assets/theme-bridge.css"><link rel="stylesheet" href="../public/assets/news-input.css"><body>'.$html.'</body></html>');
     expect(!str_contains($html,'name="action" value="approve"')&&!str_contains($html,'name="action" value="open_source"'),'unassessed intake exposes neither approval nor further generation');
     expect(str_contains($html,escape($source['rssText'])),'RSS text rendered without AI rewrite');
 }finally{if(is_file($path))unlink($path);if(is_file($path.'.lock'))unlink($path.'.lock');}
