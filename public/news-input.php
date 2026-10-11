@@ -27,7 +27,7 @@ $board=studio_board_read(studio_input_path());$review=$source?studio_input_revie
 $old=$source?($board['rssIntakeReviews'][studio_source_identity($source['url'])]??null):null;
 function input_url(string $feed,string $source=''):string{return '/news-input.php?'.http_build_query(['feed'=>$feed,'source'=>$source]);}
 function input_time(?string $at):string{try{return $at?(new DateTimeImmutable($at))->setTimezone(new DateTimeZone('Europe/Oslo'))->format('d.m. H:i'):'Ukjent';}catch(Throwable $e){return 'Ukjent';}}
-$extraStylesheet='/assets/news-input.css?v=20261011';require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet='/assets/news-input.css?v=20261011-theme2';require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell"><?php $activePage='newsdesk';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace">
 <header class="topbar"><span>Radio Rubben / <strong>Nyhetsinngang</strong></span><a href="/newsdesk.php">Til behandling</a></header>

@@ -17,6 +17,25 @@ bevis for dagens kode eller produksjon. Bevar ukommittert arbeid.
 - Rapportér hva som er endret, testet, uprøvd og publisert hver for seg.
   Dokumentasjonsendringer trenger ikke nye runtime-tester.
 
+## Avtalt arbeid og godkjenning
+- Fortsett autonomt med allerede avtalt lesing, utvikling, tester, feilretting,
+  avgrenset gren/PR og kontroller. Ikke be om ny bekreftelse for hvert delsteg.
+- «Utfør» eller «fortsett» gjelder det konkrete neste steget som nettopp er
+  beskrevet. Ikke utvid dette til generell tillatelse for andre leveranser.
+- En eksplisitt godkjenning av en konkret merge/utrulling dekker hele det avtalte
+  løpet: siste avstemming, pakke/manifest, privat kodebackup, publisering,
+  etterkontroll og tilbakeføring ved feil. Ikke be om samme godkjenning på nytt
+  midt i dette løpet. Fastlås kildecommit, filsett og faktisk deploykvittering.
+- Stopp og avklar bare ved vesentlig endret omfang, nødvendige opplysninger som
+  mangler, reell teknisk/sikkerhetsmessig sperre eller handling utenfor gitt
+  autorisasjon. Oppgi den konkrete årsaken, og fullfør upåvirket arbeid.
+- Redaksjonell innholdsgodkjenning og kodeutrulling er separate. Ikke publiser
+  saker, lag lyd eller påvirk ekte avstemning som skjult del av en kodekontroll.
+- Tilgangsproblem er ikke ny godkjenningsplikt. Bruk avtalt personlig SSH-konto
+  `cptk37ymg_w1417156` og eksisterende nøkkel; be bare om lokal opplåsing når den
+  faktisk trengs. Ikke lagre passord/passfraser eller svekk nøkkelkryptering.
+  Ny maskinnøkkel og SSH-supportsak er satt på vent etter Thomas sitt valg.
+
 ## Produksjonsgrunnlag
 Aktivt Uniweb-Studio avviker fra main og fra hele feature-grener. Selektivt
 publiserte filer er dokumentert i flere PR-er. Ikke last opp main, en hel
@@ -58,8 +77,10 @@ Nye eller endrede redaksjonelle flyter skal ha målrettede negative tester for
 manglende menneskelig godkjenning og endrede kilder/innhold/metadata.
 Syntetisk tale og AI-bilder krever egen merking og sporbarhet etter policyen.
 Rettelser kan gi versjonerte, separat godkjente læringsforslag, aldri automatisk
-faktagrunnlag eller svakere kontroll. Ikke deploy, publiser eller merge til en
-automatisk deploygren uten eksplisitt godkjenning. Bevar annet pågående arbeid.
+faktagrunnlag eller svakere kontroll. Deploy eller merge til en automatisk
+deploygren krever konkret autorisasjon; eksisterende autorisasjon for samme
+leveranse gjelder videre etter reglene over. Innholdspublisering følger egen
+redaksjonell godkjenning. Bevar annet pågående arbeid.
 
 ## CRM for Radio Rubben
 Thomas har uttrykkelig prioritert et CRM tilpasset Radio Rubben (07.10.2026).

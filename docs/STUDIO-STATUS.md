@@ -1,5 +1,26 @@
 # Studio – felles status og arbeidsliste
 
+## Nyhetsinngang og avtalt autorisasjon – 11.10.2026
+
+Thomas godkjente hele merge-/utrullingsløpet for PR #69 og bestilte presisering
+av AGENTS.md om videreføring uten gjentatt godkjenning av samme delsteg.
+#69 ble merget som 1872d1169fe033e51ddb919425fda56ff9cc93df og selektivt
+publisert i Actions 38133657647. Etter-hasher, seks uendrede avhengigheter og
+privat kodebackup selective-38133657647-1 er verifisert. Faktisk filsett omfatter
+de åtte planlagte målene samt vendor/composer/installed.php: denne ekstra filen
+endrer bare Studio-prosjektets commitreferanse to steder; backup/staging matcher.
+Ingen Composer-avhengighet er endret.
+
+Microsoft-innlogging fungerer, og nyhetsinngangen viser 44 ekte RSS-saker.
+Visuell kontroll fant hvit tekst på lyse paneler. Oppfølging #71 retter dette
+med eksisterende mørke Studio-tema, skjema-/fokusfarger og ny CSS-versjon.
+Preview-testen bruker nå samme felles CSS som produksjonen; kontrastkrav 4,5:1
+og layout ved 390/768/1280/1920 px består lokalt sammen med 23 modul-/visningstester.
+Oppfølgingen inkluderer bestilt AGENTS.md-presisering. Fersk CI og faktisk
+publiserings-/etterkontroll dokumenteres på #71 før leveransen meldes ferdig.
+Ingen vurderinger, manus, lyd eller innhold er produsert/publisert i etterkontrollen.
+Personlig SSH videreføres; maskinnøkkel/supportsak og drifts-PR #70 er på vent.
+
 ## PR #69 – gjennomgang og klargjøring, 11.10.2026
 
 PR #69 er åpen draft. Første head f7b7662 besto full PHP 8.2/8.4 og mobil-CI;

@@ -7,6 +7,17 @@ const path=require('path');
   const page=await browser.newPage({viewport:{width,height:900}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('file:///'+path.join(__dirname,'news-input-preview.html').replace(/\\/g,'/'));
+  const contrast=await page.evaluate(()=>{
+   const luminance=color=>{
+    const values=color.match(/[\d.]+/g).slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;});
+    return values[0]*.2126+values[1]*.7152+values[2]*.0722;
+   };
+   return ['.ni-list','.ni-reader','.ni-review','.ni-list select','.ni-reader textarea'].map(selector=>{
+    const style=getComputedStyle(document.querySelector(selector)),a=luminance(style.color),b=luminance(style.backgroundColor);
+    return {selector,ratio:(Math.max(a,b)+.05)/(Math.min(a,b)+.05)};
+   });
+  });
+  if(contrast.some(v=>v.ratio<4.5))throw Error('Studio theme text contrast failed: '+JSON.stringify(contrast));
   if(width>750){
    const before=await page.locator('.ni-reader').boundingBox();
    await page.locator('.ni-stories').evaluate(el=>el.scrollTop=el.scrollHeight);
