@@ -21,6 +21,14 @@ stoppet gjentatt registrering uten løst årsak. Neste steg er å avklare server
 støtte for forced command før ny registrering og deretter teste GitHub-jobben.
 Ingen merge, applikasjonsdeploy eller nyhets-/lydpublisering inngår i leveransen.
 
+Oppdatert diagnose: midlertidig nøkkelregistrering med serverstyrt tilbakeføring
+viser at serveren autentiserer maskinnøkkelen, men kjører klientkommandoen direkte
+i stedet for nøkkelens forced command (exit 127). Den konkrete feilen er dermed
+manglende håndheving av command= i denne testen, ikke feil nøkkel eller passord.
+Intern årsak hos leverandøren er fortsatt ukjent. Testregistrering er fjernet;
+eksisterende innlogging fungerer. Neste nødvendige steg er leverandøravklaring
+før maskinnøkkel/Actions kan aktiveres. Se READ-ONLY-INVENTORY.md for belegg.
+
 ## Direkte skriveinstrukser – 08.10.2026
 
 Thomas bestiller klarspråk, LIX-mål 40–50, korte og mellomlange setninger,

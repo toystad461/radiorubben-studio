@@ -40,3 +40,27 @@ fast lesekommando besto ikke tilkoblingstesten. Etterkontroll bekrefter fire
 bevarte eksisterende nøkkellinjer, filrettighet 0600 og at maskinnøkkelen avvises.
 Ikke registrer nøkkelen på nytt før årsaken er avklart. Secrets/Actions er ikke
 aktivert. Dette er klargjort kode og delvis serveroppsett, ikke permanent drift.
+
+## Avklart SSH-feil – kontrollert ny test 11.10.2026
+
+Ny diagnose registrerte nøkkelen bare mens en eksisterende SSH-forbindelse holdt
+nøkkelregisteret låst. Serverprosessen gjenopprettet originalfilen etter testen,
+med tidsavbrudd på 20 sekunder. Klienten brukte ingen lokal SSH-konfigurasjon
+eller agent, bare den dedikerte nøkkelen og verifisert kjent vert.
+
+SSH-loggen bekrefter at serveren godtok maskinnøkkelen med fingeravtrykk
+`SHA256:8/Up29/XXx4q7tNWePqCAu5tl95kROZfFvW5NdAtAMI` og autentiserte med publickey.
+Til tross for registrert `command="/usr/bin/php .../read-production.php"` kjørte
+serveren klientkommandoen `rr-studio-inventory-v1` direkte, som ga exit 127:
+`/usr/bin/bash: line 1: rr-studio-inventory-v1: command not found`.
+
+Dette beviser at forced command ikke ble håndhevet i denne testen. Det beviser
+ikke årsaken i leverandørens interne SSH-oppsett, eller status for alle andre
+nøkkelalternativer. Serverens SSH-konfigurasjon og autentiseringslogg er ikke
+lesbare for kontoen. Privat og offentlig maskinnøkkel er kontrollert like;
+HOME, eier og filrettigheter er verifisert. Passordbytte løser ikke dette avviket.
+
+Leverandøren må avklare støtte for nøkkelalternativet `command=` og en håndhevet
+begrenset SSH-løsning for denne kontoen. Ingen maskinnøkkel skal stå permanent
+registrert eller legges i GitHub-secrets før fast kommando og avvisning av andre
+kommandoer er verifisert. Ingen supportsak er sendt som del av denne diagnosen.
