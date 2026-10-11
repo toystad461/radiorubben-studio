@@ -1,5 +1,54 @@
 # Studio – felles status og arbeidsliste
 
+## PR #69 – gjennomgang og klargjøring, 11.10.2026
+
+PR #69 er åpen draft. Første head f7b7662 besto full PHP 8.2/8.4 og mobil-CI;
+deploy-jobben ble hoppet over. Egen gjennomgang retter tap av innsendt begrunnelse
+og kanalvalg ved avvist lagring; feltene beholdes escaped og den lagrede vurderingen
+endres ikke. Ny negativ controller-test `invalid` består lokalt på begge PHP-versjoner
+og inngår i Composer. Ny head må få egne grønne kontroller før utrullingsvalg.
+Ingen merge, serverendring, redaksjonell publisering eller lydproduksjon.
+
+Selektiv plan omfatter seks runtime-kodefiler, composer.json og generert release.json.
+Ferske serverhasher, fravær av nye mål og aktiv deploystatus må kontrolleres før
+publisering. Sammenlign faktisk plan mot tillatt filsett; avvik stopper utrullingen.
+Merge til main kan utløse automatisk deploy og trenger separat konkret godkjenning.
+
+## Nyhetsinngang – kodegjennomgang og innlogget lokal test, 11.10.2026
+
+Egen kodegjennomgang rettet lagring av inngangsvurderinger til separat privat
+`rss-input.private.json`; sendelistens samlesak-/lydkontroller skal ikke påvirkes.
+Faktisk lokal passordinnlogging med midlertidig syntetisk produsent og de tre
+ekte RSS-feedene besto: 19 toppsaker, 20 siste nytt og 5 kommunesaker kl.
+10:08:39 UTC. Kildevalg, kanalvurdering og lagring virket; sendelisten var
+byte-identisk. Andre Studio-handlinger og private filer var sperret med 404.
+Full innlogget Studio-visning besto mobilbytte og overflytskontroll ved 390 px.
+Server, testkonto og runtime-kopi er fjernet etter testen. Ingen produksjonsendring.
+
+PHP 8.2/8.4: 23 modul-/visningskontroller og ni controller-scenarioer besto
+etter rettelsen. Main og åpne PR-head/base er lest på nytt; main er uendret.
+Ingen uavhengig review, Microsoft-innlogging, full CI eller produksjonskontroll
+er utført. Neste steg: utviklings-PR med full CI og senere autorisert selektiv
+utrulling etter serveravstemming. Se [test og avgrensning](NEWS-INPUT.md).
+
+## Nyhetsinngang – lokal førsteintegrasjon, 11.10.2026
+
+Thomas har godkjent at den prøvde nyhetsportalen kobles til dagens Studio:
+først lesing, relevans og kanalvalg. Egen lokal gren `feat/news-input-portal`
+fra main `2a187e070e9950376d1b3e592f9da88015ca2986`. Eksisterende RSS-cache,
+kildeidentitet, roller, CSRF og atomisk lagring gjenbrukes. Ny `/news-input.php`
+viser full normalisert RSS-tekst og menneskelig innkommende-vurdering med
+kildefingeravtrykk og revisjonshistorikk. Endret kilde krever ny vurdering.
+Dette erstatter ikke dagens AI-kontroll eller noen publiseringsgodkjenning.
+Manus, lyd, eksisterende saker og automatikkinnstillinger bevares.
+Se [avgrensning, kontroller og videre arbeid](NEWS-INPUT.md).
+
+Lokal PHP 8.2/8.4-kontroll: 23 modul-/visningskontroller og ni faktiske controller-
+scenarioer bestått med syntetiske data. Nettleserkontroll bestått ved 390, 768,
+1280 og 1920 px. Ekte innlogging, full CI og aktiv server er ikke testet her.
+Ingen merge, deploy, artikkelpublisering, lydproduksjon eller avstemning.
+Den lokale innloggede testen og senere lagringsrettelsen er dokumentert over.
+
 ## Direkte skriveinstrukser – 08.10.2026
 
 Thomas bestiller klarspråk, LIX-mål 40–50, korte og mellomlange setninger,

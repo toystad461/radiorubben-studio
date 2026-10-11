@@ -45,6 +45,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          extensions: mbstring
           coverage: none
       - run: npm install --no-save --package-lock=false playwright@1.62.1
       - run: npx playwright install --with-deps chromium
@@ -56,3 +57,10 @@ jobs:
 
       - run: node tests/crm-mobile.cjs
       - run: node tests/crm-outreach-mobile.cjs
+      - name: Check news intake mobile and independent desktop scroll
+        env:
+          RR_INPUT_PREVIEW: tests/news-input-preview.html
+          RR_BROWSER_CHANNEL: chromium
+        run: |
+          php tests/news-input.php
+          node tests/news-input-mobile.cjs

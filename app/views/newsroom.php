@@ -1,4 +1,5 @@
 <main id="main" class="newsroom" data-selected="<?=escape($selected)?>">
+<p><a href="/news-input.php">Nyhetsinngang – les RSS og vurder relevans</a></p>
 <header class="nr-heading"><div><h1>Nyhetsdesk</h1><p><?=$counts['ready']?> saker klare til godkjenning</p></div><a class="nr-refresh" data-newsroom-link href="<?=escape(studio_newsroom_url($selected,$filter))?>">Oppdater</a></header>
 <?php if($error):?><p class="nr-alert" role="alert"><?=escape($error)?></p><?php endif;?>
 <?php if($notice):?><p class="nr-notice" role="status"><?=escape($notice)?></p><?php endif;?>
