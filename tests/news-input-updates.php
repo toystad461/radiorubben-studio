@@ -58,3 +58,6 @@ ob_start();require dirname(__DIR__).'/app/views/news-input.php';$html=(string)ob
 check(str_contains($html,'Sist vurdert')&&str_contains($html,'Nå i RSS')&&str_contains($html,'klokken 10.')&&str_contains($html,'klokken 12.'),'before and after visible together');
 check(!str_contains($html,'name="action"')&&!str_contains($html,'/case.php?item='),'live example has no mutable actions');
 $out=getenv('RR_UPDATE_PREVIEW');if($out)file_put_contents($out,'<!doctype html><html lang="nb"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="../public/assets/studio.css"><link rel="stylesheet" href="../public/assets/theme-bridge.css"><link rel="stylesheet" href="../public/assets/news-input.css"><body>'.$html.'</body></html>');
+$demo=false;$old['updateDraft']='Manuelt rettet oppdateringsutkast som ikke skal forsvinne.';
+ob_start();require dirname(__DIR__).'/app/views/news-input.php';$html=(string)ob_get_clean();
+check(str_contains($html,$old['updateDraft'])&&str_contains($html,'Dine tidligere utkastrettelser er beholdt'),'manual draft remains visible after another source change');

@@ -34,7 +34,7 @@
 <?php if(empty($demo)):?><p><a href="<?=escape($source['url'])?>" target="_blank" rel="noopener noreferrer">Les originalen hos <?=escape($source['sourceName'])?> ↗</a></p><?php endif;?>
 <section class="ni-review"><h3><?=$review?'Din vurdering':'Passer saken for vårt publikum?'?></h3>
 <p>Vurder lokal betydning, nytte, aktualitet og om vi allerede har omtalt saken. En kanalvurdering er ikke tillatelse til gjenbruk eller publisering.</p>
-<?php if($old&&!$review):?><p role="status">RSS-grunnlaget har endret seg. Tidligere vurdering må fornyes.</p><?php endif;?>
+<?php if($old&&!$review):?><p role="status">Tidligere vurdering gjelder et annet eller eldre RSS-grunnlag. Kontroller kilden på nytt.</p><?php endif;?>
 <?php if(!$old&&!empty($related)):?><p>En vurdering starter RSS-oppfølging fra denne versjonen. Vi har ikke et tidligere RSS-grunnlag som kan bevise hva som har endret seg.</p><?php endif;?>
 <?php if($review):?><p><strong><?=escape(studio_input_labels()[$review['channel']])?></strong>: <?=escape($review['reason'])?><br><small><?=escape($review['actor'])?> · <?=escape(input_time($review['at']))?></small></p><?php endif;?>
 <?php if($can&&empty($demo)&&empty($source['missingFromFeed'])&&($source['feedStatus']??'')==='updated'):
@@ -47,9 +47,10 @@ if($error&&is_string($_POST['reason']??null))$formReason=mb_substr($_POST['reaso
 <fieldset><legend>Bruksområde</legend><?php foreach(studio_input_labels() as $value=>$label):?><label class="ni-choice"><input type="radio" name="channel" value="<?=$value?>" <?=$formChannel===$value?'checked':''?>><?=escape($label)?></label><?php endforeach;?></fieldset>
 <label>Hvorfor er saken aktuell eller ikke aktuell?<textarea name="reason" rows="3" minlength="15" maxlength="1000" required><?=escape($formReason)?></textarea></label><button name="action" value="review">Lagre vurdering</button> <button name="action" value="discard">Forkast sak</button><p>Forkasting krever begrunnelse. Saken tas ut av arbeidslisten; kilden og historikken beholdes.</p>
 <?php if(in_array($old['channel']??'', ['both','web','radio'],true)&&(($update['state']??'')==='changed'||($review['updateDecision']??'')==='draft')):
-$draftText=$review['updateDraft']??($source['rssText']??$source['summary']);
+$draftText=$review['updateDraft']??$old['updateDraft']??($source['rssText']??$source['summary']);
 if($error&&is_string($_POST['updateDraft']??null))$draftText=mb_substr($_POST['updateDraft'],0,10000);
 ?><h3>Oppdateringsutkast</h3><p>Utgangspunktet er kildens RSS-tekst. Tilpass teksten, begrunn valget og lagre til videre behandling. Dette erstatter ikke manus-, lyd- eller publiseringsgodkjenning.</p>
+<?php if(!$review&&!empty($old['updateDraft'])):?><p role="status">Dine tidligere utkastrettelser er beholdt i feltet. Kontroller dem mot den nye RSS-versjonen før lagring.</p><?php endif;?>
 <label>Tekst til videre behandling<textarea name="updateDraft" rows="5" maxlength="10000"><?=escape($draftText)?></textarea></label>
 <button name="action" value="draft_update">Lagre oppdateringsutkast</button> <button name="action" value="keep_published">Behold eksisterende innhold</button>
 <?php endif;?>
