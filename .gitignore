@@ -18,3 +18,4 @@
 
 # Python helper test artifacts.
 __pycache__/
+/tests/news-input-preview.html

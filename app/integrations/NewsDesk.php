@@ -84,6 +84,10 @@ function newsdesk_decode_rss(string $body, string $source, array $spec, string $
             'sourceName' => ($spec['group'] ?? '') === 'nrk' ? 'NRK Vestland' : $spec['name'],
             'feedIds' => [$source], 'isTopStory' => !empty($spec['top']),
             'title' => $title, 'summary' => newsdesk_clean((string)$item->description),
+            // Keep the supplied RSS text separately from the short legacy list preview.
+            'rssTitle' => newsdesk_clean((string)$item->title, 1000000),
+            'rssText' => newsdesk_clean((string)$item->description, 1000000),
+            'rssFeed' => $source,
             'url' => $link, 'publishedAt' => gmdate('c', $published),
             'fetchedAt' => $fetchedAt,
         ];
