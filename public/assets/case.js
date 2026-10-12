@@ -3,7 +3,8 @@ const settings=document.querySelector('#case-controller').dataset;
 const state={id:settings.item,revision:Number(settings.revision),csrf:settings.csrf};
 const progress=document.querySelector('#case-progress');let busy=false;const dirty=new Set(),audioDirty=new Set();
 const say=text=>{progress.textContent=text;};
-const lock=value=>{busy=value;document.querySelectorAll('button,select,input[type=checkbox]').forEach(b=>b.disabled=value);document.querySelectorAll('textarea,input:not([type=hidden]):not([type=checkbox])').forEach(e=>e.readOnly=value);};
+const initiallyDisabled=new WeakSet(document.querySelectorAll(':disabled'));
+const lock=value=>{busy=value;document.querySelectorAll('button,select,input[type=checkbox]').forEach(b=>b.disabled=value||initiallyDisabled.has(b));document.querySelectorAll('textarea,input:not([type=hidden]):not([type=checkbox])').forEach(e=>e.readOnly=value);};
 async function step(action,form){
  const data=form?new FormData(form):new FormData();
  // Selects are disabled while a request runs; include the editor's selected placement explicitly.

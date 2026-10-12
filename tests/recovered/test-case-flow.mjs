@@ -3,10 +3,12 @@ const code=fs.readFileSync(new URL('../../public/assets/case.js', import.meta.ur
 const settings={dataset:{item:'test',revision:'1',csrf:'csrf',autoPrepare:'0'}};
 async function simulate(fail){
  const handlers={},calls=[],progress={textContent:'',after(){}},button={addEventListener:(n,f)=>handlers[n]=f},created={addEventListener(){}};
- const doc={querySelector:s=>s==='#case-controller'?settings:s==='#case-progress'?progress:s==='#news-scope'?null:button,querySelectorAll:()=>[],createElement:()=>created};
+ const locked={disabled:true};
+ const doc={querySelector:s=>s==='#case-controller'?settings:s==='#case-progress'?progress:s==='#news-scope'?null:button,querySelectorAll:s=>s===':disabled'?[locked]:s==='button,select,input[type=checkbox]'?[locked,button]:[],createElement:()=>created};
  const context={document:doc,window:{addEventListener(){}},FormData,fetch:async(url,o)=>{const action=o.body.get('action');calls.push([action,o.body.get('revision')]);if(fail)throw Error('transport');return{ok:true,json:async()=>({ok:true,revision:calls.length+1})};},location:{replace:url=>{context.done=url;}},console};
  vm.runInNewContext(code,context);handlers.click();
  for(let i=0;i<20;i++)await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(locked.disabled,true,'initially blocked controls stay blocked after transport failure');
  if(fail){assert.equal(calls.length,1);assert.equal(context.done,undefined);assert.match(progress.textContent,/Lagrede delresultater/);}
  else{assert.deepEqual(calls,[['prepare_radio','1'],['prepare_web','2']]);assert.equal(context.done,'/case.php?item=test');assert(!calls.some(([a])=>/approve|publish|ready/.test(a)));}
 }
