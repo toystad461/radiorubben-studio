@@ -59,6 +59,7 @@ function studio_board_change(callable $change, ?string $path = null): mixed
     $temp = null;
     try {
         $board = studio_board_read($path);
+        $unchanged = $board;
         $previous = []; $pendingAudio = [];
         foreach ($board['items'] as $row) {
             $previous[$row['id']] = studio_board_audio_identity($row);
@@ -90,6 +91,9 @@ function studio_board_change(callable $change, ?string $path = null): mixed
             }
         }
         unset($row);
+        // Compare after approval invalidation: safety changes must still be persisted.
+        // Duplicate intake and guarded callbacks otherwise only churn timestamp/bytes.
+        if ($board === $unchanged) return $result;
         $board['updatedAt'] = gmdate('c');
         $temp = tempnam(dirname($path), '.sending-');
         if (!$temp || !chmod($temp, 0600)
