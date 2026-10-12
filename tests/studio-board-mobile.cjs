@@ -2,7 +2,7 @@ const path=require('node:path'),assert=require('node:assert/strict'),{execFileSy
 const {chromium}=require(process.env.RR_PLAYWRIGHT_MODULE||'playwright');const root=path.resolve(__dirname,'..');
 const html=execFileSync(process.env.PHP_BIN||'php',[path.join(root,'tests/fixtures/studio-board.php')],{encoding:'utf8'});
 (async()=>{const browser=await chromium.launch(process.env.RR_BROWSER_CHANNEL?{channel:process.env.RR_BROWSER_CHANNEL}:{});try{
- for(const width of [390,768,1440]){const page=await browser.newPage({viewport:{width,height:1000}});const errors=[];let approvals=0,audioStreams=0;
+ for(const width of [320,390,768,1280,1440]){const page=await browser.newPage({viewport:{width,height:1000}});const errors=[];let approvals=0,audioStreams=0;
  page.on('pageerror',e=>errors.push(e.message));
  const tracks=[1,2,3,4].map(n=>({id:String(n),artist:'Testartist',title:'Låt '+n,eligible:true}));
  await page.route('**/*',route=>{const r=route.request(),u=new URL(r.url());
@@ -20,6 +20,6 @@ const html=execFileSync(process.env.PHP_BIN||'php',[path.join(root,'tests/fixtur
  await page.locator('.manual-music summary').click();await page.locator('#manual-now').fill('Manuell artist – Nå');await page.locator('#manual-next-1').fill('Manuell artist – Neste');await page.getByRole('button',{name:'Bruk manuelt musikkgrunnlag',exact:true}).click();assert.match(await page.locator('#now-playing').innerText(),/Manuell artist/);assert.equal(audioStreams,0);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`overflow ${width}`);
  if(width===1440){const s=await page.locator('.status-card').boundingBox(),p=await page.locator('.producer').boundingBox();assert(s.x>p.x+p.width-1,'status at far right');}
- assert.deepEqual(errors,[]);await page.close();
+ await page.locator('.pads-card summary').click();assert(await page.locator('#pad-board').isVisible());await page.locator('.log-card summary').click();assert(await page.locator('#export-log').isVisible());assert.deepEqual(errors,[]);await page.close();
  }console.log('PASS Studio queue, one-click approval, edit invalidation and responsive layout');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exit(1);});
