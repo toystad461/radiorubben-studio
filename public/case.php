@@ -111,7 +111,7 @@ function case_report(array $check): void {
 }
 $items=studio_board_active(studio_board_read());
 $feeds=newsdesk_all(dirname(__DIR__).'/config');
-$extraStylesheet='/assets/case.css?v=20261004-1'; require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet='/assets/case.css?v=20261012-wp-status1'; require dirname(__DIR__).'/app/views/head.php';
 ?>
 
 <div class="shell"><?php $activePage='newsdesk';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace"><main id="main" class="control-page case-workspace">

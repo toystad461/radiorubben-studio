@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 $mode=$argv[1]??'get';
-$render=$mode==='render';
-if($render)$mode='get';
+$render=in_array($mode,['render','render-wp-status'],true);
+if($render)$mode=$mode==='render'?'get':'wp-status';
 $root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/case-page-'.bin2hex(random_bytes(4));
 foreach(['/app/views','/app/integrations','/config','/public']as$dir)mkdir($tmp.$dir,0700,true);
 foreach(['board','source-identity','programs','audio-profiles','stylebook','news-script','news-relevance','web-publish','wordpress-status','news-publication','case-workflow','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage']as$name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
