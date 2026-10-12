@@ -8,6 +8,7 @@ require_once dirname(__DIR__) . '/app/board.php';
 require dirname(__DIR__) . '/app/integrations/NewsDesk.php';
 require dirname(__DIR__) . '/app/weather.php';
 require_once dirname(__DIR__) . '/app/newsroom.php';
+require_once dirname(__DIR__) . '/app/wordpress-status.php';
 require_once dirname(__DIR__) . '/app/producer.php';
 $canPrepare = studio_can($user, 'produce');
 if (!in_array($_SERVER['REQUEST_METHOD'], ['GET', 'POST'], true)) { http_response_code(405); header('Allow: GET, POST'); exit; }
@@ -17,7 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if (!preg_match('/^[a-f0-9]{16}$/D', $id)) throw new InvalidArgumentException('Velg en gyldig sak.');
         $action = $_POST['action'] ?? '';
-        if ($action === 'discard') {
+        if ($action === 'wp_status') {
+            $lookup=studio_web_status_check($id,(int)($_POST['revision']??0),$user,studio_wp_config());
+            $_SESSION['control_message']=studio_wp_status_message($lookup);
+        } elseif ($action === 'discard') {
             if (($_POST['confirmed'] ?? '') !== '1') throw new InvalidArgumentException('Bekreft at du vil forkaste saken.');
             $current = null;
             foreach (studio_board_active(studio_board_read()) as $row) if ($row['id'] === $id) $current = $row;
@@ -102,19 +106,20 @@ require dirname(__DIR__) . '/app/views/head.php';
       <p class="control-muted"><?= escape($selected['sourceName']) ?></p>
       <?php if ($selected['sourceUrl']): ?><p><a href="<?= escape($selected['sourceUrl']) ?>" target="_blank" rel="noopener noreferrer">Les originalkilden ↗</a></p><?php endif; ?>
       <?php if ($selected['summary']): ?><p><?= escape($selected['summary']) ?></p><?php endif; ?>
-      <?php if ($canPrepare): ?><form method="post" class="editor-form"><?php control_fields($selected); ?>
+      <?php if ($canPrepare && !in_array($selected['web']['delivery']['state'] ?? '', ['pending','unknown'], true)): ?><form method="post" class="editor-form"><?php control_fields($selected); ?>
         <label for="case-channel">Bruksområde</label><select id="case-channel" name="channel">
           <?php foreach (['radio'=>'Radiomateriale', 'web'=>'Nettmateriale', 'both'=>'Radio og nett'] as $value=>$label): ?><option value="<?= $value ?>" <?= $channel === $value ? 'selected' : '' ?>><?= $label ?></option><?php endforeach; ?>
         </select><button name="action" value="channel">Lagre bruksområde</button>
       </form><?php else: ?><p>Bruksområde: <?= ['radio'=>'Radiomateriale', 'web'=>'Nettmateriale', 'both'=>'Radio og nett'][$channel] ?></p><?php endif; ?>
-      <?php if ($canPrepare && !empty($selected['originId']) && studio_news_allowed_url((string)$selected['sourceUrl'])): ?><form method="post" class="editor-form"><?php control_fields($selected); ?><button name="action" value="prepare">Robåt: klargjør og kontroller</button><p class="control-muted">Lagre bruksområdet først. Henter originalen og lager manglende forslag for valgt kanal. Eksisterende radiomanus beholdes og kontrolleres.</p></form><?php endif; ?>
+      <?php if ($canPrepare && !in_array($selected['web']['delivery']['state'] ?? '', ['pending','unknown'], true) && !empty($selected['originId']) && studio_news_allowed_url((string)$selected['sourceUrl'])): ?><form method="post" class="editor-form"><?php control_fields($selected); ?><button name="action" value="prepare">Robåt: klargjør og kontroller</button><p class="control-muted">Lagre bruksområdet først. Henter originalen og lager manglende forslag for valgt kanal. Eksisterende radiomanus beholdes og kontrolleres.</p></form><?php endif; ?>
       <?php if (parse_url((string)$selected['sourceUrl'], PHP_URL_HOST) === 'www.nrk.no'): ?><p class="dashboard-source-credit">Basert på opplysninger fra NRK. <a href="<?= escape($selected['sourceUrl']) ?>" target="_blank" rel="noopener noreferrer">Les hele saken hos NRK ↗</a></p><?php endif; ?>
       <?php if ($channel !== 'web' && trim((string)$selected['script']) !== ''): ?><details open class="dashboard-proposal"><summary>Forslag til radiomanus</summary><?php foreach (studio_news_reading_paragraphs($selected['script']) as $paragraph): ?><p><?= escape($paragraph) ?></p><?php endforeach; ?></details><?php endif; ?>
       <?php if ($channel !== 'radio' && !empty($selected['web']['body'])): ?><details open class="dashboard-proposal"><summary>Forslag til nettsak</summary><h3><?= escape($selected['web']['title'] ?? '') ?></h3><p><strong><?= escape($selected['web']['intro'] ?? '') ?></strong></p><?php foreach (studio_news_reading_paragraphs($selected['web']['body']) as $paragraph): ?><p><?= escape($paragraph) ?></p><?php endforeach; ?></details><?php endif; ?>
       <?php if ($channel !== 'web' && !studio_news_radio_credit($selected)): ?><p class="control-alert error">NRK må nevnes tidlig i radiomanuset før godkjenning til sending.</p><?php endif; ?>
       <div class="dashboard-treatment-actions">
       <?php if ($channel !== 'web'): ?><p>Radio: <?= $selected['status'] === 'ready' ? 'Godkjent til sending' : 'Utkast – må kontrolleres og godkjennes' ?></p><a class="control-link" href="/case.php?item=<?= escape($selected['id']) ?>#radio-material">Behandle radiomanus ↗</a><?php endif; ?>
-      <?php if ($channel !== 'radio'): ?><p>Nett: <?= escape(studio_web_status_label($selected)) ?></p><a class="control-link" href="/case.php?item=<?= escape($selected['id']) ?>#web-material">Behandle nettsak ↗</a><?php endif; ?>
+      <?php if ($channel !== 'radio'): ?><p>Nett: <?= escape(studio_web_status_label($selected)) ?></p><a class="control-link" href="/case.php?item=<?= escape($selected['id']) ?>#web-material"><?=in_array($selected['web']['delivery']['state']??'', ['pending','unknown'],true)?'Avklar WordPress-status':'Behandle nettsak'?> ↗</a>
+<?php $wpStatusItem=$selected;$wpStatusAdmin=($user['role']??'')==='admin';$wpStatusReady=studio_wp_ready(studio_wp_config());require dirname(__DIR__).'/app/views/wordpress-status.php';?><?php endif; ?>
       </div><p class="control-muted">Kanalvalg publiserer ingenting. Les teksten og kontrollrapporten før sluttgodkjenning.</p>
       <?php if ($canPrepare): ?><details class="source-summary"><summary>Forkast saken</summary><p>Saken arkiveres fra arbeidslisten. Manus og historikk beholdes. En allerede publisert nettsak trekkes ikke tilbake.</p><form method="post" class="editor-form"><?php control_fields($selected); ?><input type="hidden" name="snapshot" value="<?= escape(studio_board_snapshot($board)) ?>"><label class="verify-row"><input type="checkbox" name="confirmed" value="1" required> Jeg vil forkaste denne saken</label><button class="quiet" name="action" value="discard">Forkast sak</button></form></details><?php endif; ?>
       <?php else: ?><p class="control-empty">Velg en sak i Nyhetsdesk for å starte.</p><?php endif; ?>

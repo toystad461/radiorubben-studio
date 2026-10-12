@@ -96,7 +96,7 @@ foreach (glob(__DIR__.'/recovered/test-*.php') as $file) {
     $modes = match(basename($file)) {
         'test-newsroom-page.php' => ['get','fragment','guest','method','observer','csrf','forged','feedback','feedback-stale','feedback-csrf','feedback-observer','handoff-missing'],
         'test-news-page.php' => ['get','guest','method','observer','csrf','forged','bulletin-csrf','bulletin-observer'],
-        'test-case-page.php' => ['get','legacy','published','guest','csrf','observer','open','save','audio-disabled'],
+        'test-case-page.php' => ['get','legacy','published','guest','csrf','observer','open','save','audio-disabled','wp-status','wp-status-csrf','wp-status-observer','wp-status-stale'],
         default => [''],
     };
     foreach ($modes as $mode) {

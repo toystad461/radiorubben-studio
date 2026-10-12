@@ -61,6 +61,9 @@ function studio_web_approval_hash(array $item): string
 function studio_web_status_label(array $item): string
 {
     $w = $item['web'] ?? []; $d = $w['delivery'] ?? [];
+    if(($d['lookup']['state']??'')==='different')return ($d['lookup']['status']??'')==='publish'?'Publisert i WordPress – innholdet må avklares':'WordPress-status avviker – må avklares';
+    if(($d['lookup']['state']??'')==='not_found')return 'Ikke funnet i WordPress – må avklares';
+    if(($d['lookup']['state']??'')==='multiple')return 'Flere WordPress-innlegg – må avklares';
     if (($d['state'] ?? '') === 'pending') return 'Overføring pågår';
     if (($d['state'] ?? '') === 'unknown') return 'Overføringen må avklares';
     if (($d['state'] ?? '') === 'confirmed' && ($d['hash'] ?? '') === studio_web_approval_hash($item))

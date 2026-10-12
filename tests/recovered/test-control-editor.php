@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 if (empty($argv[1])) {
-    foreach (['get','csrf','observer','channel','discard','stale','undo'] as $mode) {
+    foreach (['get','csrf','observer','channel','discard','stale','undo','wp-status'] as $mode) {
         passthru(escapeshellarg(PHP_BINARY).' '.escapeshellarg(__FILE__).' '.escapeshellarg($mode),$code);
         if ($code) exit($code);
     }
@@ -9,7 +9,8 @@ if (empty($argv[1])) {
 }
 $mode=$argv[1];$root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/control-editor-'.bin2hex(random_bytes(5));
 foreach(['/app/views','/app/integrations','/public','/config'] as $dir)mkdir($tmp.$dir,0700,true);
-foreach(['board','programs','audio-profiles','stylebook','news-script','news-relevance','source-identity','web-publish','news-publication','case-workflow','editorial-memory','newsroom'] as $name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
+foreach(['board','programs','audio-profiles','stylebook','news-script','news-relevance','source-identity','web-publish','wordpress-status','news-publication','case-workflow','editorial-memory','newsroom'] as $name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
+copy($root.'/app/views/wordpress-status.php',$tmp.'/app/views/wordpress-status.php');
 copy($root.'/public/control.php',$tmp.'/public/control.php');
 file_put_contents($tmp.'/app/bootstrap.php','<?php function current_user(){return ["name"=>"Fixture","role"=>$GLOBALS["mode"]==="observer"?"observer":"admin"];} function studio_can($u,$p){return $u["role"]==="admin";} function escape($s){return htmlspecialchars((string)$s,ENT_QUOTES,"UTF-8");} function redirect($url){$GLOBALS["redirected"]=$url;exit;}');
 file_put_contents($tmp.'/app/integrations/NewsDesk.php','<?php function newsdesk_sources(){return ["bomlo"=>[]];} function newsdesk_feed(...$a){return ["status"=>"updated","items"=>[]];} function newsdesk_traffic(...$a){return ["status"=>"updated","items"=>[]];}');
@@ -21,15 +22,17 @@ $user=['name'=>'Fixture','role'=>'admin'];studio_board_add_manual('<Test & sak>'
 $path=$tmp.'/config/sending-board.json';$board=studio_board_read();$item=$board['items'][0];$id=$item['id'];
 $_SESSION=['csrf'=>'fixture'];$_GET=['item'=>$id];$_POST=[];$_SERVER['REQUEST_METHOD']='GET';
 if($mode==='undo'){$_SESSION['control_undo']=studio_board_clear(studio_board_snapshot($board),$user);}
+if($mode==='wp-status'){$board['items'][0]['web']=['title'=>'Test','intro'=>'Test','body'=>'Test','delivery'=>['state'=>'unknown','requestedStatus'=>'publish']];file_put_contents($path,json_encode($board));file_put_contents($tmp.'/config/wordpress.php','<?php return ["username"=>"fixture","application_password"=>"fixture"];');}
 $before=file_get_contents($path);
-if($mode!=='get'){
+if(!in_array($mode,['get','wp-status'],true)){
     $_SERVER['REQUEST_METHOD']='POST';
     $_POST=['csrf'=>$mode==='csrf'?'bad':'fixture','id'=>$id,'revision'=>1,'channel'=>'web','confirmed'=>'1','snapshot'=>$mode==='stale'?'bad':studio_board_snapshot($board),'action'=>in_array($mode,['discard','stale'],true)?'discard':($mode==='undo'?'undo':'channel')];
 }
 ob_start();
 register_shutdown_function(static function()use($tmp,$mode,$path,$before){
     $html=ob_get_clean();$stored=json_decode(file_get_contents($path),true);$ok=true;
-    if($mode==='get')$ok=str_contains($html,'Saker til behandling')&&str_contains($html,'&lt;Test &amp; sak&gt;')&&str_contains($html,'id="case-treatment"')&&str_contains($html,'Forkast sak')&&str_contains($html,'name="snapshot"')&&str_contains($html,'value="web"')&&str_contains($html,'#radio-material')&&str_contains($html,'#web-material');
+    if($mode==='wp-status')$ok=file_get_contents($path)===$before&&str_contains($html,'Kontroller WordPress-status')&&str_contains($html,'Avklar WordPress-status');
+    elseif($mode==='get')$ok=str_contains($html,'Saker til behandling')&&str_contains($html,'&lt;Test &amp; sak&gt;')&&str_contains($html,'id="case-treatment"')&&str_contains($html,'Forkast sak')&&str_contains($html,'name="snapshot"')&&str_contains($html,'value="web"')&&str_contains($html,'#radio-material')&&str_contains($html,'#web-material');
     elseif(in_array($mode,['csrf','observer'],true))$ok=http_response_code()===403&&file_get_contents($path)===$before;
     elseif($mode==='channel')$ok=$stored['items'][0]['channel']==='web'&&$stored['items'][0]['revision']===2;
     elseif($mode==='discard')$ok=$stored['items'][0]['status']==='archived'&&!empty($_SESSION['control_undo']);
