@@ -57,6 +57,8 @@ jobs:
 
       - run: node tests/crm-mobile.cjs
       - run: node tests/crm-outreach-mobile.cjs
+      - name: Check Studio music queue and next break
+        run: node tests/studio-board-mobile.cjs
       - name: Check WordPress status controls on small and large screens
         run: node tests/wordpress-status-mobile.cjs
       - name: Check news intake mobile and independent desktop scroll

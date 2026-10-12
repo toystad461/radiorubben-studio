@@ -1,5 +1,37 @@
 # Studio – felles status og arbeidsliste
 
+## Studio-musikk og neste stikk – lokal førsteversjon, 12.10.2026
+
+Bestilt: status høyre, tre neste låter, stikkvalg over tekst og ett klikk
+for menneskelig manusgodkjenning. Bygger på main 7a7e26e, ingen PR74-base.
+Eksisterende lokalspiller får trelåters kø; manuell, tydelig merket
+musikk-kontekst brukes når nettversjonen mangler spillerdata. Ingen
+Radio.co-/BUTT-integrasjon eller automatisk sendestatus er innført.
+Stikk lagres som radiosak og gjenbruker RR Audio sine hashbundne
+manusgodkjenninger, TTS, merking/budsjett og separat lydgodkjenning.
+Operatørkontrollert program-/musikkgrunnlag er egen sakstype; nyheter,
+vær og sponsor får ikke omgå eksisterende kildeflyter. Metadata er
+bundet til godkjenningen og invalideres permanent ved endring.
+PHP 8.2/8.4, syntetisk mock-TTS og layout390/768/1440 består lokalt.
+Status: lokal førsteversjon; PR/full CI kommer ved levering. Ingen
+merge/utrulling, faktisk lydgenerering eller ekte manusgodkjenning.
+Se STUDIO-MUSIC-BREAK.md for avgrensning og ferdigkriterier.
+
+## PR #75 – publisert og etterkontrollert, 12.10.2026
+
+Thomas godkjente konkret merge/utrulling med backup og etterkontroll.
+Merge 7a7e26e34945cc83accaf2d742f158e118ea6ec8; deploy 38237230460-1
+success. Ni planlagte filer, 27 filbaner og privat backup/staging verifisert.
+ZIP SHA256 f0b92f760a4f610b96bbf06a3acf4ef64e9b401aae0a11faa82291a52d814a7a.
+Composer endrer bare prosjektcommitreferanser; ingen biblioteksendring.
+Fem private filhash-er og sendelistens semantiske hash er uendret.
+Innlogget Studiooversikt og sak viser Kontroller WordPress-status;
+nettsaksredigering er sperret ved uavklart overføring. Mobil390 uten
+overflyt. Ingen reell avklaring, redaksjonell godkjenning eller publisering
+er kjørt under kontrollen. Bruk knappen på saken for å bekrefte kvitteringen.
+PR #74 er fortsatt separat og ikke utrullet. Dette er lokalt statusnotat;
+PR #75 har faktisk deploykvittering.
+
 ## WordPress-statusflyt – lokal rettelse, 12.10.2026
 
 Bestilt: tydelig publiseringsstatus og neste handling på sak og oversikt.
@@ -12,7 +44,12 @@ Feilet oppslag bevarer eksisterende status. Admin, CSRF og revisjon/CAS
 kreves; aktiv overføring får vente. Begge flater bruker samme statusvisning.
 Klargjøring/redigering av nettsak tilbys ikke mens overføringen er uavklart.
 Base main 84f9960; PR #74 er separat og er ikke tatt inn som avhengighet.
-Målrettede PHP 8.2/8.4-kontroller består lokalt. Full CI kommer i PR.
+PR #75 klar for gjennomgang; head 8a4d5df1ad95339baf7bf3ab0365cdcc83fce199.
+Full PHP 8.2/8.4, JavaScript, pakking og mobil består i CI 38236412761;
+release-verifisering 38236412723 success uten deploy. Statusknapp og
+sperret nettsaksredigering består ved 390/768/1280 px. 27 relevante
+produksjonsfilbaner avstemt; planlagt selektiv utrulling er ni filer.
+Denne CI-kvitteringen er lokalt leveringsnotat; PR #75 har samme belegg.
 Status: lokal funksjon; ingen merge/utrulling eller reell statusendring.
 Den faktiske saken 3f78af96b7ed7865 er verifisert publisert som WordPress
 1326 via skrivebeskyttet GET 12.10 kl. 10:24 norsk tid; samme tekst som

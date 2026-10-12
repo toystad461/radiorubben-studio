@@ -1,7 +1,7 @@
 import { Rotation } from './rotation.mjs';
 export function initMusic(bus, updateContext, emptyContext) {
   const $=id=>document.getElementById(id), audio=$('music-audio');
-  let tracks=[], breaks=[], token='', queued=null, current=null, loaded=null, recent=[], generation=0;
+  let tracks=[], breaks=[], token='', queued=null, upcoming=[], current=null, loaded=null, recent=[], generation=0;
   let choosing=null, playVersion=0, lastPlayedVersion=0, pendingAdvance=false;
   const rotation=new Rotation();
   const say=text=>{$('music-status').textContent=text;};
@@ -19,18 +19,28 @@ export function initMusic(bus, updateContext, emptyContext) {
   window.addEventListener('pagehide',()=>clearInterval(moodTimer),{once:true});
   function context(){
     $('demo-data').checked=false;
-    updateContext({...emptyContext(),source:'local',program:'Radio Rubben · lokalt musikkbibliotek',nowPlaying:current?label(current):null,next:queued?label(queued):null});
+    updateContext({...emptyContext(),source:'local',program:'Radio Rubben · lokalt musikkbibliotek',nowPlaying:current?label(current):null,next:queued?label(queued):null,nextTracks:upcoming.map(label)});
   }
-  function queue(track){generation++;queued=track;$('music-selection').value=track?.id||'';context();$('music-play').disabled=!track||!$('music-output-confirmed').checked;}
+  function queue(track){generation++;upcoming=track?[track,...upcoming.slice(queued?1:0).filter(t=>t.id!==track.id)].slice(0,3):upcoming.slice(1);queued=upcoming[0]||null;track=queued;$('music-selection').value=track?.id||'';context();$('music-play').disabled=!track||!$('music-output-confirmed').checked;}
+  $('manual-music-apply').onclick=()=>{
+    if(current){say('Lokal musikk spiller. Bruk spillerens kø eller stopp avspillingen før manuelt grunnlag.');return;}
+    const now=$('manual-now').value.trim(),nextTracks=[1,2,3].map(n=>$('manual-next-'+n).value.trim()).filter(Boolean);
+    disableAuto();$('demo-data').checked=false;
+    updateContext({...emptyContext(),source:'operator',program:'Radio Rubben',nowPlaying:now||null,next:nextTracks[0]||null,nextTracks});
+    $('remaining').textContent='ukjent · manuelt grunnlag';$('player-status').textContent='Ingen lokal avspilling · manuelt grunnlag';
+    say('Manuelt musikkgrunnlag oppdatert. Ingen lyd eller avspilling er startet.');
+  };
   $('music-load').onclick=async()=>{
     $('music-load').disabled=true;
     try{const result=await api({action:'catalog'});tracks=result.tracks.filter(t=>t.kind!=='break');breaks=result.tracks.filter(t=>t.kind==='break');token=result.token;showMood(result.schedule);
       $('music-break-status').textContent=`${result.breakStatus} · ${breaks.length} lydstikk. Stikk rullerer i rekkefølge.`;
       $('music-selection').replaceChildren(new Option('Velg neste låt',''),...tracks.map(t=>new Option(label(t)+(t.eligible?'':' · manuelt valg'),t.id)));
-      $('music-ai').disabled=!tracks.some(t=>t.eligible);queue(null);say(`${tracks.length} lydfiler funnet. AI velger blant ${tracks.filter(t=>t.eligible).length} med kjent artist. Ingen lydfiler lastes opp.`);
+      $('music-ai').disabled=!tracks.some(t=>t.eligible);upcoming=[];queue(null);$('music-queue-add').disabled=!tracks.length;say(`${tracks.length} lydfiler funnet. AI velger blant ${tracks.filter(t=>t.eligible).length} med kjent artist. Ingen lydfiler lastes opp.`);
     }catch(e){say(e.message);}finally{$('music-load').disabled=false;}
   };
-  $('music-selection').onchange=e=>{queue(tracks.find(t=>t.id===e.target.value)||null);say('Neste låt er valgt manuelt. Trykk Spill neste når du er klar.');};
+  $('music-selection').onchange=()=>say('Velg Legg valgt låt i kø. Musikken starter ikke automatisk.');
+  $('music-queue-add').onclick=()=>{const t=tracks.find(t=>t.id===$('music-selection').value);if(!t)return;if(upcoming.length>=3){say('Køen har tre låter. Spill neste eller tøm køen først.');return;}if(upcoming.some(x=>x.id===t.id)){say('Låten finnes allerede i køen.');return;}upcoming.push(t);queued=upcoming[0];generation++;context();$('music-play').disabled=!$('music-output-confirmed').checked;say('Låten er lagt i kø. Ingen avspilling er startet.');};
+  $('music-queue-clear').onclick=()=>{disableAuto();upcoming=[];queued=null;generation++;context();$('music-play').disabled=true;say('Planlagt kø er tømt. Låten som spiller, fortsetter.');};
   function fallback(){
     const eligible=tracks.filter(t=>t.eligible&&t.id!==loaded?.id);
     return eligible.find(t=>!recent.includes(t.id)) || [...eligible].sort((a,b)=>recent.indexOf(a.id)-recent.indexOf(b.id))[0] || tracks.find(t=>t.eligible) || null;
@@ -41,7 +51,7 @@ export function initMusic(bus, updateContext, emptyContext) {
     say('AI velger neste låt …');bus.emit('AI_STATUS',{source:'music',busy:true,message:'Velger neste låt …'});
     choosing=(async()=>{
       try{
-        const result=await api({action:'choose',recent,wish:$('music-wish').value});
+        const result=await api({action:'choose',recent:[...recent,...upcoming.map(t=>t.id)].slice(-20),wish:$('music-wish').value});
         bus.emit('AI_STATUS',{source:'music',busy:false,message:'Låtvalg mottatt · '+new Date().toLocaleTimeString('nb-NO')});
         if(version!==generation)return;showMood(result.schedule);
         const track=tracks.find(t=>t.id===result.id);if(!track)throw Error('Låtvalget finnes ikke.');

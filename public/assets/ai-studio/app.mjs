@@ -1,5 +1,6 @@
 import { initWeather } from './services/weather.mjs';
 import { AiStatus, watchStudioServer } from './services/status.mjs';
+import { initBreakApproval } from './services/break-approval.mjs';
 import { initMusic } from './services/music.mjs';
 import { HueFollower } from './services/hue.mjs';
 import { validFader, faderLive } from './services/fader.mjs';
@@ -42,6 +43,7 @@ function stopFaderLearning() {
 
 let context = emptyContext(), monitor = true, messages = [], learn = null, suggestion = null, renderPending = false;
 let confirmedPort = '', previousPort = '';
+let draftAiAssisted=false;
 let generating = false, revision = 0, suggestionOrigin = 'Lokal mal';
 let undoDraft = null, lastAction = 'new', styleFeedback = [];
 const feedbackKey = 'rubben.ai-studio.feedback.v1';
@@ -76,20 +78,24 @@ function renderMonitor() {
   }));
   $('monitor-status').textContent = `${monitor ? 'Monitor kjører' : 'Monitor pauset'} · ${messages.length} events (viser siste 100)`;
 }
+const breakApproval=initBreakApproval(()=>({text:(suggestion??$('draft').value).trim(),type:lastAction||'new',notes:$('producer-notes').value,context:{source:context.source,program:context.program,nowPlaying:context.nowPlaying,next:context.next,nextTracks:context.nextTracks||[]},aiAssisted:suggestion!==null?suggestionOrigin.startsWith('AI-generert'):draftAiAssisted}),(text,ai)=>{draftAiAssisted=ai;$('draft').value=text;resetSuggestion();estimate();$('draft-origin').textContent=ai?'AI-generert · manuelt godkjent':'Manuelt godkjent';});
 function estimate() { $('estimate').textContent = `Estimert: ${estimateSeconds($('draft').value)} sek`; }
-function resetSuggestion() { revision++; suggestion = null; $('suggestion-preview').hidden = true; $('use-suggestion').disabled = true; $('suggestion-status').textContent = $('auto-prepare').checked ? 'Venter på nytt låtbytte. Manuset ditt beholdes.' : 'Automatisk klargjøring er av. Manuset ditt beholdes.'; }
+function resetSuggestion() { revision++; suggestion = null; $('suggestion-preview').hidden = true; $('suggestion-label').hidden=true; $('use-suggestion').disabled = true; $('suggestion-status').textContent = $('auto-prepare').checked ? 'Venter på nytt låtbytte. Manuset ditt beholdes.' : 'Automatisk klargjøring er av. Manuset ditt beholdes.'; }
 function updateContext(next) {
+  breakApproval?.invalidate();
   const changed = context.nowPlaying !== next.nowPlaying;
   context = next; resetSuggestion();
   $('program-title').textContent = context.program ?? 'Velg programkontekst';
-  $('context-source').textContent = context.source === 'demo' ? 'TESTDATA · Ingen faktisk sendestatus' : context.source === 'local' ? 'Lokalt musikkbibliotek · sendestatus ukjent' : 'Ingen sendekilde tilkoblet';
+  $('context-source').textContent = context.source === 'demo' ? 'TESTDATA · Ingen faktisk sendestatus' : context.source === 'operator' ? 'Musikk oppgitt av operatør · sendestatus ukjent' : context.source === 'local' ? 'Lokalt musikkbibliotek · sendestatus ukjent' : 'Ingen sendekilde tilkoblet';
   $('now-playing').textContent = context.nowPlaying ?? 'Venter på musikkdata';
   $('next-track').textContent = context.next ?? 'Ikke tilgjengelig';
+  $('next-tracks').replaceChildren(...(context.nextTracks?.length?context.nextTracks.slice(0,3):context.next?[context.next]:['Ingen planlagt musikk']).map(text=>{const li=document.createElement('li');li.textContent=text;return li;}));
   if (changed && context.nowPlaying) bus.emit('SONG_START', {log:context.source === 'demo' ? 'Testdata · simulert låtbytte' : 'Kontekst oppdatert'});
 }
 function stageSuggestion(text, origin) {
+  breakApproval?.invalidate();
   suggestion = text; suggestionOrigin = origin;
-  $('suggestion-preview').textContent = text; $('suggestion-preview').hidden = false;
+  $('suggestion-preview').textContent = text; $('suggestion-preview').hidden = false; $('suggestion-label').hidden=false;
   $('use-suggestion').disabled = false;
   $('suggestion-status').textContent = `${origin} · ca. ${estimateSeconds(text)} sek. Les gjennom før du bruker forslaget.`;
   bus.emit('BREAK_PREPARED', {log:`${origin} · venter på godkjenning`});
@@ -223,14 +229,14 @@ bus.on('SONG_START', () => {
 });
 bus.on('*',scheduleRender);
 for (const button of document.querySelectorAll('[data-action]')) button.onclick = () => bus.emit('PRODUCER_ACTION',{action:button.dataset.action,log:ACTIONS[button.dataset.action]});
-$('draft').oninput = () => { revision++; undoDraft=null; $('undo-draft').disabled=true; $('draft-origin').textContent='Manuelt redigert'; estimate(); };
-$('producer-notes').oninput = () => { revision++; };
+$('draft').oninput = () => { resetSuggestion(); undoDraft=null; $('undo-draft').disabled=true; $('draft-origin').textContent='Manuelt redigert'; estimate(); };
+$('producer-notes').oninput = () => { resetSuggestion(); };
 $('local-template').onclick = () => { void action('new', true); };
 function applySuggestion(automatic = false) {
   if (suggestion === null) return;
-  undoDraft = {text:$('draft').value, origin:$('draft-origin').textContent};
+  undoDraft = {text:$('draft').value, origin:$('draft-origin').textContent,ai:draftAiAssisted};
   $('undo-draft').disabled = false;
-  $('draft').value = suggestion; const origin = suggestionOrigin;
+  $('draft').value = suggestion; const origin = suggestionOrigin;draftAiAssisted=origin.startsWith('AI-generert');
   resetSuggestion(); estimate();
   $('draft-origin').textContent = automatic ? 'AI-generert · automatisk kontrollert' : origin;
   if (automatic) {
@@ -242,7 +248,7 @@ function applySuggestion(automatic = false) {
 $('use-suggestion').onclick = () => applySuggestion();
 $('undo-draft').onclick = () => {
   if (!undoDraft) return;
-  $('draft').value = undoDraft.text; $('draft-origin').textContent = undoDraft.origin;
+  draftAiAssisted=undoDraft.ai;$('draft').value = undoDraft.text; $('draft-origin').textContent = undoDraft.origin;
   undoDraft = null; $('undo-draft').disabled = true; resetSuggestion(); estimate();
   say('Forrige manus er gjenopprettet.'); bus.emit('BREAK_UNDONE', {log:'Forrige manus gjenopprettet'});
 };
