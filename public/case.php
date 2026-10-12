@@ -43,7 +43,7 @@ if($_SERVER['REQUEST_METHOD']==='POST' && !empty($_POST)) {
             $profile=(string)($_POST['profile']??'');rr_audio_profile($profile);$audio=$config['rr_audio']??[];$step=substr($action,6);
             if(in_array($step,['generate_script','check'],true)) {
                 $script=$step==='check'?(string)($item['audioScripts'][$profile]['script']??''):null;
-                $r=rr_audio_prepare($item,$profile,$config,studio_memory_context(studio_board_read(),(string)($item['program']??'')),$script);
+                $r=isset($item['studioBreak'])&&$step==='check'?['script'=>$script,'check'=>rr_studio_break_check($item,(string)$script),'generation'=>[]]:rr_audio_prepare($item,$profile,$config,studio_memory_context(studio_board_read(),(string)($item['program']??'')),$script);
                 rr_audio_change($id,$rev,$step==='check'?'checked':'generated',['profile'=>$profile,'script'=>$r['script'],'check'=>$r['check'],'generation'=>$r['generation']],$user);
             } elseif(in_array($step,['save','approve_script'],true))rr_audio_change($id,$rev,$step,$_POST,$user);
             elseif($step==='tts')rr_audio_generate($id,$rev,$profile,(string)($_POST['voice']??''),$_POST,$user,$audio);

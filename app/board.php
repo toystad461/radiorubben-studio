@@ -22,10 +22,12 @@ function studio_board_read(?string $path = null): array
 /** Inputs shared by radio variants. Web prose alone is not an audio source. */
 function studio_board_audio_identity(array $item): array
 {
-    return [$item['title'] ?? '', $item['script'] ?? '', $item['program'] ?? '',
+    $identity=[$item['title'] ?? '', $item['script'] ?? '', $item['program'] ?? '',
         $item['sourceUrl'] ?? '', $item['sourceAt'] ?? '', $item['channel'] ?? 'both',
         ($item['status'] ?? '') === 'archived',
         $item['sourceCheck']['source']['sha256'] ?? '', $item['web']['check']['source']['sha256'] ?? '', $item['relevance'] ?? null];
+    if(isset($item['studioBreak']))$identity[]=$item['studioBreak'];
+    return $identity;
 }
 
 /** Relevant source changes invalidate composite approvals permanently, including edit/restore. */

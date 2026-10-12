@@ -1,4 +1,4 @@
-export const emptyContext = () => ({live:null, program:null,presenter:null,nowPlaying:null,next:null,remainingSeconds:null,source:'unavailable'});
+export const emptyContext = () => ({live:null, program:null,presenter:null,nowPlaying:null,next:null,nextTracks:[],remainingSeconds:null,source:'unavailable'});
 export const demoContext = () => ({live:null,program:'God morgen Vestland',presenter:'Thomas',nowPlaying:'Queen – Radio Ga Ga',next:'Bryan Adams – Summer of ’69',remainingSeconds:null,source:'demo'});
 export function publicStudioStatus(context) {
   // Deliberate whitelist. MIDI mute is never evidence of microphone on air.

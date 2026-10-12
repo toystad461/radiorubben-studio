@@ -14,11 +14,28 @@ function rr_audio_projection(array $item,array $variant):array {
     $item['script']=$variant['script']??'';$item['sourceCheck']=$variant['check']??[];return $item;
 }
 function rr_audio_script_hash(array $item,array $v):string {
-    return rr_audio_hash([studio_news_fingerprint($item,(string)($v['script']??'')),$v['profile']??'', $v['check']['source']['sha256']??'',RR_AUDIO_VERSION,RR_STYLEBOOK_VERSION,
+    $binding=[studio_news_fingerprint($item,(string)($v['script']??'')),$v['profile']??'', $v['check']['source']['sha256']??'',RR_AUDIO_VERSION,RR_STYLEBOOK_VERSION,
         // Editing the primary radio manuscript invalidates dependent audio too.
-        studio_board_audio_identity($item),$item['bulletin']??null,rr_audio_disclosure()]);
+        studio_board_audio_identity($item),$item['bulletin']??null,rr_audio_disclosure()];
+    if(isset($item['studioBreak']))$binding[]=$item['studioBreak'];
+    return rr_audio_hash($binding);
+}
+/** Operator-reviewed program links, separate from externally sourced news. */
+function rr_studio_break_check(array $item,string $script):array {
+    if(($item['studioBreak']['kind']??'')!=='operator-break-1'||!is_array($item['studioBreak']['source']??null))throw new InvalidArgumentException('Dette er ikke et Studio-stikk.');
+    return ['status'=>'operator_checked','policy'=>'operator-break-1','checkedAt'=>gmdate('c'),
+        'fingerprint'=>studio_news_fingerprint($item,$script),'sourceHash'=>rr_audio_hash($item['studioBreak']['source'])];
+}
+function rr_studio_break_checked(array $item,array $variant):bool {
+    $c=$variant['check']??[];
+    return ($variant['profile']??'')==='host'&&count(preg_split('/\s+/u',trim((string)($variant['script']??''))))<=100&&($item['studioBreak']['kind']??'')==='operator-break-1'&&is_array($item['studioBreak']['source']??null)
+        &&($c['status']??'')==='operator_checked'&&($c['policy']??'')==='operator-break-1'
+        &&($c['sourceHash']??'')===rr_audio_hash($item['studioBreak']['source'])
+        &&($c['fingerprint']??'')===studio_news_fingerprint($item,(string)($variant['script']??''))
+        &&trim((string)($variant['script']??''))!==''&&($at=strtotime($c['checkedAt']??''))!==false&&$at<=time()+60&&$at>=time()-3600;
 }
 function rr_audio_checked(array $item,array $v):bool {
+    if(isset($item['studioBreak']))return rr_studio_break_checked($item,$v);
     if(isset($item['bulletin']))return rr_bulletin_checked($item,$v);
     $p=rr_audio_projection($item,$v);
     return trim((string)($v['script']??''))!==''&&studio_news_check_current($p)&&studio_news_original_read($p,$v['check']??[])&&studio_news_radio_credit($p)
