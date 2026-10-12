@@ -1,5 +1,36 @@
 # Studio – felles status og arbeidsliste
 
+## Unødvendig omskriving av sendelisten – lokal feilretting, 12.10.2026
+
+Bestilt feilsøking av driftsavviket etter PR #73. Brukeren valgte lokal
+feilsøking mens SSH-opplåsingen er utløpt; ingen fersk produksjonslesing.
+Bekreftet kodefeil: studio_board_change omskriver filen og updatedAt selv
+når callbacken ikke endrer data, blant annet ved duplikatinnlegg. Syntetisk
+regresjonstest feiler på main og består med rettelsen. Sammenligning skjer
+etter eksisterende godkjenningsinvalidering; faktiske sikkerhetsendringer
+og metadataendringer lagres fortsatt. Callbackresultat/lock/CAS beholdes.
+Den observerte hashendringen 11.10 kan ikke entydig tilskrives denne feilen
+uten samtidig belegg fra produksjonen. Automatikkinnstillinger er uendret.
+Gren fix/board-noop-write fra main 84f9960. PR og CI kommer ved levering.
+Ferdigkriterier: tom/duplisert endring bevarer fil/hash/tidspunkt; reelle
+endringer lagres og godkjenning trekkes tilbake ved endret manus/kilde.
+Status: lokal rettelse og syntetiske tester; ikke utrullet.
+
+## PR #73 – publisert med dokumentert driftsobservasjon, 11.10.2026
+
+Thomas ga konkret utrullingsautorisasjon. Merge 84f99601b4047de69031a108f0bbd769d77759fd.
+Deploy 38156638810-1 og full push-CI 38156638842 success. Åtte planlagte
+filer, 19 kodehasher, privat backup og staging verifisert. Composer-biblioteker
+er uendret. Installert motor består skrivebeskyttet syntetisk kontroll av
+videreført begrunnelse/kanal og kilde-/kanalsperrer. Innlogget side og mobil
+390 px kontrollert; eksisterende vurdering bevart. Ingen redaksjonelle writes.
+Fire private filhash-er er uendret. sending-board.json hadde samtidig
+hashendring; ingen nye sakshendelser i lest metadata, automatisk klargjøring
+observert aktiv. Årsaken er ikke endelig fastslått. Filen er utenfor deploy og
+er ikke tilbakeført. Se PR #73 og lokal NEWS-HANDOFF-sluttkontroll.json.
+Neste: prøv en ny sak gjennom inngangen; eldre saker migreres ikke.
+Dette er lokal leveringsstatus; PR #73 inneholder deploykvitteringen.
+
 ## Nyhetsinngang → Nyhetsdesk – rettelse, 11.10.2026
 
 Bestilt: viderefør menneskelig vurdering, begrunnelse og kanal uten dobbeltarbeid.
@@ -10,9 +41,13 @@ og originalkontrollen som redaksjonelt innspill. Originalkontroll som støtter
 valget viderefører kanalen; avvik, utilstrekkelig kilde og endret original
 krever avklaring. Ingen publisering, lydproduksjon eller sluttgodkjenning.
 Eksisterende saker/manuelle rettelser gjenbrukes uendret.
-Status: lokal rettelse; målrettet PHP 8.2/8.4 og fersk CI dokumenteres i PR.
-Full lokal pakke mangler Composer-biblioteker; full kontroll kjøres i CI.
-Ikke merget eller utrullet. Neste: grønn PR og konkret utrullingsgodkjenning.
+Status: PR #73 klar for gjennomgang; head 11166c0450e41c212f280dc7b4c2755110168c03.
+Full PHP 8.2/8.4, mobil/desktop og pakking består i CI 38155664256;
+release-verifisering 38155664315 success uten deploy. Lokal kontroll består.
+19 ferske produksjonshasher avstemt mot deploy 38153651089-1. Plan: åtte
+produksjonsfiler, hvorav seks kodefiler og to genererte metadatafiler.
+Ikke merget eller utrullet. Neste: konkret merge-/utrullingsgodkjenning av #73.
+Dette avsnittets CI-kvittering er et lokalt leveringsnotat; PR #73 har samme belegg.
 
 ## RSS-oppfølging v1 – verifisert publisert, 11.10.2026
 
