@@ -11,7 +11,7 @@ $localMidi = getenv('STUDIO_LOCAL_MIDI') === '1' && in_array($_SERVER['REMOTE_AD
 $midiEnabled = ($user !== null && studio_can($user, 'settings')) || (!$user && $localMidi);
 require dirname(__DIR__) . '/app/views/head.php';
 ?>
-<link rel="stylesheet" href="/assets/ai-studio/studio.css?v=20261012-console1">
+<link rel="stylesheet" href="/assets/ai-studio/studio.css?v=20261012-player1">
 <div class="shell studio-shell">
 <?php $activePage = 'ai-studio'; require dirname(__DIR__) . '/app/views/sidebar.php'; ?>
 <div class="workspace">
@@ -44,4 +44,4 @@ require dirname(__DIR__) . '/app/views/head.php';
 </section>
 </div>
 <?php if ($readOnly): ?></fieldset><?php endif; ?><footer><span>Radio Rubben <b>AI Studio</b></span><span>Radiosendingen fungerer uavhengig av AI Studio.</span></footer>
-</main></div></div><?php if (!$readOnly): ?><script type="module" src="/assets/ai-studio/app.mjs?v=board-20261012"></script><?php endif; ?></body></html>
+</main></div></div><?php if (!$readOnly): ?><script type="module" src="/assets/ai-studio/app.mjs?v=player-20261012"></script><?php endif; ?></body></html>

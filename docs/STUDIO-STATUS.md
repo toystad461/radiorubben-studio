@@ -1409,3 +1409,10 @@ Autorisert utrulling 12.10.2026: PR76 merget til ed2e4d80f03d1688f881f17ae3abda5
 
 ## Studio – konsolloppsett, 12.10.2026
 Fra utrullet main ed2e4d80. Radio.co, RadioKing og Airtime er undersøkt som referanser; egen Radio Rubben-utforming med musikk venstre, manus midt og status høyre på stor skjerm. Kompakt topp, ryddig nummerert kø og utvidbare pads/hendelser. Kun presentasjon; eksisterende API/godkjenning/avspilling beholdes. Lokal kontroll ved 320/390/768/1280/1440 px besto kø, manusgodkjenning, redigeringsinvalidering og bredde. PHP 8.2/8.4 syntaks besto. Se docs/STUDIO-CONSOLE-DESIGN.md. Ingen utrulling av denne endringen. Neste steg: PR og full CI, deretter konkret utrullingsbeslutning.
+
+Leveringskontroll: PR77 klar for gjennomgang på f6d8bc1b46da7f897595df28c6cfad03240f4bd3. Begge PR-kjøringer 38253101755/38253101720 besto. Produksjonsavstemming: 37 filbaner, to runtime-filer og firefilers selektiv utrullingsplan. Ingen deploy. Neste steg: konkret godkjenning av merge og utrulling med privat kodebackup og etterkontroll.
+
+Autorisert utrulling PR77, 12.10.2026: merge 918b6b5e8e67a93923c01fd94801f2a3ca4213fe, deploy 38254658304-1. Begge main-kjøringer besto. Privat backup, fire endrede filer og 37 produksjonsbaner verifisert. Beskyttede filer bevart; sendelisteinnhold semantisk uendret. Innlogget produksjonskontroll: nytt konsolloppsett, status høyre ved 1440 px og ingen horisontal overflyt ved 1440/390. Ingen ekte manusgodkjenning, lydgenerering, avspilling eller innholdspublisering. Neste anbefaling: test eget stikk og gi tilbakemelding på arbeidsflyten.
+
+## Studio – spillerplass, 12.10.2026
+Fra utrullet PR77 (918b6b5e). Lytt i studio under mikrofonstatus, utenfor lukket mobilmeny. Radiosending er ikke tilkoblet; lokal musikk bruker eksisterende lyd-element med spill/pause/volum. Ingen ny lydkilde eller ubedt avspilling. Fem skjermbredder, kildevalg, sperret avspilling uten lyd, volum og eksisterende kø/godkjenning består lokalt. PHP 8.2/8.4 syntaks kontrollert. Se docs/STUDIO-PLAYER.md. Neste steg: PR/CI og konkret utrullingsbeslutning. Ingen merge/deploy i denne utviklingsoppgaven.
