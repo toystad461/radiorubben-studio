@@ -1,0 +1,19 @@
+<?php
+declare(strict_types=1);
+require dirname(__DIR__,2).'/app/music-library-producer.php';
+function producer_assert(bool $v):void{if(!$v)throw new RuntimeException('Producer assertion failed');}
+function producer_denied(callable $f):void{try{$f();}catch(Throwable){return;}throw new RuntimeException('Expected producer denial');}
+$dir=sys_get_temp_dir().'/rr-producer-'.bin2hex(random_bytes(6));mkdir($dir,0700);$dir=realpath($dir);$root=$dir.'/media/music';$user=['role'=>'producer','id'=>'test'];$config=['openai_model'=>'synthetic'];$calls=0;
+$request=function($c,$p)use(&$calls){$calls++;producer_assert($p['store']===false);producer_assert(!str_contains($p['input'],'originals/'));return json_encode(['energy'=>'moderat','periods'=>['Ettermiddag'],'reason'=>'Passer som et forsiktig forslag.','confidence'=>'medium']);};
+try{
+ $bytes=str_repeat(hex2bin('fffb9000').str_repeat("\0",413),100);$file=$dir.'/test.mp3';file_put_contents($file,$bytes);
+ $upload=music_library_upload(['name'=>'Test.mp3','tmp_name'=>$file,'size'=>strlen($bytes),'error'=>0],$user,'c','c',$root,fn()=>true,fn($a,$b)=>copy($a,$b));$t=$upload['track'];$id=$t['id'];$sha=$t['sha256'];
+ $t=music_library_prepare($id,$sha,0,$user,'c','c',$root);$index=music_library_index($root);$index['tracks'][0]['metadata']['fields']['title']='Testlåt';$index['tracks'][0]['metadata']['fields']['artist']='Testartist';$index['tracks'][0]['tags']=['Manuelt program'];$index['tracks'][0]['manualOverrides']=['title'=>'Rettet'];file_put_contents($root.'/library.json',json_encode($index));$before=file_get_contents($root.'/library.json');
+ producer_denied(fn()=>music_library_producer_save($config,$id,$sha,1,['role'=>'observer'],'c','c',$root,$request));producer_denied(fn()=>music_library_producer_save($config,$id,$sha,1,$user,'bad','c',$root,$request));producer_denied(fn()=>music_library_producer_save($config,$id,$sha,0,$user,'c','c',$root,$request));producer_assert($calls===0&&file_get_contents($root.'/library.json')===$before);
+ $result=music_library_producer_save($config,$id,$sha,1,$user,'c','c',$root,$request);producer_assert($calls===1&&$result['revision']===2&&$result['tags']===['Manuelt program']&&$result['manualOverrides']['title']==='Rettet');producer_assert(music_library_producer_input($result)['effectiveFields']['title']==='Rettet');producer_assert($result['producerAssessment']['rotationApproved']===false&&music_library_producer_current($result)!==null);producer_assert(hash_file('sha256',$root.'/originals/'.$id.'.mp3')===$sha);
+ $changed=$result;$changed['tags'][]='Endret';producer_assert(music_library_producer_current($changed)===null);
+ $before=file_get_contents($root.'/library.json');producer_denied(fn()=>music_library_producer_save($config,$id,$sha,2,$user,'c','c',$root,fn()=>'{"energy":"energisk","periods":["Oppdiktet program"],"reason":"Test","confidence":"high"}'));producer_assert(file_get_contents($root.'/library.json')===$before);
+ producer_denied(fn()=>music_library_producer_save($config,$id,$sha,2,$user,'c','c',$root,fn()=>throw new RuntimeException('timeout')));producer_assert(file_get_contents($root.'/library.json')===$before);
+ $concurrent=function($c,$p)use($root,$request){$i=music_library_index($root);$i['tracks'][0]['revision']++;file_put_contents($root.'/library.json',json_encode($i));return $request($c,$p);};producer_denied(fn()=>music_library_producer_save($config,$id,$sha,2,$user,'c','c',$root,$concurrent));producer_assert(music_library_index($root)['tracks'][0]['producerAssessment']===$result['producerAssessment']);
+ echo "PASS music producer: roles/CSRF, source/revision, timeout, invalid program, concurrent edit, manual preservation, stale proposal and no rotation approval\n";
+}finally{foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST)as$f)$f->isDir()?rmdir($f->getPathname()):unlink($f->getPathname());rmdir($dir);}

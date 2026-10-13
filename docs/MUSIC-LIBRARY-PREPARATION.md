@@ -1,5 +1,54 @@
 # Musikkbibliotek – filopplysninger, visning og filslipp, 13.10.2026
 
+## Oppfølging: liste og egen låtfane
+
+Fra utrullet PR80 (440649dd). Biblioteklisten bruker hele bredden med egne
+kolonner for låt, artist, album, tid, merkelapper og status. Låtlenken åpner
+en egen nettleserfane (nettleseren avgjør fane/vindu), med tilbakekobling til
+biblioteket. Klargjøring beholder detaljvisningen etter innsending.
+Lagrede tekstmerkelapper vises og er søkbare; sjanger fra originalfilen
+vises separat merket «fra filen». Ingen ny merkelapp lagres eller genereres.
+Radio.co-videoen [Managing Media](https://www.youtube.com/watch?v=tZQArfKUwdc)
+har kapitler om opplasting og organisering med tags og brukes som referanse.
+Lokalt testet med syntetisk MP3: faktisk ny fane, rollebegrenset detalj,
+klargjøring, escapede/søkbare merkelapper, upload/dublett/privat Range-lyd,
+CSRF og liste/detalj ved 320, 390, 768 og 1280 px uten overflyt eller JS-feil.
+Ingen ny kode er utrullet av denne oppfølgingen.
+
+### Automatisk første trinn ved opplasting
+
+Ny original lagres først. Deretter klargjøres filopplysninger og kildebundne
+sjanger-/tiårtags automatisk i samme PHP-forespørsel. Ingen ekstra knapp er
+nødvendig for en ny opplasting. Feilet analyse beholder den lagrede originalen
+og gir tydelig beskjed om nytt forsøk. Dubletter analyseres ikke på nytt.
+Eksisterende låter kan fortsatt klargjøres med knappen i detaljfanen.
+Manuelle `tags` og `manualOverrides` beholdes; genererte tags ligger separat
+i `autoTags` med originalhash, regelversjon og tidspunkt. År/tags er filens
+opplysninger, ikke bekreftet utgivelsesdato. Ukjent artist/tittel krever kontroll.
+Dette er første del av automatisk tagging, ikke ferdig nettoppslag eller AI-
+klassifisering. Energi, sendetid og programvalg gjenstår. Eksisterende
+`music_choose`/`music_mood` er kartlagt som gjenbruk for vurderingsdelen.
+MusicBrainz tilbyr identifisering/genredata, men API-bruk og kommersielle
+vilkår må avklares før aktivering; ingen originalmusikk sendes eksternt her.
+
+### Musikkprodusentens vurdering
+
+Eksisterende `producer_request` og `music_mood` gjenbrukes. Eget klikk i
+låtdetaljen ber den konfigurerte AI-tjenesten om energi og inntil fire av de
+eksisterende musikkflatene. Kun tekstmetadata sendes; ingen musikkfil.
+Vurderingen er tydelig AI-forslag, ikke nettfakta, lydanalyse eller godkjenning.
+Manuelle feltrettelser veier tyngst i grunnlaget. Forslag bindes til filhash,
+grunnlagshash, modell og promptversjon, med revisjonskontroll ved lagring.
+Nettkallet skjer uten biblioteklåsen; kilde/revisjon/grunnlag kontrolleres igjen
+før atomisk lagring. Timeout, ugyldig forslag og samtidige rettelser bevarer
+tidligere forslag. Endret grunnlag skjuler et foreldet forslag.
+
+Denne vurderingsdelen er en testbar enkeltlåt-flyt, ikke ferdig automatisk
+bakgrunnsjobb. Nettsøk, arbeidskø med retry/bruksgrenser, cue-redigering,
+avspillingskontroll og endelig rotasjonsgodkjenning må bygges før automatisk
+klargjøring av hele biblioteket. Status er fortsatt «Trenger din vurdering».
+Ingen nye programmer eller faktisk sending er aktivert.
+
 Behov: Bibliotek som arbeidsflate med Radio.co som visuell veileder, faktisk
 varighet/filopplysninger og privat forhåndslytting. Filslipp ble uttrykkelig
 lagt til under arbeidet. Base: utrullet PR79, main 69cb55572d17c7303c1d97e29ca21c02b0f84cfc.

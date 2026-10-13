@@ -1,0 +1,12 @@
+<?php
+declare(strict_types=1);
+require dirname(__DIR__,2).'/app/music-library-delete.php';
+function delete_ok(bool $v):void{if(!$v)throw new RuntimeException('Deletion assertion failed');}
+function delete_no(callable $f):void{try{$f();}catch(Throwable){return;}throw new RuntimeException('Expected deletion denial');}
+$dir=sys_get_temp_dir().'/rr-delete-'.bin2hex(random_bytes(6));mkdir($dir,0700);$dir=realpath($dir);$root=$dir.'/media/music';$user=['role'=>'producer'];
+try{$bytes=str_repeat(hex2bin('fffb9000').str_repeat("\0",413),100);$file=$dir.'/test.mp3';file_put_contents($file,$bytes);$r=music_library_upload(['name'=>'Test.mp3','tmp_name'=>$file,'size'=>strlen($bytes),'error'=>0],$user,'c','c',$root,fn()=>true,fn($a,$b)=>copy($a,$b));$t=$r['track'];$id=$t['id'];$sha=$t['sha256'];$original=$root.'/originals/'.$id.'.mp3';$before=file_get_contents($root.'/library.json');
+ delete_no(fn()=>music_library_delete($id,$sha,0,['role'=>'observer'],'c','c',true,$root));delete_no(fn()=>music_library_delete($id,$sha,0,$user,'bad','c',true,$root));delete_no(fn()=>music_library_delete($id,$sha,0,$user,'c','c',false,$root));delete_no(fn()=>music_library_delete($id,$sha,1,$user,'c','c',true,$root));delete_no(fn()=>music_library_delete('../outside',$sha,0,$user,'c','c',true,$root));delete_ok(file_get_contents($root.'/library.json')===$before&&hash_file('sha256',$original)===$sha);
+ $result=music_library_delete($id,$sha,0,$user,'c','c',true,$root);delete_ok($result['fileDeleted']&&!file_exists($original)&&music_library_read($root)===[]);delete_ok(!file_exists($root.'/.pending-delete-'.$id.'.mp3'));delete_no(fn()=>music_library_delete($id,$sha,0,$user,'c','c',true,$root));
+ $r=music_library_upload(['name'=>'Again.mp3','tmp_name'=>$file,'size'=>strlen($bytes),'error'=>0],$user,'c','c',$root,fn()=>true,fn($a,$b)=>copy($a,$b));$t=$r['track'];$result=music_library_delete($t['id'],$t['sha256'],0,$user,'c','c',true,$root,fn()=>false);delete_ok(!$result['fileDeleted']&&$result['libraryRemoved']&&is_file($root.'/.pending-delete-'.$t['id'].'.mp3'));
+ echo "PASS deletion: role, CSRF, explicit confirmation, source/revision/path safety, index and original removed, purge failure reported honestly\n";
+}finally{foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST)as$f)$f->isDir()?rmdir($f->getPathname()):unlink($f->getPathname());rmdir($dir);}
