@@ -1,0 +1,49 @@
+name: Studio music preparation scheduler
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: radiorubben-studio-music-preparation
+  cancel-in-progress: false
+jobs:
+  prepare:
+    # Merge alone never activates this job. Operational activation is separate.
+    if: github.ref == 'refs/heads/main' && vars.STUDIO_MUSIC_SCHEDULER_ENABLED == 'true' && vars.STUDIO_MUSIC_SCHEDULER_COMMIT != ''
+    runs-on: ubuntu-24.04
+    environment: studio-production
+    timeout-minutes: 5
+    steps:
+      - name: Check immutable version and existing Studio connection settings
+        env:
+          APPROVED_COMMIT: ${{ vars.STUDIO_MUSIC_SCHEDULER_COMMIT }}
+          SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
+          SSH_USER: ${{ vars.STUDIO_SSH_USER }}
+          DEPLOY_KEY: ${{ secrets.STUDIO_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STUDIO_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          set -Eeuo pipefail
+          [[ "$APPROVED_COMMIT" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$SSH_HOST" == ssh.cptk37ymg.service.one ]]
+          [[ "$SSH_USER" == cptk37ymg_w1417156 ]]
+          test -n "$DEPLOY_KEY"
+          test -n "$KNOWN_HOSTS"
+          umask 077
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Run only the deployed, verified music preparation worker
+        env:
+          APPROVED_COMMIT: ${{ vars.STUDIO_MUSIC_SCHEDULER_COMMIT }}
+        run: |
+          set -Eeuo pipefail
+          [[ "$APPROVED_COMMIT" =~ ^[a-f0-9]{40}$ ]]
+          ssh -T -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 \
+            -i ~/.ssh/id_ed25519 -o UserKnownHostsFile=~/.ssh/known_hosts \
+            cptk37ymg_w1417156@ssh.cptk37ymg.service.one \
+            "php /customers/9/3/1/cptk37ymg/webroots/r1417157/studio-private/app/music-library-scheduler.php $APPROVED_COMMIT"
+      - name: Remove temporary runner key
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519

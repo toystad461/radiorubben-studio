@@ -92,6 +92,22 @@ ikke påstå automatisk crash-recovery. Hostingbackuper endres ikke.
 
 ## Kontroll
 
+Scheduler klargjort 13.10 i `.github/workflows/music-library-scheduler.yml`.
+Den bruker eksisterende Studio production-miljø og SSH-innstillinger. Jobben
+kjører bare fra main når `STUDIO_MUSIC_SCHEDULER_ENABLED` er nøyaktig true og
+`STUDIO_MUSIC_SCHEDULER_COMMIT` er satt til godkjent 40-tegns commit. Den kopierer
+ingen kode til serveren. Privat `music-library-scheduler.php` holder delt
+deploylås, avstemmer release.json/selective-state og ti jobb-/avhengighetsfiler
+før konfigurasjon leses og worker kjøres. Begge de separate aktiveringsnivåene
+(GitHub og privat music_processing-konfigurasjon) må være på.
+
+Planlagt intervall er ti minutter, maksimalt én låt per kjøring. GitHub kan
+forsinke eller hoppe over kjøringer; dette er ingen sanntidsgaranti.
+En senere kodeutrulling krever ny avstemming av fastlåst commit for å fortsette.
+Det er ikke opprettet GitHub-variabler, nye nøkler, konfigurert hosting eller
+startet jobb i produksjon. Isolert hosting-test avventer autorisert utrulling.
+PHP8.2/8.4 tester riktig versjon, feil ref/state/release og endret worker.
+
 PHP8.2/8.4 med syntetiske transport-/modelldata: tvetydige treff, feil varighet,
 annen utgave, ingen dublettjobb, manuell invalidering, tre forsøk, rolle/CSRF,
 timeout, samtidige rettelser, kildehash og bevaring. Sletting prøvd med bekreftet
