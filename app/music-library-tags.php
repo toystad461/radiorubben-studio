@@ -13,5 +13,8 @@ function music_library_tag_labels(array $track):array {
     foreach($manual as$label)if(is_string($label)&&trim($label)!==''&&mb_strlen($label)<=80)$labels[]=trim($label);
     $auto=$track['autoTags']??null;
     if(is_array($auto)&&($auto['source']??null)==='file'&&($auto['sourceSha256']??null)===($track['sha256']??null)&&is_array($auto['tags']??null))foreach($auto['tags']as$tag)if(is_array($tag)&&is_string($tag['label']??null)&&mb_strlen($tag['label'])<=80)$labels[]=$tag['label'];
-    return array_slice(array_values(array_unique($labels)),0,28);
+    $online=$track['onlineIdentification']??null;$fields=$track['metadata']['fields']??[];
+    foreach(['artist','title','album','genre','year']as$key){$v=$track['manualOverrides'][$key]??null;if(is_string($v)&&trim($v)!==''&&mb_strlen($v)<=240&&preg_match('//u',$v))$fields[$key]=$v;}
+    if(is_array($online)&&($online['status']??null)==='matched'&&($online['sourceSha256']??null)===($track['sha256']??null)&&($online['queryInputSha256']??null)===hash('sha256',json_encode($fields,JSON_THROW_ON_ERROR))){$check=$online;unset($check['evidenceSha256']);if(($online['evidenceSha256']??null)===hash('sha256',json_encode($check,JSON_THROW_ON_ERROR)))foreach(($online['genres']??[])as$label)if(is_string($label)&&mb_strlen($label)<=80)$labels[]=$label;}
+    return array_slice(array_values(array_unique($labels)),0,36);
 }
