@@ -11,9 +11,10 @@ function music_library_producer_result(string $raw):array {
     $v['periods']=array_values(array_unique($v['periods']));return $v;
 }
 function music_library_producer_input(array $track):array {
-    $m=music_library_metadata($track);if(!$m||empty($m['fields']['artist'])||empty($m['fields']['title']))throw new InvalidArgumentException('Artist og tittel må klargjøres før produsentens vurdering.');
+    $m=music_library_metadata($track);if(!$m)throw new InvalidArgumentException('Filopplysningene må klargjøres før produsentens vurdering.');
     $profiles=[];foreach([0,8,12,16,20,23]as$hour)$profiles[]=music_mood(new DateTimeImmutable(sprintf('2026-10-12 %02d:00:00',$hour),new DateTimeZone('Europe/Oslo')));
     $fields=$m['fields'];foreach(['artist','title','album','genre','year']as$key){$override=$track['manualOverrides'][$key]??null;if(is_string($override)&&trim($override)!==''&&mb_strlen($override)<=240&&preg_match('//u',$override))$fields[$key]=$override;}
+    if(empty($fields['artist'])||empty($fields['title']))throw new InvalidArgumentException('Artist og tittel må klargjøres før produsentens vurdering.');
     $online=$track['onlineIdentification']??null;$evidence=null;
     if(is_array($online)&&($online['status']??null)==='matched'&&($online['sourceSha256']??null)===$track['sha256']&&($online['queryInputSha256']??null)===hash('sha256',json_encode($fields,JSON_THROW_ON_ERROR))){$check=$online;unset($check['evidenceSha256']);if(($online['evidenceSha256']??null)===hash('sha256',json_encode($check,JSON_THROW_ON_ERROR)))$evidence=['candidate'=>$online['candidate'],'genres'=>$online['genres'],'url'=>$online['url'],'retrievedAt'=>$online['retrievedAt']];}
     return ['effectiveFields'=>$fields,'fileFields'=>$m['fields'],'onlineEvidence'=>$evidence,'durationSeconds'=>$m['durationSeconds'],'tags'=>music_library_tag_labels($track),'profiles'=>$profiles,'limitations'=>'Ingen lydanalyse. Bare vedlagt onlineEvidence gir verifisert nettoppslag. Filopplysninger er ikke bekreftede eksterne fakta. Manuelle rettelser veier tyngst.'];
