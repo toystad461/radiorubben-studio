@@ -45,8 +45,10 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring
+          extensions: curl, openssl, mbstring, zip
+          tools: composer:v2
           coverage: none
+      - run: composer install --no-dev --prefer-dist --no-interaction
       - run: npm install --no-save --package-lock=false playwright@1.62.1
       - run: npx playwright install --with-deps chromium
       - run: node tests/recovered/test-newsroom-mobile.cjs

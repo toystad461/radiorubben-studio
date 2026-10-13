@@ -9,6 +9,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "ext-session": "*",
+    "james-heinrich/getid3": "^1.9",
     "jumbojett/openid-connect-php": "^1.0.2"
   },
   "config": {
