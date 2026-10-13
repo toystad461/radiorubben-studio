@@ -1,6 +1,6 @@
 const search=document.getElementById('library-search'),filter=document.getElementById('library-filter'),rows=[...document.querySelectorAll('.library-tracks li')];
 function filterLibrary(){const q=search.value.trim().toLocaleLowerCase('nb');let n=0;for(const row of rows){const match=row.dataset.librarySearch.toLocaleLowerCase('nb').includes(q)&&(filter.value==='all'||row.dataset.libraryState===filter.value);row.hidden=!match;if(match)n++;}document.getElementById('library-search-status').textContent=`${n} av ${rows.length} låter vises.`;}
-search.addEventListener('input',filterLibrary);filter.addEventListener('change',filterLibrary);filterLibrary();
+if(search&&filter){search.addEventListener('input',filterLibrary);filter.addEventListener('change',filterLibrary);filterLibrary();}
 const drawer=document.getElementById('upload-drawer'),input=document.getElementById('music-files'),zone=document.getElementById('music-drop-zone'),status=document.getElementById('music-file-status');
 document.querySelector('.library-upload-link')?.addEventListener('click',()=>{drawer.open=true;});
 function validFiles(files){if(!files.length||files.length>10)return 'Velg én til ti MP3-filer.';let total=0;for(const f of files){if(!/\.mp3$/i.test(f.name))return 'Bare MP3-filer kan velges.';if(!f.size||f.size>20*1024*1024)return 'Hver fil må være mellom 1 byte og 20 MiB.';total+=f.size;}return total>64*1024*1024?'Velg færre filer: maksimalt 64 MiB samlet.':null;}

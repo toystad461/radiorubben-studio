@@ -1,5 +1,20 @@
 # Musikkbibliotek – filopplysninger, visning og filslipp, 13.10.2026
 
+## Oppfølging: liste og egen låtfane
+
+Fra utrullet PR80 (440649dd). Biblioteklisten bruker hele bredden med egne
+kolonner for låt, artist, album, tid, merkelapper og status. Låtlenken åpner
+en egen nettleserfane (nettleseren avgjør fane/vindu), med tilbakekobling til
+biblioteket. Klargjøring beholder detaljvisningen etter innsending.
+Lagrede tekstmerkelapper vises og er søkbare; sjanger fra originalfilen
+vises separat merket «fra filen». Ingen ny merkelapp lagres eller genereres.
+Radio.co-videoen [Managing Media](https://www.youtube.com/watch?v=tZQArfKUwdc)
+har kapitler om opplasting og organisering med tags og brukes som referanse.
+Lokalt testet med syntetisk MP3: faktisk ny fane, rollebegrenset detalj,
+klargjøring, escapede/søkbare merkelapper, upload/dublett/privat Range-lyd,
+CSRF og liste/detalj ved 320, 390, 768 og 1280 px uten overflyt eller JS-feil.
+Ingen ny kode er utrullet av denne oppfølgingen.
+
 Behov: Bibliotek som arbeidsflate med Radio.co som visuell veileder, faktisk
 varighet/filopplysninger og privat forhåndslytting. Filslipp ble uttrykkelig
 lagt til under arbeidet. Base: utrullet PR79, main 69cb55572d17c7303c1d97e29ca21c02b0f84cfc.
