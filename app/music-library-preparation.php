@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/music-library.php';
+require_once __DIR__.'/music-library-tags.php';
 function music_library_verified_handle(array $track,string $root){
     music_library_directory($root,false);$p=$root.'/originals/'.$track['id'].'.mp3';
     if(is_link($p)||!is_file($p))throw new RuntimeException('Originalfilen må kontrolleres.');
@@ -23,7 +24,7 @@ function music_library_prepare(string $id,string $version,int $revision,?array $
     $root??=music_library_root();if(!music_library_directory($root,false)||is_link($root.'/library.lock'))throw new RuntimeException('Biblioteket kan ikke leses.');
     $lock=fopen($root.'/library.lock','rb');if(!$lock||!flock($lock,LOCK_EX))throw new RuntimeException('Biblioteket er opptatt.');$staging=null;
     try{$index=music_library_index($root);$at=null;foreach($index['tracks']as$i=>$t)if($t['id']===$id){$at=$i;break;}if($at===null)throw new InvalidArgumentException('Låten finnes ikke.');$t=$index['tracks'][$at];if(!hash_equals($t['sha256'],$version)||($t['revision']??0)!==$revision)throw new InvalidArgumentException('Låten er endret. Last siden på nytt før klargjøring.');
-      $metadata=music_library_analyze($t,$root);$index['tracks'][$at]['metadata']=$metadata;$index['tracks'][$at]['revision']=$revision+1;$index['tracks'][$at]['status']='file_prepared';$index['tracks'][$at]['preparedBy']=(string)($user['id']??$user['name']??$user['role']);
+      $metadata=music_library_analyze($t,$root);$index['tracks'][$at]['metadata']=$metadata;$index['tracks'][$at]['autoTags']=music_library_file_tags($metadata);$index['tracks'][$at]['revision']=$revision+1;$index['tracks'][$at]['status']='file_prepared';$index['tracks'][$at]['preparedBy']=(string)($user['id']??$user['name']??$user['role']);
       $staging=$root.'/library-'.bin2hex(random_bytes(8)).'.tmp';$h=fopen($staging,'xb');if(!$h)throw new RuntimeException('Kunne ikke lagre opplysningene.');try{$json=json_encode($index,JSON_THROW_ON_ERROR|JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);if(!chmod($staging,0600)||fwrite($h,$json)!==strlen($json)||!fflush($h))throw new RuntimeException('Kunne ikke lagre opplysningene.');}finally{fclose($h);}if(!rename($staging,$root.'/library.json'))throw new RuntimeException('Kunne ikke bekrefte klargjøringen.');$staging=null;return $index['tracks'][$at];
     }finally{if($staging!==null&&is_file($staging))unlink($staging);flock($lock,LOCK_UN);fclose($lock);}
 }

@@ -15,6 +15,22 @@ klargjøring, escapede/søkbare merkelapper, upload/dublett/privat Range-lyd,
 CSRF og liste/detalj ved 320, 390, 768 og 1280 px uten overflyt eller JS-feil.
 Ingen ny kode er utrullet av denne oppfølgingen.
 
+### Automatisk første trinn ved opplasting
+
+Ny original lagres først. Deretter klargjøres filopplysninger og kildebundne
+sjanger-/tiårtags automatisk i samme PHP-forespørsel. Ingen ekstra knapp er
+nødvendig for en ny opplasting. Feilet analyse beholder den lagrede originalen
+og gir tydelig beskjed om nytt forsøk. Dubletter analyseres ikke på nytt.
+Eksisterende låter kan fortsatt klargjøres med knappen i detaljfanen.
+Manuelle `tags` og `manualOverrides` beholdes; genererte tags ligger separat
+i `autoTags` med originalhash, regelversjon og tidspunkt. År/tags er filens
+opplysninger, ikke bekreftet utgivelsesdato. Ukjent artist/tittel krever kontroll.
+Dette er første del av automatisk tagging, ikke ferdig nettoppslag eller AI-
+klassifisering. Energi, sendetid og programvalg gjenstår. Eksisterende
+`music_choose`/`music_mood` er kartlagt som gjenbruk for vurderingsdelen.
+MusicBrainz tilbyr identifisering/genredata, men API-bruk og kommersielle
+vilkår må avklares før aktivering; ingen originalmusikk sendes eksternt her.
+
 Behov: Bibliotek som arbeidsflate med Radio.co som visuell veileder, faktisk
 varighet/filopplysninger og privat forhåndslytting. Filslipp ble uttrykkelig
 lagt til under arbeidet. Base: utrullet PR79, main 69cb55572d17c7303c1d97e29ca21c02b0f84cfc.
