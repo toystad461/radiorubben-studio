@@ -45,6 +45,9 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          extensions: curl, openssl, mbstring, zip
+          tools: composer:v2
+      - run: composer install --no-dev --prefer-dist --no-interaction
           extensions: mbstring
           coverage: none
       - run: npm install --no-save --package-lock=false playwright@1.62.1
