@@ -26,6 +26,41 @@ rotasjon. Cue-/lydkontroll og endelig menneskelig rotasjonsgodkjenning gjenstår
 
 ## Aktivering etter utrullingsgodkjenning
 
+Avklaring 13.10: eksisterende fotballrobot bruker GitHub Actions over SSH,
+ikke påvist lokal crontab. Kilde er radiorubben-web sin
+`.github/workflows/fotballrobot-scheduler.yml`, kontrollert fra main via
+GitHub-koblingen. Den har eksplisitt aktiveringsvariabel, fastlåst runnercommit,
+concurrency og kjent SSH-vertsnøkkel. Driftskvitteringen fra 10.10 dokumenterer
+ti vellykkede kjøringer og observerte mellomrom 448–867 sek selv om planen er
+300 sek. Dette er et gjenbrukbart driftsmønster, ikke aktiv musikkjobbstøtte.
+SSH-kontrollen fra 10.10 fikk exit127 for crontab. Kommandoen var ikke
+tilgjengelig i den kontrollerte kontoen; dette utelukker ikke leverandørstyrt cron.
+
+Anbefalt musikkdrift: egen, avslått Studio-jobb med eksplisitt aktivering,
+fastlåst utrullet commit og kontrollert privat PHP-worker. Ikke legg musikk inn
+i fotballjobben eller kopier ny runnerkode ved hver kjøring. Før aktivering må
+Studio-repoets eksisterende SSH-oppsett avstemmes og syntetisk CLI-kjøring på
+isolert mål bekreftes. Ingen workflow, hemmelighet eller aktiveringsvariabel er
+opprettet eller endret her. GitHub-jobber kan være forsinket; musikkklargjøring
+tåler dette, sanntidsavspilling må bruke annen mekanisme.
+
+Oppslagsvilkår: skill datalisens fra API-bruk. MusicBrainz-kjernedata er CC0,
+tilleggsdata er CC BY-NC-SA3.0. Sjangerforslag er derfor ikke automatisk fritt
+til kommersiell bruk bare fordi artist/tittel er det. API-dokumentasjonen
+henviser kommersielle brukere til planer eller kontakt. Bronze er publisert
+som 100–599USD/måned for aktuelle offentlige produkter, men er ikke et
+pristilbud eller bekreftet riktig kategori for Radio Rubben. Liten intern
+lokalradio-bruk og sjangertags må avklares før terms-flagget settes. Ingen
+bestilling eller kontakt er gjennomført.
+
+Kilder kontrollert 13.10:
+- https://github.com/toystad461/radiorubben-web/blob/main/.github/workflows/fotballrobot-scheduler.yml
+- https://musicbrainz.org/doc/MusicBrainz_API
+- https://musicbrainz.org/doc/About/Data_License
+- https://metabrainz.org/supporters/tiers/2
+- Driftskvittering: production-inventory/backup-job-summary.json
+- SSH-kvittering: production-inventory/access-ops-server-confirmed-account.json
+
 Privat konfigurasjon må eksplisitt sette `music_processing.enabled`,
 `music_processing.online_enabled` og `music_processing.provider_terms_confirmed`
 til true. Eksisterende OpenAI-konfigurasjon må være tilgjengelig. Standard er
