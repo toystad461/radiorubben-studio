@@ -31,6 +31,24 @@ klassifisering. Energi, sendetid og programvalg gjenstår. Eksisterende
 MusicBrainz tilbyr identifisering/genredata, men API-bruk og kommersielle
 vilkår må avklares før aktivering; ingen originalmusikk sendes eksternt her.
 
+### Musikkprodusentens vurdering
+
+Eksisterende `producer_request` og `music_mood` gjenbrukes. Eget klikk i
+låtdetaljen ber den konfigurerte AI-tjenesten om energi og inntil fire av de
+eksisterende musikkflatene. Kun tekstmetadata sendes; ingen musikkfil.
+Vurderingen er tydelig AI-forslag, ikke nettfakta, lydanalyse eller godkjenning.
+Manuelle feltrettelser veier tyngst i grunnlaget. Forslag bindes til filhash,
+grunnlagshash, modell og promptversjon, med revisjonskontroll ved lagring.
+Nettkallet skjer uten biblioteklåsen; kilde/revisjon/grunnlag kontrolleres igjen
+før atomisk lagring. Timeout, ugyldig forslag og samtidige rettelser bevarer
+tidligere forslag. Endret grunnlag skjuler et foreldet forslag.
+
+Denne vurderingsdelen er en testbar enkeltlåt-flyt, ikke ferdig automatisk
+bakgrunnsjobb. Nettsøk, arbeidskø med retry/bruksgrenser, cue-redigering,
+avspillingskontroll og endelig rotasjonsgodkjenning må bygges før automatisk
+klargjøring av hele biblioteket. Status er fortsatt «Trenger din vurdering».
+Ingen nye programmer eller faktisk sending er aktivert.
+
 Behov: Bibliotek som arbeidsflate med Radio.co som visuell veileder, faktisk
 varighet/filopplysninger og privat forhåndslytting. Filslipp ble uttrykkelig
 lagt til under arbeidet. Base: utrullet PR79, main 69cb55572d17c7303c1d97e29ca21c02b0f84cfc.
