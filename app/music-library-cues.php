@@ -1,14 +1,6 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/music-library-worker.php';
-function music_cue_values(array $v,float $duration):array {
-    $keys=['start','vocalStart','transition','end'];
-    if(array_diff(array_keys($v),$keys)||array_diff($keys,array_keys($v))||!is_finite($duration)||$duration<=0)throw new InvalidArgumentException('Ugyldige cue-punkter.');
-    foreach($keys as$k){if($v[$k]===null&&in_array($k,['vocalStart','transition'],true))continue;if((!is_float($v[$k])&&!is_int($v[$k]))||!is_finite((float)$v[$k])||$v[$k]<0||$v[$k]>$duration)throw new InvalidArgumentException('Cue-punkter må være innenfor låten.');}
-    if($v['end']-$v['start']<0.1)throw new InvalidArgumentException('Slutt må være etter start.');
-    $previous=$v['start'];foreach(['vocalStart','transition','end']as$k){if($v[$k]===null)continue;if($v[$k]<$previous)throw new InvalidArgumentException('Rekkefølgen må være start, vokalstart, overgang og slutt.');$previous=$v[$k];}
-    return $v;
-}
 function music_cue_form_values(array $input):array {
     $v=[];foreach(['start','vocalStart','transition','end']as$k){$s=$input[$k]??null;if(!is_string($s)||strlen($s)>20)throw new InvalidArgumentException('Ugyldig cue-tid.');if($s===''&&in_array($k,['vocalStart','transition'],true)){$v[$k]=null;continue;}if(!preg_match('/^[0-9]+(?:\.[0-9]{1,3})?$/D',$s))throw new InvalidArgumentException('Bruk sekunder med inntil tre desimaler.');$v[$k]=(float)$s;}return $v;
 }
