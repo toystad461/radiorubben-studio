@@ -2,7 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__.'/music-library-online.php';
 function music_worker_key(array $track):string {
-    return hash('sha256',json_encode(['source'=>$track['sha256'],'fields'=>music_library_metadata($track),'tags'=>$track['tags']??[],'manual'=>$track['manualOverrides']??[]],JSON_THROW_ON_ERROR));
+    $input=['source'=>$track['sha256'],'fields'=>music_library_metadata($track),'tags'=>$track['tags']??[],'manual'=>$track['manualOverrides']??[]];if($analysis=music_library_analysis_current($track))$input['audioAnalysis']=$analysis;return hash('sha256',json_encode($input,JSON_THROW_ON_ERROR));
 }
 function music_worker_commit(string $root,array $before,array $changes):array {
     if(is_link($root.'/library.lock'))throw new RuntimeException('Ugyldig biblioteklås.');$lock=fopen($root.'/library.lock','rb');if(!$lock||!flock($lock,LOCK_EX))throw new RuntimeException('Biblioteket er opptatt.');$tmp=null;
