@@ -159,3 +159,5 @@
 .learning-page select { box-sizing: border-box; width: 100%; margin: 10px 0; padding: 12px; border: 1px solid #456179; border-radius: 8px; background: #071728; color: #fff; font: inherit; }
 @media (max-width: 1000px) { .learning-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 600px) { .learning-steps, .learning-comparison { grid-template-columns: minmax(0, 1fr); } .learning-page .control-heading { align-items: start; flex-direction: column; } }
+
+.learning-rule-manager { grid-template-columns: minmax(0, 1fr); max-width: 1000px; }

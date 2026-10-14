@@ -7,7 +7,7 @@ foreach(['web-publish','news-publication','editorial-memory','board','programs',
 foreach(['head','sidebar','navigation','account'] as $name)copy($root.'/app/views/'.$name.'.php',$tmp.'/app/views/'.$name.'.php');
 copy($root.'/public/learning.php',$tmp.'/public/learning.php');
 $role=($argv[2]??'')==='observer'?'observer':'admin';
-file_put_contents($tmp.'/app/bootstrap.php','<?php function current_user(){return ["name"=>"Fixture","role"=>$GLOBALS["role"]];} function studio_can($u,$p){return $u["role"]==="admin";} function studio_roles(){return ["admin"=>"Administrator","observer"=>"Leser"];} function escape($s){return htmlspecialchars((string)$s,ENT_QUOTES,"UTF-8");} function icon(...$a){return "";} function redirect($url){throw new RuntimeException("Unexpected redirect");}');
+file_put_contents($tmp.'/app/bootstrap.php','<?php function current_user(){return ["name"=>"Fixture","role"=>$GLOBALS["role"]];} function studio_can($u,$p){return $u["role"]==="admin";} function studio_roles(){return ["admin"=>"Administrator","observer"=>"Leser"];} function escape($s){return htmlspecialchars((string)$s,ENT_QUOTES,"UTF-8");} function icon(...$a){return "";} function redirect($url){echo "REDIRECT ".$url; exit;}');
 $item=['id'=>'1111111111111111','revision'=>3,'program'=>'god-morgen-vestland','status'=>'ready','title'=>'Rettet <eksempel>','verified'=>true,'approvedBy'=>'Fixture','generatedOriginal'=>'Et <script>utkast</script> som skal rettes.','script'=>'Et rettet manus.'];
 require $tmp.'/app/board.php';
 require $tmp.'/app/web-publish.php';
@@ -27,5 +27,17 @@ foreach(['pending'=>'Bevar forbeholdene i kilden.','approved'=>'Del lange setnin
 $rules[]=array_replace($rules[0],['id'=>'other-program','program'=>'other-program','text'=>'Skal ikke vises.']);
 file_put_contents($tmp.'/config/sending-board.json',json_encode(['items'=>[$item,$webItem],'editorialRules'=>$rules]));
 $_SERVER['REQUEST_METHOD']='GET';$_SESSION=['csrf'=>'fixture'];$_GET=['view'=>$argv[1]??'pending','channel'=>$argv[3]??'radio','item'=>($argv[3]??'')==='general'?'':(($argv[3]??'radio')==='web'?$webItem['id']:$item['id'])];$_POST=[];
+$mode=$argv[5]??'';
+if ($mode!=='') {
+    $_SERVER['REQUEST_METHOD']='POST'; $_GET=['view'=>'approved'];
+    $_POST=['csrf'=>'fixture','action'=>'edit','id'=>'approved','revision'=>1,'text'=>'Bruk konkrete verb i hver setning.','styleOnly'=>'1'];
+    if($mode==='csrf')$_POST['csrf']='invalid';
+    if($mode==='stale')$_POST['revision']=0;
+    if($mode==='propose'){$_POST['action']='propose';$_POST['item']='';}
+    if($mode==='approve'){$_POST['action']='approve';$_POST['id']='pending';}
+    if($mode==='duplicate'){$_POST['action']='propose';$_POST['item']='';$_POST['text']='Del lange setninger i korte setninger.';}
+    register_shutdown_function(static function()use($tmp){echo "\nRESULT ".json_encode(['code'=>http_response_code(),'rules'=>studio_board_read($tmp.'/config/sending-board.json')['editorialRules']]);});
+}
 register_shutdown_function(static function()use($tmp){foreach(['/app/views','/app','/public','/config',''] as $dir){foreach(glob($tmp.$dir.'/*') as $file)if(is_file($file))unlink($file);rmdir($tmp.$dir);}});
+if (($argv[4]??'')==='rules') define('STUDIO_LEARNING_RULES_PAGE',true);
 require $tmp.'/public/learning.php';
