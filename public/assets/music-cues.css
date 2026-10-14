@@ -5,3 +5,5 @@
 
 .library-cue-editor [hidden]{display:none!important}
 .library-audio-queue button:not(.button){background:#173b50;color:#e4f2fa;border:1px solid #3e6073;border-radius:8px;padding:10px 14px;cursor:pointer;font:inherit}.library-audio-queue button:disabled{opacity:.5;cursor:default}.library-audio-queue form{margin-top:12px}
+
+.cue-listening{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0}.cue-listening label{width:100%;font-weight:600}.cue-listening input[type=range]{width:100%;min-width:0;accent-color:#21b2ec}.cue-listening output{font-variant-numeric:tabular-nums;min-width:100px}
