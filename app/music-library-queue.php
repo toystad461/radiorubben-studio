@@ -10,11 +10,12 @@ function music_audio_find(string $root,string $id):array {foreach(music_library_
 function music_audio_job_key(array $track):string{return hash('sha256',$track['sha256'].'|'.MUSIC_AUDIO_QUEUE_ENGINE);}
 function music_audio_enqueue(string $id,string $sha,?array $user,string $csrf,string $expected,?string $root=null,bool $retry=false):array {
     music_audio_authorize($user,$csrf,$expected);$root??=music_library_root();$track=music_audio_find($root,$id);if($track['sha256']!==$sha)throw new InvalidArgumentException('Låten er endret.');
-    $job=$track['audioQueue']??null;if(is_array($job)&&($job['jobKey']??null)===music_audio_job_key($track)&&(!$retry||($job['status']??null)==='running'))return $track;
+    if(!$retry&&music_audio_profile_current($track)!==null&&music_library_analysis_current($track)!==null)return $track;
+    $job=$track['audioQueue']??null;if(is_array($job)&&($job['jobKey']??null)===music_audio_job_key($track)&&((!$retry&&($job['status']??null)!=='prepared')||($job['status']??null)==='running'))return $track;
     return music_worker_commit($root,$track,['audioQueue'=>['jobKey'=>music_audio_job_key($track),'status'=>'queued','attempts'=>0,'updatedAt'=>time()]]);
 }
 function music_audio_status(?string $root=null):array {
-    $root??=music_library_root();$result=[];foreach(array_reverse(music_library_read($root))as$t){$q=$t['audioQueue']??null;if(!is_array($q)||($q['jobKey']??null)!==music_audio_job_key($t))continue;$result[]=['id'=>$t['id'],'version'=>$t['sha256'],'revision'=>$t['revision']??0,'title'=>music_library_effective_fields($t)['title']??$t['originalName'],'status'=>$q['status'],'attempts'=>$q['attempts']??0];}return $result;
+    $root??=music_library_root();$result=[];foreach(array_reverse(music_library_read($root))as$t){$q=$t['audioQueue']??null;if(!is_array($q)||($q['jobKey']??null)!==music_audio_job_key($t))continue;$result[]=['id'=>$t['id'],'version'=>$t['sha256'],'revision'=>$t['revision']??0,'title'=>music_library_effective_fields($t)['title']??$t['originalName'],'status'=>$q['status'],'leaseActive'=>($q['status']??null)==='running'&&($q['leaseUntil']??0)>time(),'attempts'=>$q['attempts']??0];}return $result;
 }
 function music_audio_claim(?array $user,string $csrf,string $expected,?string $root=null,?int $now=null):?array {
     music_audio_authorize($user,$csrf,$expected);$root??=music_library_root();$now??=time();$tracks=array_reverse(music_library_read($root));
