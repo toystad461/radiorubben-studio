@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 // Only shipped code is managed. Runtime config/data never enters the manifest.
 function studioManaged(string $p): bool {
+    if (preg_match('~^studio-public/assets/music-analysis/yamnet/(?:model\.json|group1-shard[1-4]of4\.bin)$~D', $p)) return true;
     return !str_contains($p, '..') && !str_contains($p, '\\')
         && !preg_match('~(^|/)(config|cache|data|backups?|\.git)(/|$)~i', $p)
         && (bool)preg_match('~^(studio-public/(?:[a-zA-Z0-9_./-]+\.(?:php|css|js|mjs|png|svg|ico)|\.htaccess|release\.json)|studio-private/(?:app/[a-zA-Z0-9_./-]+\.php|vendor/[a-zA-Z0-9_./-]+|composer\.(?:json|lock)|\.htaccess))$~D', $p);

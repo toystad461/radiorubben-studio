@@ -41,6 +41,8 @@ unlink($r.'/'.$p);symlink($t.'/outside',$r.'/'.$p);
 fails(fn()=>studioPublish($r,$s,$w,$b,str_repeat('f',40),'symlink',$health),'Symlink rejected');
 check(!studioManaged('studio-public/../config/local.php'),'Traversal rejected');check(!studioManaged('studio-private/config/local.php'),'Config excluded');
 check(studioManaged('studio-public/release.json'),'Exact public release metadata managed');
+check(studioManaged('studio-public/assets/music-analysis/yamnet/model.json')&&studioManaged('studio-public/assets/music-analysis/yamnet/group1-shard4of4.bin'),'Exact YAMNet assets managed');
+check(!studioManaged('studio-public/assets/music-analysis/yamnet/secrets.json')&&!studioManaged('studio-public/assets/music-analysis/yamnet/group1-shard5of4.bin'),'Other model paths excluded');
 check(!studioManaged('studio-public/users.json')&&!studioManaged('studio-public/config.json'),'Other JSON remains excluded');
 echo "PASS bootstrap, selective update/add/delete, private data preservation, permissions, rollback, drift and symlink protection\n";
 } finally {
