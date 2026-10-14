@@ -1,24 +1,33 @@
 # Studio – felles status og arbeidsliste
 
-## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
+## Nyhetsbilder v1.2 – aktiv drift, 14.10.2026
 
-Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
-som 2c9a221, jobb 38617872866. WordPress-utvidelsen er aktiv med 21 verifiserte
-produksjonsmedier (1352–1372). OneDrive-originalen er lest tilbake med identisk
-SHA-256. WordPress-kontroll 38621341817 bekrefter at 76 artikler er uendret.
-Produksjonens bilder, PHP-markup og aktive stilark er visuelt kontrollert ved
-390/1280 px; hele logoer og KI-tekst vises i kort, artikkel og prioritert kort.
+Thomas godkjente OneDrive, merge og utrulling. Studio PR92 og PR93 er merget;
+selektiv utrulling 38623594055 publiserte commit 96ff332d9b26f07b3be68c1d9cf2c9e58b6a7c60
+med privat backup og etterkontroll. Koden bruker strukturert JSON med ordrette
+belegg etter at første modellpilot stoppet trygt på Markdown/omskrevne sitater.
+PHP 8.2/8.4 og alle CI-mobilkontroller består.
 
-Aktivering stoppet trygt i modellpiloten: modellen returnerte Markdown rundt
-JSON og omskrev enkelte sitater. Bildevalget er fortsatt av. En avgrenset
-rettelse krever nå strukturert JSON og lar modellen velge belegg fra ordrette
-utdrag av saken. Hele saksteksten inngår fortsatt i vurderingen; alle tidligere
-tematiske sperrer og menneskelig sluttgodkjenning består. Målrettet lokal test
-består, inkludert fortsatt avvisning av ugyldig svar. Neste steg er CI,
-selektiv publisering og den samme åtte-sakers piloten før aktivering.
+WordPress-utvidelsen er aktiv med 21 faktiske medier, ID 1352–1372. Import og
+nytt forsøk ga samme mapping. Alle offentlige filer ble lastet ned og SHA-256
+kontrollert. WordPress-kontroll 38621341817 bekrefter 76 uendrede artikler.
+Produksjonsmarkup, aktive CSS og faktiske bilder er visuelt kontrollert ved
+390/1280 px: hele bilder/logoer og KI-tekst i kort, artikkel og prioritert kort.
 
-Faktisk OneDrive-mappe: Radio Rubben / 02 Profil og maler / Nyhetsbilder /
-RadioRubben-Nyhetsbilder-v1.2. Ingen reell sak er publisert som test.
+Aktivering 38623968749 bestod åtte syntetiske saker med faktisk gpt-4.1-mini:
+Bremnes/Brann, politikk/tjeneste, konsert/idrett, frisør uten egnet bilde og
+maritimt verksted. Alle lagrede valg var stabile ved nytt forsøk. Flagget ble
+satt til true og lest tilbake kl. 19:29 UTC. Privat config og sendeliste er
+uendret. Bildevalg er nå aktivt for nye utkast i Nyhetsdesk og saksvisning,
+med begrunnelse, KI-merking, manuelt valg/lås og samme menneskelige godkjenning.
+
+Originalen er faktisk arkivert og kontrollert i OneDrive: Radio Rubben /
+02 Profil og maler / Nyhetsbilder / RadioRubben-Nyhetsbilder-v1.2.
+Samme mappe har faktisk medieregister, skjermbilder og driftskvittering.
+Se [NEWS-IMAGES.md](NEWS-IMAGES.md) for eksakte filbaner og tilbakeføring.
+Ingen reell sak ble opprettet, godkjent eller publisert som test. Første
+virkelige sak følger vanlig sluttgodkjenning; ekstern sosial beskjæring
+kontrolleres ved deling. Ingen ny automatisk sosial publiseringskanal.
 
 ## Nyhetsbilder v1.2 – kode og lokal verifisering, 14.10.2026
 
