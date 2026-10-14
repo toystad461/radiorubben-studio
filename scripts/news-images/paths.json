@@ -1,0 +1,20 @@
+[
+  "studio-private/app/case-workflow.php",
+  "studio-private/app/data/01-BILDEREGISTER.json",
+  "studio-private/app/news-images-contract.php",
+  "studio-private/app/news-images.php",
+  "studio-private/app/news-publication.php",
+  "studio-private/app/newsroom.php",
+  "studio-private/app/views/news-image-choice.php",
+  "studio-private/app/views/newsroom.php",
+  "studio-private/app/web-publish.php",
+  "studio-private/app/wordpress-status.php",
+  "studio-public/assets/case.css",
+  "studio-public/assets/case.js",
+  "studio-public/assets/newsroom.css",
+  "studio-public/assets/newsroom.js",
+  "studio-public/case.php",
+  "studio-public/news-image-export.php",
+  "studio-public/newsdesk-image.php",
+  "studio-public/newsdesk.php"
+]
