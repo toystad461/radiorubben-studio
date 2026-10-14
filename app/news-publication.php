@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/news-images.php';
 
 /** Verified on radiorubben.no on 2026-10-04; IDs belong to this site only. */
 const STUDIO_NEWS_PUBLICATION_VERSION = 'news-web-1';
@@ -27,6 +28,11 @@ function studio_news_publication_metadata(array $item): array
     if (!is_array($profile) || !is_string($profile['scope'] ?? null)
         || $profile !== studio_news_publication($item, $profile['scope']))
         throw new InvalidArgumentException('Nyhetsprofilen er endret. Lagre og godkjenn nettsaken på nytt.');
+    if (isset($item['web']['imageSelection'])) {
+        $issue=studio_images_issue($item); if($issue) throw new InvalidArgumentException($issue);
+        $s=$item['web']['imageSelection'];
+        return ['featured_media'=>$s['variants']['article_landscape']['media_id']??0, 'categories'=>$profile['categories']];
+    }
     return ['featured_media'=>$profile['featured_media'], 'categories'=>$profile['categories']];
 }
 
@@ -55,6 +61,7 @@ function studio_web_approval_hash(array $item): string
     if (array_key_exists('aiPolicyVersion', $w['generation'] ?? [])) {
         $payload['version']='web-approval-4'; $payload['generation']=$w['generation'];
     }
+    if (isset($w['imageSelection'])) { $payload['version']='web-approval-5'; $payload['imageSelection']=$w['imageSelection']; }
     return hash('sha256', json_encode($payload, JSON_THROW_ON_ERROR));
 }
 

@@ -73,6 +73,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 $notice=($_POST['apply']??'')==='1'
                     ? 'Kommentaren er lagret som et aktivt skriveråd. Den brukes i nye nett- og radioutkast for God morgen Vestland.'
                     : 'Kommentaren er lagret med tekstversjon og kildegrunnlag. Den venter på godkjenning i Robåt – læring.';
+            }elseif($action==='image_select'){
+                studio_images_change($id,$revision,$_POST,$user); $notice='Bildevalget er lagret og inngår i sluttgodkjenningen.';
             }elseif($action==='approve'){
                 if(!$admin||($_POST['confirmed']??'')!=='1')throw new InvalidArgumentException('Administrator må lese og bekrefte saken.');
                 studio_web_save($id,$revision,'approve',['confirmed'=>'1'],$user);
@@ -112,8 +114,8 @@ ob_start();require dirname(__DIR__).'/app/views/newsroom.php';$html=ob_get_clean
 $url=studio_newsroom_url($selected,$filter);
 if($fragment){header('Content-Type: application/json; charset=utf-8');header('Cache-Control: no-store');if($error)http_response_code(409);echo json_encode(['ok'=>!$error,'error'=>$error,'html'=>$html,'url'=>$url,'advance'=>$advance&&!$error,'selected'=>$selected,'notice'=>$notice],JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR);exit;}
 if($_SERVER['REQUEST_METHOD']==='POST'&&!$error){$_SESSION['newsroom_notice']=$notice;redirect($url);}
-$extraStylesheet='/assets/newsroom.css?v=20261008-channels';require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet='/assets/newsroom.css?v=20261014-images1';require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell newsroom-shell"><?php $activePage='newsdesk';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace">
 <header class="topbar"><span>Radio Rubben / <strong>Nyhetsdesk</strong></span><details class="nr-site-menu"><summary>Studio-meny</summary><?php require dirname(__DIR__).'/app/views/navigation.php';?><?php require dirname(__DIR__).'/app/views/account.php';?></details></header>
-<?php echo $html; ?></div></div><p id="newsroom-progress" role="status" aria-live="polite" hidden></p><script src="/assets/newsroom.js?v=20261010-feedback" defer></script></body></html>
+<?php echo $html; ?></div></div><p id="newsroom-progress" role="status" aria-live="polite" hidden></p><script src="/assets/newsroom.js?v=20261014-images1" defer></script></body></html>

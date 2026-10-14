@@ -1,6 +1,7 @@
 <?php
 // Copy to config/local.php on the server, outside the public document root.
 return [
+    'news_images_enabled' => false, // Enable only after verified WP import and review of new-draft rendering.
     'site_mode' => 'coming-soon', // app enables the configured authentication mode
     'auth_mode' => 'demo', // demo = login page only; entra or vipps = authentication required
     'base_url' => 'http://localhost:8080', // https://studio.radiorubben.no in production

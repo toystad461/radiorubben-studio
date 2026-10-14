@@ -15,6 +15,7 @@ foreach (['app', 'public', 'vendor', 'docs'] as $folder) {
             || preg_match('~(?:^|/)(?:\.env[^/]*|local\.php)$|\.(?:key|pem|log|bak|zip|lock)$~i', $within)) continue;
         $allowed = ['app'=>['php'], 'public'=>['php','css','mjs','js','png','svg','ico'], 'docs'=>['md']];
         if (isset($allowed[$folder]) && !in_array(strtolower($file->getExtension()), $allowed[$folder], true)
+            && !($folder === 'app' && str_replace('\\','/',$within) === 'data/01-BILDEREGISTER.json')
             && !($folder === 'public' && $within === '.htaccess')
             && !($folder === 'public' && preg_match('~^assets/music-analysis/yamnet/(?:model\.json|group1-shard[1-4]of4\.bin)$~D', str_replace('\\','/',$within)))) continue;
         $relative = str_replace('\\', '/', substr($file->getPathname(), strlen($root)+1));

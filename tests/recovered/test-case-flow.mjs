@@ -4,7 +4,7 @@ const settings={dataset:{item:'test',revision:'1',csrf:'csrf',autoPrepare:'0'}};
 async function simulate(fail){
  const handlers={},calls=[],progress={textContent:'',after(){}},button={addEventListener:(n,f)=>handlers[n]=f},created={addEventListener(){}};
  const locked={disabled:true};
- const doc={querySelector:s=>s==='#case-controller'?settings:s==='#case-progress'?progress:s==='#news-scope'?null:button,querySelectorAll:s=>s===':disabled'?[locked]:s==='button,select,input[type=checkbox]'?[locked,button]:[],createElement:()=>created};
+ const doc={addEventListener(){},querySelector:s=>s==='#case-controller'?settings:s==='#case-progress'?progress:s==='#news-scope'?null:button,querySelectorAll:s=>s===':disabled'?[locked]:s==='button,select,input[type=checkbox]'?[locked,button]:[],createElement:()=>created};
  const context={document:doc,window:{addEventListener(){}},FormData,fetch:async(url,o)=>{const action=o.body.get('action');calls.push([action,o.body.get('revision')]);if(fail)throw Error('transport');return{ok:true,json:async()=>({ok:true,revision:calls.length+1})};},location:{replace:url=>{context.done=url;}},console};
  vm.runInNewContext(code,context);handlers.click();
  for(let i=0;i<20;i++)await new Promise(resolve=>setImmediate(resolve));
@@ -20,7 +20,7 @@ async function placementChange(){
  const form={dataset:{save:'web'},addEventListener:(name,fn)=>handlers['web:'+name]=fn};
  const finalForm={addEventListener:(name,fn)=>handlers['final:'+name]=fn};
  const button={addEventListener(){}};
- const doc={querySelector:s=>({'#case-controller':settings,'#case-progress':progress,'#news-scope':scope,'#web-editor':form}[s]??button),
+ const doc={addEventListener(){},querySelector:s=>({'#case-controller':settings,'#case-progress':progress,'#news-scope':scope,'#web-editor':form}[s]??button),
   querySelectorAll:s=>s==='[data-save]'?[form]:s==='[data-final]'?[finalForm]:s==='[data-final] button'?[finalButton]:s==='button,select,input[type=checkbox]'?[scope,finalButton]:[],
   createElement:()=>({addEventListener(){}})};
  // Like a browser, disabled selects are omitted by FormData(form).

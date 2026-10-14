@@ -57,7 +57,7 @@ function studio_newsroom_card(array $item): array {
             foreach($check['segments']??[] as $seg)if(($seg['verdict']??'')!=='supported')$reasons[]=($seg['text']??'').': '.($seg['reason']??'Mangler kildebelegg.');
             if(!$reasons)$reasons[]='Kilde- og språkkontrollen må fornyes.';
         }
-        if(!studio_web_presentation_ready($item))$reasons[]='Bilde og kategorier må lagres.';
+        if(!studio_web_presentation_ready($item))$reasons[]=studio_images_issue($item)??'Bilde og kategorier må lagres.';
         if(!empty($item['newsroom']['error']))$reasons[]=$item['newsroom']['error'];
         $status=$reasons?'attention':'ready';
         if(($item['newsroom']['state']??'')==='working'){

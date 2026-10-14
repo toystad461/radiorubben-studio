@@ -28,7 +28,7 @@ function studio_web_status_check(string $id,int $revision,array $user,array $con
     if(($d['state']??'')==='pending'&&(strtotime($d['at']??'')?:0)>time()-120)throw new InvalidArgumentException('Overføringen pågår. Vent litt før statuskontroll.');
     $postId=$d['id']??null;
     if($postId!==null&&(!is_int($postId)||$postId<1))throw new InvalidArgumentException('Innleggsidentiteten må avklares.');
-    $fields='id,status,link,slug,title,content,excerpt';
+    $fields='id,status,link,slug,title,content,excerpt,featured_media';
     $query=['context'=>'edit','_fields'=>$fields];
     if(!$postId)$query+=['slug'=>'studio-'.$id,'status'=>['publish','draft','pending','future','private'],'per_page'=>10];
     $route='/posts'.($postId?'/'.$postId:'').'?'.http_build_query($query);
@@ -50,6 +50,7 @@ function studio_web_status_check(string $id,int $revision,array $user,array $con
             && is_string($p['content']['raw']??null)&&trim($p['content']['raw'])===trim(studio_web_html($item))
             && is_string($p['excerpt']['raw']??null)&&trim($p['excerpt']['raw'])===trim($item['web']['intro']??'')
             && ($d['hash']??'')===$hash;
+        if(isset($item['web']['imageSelection']))$same=$same&&($p['featured_media']??null)===($item['web']['imageSelection']['variants']['article_landscape']['media_id']??0);
         $wanted=$d['requestedStatus']??$d['status']??null;
         $confirmed=$same&&in_array($p['status'],['publish','draft'],true)&&$wanted===$p['status'];
         $lookup['state']=$confirmed?'matched':'different';

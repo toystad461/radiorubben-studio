@@ -9,3 +9,9 @@
 @media(max-width:900px){.case-workspace .sending-layout{grid-template-columns:1fr}}
 
 .case-workspace .editor-form fieldset{border:0;padding:0;margin:0;min-width:0}
+
+.rr-image-choice{margin:16px 0;padding:14px;border:1px solid #35516a;border-radius:8px;min-width:0;overflow-wrap:anywhere}
+.rr-image-variants{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.rr-image-variant{margin:0;min-width:0}.rr-image-choice .rr-image-variant img{display:block;width:100%;height:auto;max-height:none;aspect-ratio:auto;object-fit:contain!important;background:#101c28;border-radius:0}
+.rr-image-variant figcaption{font-size:.8rem;line-height:1.45;margin-top:6px}.rr-image-choice select,.rr-image-choice textarea{width:100%;max-width:100%;box-sizing:border-box}.rr-image-choice label{display:block;margin:10px 0}
+@media(max-width:600px){.rr-image-variants{grid-template-columns:1fr}.rr-image-variant img{max-height:400px!important;object-fit:contain!important}}

@@ -30,6 +30,9 @@ function load_config(): array
     $config = require dirname(__DIR__) . '/config/example.php';
     $local = dirname(__DIR__) . '/config/local.php';
     if (is_file($local)) $config = array_replace($config, require $local);
+    // A narrowly scoped operational flag avoids rewriting private credentials/config.
+    $imageFlag = dirname(__DIR__) . '/config/news-images-enabled.php';
+    if (is_file($imageFlag)) $config['news_images_enabled'] = (require $imageFlag) === true;
     $keyFile = dirname(__DIR__) . '/config/openai.key';
     if (is_file($keyFile)) $config['openai_api_key'] = trim(file_get_contents($keyFile));
     foreach (['OPENAI_API_KEY'=>'openai_api_key', 'OPENAI_MODEL'=>'openai_model', 'STUDIO_AUTH_MODE'=>'auth_mode', 'STUDIO_BASE_URL'=>'base_url', 'ENTRA_TENANT_ID'=>'tenant_id', 'ENTRA_CLIENT_ID'=>'client_id', 'ENTRA_CLIENT_SECRET'=>'client_secret', 'VIPPS_CLIENT_ID'=>'vipps_client_id', 'VIPPS_CLIENT_SECRET'=>'vipps_client_secret', 'VIPPS_ENVIRONMENT'=>'vipps_environment'] as $env=>$key) {

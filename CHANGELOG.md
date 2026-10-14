@@ -1,5 +1,14 @@
 # Endringslogg – Radio Rubben Studio
 
+## Under utvikling – nyhetsbilder v1.2
+
+- Semantisk tema og tre verifiserte formatvarianter for nye nyhetsutkast.
+- Forhåndsvisning, KI-merking, begrunnelse, manuell overstyring/lås og synlige avvik i dagens godkjenningsflate.
+- Bilde og tekst bindes til samme sluttgodkjenning; godkjente originaler kan lastes ned for deling.
+- Krever sammenhørende WordPress-utvidelse og kontrollert aktivering; flagget er av som standard.
+
+Se [implementasjon, tester og innføring](docs/NEWS-IMAGES.md). Ikke produksjonsaktivert.
+
 ## Under utvikling – NRK Vestland RSS
 
 - NRK Vestland Toppsaker og Siste nytt erstatter nasjonal NRK-feed i Nyhetsdesken.

@@ -1,0 +1,44 @@
+name: News images production read-only audit
+on:
+  push:
+    branches: [feat/news-image-pack-v12]
+    paths: ['scripts/news-images/**', '.github/workflows/news-images-audit.yml']
+permissions:
+  contents: read
+concurrency:
+  group: studio-release
+  cancel-in-progress: false
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: studio-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read current production code hashes with verified SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.STUDIO_DEPLOY_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.STUDIO_DEPLOY_KNOWN_HOSTS }}
+          SSH_HOST: ${{ vars.STUDIO_SSH_HOST }}
+          SSH_USER: ${{ vars.STUDIO_SSH_USER }}
+        run: |
+          set -Eeuo pipefail
+          umask 077
+          test "$SSH_HOST" = ssh.cptk37ymg.service.one
+          test "$SSH_USER" = cptk37ymg_w1417156
+          test -n "$DEPLOY_KEY"
+          test -n "$KNOWN_HOSTS"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          payload=$(base64 -w0 scripts/news-images/paths.json)
+          ssh -T -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 "$SSH_USER@$SSH_HOST" "RR_IMAGE_AUDIT_PATHS='$payload' php" < scripts/news-images/audit.php | tee "$RUNNER_TEMP/news-images-audit.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: news-images-audit
+          path: ${{ runner.temp }}/news-images-audit.json
+      - name: Remove runner key
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519
