@@ -35,6 +35,11 @@ function studio_web_save(string $id,int $revision,string $action,array $data,arr
                     if($scope!==null && !is_string($scope)) throw new InvalidArgumentException('Ugyldig nyhetskategori.');
                     $w['publication']=studio_news_publication($item,$scope);
                 }
+                if($action==='generated' && !isset($w['imageSelection']) && isset($data['imageSelection']) && empty($before['body']) && empty($before['publication']) && empty($w['delivery'])) $w['imageSelection']=$data['imageSelection'];
+                if($action==='save' && studio_images_enabled() && empty($before['body']) && empty($before['publication']) && empty($w['delivery']) && empty($w['editorialImage']) && studio_web_is_news($item)) {
+                    $imageItem=$item;$imageItem['web']=$w;
+                    $w['imageSelection']=rrni_pending('Dette er et manuelt opprettet utkast. Velg et passende bilde før sluttgodkjenning.','BILDE_MANGLER')+['context_hash'=>rrni_context_hash(rrni_context($imageItem))];
+                }
                 $w['check']=$action==='generated' ? ($data['check']??[]) : [];
                 $w['approvedHash']=null;
                 if($action==='generated') {
@@ -47,6 +52,11 @@ function studio_web_save(string $id,int $revision,string $action,array $data,arr
                 if(!studio_web_presentation_ready($item)) throw new InvalidArgumentException('Lagre nettsaken med nyhetsbilde og kategori før godkjenning.');
                 if(($user['role']??'')!=='admin' || !studio_web_checked($item) || ($data['confirmed']??'')!=='1') throw new InvalidArgumentException('Administrator må lese og bekrefte en kildekontrollert nettsak.');
                 studio_news_publication_metadata($item);
+                if(isset($w['imageSelection'])) {
+                    $w['imageSelection']['reviewed_by']=$user['name']??'Administrator';
+                    $w['imageSelection']['reviewed_at']=gmdate('c');
+                    $item['web']=$w;
+                }
                 $w['approvedHash']=studio_web_approval_hash($item); $w['approvedBy']=$user['name']??'Administrator';
             } else throw new InvalidArgumentException('Ukjent netthandling.');
             $w['history'][]=['action'=>$action,'at'=>gmdate('c'),'actor'=>$user['name']??'Medarbeider','before'=>$before];
@@ -77,6 +87,13 @@ function studio_web_prepare(array $item,array $config,array $editorial=[],?calla
         $reason=$e instanceof StudioNewsPreparationException?$e->getMessage():'Kildekontrollen kunne ikke fullføres. Kontroller den lagrede teksten på nytt.';
         $w['check']=['policy'=>STUDIO_NEWS_POLICY,'status'=>'needs_review','checkedAt'=>gmdate('c'),
             'fingerprint'=>studio_news_fingerprint($item,studio_web_text($w)),'source'=>$source,'segments'=>[],'issues'=>[$reason]];
+    }
+    if(empty($item['web']['body']) || isset($item['web']['imageSelection'])) {
+        $imageItem=$item; $imageItem['web']=array_replace($item['web']??[],$w);
+        // Category is the same source-derived profile used by the subsequent save.
+        $imageItem['category']=studio_news_publication($item)['scope'];
+        $selection=studio_images_prepare($imageItem,$config,$request);
+        if($selection!==null) $w['imageSelection']=$selection;
     }
     $w['generation']=rr_generation_record($source,$config,$editorial,'web');
     return $w;

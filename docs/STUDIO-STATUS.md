@@ -1,5 +1,28 @@
 # Studio – felles status og arbeidsliste
 
+## Nyhetsbilder v1.2 – kode og lokal verifisering, 14.10.2026
+
+Bestilt: vedlagt pakke med 21 bilder inn i eksisterende nyhetsgodkjenning.
+Gren `feat/news-image-pack-v12` fra main `1da52a9`, sammen med avgrenset
+`rr-news-images`-utvidelse i web-repositoryet fra main `b40e5fd`.
+Ingen eldre PR-kjede er tatt inn. PR75s rene bildeproveniensmodell gjenbrukes
+isolert med eget prefiks; dens globale sperrer aktiveres ikke.
+
+Semantisk hovedvinkel velger ett tema og tre faktiske WordPress-varianter.
+Studio viser forhåndsvisning, KI-merking, begrunnelse, manuelt valg og lås.
+Fil-/temaavvik stopper flyten synlig. Samme sluttgodkjenning binder tekst og
+bilde; manuelt WordPress-bilde bevares. Flagg `news_images_enabled=false`
+begrenser innføring til nye utkast ved senere aktivering.
+
+Kontrollert lokalt: full Composer-suite, JS, pakking, 11 syntetiske tematilfeller,
+negative godkjennings-/rolle-/CSRF-tester, faktisk isolert WordPress-import av 21
+bilder med avbrudd/gjentakelse uten duplikater, og hel bildevisning ved 390/1280 px.
+Levende modell, produksjonens MySQL/tema/CDN og faktiske delingsplattformer gjenstår.
+Ingen produksjonsimport, merge, deploy eller redaksjonell publisering.
+Originalens hash, testmedienes plassering og ubekreftet OneDrive-forslag er
+dokumentert i [NEWS-IMAGES.md](NEWS-IMAGES.md). Neste steg er PR-gjennomgang og
+konkret godkjent, selektiv utrulling med faktisk importkvittering og pilotkontroll.
+
 ## Læring og regeladministrasjon – 14.10.2026
 
 Bestilt: mindre informasjon på læringssiden, egen side for redigering/fjerning

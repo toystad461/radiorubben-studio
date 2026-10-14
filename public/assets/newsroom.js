@@ -58,3 +58,11 @@
  window.addEventListener('beforeunload',event=>{if(busy||dirty){event.preventDefault();event.returnValue='';}});
  init();
 })();
+
+// Report broken image previews without accepting an unverified fallback.
+document.addEventListener('error', (event) => {
+  if (event.target instanceof HTMLImageElement) {
+    const warning = event.target.closest('.rr-image-choice')?.querySelector('.rr-image-load-error');
+    if (warning) warning.hidden = false;
+  }
+}, true);

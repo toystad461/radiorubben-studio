@@ -31,6 +31,7 @@ function studio_wp_request(array $c, string $method, string $route, ?array $payl
     if (!$ok || $status < 200 || $status >= 300) throw new RuntimeException('WordPress svarte ikke med bekreftet lagring.');
     $r=json_decode($body,true,64,JSON_THROW_ON_ERROR);
     if (!is_array($r) || !is_int($r['id']??null) || $r['id']<1 || !in_array($r['status']??'', ['draft','publish'],true)) throw new RuntimeException('Uventet WordPress-svar.');
+    if(isset($payload['rr_news_image'])&&($r['featured_media']??null)!==($payload['rr_news_image']['variants']['article_landscape']['media_id']??0))throw new RuntimeException('WordPress bekreftet ikke det valgte bildet.');
     $url=parse_url((string)($r['link']??''));
     if (($url['scheme']??'')!=='https' || !in_array($url['host']??'', ['radiorubben.no','www.radiorubben.no'],true)) throw new RuntimeException('Uventet WordPress-lenke.');
     return ['id'=>$r['id'],'status'=>$r['status'],'link'=>$r['link']];
@@ -53,9 +54,12 @@ function studio_web_html(array $item): string {
     return $disclosure.'<p>Basert på opplysninger fra '.($nrk?'NRK':$esc($item['sourceName'])).'. <a href="'.$esc($item['sourceUrl']).'" rel="noopener">'.$esc($label).'</a></p><p><strong>'.$esc($w['intro']).'</strong></p>'.$html;
 }
 /** Reserve durably before network I/O. An unknown outcome is never retried automatically. */
-function studio_web_publish(string $id,int $revision,string $status,array $user,array $config,?callable $request=null,?string $path=null): array {
+function studio_web_publish(string $id,int $revision,string $status,array $user,array $config,?callable $request=null,?string $path=null,?callable $imageCatalog=null): array {
     if (($user['role']??'')!=='admin') throw new InvalidArgumentException('Bare administrator kan sende til WordPress.');
     if (!in_array($status,['draft','publish'],true) || !studio_wp_ready($config)) throw new InvalidArgumentException('WordPress-koblingen er ikke konfigurert.');
+    $imageItem=studio_case_get($id,$path);
+    if($imageItem['revision']!==$revision)throw new InvalidArgumentException('Saken er endret. Last siden på nytt.');
+    studio_images_verify($imageItem,$imageCatalog);
     $reserved=studio_board_change(static function(array &$board) use($id,$revision,$status,$user): array {
         foreach($board['items'] as &$item) if($item['id']===$id && $item['status']!=='archived') {
             $w=$item['web']??[];
@@ -81,6 +85,10 @@ function studio_web_publish(string $id,int $revision,string $status,array $user,
     if(isset($reserved['done'])) return $reserved['done'];
     $request??='studio_wp_request'; $item=$reserved['item']; $postId=$reserved['postId'];
     $payload=['title'=>$item['web']['title'],'excerpt'=>$item['web']['intro'],'content'=>studio_web_html($item),'status'=>$status];
+    if(isset($item['web']['imageSelection'])) {
+        $payload['rr_news_image']=$item['web']['imageSelection'];
+        $payload['rr_news_image_confirmed']=$status==='publish' && ($item['web']['approvedHash']??'')===studio_web_approval_hash($item);
+    }
     if(!$postId) $payload['slug']='studio-'.$id;
     // Assign the news image/categories only on creation. Keep WordPress editor choices on updates.
     $newsMetadata=studio_news_publication_metadata($item);

@@ -43,3 +43,11 @@ document.querySelectorAll('#audio-material form').forEach(form=>form.addEventLis
 window.addEventListener('beforeunload',e=>{if(busy||dirty.size||audioDirty.size){e.preventDefault();e.returnValue='';}});
 if(settings.autoPrepare==='1')document.querySelector('#prepare-all').click();
 })();
+
+// Report broken image previews without accepting an unverified fallback.
+document.addEventListener('error', (event) => {
+  if (event.target instanceof HTMLImageElement) {
+    const warning = event.target.closest('.rr-image-choice')?.querySelector('.rr-image-load-error');
+    if (warning) warning.hidden = false;
+  }
+}, true);
