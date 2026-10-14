@@ -1,9 +1,11 @@
 # Nyhetsbilder v1.2 – implementasjon og aktivering
 
-14.10.2026. Kode og isolerte tester; ikke produksjonsaktivert.
-Studio-base: `1da52a93219f6cec6a15964159e8a993794fa474`.
-WordPress-base: `b40e5fd3e9612b6f31c02bf6cd603641f266b3a7`.
-Begge endringer ligger på `feat/news-image-pack-v12` i hvert sitt repository.
+14.10.2026. Studio PR92 og PR93 er merget og selektivt publisert.
+Siste kodecommit er `96ff332d9b26f07b3be68c1d9cf2c9e58b6a7c60`,
+releasejobb `38623594055`, privat backup `selective-38623594055-1`.
+WordPress-utvidelsen er aktiv med 21 faktiske mediefiler. Automatvalg ble
+aktivert 14.10.2026 kl. 19:29 UTC etter bestått modellpilot `38623968749`.
+Ingen tidligere publiserte artikler er migrert eller endret.
 
 ## Plassering i eksisterende system
 
@@ -18,6 +20,7 @@ tekstmodell som resten av Studio, med hele overskrift, ingress, brødtekst,
 kategori og tilgjengelige entiteter, samt alle registerets `use_when` og
 `do_not_use_when`. Personer, organisasjoner og steder leses også i artikkelteksten.
 Dette er en semantisk vurdering av hovedinnhold og motiv, ikke en nøkkelordtabell.
+Strukturert JSON-skjema krever belegg fra ordrette utdrag av selve saken.
 Ordrette belegg, hovedvinkling, motivenes egnethet og sikkerhet kontrolleres.
 Bremnes krever uttrykkelig hovedklubb og fotballvinkling; Brann/Bømlo er ikke nok.
 Ingen passende motiv, usikkerhet, modellfeil eller manglende medier gir en synlig
@@ -94,10 +97,21 @@ I den isolerte testen ligger mediene under
 Testinstallasjonen bruker lokal ruting og Radio Rubben-hostnavnet som testkonfig;
 disse ID-ene/adressene er **ikke** produksjonsmedier. De skal ikke kopieres til drift.
 
-OneDrive-forslaget `Radio Rubben / Sosiale Medier / Nyhetsbilder /
-RadioRubben-Nyhetsbilder-v1.2` er ikke opprettet eller bekreftet opplastet.
-Dagens dokumenterte OneDrive-struktur har nyere nummererte mapper.
-Endelig arkivplass må bekreftes ved faktisk arkivering av originalpakken.
+Originalpakken er faktisk arkivert og lest tilbake med identisk SHA-256 i
+OneDrive: `Radio Rubben / 02 Profil og maler / Nyhetsbilder / RadioRubben-Nyhetsbilder-v1.2`.
+Item: `012VNUSIGB4FUDOXKHQRAYD3WJSRTTNAJY`.
+[Originalpakke](https://radiorubben-my.sharepoint.com/personal/thomas_sellevold-oystad_radiorubben_no/Documents/Radio%20Rubben/02%20Profil%20og%20maler/Nyhetsbilder/RadioRubben-Nyhetsbilder-v1.2/RadioRubben-Nyhetsbilder-v1.2.zip).
+Samme mappe inneholder `MEDIEREGISTER-PRODUKSJON.json` med faktiske ID-er/URL-er
+og skjermbilder fra mobil- og skrivebordskontrollen.
+
+Produksjonsarkiv:
+`/customers/9/3/1/cptk37ymg/users/cptk37ymg_w1417156/.radiorubben-deploy/news-images/archive/RadioRubben-Nyhetsbilder-v1.2.zip`.
+Produksjonsmedier:
+`/run/webroots/r1417157/wp-content/uploads/rr-news-images/RadioRubben-Nyhetsbilder-v1.2`.
+ID-er 1352–1372. Bremnes: liggende 1361, kvadrat 1362, story 1363.
+Produksjonens katalog-API er kontrollert, og alle 21 offentlige HTTPS-filer er
+lastet ned og sjekket mot originalhashene. Gjentatt import ga samme mapping.
+WordPress-kontroll 38621341817 bekrefter 76 uendrede artikler.
 
 ## Verifisert lokalt
 
@@ -120,10 +134,30 @@ Endelig arkivplass må bekreftes ved faktisk arkivering av originalpakken.
 
 Dette dokumenterer programflyt og lokal rendering. De semantiske testsvarene er
 syntetiske; de er **ikke** en evaluering av den levende modellens treffsikkerhet.
-Produksjonens PHP/MySQL, aktive tema, Optimole/CDN og eksterne sosiale flater er
-ikke verifisert. Ingen reell sak er godkjent eller publisert under testene.
+Produksjonens WordPress 7.1.3/PHP 8.2.34, aktive Next-tema, Optimole 4.2.16,
+PHP-bildemarkup og faktiske CSS er etterkontrollert. Alle ni kontrollbilder
+(sju kort, artikkel og prioritert kort) er hele ved 390/1280 px. Visningen er
+syntetisk; ingen artikkel ble opprettet. Eksterne sosiale flater er uprøvd.
+Ingen reell sak er godkjent eller publisert under testene.
 
-## Kontrollert innføring
+## Verifisert aktivering
+
+[Produksjonspilot 38623968749](https://github.com/toystad461/radiorubben-web/actions/runs/38623968749)
+bestod med faktisk `gpt-4.1-mini` og autentisert WordPress-katalog. Bremnes fikk
+bremnes-fotball, Brann fikk sport, politikk/tjeneste og konsert/idrett ble skilt,
+frisør fikk INGEN_PASSENDE_BILDE, maritimt verksted fikk naeringsliv. Alle valg
+var stabile ved nytt forsøk. Dette er åtte syntetiske prøvesaker, ikke ekte
+redaksjonelt innhold eller en garanti for alle fremtidige motivvurderinger.
+
+`studio-private/config/news-images-enabled.php` ble atomisk satt til `true`
+og lest tilbake. Øvrig privat konfigurasjon og sendeliste var uendret. Backup:
+`/home/cptk37ymg_w1417156/.radiorubben-studio-deploy/backups/news-images-activation-38623968749-1`.
+Kun nye utkast tar i bruk automatvalget. Eksisterende sluttgodkjenning består.
+DRIFTSKVITTERING.txt, aktiveringskvittering, faktiske medier og skjermkontroll
+ligger sammen med originalpakken i OneDrive. Første virkelige sak skal gjennom
+vanlig redaksjonell kontroll; ingen slik sak ble publisert som utrullingstest.
+
+## Innføringsprosedyre (gjennomført 14.10.2026)
 
 1. Gjennomgå begge PR-er. Avstem selektivt mot ferske produksjonsfiler og ta
    privat kodebackup. Ikke rull ut hele repositoryet eller eldre PR-kjeder.
