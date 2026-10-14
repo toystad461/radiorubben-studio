@@ -1,5 +1,25 @@
 # Studio – felles status og arbeidsliste
 
+## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
+
+Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
+som 2c9a221, jobb 38617872866. WordPress-utvidelsen er aktiv med 21 verifiserte
+produksjonsmedier (1352–1372). OneDrive-originalen er lest tilbake med identisk
+SHA-256. WordPress-kontroll 38621341817 bekrefter at 76 artikler er uendret.
+Produksjonens bilder, PHP-markup og aktive stilark er visuelt kontrollert ved
+390/1280 px; hele logoer og KI-tekst vises i kort, artikkel og prioritert kort.
+
+Aktivering stoppet trygt i modellpiloten: modellen returnerte Markdown rundt
+JSON og omskrev enkelte sitater. Bildevalget er fortsatt av. En avgrenset
+rettelse krever nå strukturert JSON og lar modellen velge belegg fra ordrette
+utdrag av saken. Hele saksteksten inngår fortsatt i vurderingen; alle tidligere
+tematiske sperrer og menneskelig sluttgodkjenning består. Målrettet lokal test
+består, inkludert fortsatt avvisning av ugyldig svar. Neste steg er CI,
+selektiv publisering og den samme åtte-sakers piloten før aktivering.
+
+Faktisk OneDrive-mappe: Radio Rubben / 02 Profil og maler / Nyhetsbilder /
+RadioRubben-Nyhetsbilder-v1.2. Ingen reell sak er publisert som test.
+
 ## Nyhetsbilder v1.2 – kode og lokal verifisering, 14.10.2026
 
 Bestilt: vedlagt pakke med 21 bilder inn i eksisterende nyhetsgodkjenning.
