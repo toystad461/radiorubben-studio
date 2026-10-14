@@ -17,5 +17,5 @@ if(root){
  start.addEventListener('click',()=>{if(navigator.locks)navigator.locks.request('rrMusicAudioQueue',{ifAvailable:true},lock=>lock?loop():(status.textContent='Køen kjører i en annen fane.'));else loop();});
  pause.addEventListener('click',()=>{stopping=true;sessionStorage.removeItem('rrAudioQueueRun');status.textContent='Pauser etter denne låten. Ferdige analyser beholdes.';});
  window.addEventListener('pagehide',()=>{stopping=true;worker?.terminate();clearInterval(heartbeat);if(current)navigator.sendBeacon('/music-library-queue.php',new Blob([JSON.stringify({action:'pause',csrf:root.dataset.csrf,id:current.id,token:current.token})],{type:'application/json'}));});
- refresh().then(()=>{if(root.dataset.autostart==='yes'||sessionStorage.getItem('rrAudioQueueRun')==='yes')start.click();}).catch(error=>{status.textContent=error.message;});
+ refresh().then(jobs=>{if(root.dataset.autostart==='yes'||sessionStorage.getItem('rrAudioQueueRun')==='yes')start.click();else status.textContent=jobs.length?'Køen er lest. Se status ved hver låt, eller velg Fortsett analysekø.':'Køen er tom. Nye opplastinger analyseres automatisk.';}).catch(error=>{status.textContent=error.message;});
 }
