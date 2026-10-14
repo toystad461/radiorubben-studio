@@ -109,7 +109,7 @@ function studio_memory_change(string $action, array $input, array $user, ?string
             if (count($board['editorialRules']) + count($texts) > 300)
                 throw new InvalidArgumentException('Regelregisteret er fullt. Kontakt administrator.');
             foreach ($texts as $text) $board['editorialRules'][] = ['id'=>bin2hex(random_bytes(8)), 'program'=>'god-morgen-vestland',
-                'text'=>$text, 'status'=>'pending', 'revision'=>1, 'evidence'=>$evidence,
+                'text'=>$text, 'status'=>'pending', 'revision'=>1, 'evidence'=>$evidence, 'scope'=>($input['scope']??'')==='shared'?'shared':'program',
                 'createdAt'=>gmdate('c'), 'createdBy'=>$actor,
                 'history'=>[['action'=>'propose', 'at'=>gmdate('c'), 'actor'=>$actor]]];
             return;
@@ -118,6 +118,28 @@ function studio_memory_change(string $action, array $input, array $user, ?string
             if ($rule['id'] !== ($input['id'] ?? '')) continue;
             if ($rule['revision'] !== (int)($input['revision'] ?? 0))
                 throw new InvalidArgumentException('Regelen ble endret. Last siden på nytt.');
+            if ($action === 'edit') {
+                if (!in_array($rule['status'], ['pending','approved'], true))
+                    throw new InvalidArgumentException('Bare forslag og aktive regler kan redigeres.');
+                $text = is_string($input['text'] ?? null) ? trim($input['text']) : '';
+                if (studio_board_length($text) < 10 || studio_board_length($text) > 500
+                    || $text !== strip_tags($text) || preg_match('/[\x00-\x1f\x7f]/', $text))
+                    throw new InvalidArgumentException('Skriv én regel på 10–500 tegn uten HTML.');
+                if (($input['styleOnly'] ?? '') !== '1')
+                    throw new InvalidArgumentException('Bekreft at regelen gjelder språk eller form.');
+                if ($text === $rule['text'] && (($input['scope']??'')==='shared'?'shared':'program')===($rule['scope']??'program')) throw new InvalidArgumentException('Regelteksten er ikke endret.');
+                foreach ($board['editorialRules'] as $other)
+                    if ($other['id'] !== $rule['id'] && $other['program'] === $rule['program']
+                        && in_array($other['status'], ['pending','approved'], true) && $other['text'] === $text)
+                        throw new InvalidArgumentException('Denne regelen finnes allerede.');
+                $rule['history'][] = ['action'=>'edit', 'at'=>gmdate('c'), 'actor'=>$actor,
+                    'previousStatus'=>$rule['status'], 'previousRevision'=>$rule['revision'], 'previousText'=>$rule['text'], 'previousScope'=>$rule['scope']??'program'];
+                $rule['text'] = $text;
+                $rule['scope'] = ($input['scope']??'')==='shared'?'shared':'program';
+                $rule['status'] = 'pending';
+                $rule['revision']++;
+                return;
+            }
             $next = match ($action) {
                 'approve' => $rule['status'] === 'pending' ? 'approved' : null,
                 'reject' => $rule['status'] === 'pending' ? 'rejected' : null,

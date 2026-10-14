@@ -1,5 +1,24 @@
 # Studio – felles status og arbeidsliste
 
+## Læring og regeladministrasjon – 14.10.2026
+
+Bestilt: mindre informasjon på læringssiden, egen side for redigering/fjerning
+av aktive regler og rettet innsending til godkjenning. Separat gren fra main
+0c76a41ef5e693879b31deddff2580354818a34f, uten eldre PR-avhengigheter.
+`learning.php` viser skjema og lenke til forslag; `learning-rules.php` viser
+forslag, aktive regler og historikk. Sju forhåndsutfylte standardregler fjernes:
+de kunne allerede være aktive og fikk da hele innsendingen avvist som duplikat.
+Vellykket innsending går direkte til forslagene med lagringskvittering.
+Administrator kan redigere en regel; tidligere tekst, identitet og belegg
+bevares. Endret regel tas ut av bruk til separat godkjenning av ny revisjon.
+«Fjern fra bruk» bruker eksisterende deaktivering, ingen permanent sletting.
+
+Kontrollert lokalt: 40 læringskontroller, sju kontroller av faktisk sideflyt
+(innsending, redigering, godkjenning, CSRF, revisjonskonflikt, duplikat og rolle),
+samt mobil/desktop 390/1280. Syntetiske data, ingen reelle regler endret.
+Ingen merge eller produksjonsdeploy. Selektiv filavstemming og autorisert
+utrulling gjenstår. Fotballrobotens separate læring/dataflyt er ikke endret.
+
 ## Studio-musikk og neste stikk – lokal førsteversjon, 12.10.2026
 
 Bestilt: status høyre, tre neste låter, stikkvalg over tekst og ett klikk
