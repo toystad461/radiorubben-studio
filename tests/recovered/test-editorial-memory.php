@@ -68,7 +68,7 @@ try {
     $first=$batchBoard['editorialRules'][0];
     studio_memory_change('approve',['id'=>$first['id'],'revision'=>1],$admin,$batchPath);
     check(count(studio_memory_context(studio_board_read($batchPath),'god-morgen-vestland')['rules'])===1,'only approved instruction becomes active');
-    $edit=['id'=>$first['id'],'revision'=>2,'text'=>'Bruk konkrete verb og korte setninger.','styleOnly'=>'1'];
+    $edit=['id'=>$first['id'],'revision'=>2,'text'=>'Bruk konkrete verb og korte setninger.','styleOnly'=>'1','scope'=>'shared'];
     $before=file_get_contents($batchPath);
     rejected(fn()=>studio_memory_change('edit',$edit,$presenter,$batchPath),'presenter cannot edit rules');
     rejected(fn()=>studio_memory_change('edit',array_replace($edit,['revision'=>1]),$admin,$batchPath),'stale rule edit rejected');
@@ -78,6 +78,7 @@ try {
     check(file_get_contents($batchPath)===$before,'rejected edits preserve stored data');
     studio_memory_change('edit',$edit,$admin,$batchPath);
     $edited=studio_board_read($batchPath)['editorialRules'][0];
+    check($edited['scope']==='shared','shared scope requires explicit new approval');
     check($edited['status']==='pending' && $edited['revision']===3,'edit requires new approval');
     check($edited['history'][2]['previousText']===$first['text'],'previous rule text is preserved');
     check($edited['evidence']===$first['evidence'],'original evidence is preserved');
