@@ -14,7 +14,7 @@ foreach($state['files'] as $path=>$expected){
  if($expected['source']!==$expected['live'])$differences[$path]=$expected;
  $actual[$path]=$hash;
 }
-$paths=json_decode(base64_decode($argv[1]),true,32,JSON_THROW_ON_ERROR);
+$paths=json_decode(base64_decode(getenv('RR_IMAGE_AUDIT_PATHS')),true,32,JSON_THROW_ON_ERROR);
 $selected=[];
 foreach($paths as $path){
  if(!preg_match('~^studio-(public|private)/[a-zA-Z0-9_./-]+$~D',$path)||str_contains($path,'..')||is_link($root.'/'.$path))throw new RuntimeException('Invalid candidate path');

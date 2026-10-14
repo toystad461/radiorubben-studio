@@ -131,7 +131,8 @@ ikke verifisert. Ingen reell sak er godkjent eller publisert under testene.
    kjør `wp rr-news-images import /faktisk/sti/pakke.zip`, deretter
    `wp rr-news-images verify`. Registrer kvittering og produksjonens faktiske medier.
 3. Rull ut berørte Studio-filer. `news_images_enabled` er `false` som standard.
-   Denne innstillingen legges i eksisterende private Studio-konfig ved aktivering.
+   Aktivering skjer med den private filen `config/news-images-enabled.php`, som
+   returnerer `true`. Eksisterende `config/local.php` og nøkler omskrives ikke.
 4. Prøv nye utkast med den levende modellen, inkludert grensetilfellene over.
    Kontroller artikkel, kort, mobil, desktop og tilgjengelig deling i faktisk tema/CDN.
    Ingen virkelig publisering uten separat redaksjonell sluttgodkjenning.

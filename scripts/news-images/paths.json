@@ -16,5 +16,6 @@
   "studio-public/case.php",
   "studio-public/news-image-export.php",
   "studio-public/newsdesk-image.php",
-  "studio-public/newsdesk.php"
+  "studio-public/newsdesk.php",
+  "studio-private/app/config.php"
 ]

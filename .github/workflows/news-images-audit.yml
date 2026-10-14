@@ -34,7 +34,7 @@ jobs:
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
           printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
           payload=$(base64 -w0 scripts/news-images/paths.json)
-          ssh -T -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 "$SSH_USER@$SSH_HOST" "php /dev/stdin '$payload'" < scripts/news-images/audit.php | tee "$RUNNER_TEMP/news-images-audit.json"
+          ssh -T -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 "$SSH_USER@$SSH_HOST" "RR_IMAGE_AUDIT_PATHS='$payload' php" < scripts/news-images/audit.php | tee "$RUNNER_TEMP/news-images-audit.json"
       - uses: actions/upload-artifact@v4
         with:
           name: news-images-audit
