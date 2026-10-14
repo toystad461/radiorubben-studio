@@ -29,6 +29,9 @@ foreach($rows as [$title,$body,$theme,$angle,$club]){
  $candidate=['category'=>'local','entities'=>[],'web'=>['title'=>$title,'intro'=>$body,'body'=>$body]];
  $prepared=studio_images_prepare($candidate,['news_images_enabled'=>true,'openai_model'=>'synthetic'],static function($config,$payload)use($ctx,$answer){
   $input=json_decode($payload['input'],true);if($input['article']!==$ctx||count($input['themes'])!==7)throw new RuntimeException('Incomplete semantic context');
+  check(($payload['text']['format']['strict']??false)===true,'image assessment requires structured JSON');
+  foreach($payload['text']['format']['schema']['properties']['evidence']['items']['enum'] as $quote)
+   check(str_contains(implode("\n",[$ctx['title'],$ctx['intro'],$ctx['body']]),$quote),'schema evidence is verbatim article text');
   return json_encode($answer);
  },fn()=>$catalog);
  check(($prepared['theme_id']??null)===$theme&&($prepared['status']??'')===($theme?'selected':'INGEN_PASSENDE_BILDE'),'full context selection pipeline: '.$title);
@@ -90,6 +93,8 @@ try{
  check($item['web']['imageSelection']['context_hash']===$oldContext&&studio_images_issue($item)!==null,'upload retry preserves stale context and still requires human review');
  $empty=['title'=>'Frisørsalong åpner','web'=>['title'=>'Frisørsalong åpner','intro'=>'Ny frisørsalong.','body'=>'En frisørsalong åpner.']];
  $config=['news_images_enabled'=>true,'openai_model'=>'synthetic'];
+ $invalid=studio_images_prepare($empty,$config,fn()=>"```json\n{}\n```");
+ check($invalid['status']==='BILDEVURDERING_FEILET','malformed model response still fails closed');
  $none=studio_images_prepare($empty,$config,fn()=>json_encode(['theme_id'=>null,'reason'=>'Ingen av motivene passer en frisørsalong.']));
  check($none['status']==='INGEN_PASSENDE_BILDE','no suitable image stays visible, not random fallback');
  $legacy=$empty;$legacy['web']['publication']=['featured_media'=>999];check(studio_images_prepare($legacy,$config)===null,'existing editorial profile preserved');
