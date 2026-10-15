@@ -1,0 +1,22 @@
+<?php
+define('DB_NAME', 'rr_test_wp');
+define('DB_USER', 'rr-wordpress');
+define('DB_PASSWORD', '');
+define('DB_HOST', 'localhost:/run/mysqld/mysqld.sock');
+define('DB_CHARSET', 'utf8mb4');
+define('DB_COLLATE', '');
+require __DIR__ . '/wp-salts.php';
+$table_prefix = 'rrtest_';
+define('WP_HOME', 'https://5.249.252.78/wordpress');
+define('WP_SITEURL', WP_HOME);
+define('WP_ENVIRONMENT_TYPE', 'staging');
+define('DISABLE_WP_CRON', true);
+define('WP_HTTP_BLOCK_EXTERNAL', true);
+define('AUTOMATIC_UPDATER_DISABLED', true);
+define('DISALLOW_FILE_EDIT', true);
+define('DISALLOW_FILE_MODS', true);
+define('FORCE_SSL_ADMIN', true);
+define('WP_DEBUG', false);
+define('WP_MEMORY_LIMIT', '256M');
+if (!defined('ABSPATH')) define('ABSPATH', __DIR__ . '/');
+require_once ABSPATH . 'wp-settings.php';

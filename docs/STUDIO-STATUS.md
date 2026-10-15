@@ -1,5 +1,25 @@
 # Studio – felles status og arbeidsliste
 
+## Isolert Uniweb-VPS-test — 15.10.2026
+
+Bestilt: ny VPS 5363103 som testmiljø, Ubuntu 24.04 LTS uten kontrollpanel,
+ingen DNS/endringer i produksjon. Server- og root-innlogging er bekreftet.
+Systemoppdateringer er utført, brannmur aktivert, PHP/Nginx/MariaDB installert.
+Node.js 24.22.0 LTS/npm 11.19.1 er installert; robotens seks tester består.
+Studio sin fulle Composer-testpakke består på VPS-ens PHP 8.3.6. Faktiske
+HTTP-/fil-/nettverks-/mailkontroller består med appene på loopback.
+Egen gren `infra/uniweb-vps-test-5363103`, draft PR96 fra main 96ff332, uten merge.
+Vertssperret bootstrap bruker egne data/systembrukere og blokkerer PHP-utgående
+trafikk, mail og produksjonsintegrasjoner. WordPress-testen har separat database.
+Testmiljøet er aktivt: Studio på `https://5.249.252.78` og WordPress under
+`https://5.249.252.78/wordpress/`, begge på HTTPS 443 med innloggingskrav.
+Begge innloggingssider er bekreftet i Cloud Browser. Node er klargjort uten worker.
+WP-CLI skrev feilaktig det første testpassordet i konsollen. Tilgangen ble stengt,
+passordløpet rettet, og eieren har nå selv byttet begge passord. Gamle sesjoner
+er ugyldiggjort; ingen passordverdi lagres i Git. Sertifikatfornyelsens dry-run
+består. Endelig runtime for infrastrukturen er 551a476, uten produksjonsdeploy.
+Eierens nettleserinnlogging og tester inne i appene gjenstår. Se UNIWEB-VPS-TEST.md.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
