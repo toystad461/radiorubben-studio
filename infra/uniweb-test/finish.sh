@@ -3,10 +3,13 @@
 set -Eeuo pipefail
 set +x
 umask 077
+ulimit -c 0
+trap 'unset rr_test_password rr_test_confirmation' EXIT
 [[ $(id -u) == 0 && $(hostname) == vps-5363103 && -t 0 ]]
 state=/var/lib/radiorubben-test
 root=/srv/radiorubben-test
 [[ -f $state/prepared && ! -f $state/active ]]
+[[ ! -f $state/credential-rotation-required ]]
 /usr/local/sbin/rr-test-verify
 if [[ ! -f /etc/letsencrypt/live/5.249.252.78/fullchain.pem ]]; then
     printf '\nHTTPS for testserverens IP. Les og godta sertifikatvilkarene i neste steg.\n'
@@ -26,9 +29,10 @@ if [[ ! -f $state/accounts-created ]]; then
     [[ $rr_test_password == "$rr_test_confirmation" && ${#rr_test_password} -ge 14 && ${#rr_test_password} -le 72 ]] || { unset rr_test_password rr_test_confirmation; echo 'Passordene samsvarte ikke eller hadde feil lengde.'; exit 1; }
     unset rr_test_confirmation
     printf '%s' "$rr_test_password" | php -r '$s=stream_get_contents(STDIN); exit(strlen($s)>=14 && strlen($s)<=72 ? 0 : 1);'
-    printf '%s\n' "$rr_test_password" | runuser -u rr-wordpress -- wp --path="$root/wordpress" core install \
-        --url=https://5.249.252.78:8443 --title='Radio Rubben TEST' \
-        --admin_user=thomas --admin_email=thomas@example.test --skip-email --prompt=admin_password
+    # WP-CLI --prompt echoes the reconstructed command, including the password.
+    # Keep credentials entirely out of WP-CLI and call core's API over stdin.
+    install -o root -g rr-wordpress -m 0640 "$state/tools/wordpress-account.php" "$root/wordpress-account.php"
+    printf '%s' "$rr_test_password" | runuser -u rr-wordpress -- php "$root/wordpress-account.php" install
     # The helper is copied outside root's private tools folder for this invocation.
     install -o root -g rr-studio -m 0640 "$state/tools/create-studio-user.php" "$root/create-studio-user.php"
     printf '%s\n' "$rr_test_password" | runuser -u rr-studio -- php "$root/create-studio-user.php"

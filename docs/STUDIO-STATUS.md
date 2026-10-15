@@ -11,9 +11,12 @@ HTTP-/fil-/nettverks-/mailkontroller består med appene på loopback.
 Egen gren `infra/uniweb-vps-test-5363103`, draft PR96 fra main 96ff332, uten merge.
 Vertssperret bootstrap bruker egne data/systembrukere og blokkerer PHP-utgående
 trafikk, mail og produksjonsintegrasjoner. WordPress-testen har separat database.
-HTTPS og nye testkontoer fullføres av eierens interaktive sluttsteg; passord
-skal aldri leses, logges eller sendes i chat. Se UNIWEB-VPS-TEST.md for faktiske
-kontroller og gjenstående arbeid. Ingen produksjonsdeploy eller redaksjonell handling.
+HTTPS-sertifikat og begge testkontoer ble opprettet etter eierens sluttsteg.
+Etterkontrollen avdekket at WP-CLI `--prompt` skrev passord i konsollutskriften.
+Testportene 443/8443 er derfor stengt igjen. Ingen passordverdi lagres i Git.
+Passordhåndteringen erstattes med avgrensede PHP-hjelpere som leser stdin uten
+WP-CLI; eieren må velge et helt nytt passord før testtilgangen åpnes igjen.
+Se UNIWEB-VPS-TEST.md for kontroller og gjenstående arbeid. Ingen produksjonsdeploy.
 
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 

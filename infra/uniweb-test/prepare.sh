@@ -108,5 +108,6 @@ install -d -m 0700 "$state/tools"
 cp "$here"/* "$state/tools/"
 install -m 0700 "$here/finish.sh" /usr/local/sbin/rr-test-finish
 install -m 0700 "$here/verify.sh" /usr/local/sbin/rr-test-verify
+install -m 0700 "$here/rotate-password.sh" /usr/local/sbin/rr-test-rotate-password
 printf '%s\n' "studio=$studio_commit" "web=$web_commit" "prepared=$(date -Is)" > "$state/prepared"
 echo 'PREPARED: apps are reachable only on loopback; public port 80 serves ACME only.'

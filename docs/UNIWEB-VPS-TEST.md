@@ -35,8 +35,8 @@ kun på ACME-verifisering, ellers 404. Etter eierens sluttføring:
 - Studio: `https://5.249.252.78`, lokal testkonto `thomas@example.test`.
 - WordPress: `https://5.249.252.78:8443`, administrator `thomas`.
 - Innlogging kreves også for WordPress-forsiden og REST. Begge har noindex.
-- Eieren velger passord direkte i terminalen. Det vises ikke og sendes ikke
-  som kommandolinjeargument, miljøvariabel, logg eller Git-fil; appene lagrer hash.
+- Eieren velger passord direkte i terminalen. Rettingen bruker PHP direkte og
+  stdin uten WP-CLI, kommandolinjeargument eller miljøvariabel; appene lagrer hash.
   Den lokale Studio-kontoen gis adminrolle av den vertssperrede CLI-klargjøringen,
   slik at CRM og redaksjon kan testes uten å etterligne en Entra-identitet.
 
@@ -46,7 +46,7 @@ På den nye serveren installeres oppdateringer og nødvendige Ubuntu-pakker.
 Kjør så `bash infra/uniweb-test/prepare.sh` fra den gjennomgåtte grenen.
 Kjør `/usr/local/sbin/rr-test-verify` før eierens sluttsteg.
 Eieren kjører `/usr/local/sbin/rr-test-finish`, godtar Let's Encrypt-vilkårene
-og skriver et nytt testpassord to ganger. Scriptet viser aldri passordet.
+og skriver et nytt testpassord to ganger. Se hendelsen nedenfor om første utgave.
 HTTPS-portene åpnes først etter at kontoene finnes og kontrollene består.
 Certbot snap fornyer IP-sertifikatet automatisk; deploy-hook laster Nginx på nytt.
 IP-sertifikatet er kortlivet og fornyelse må etterkontrolleres med dry-run.
@@ -85,4 +85,21 @@ Sluttkontrollen består: Studio-login 200, gjest sendes til innlogging, ekstern
 auth og private filer avvises, faktisk PHP-socket mot internett mislykkes,
 Studio kan ikke lese WordPress-konfigurasjon, og mail-funksjonen er deaktivert.
 Studio merkes synlig som TESTMILJØ av testserverens Nginx-konfigurasjon.
-Sertifikat, kontoer og nettleserprøve registreres etter faktisk sluttføring.
+Let's Encrypt-vilkårene ble godkjent etter konkret Y fra eieren. IP-sertifikatet
+ble utstedt med utløp 22.10.2026 og automatisk fornyelse planlagt av Certbot.
+Eieren skrev testpassord direkte i konsollen; WordPress-kjernen, Studio-kontoen
+og Next-temaet ble aktivert. Sluttkontrollen besto før testportene ble åpnet.
+
+Etterkontroll 15.10 kl. 15 norsk tid avdekket en sikkerhetsfeil i klargjøringen:
+WP-CLI `--prompt=admin_password` skrev den rekonstruerte kommandoen med passord
+i konsollutskriften. Verdien skal ikke kopieres til kode, dokumentasjon eller
+artefakter. Testportene 443/8443 ble stengt umiddelbart; SSH og ACME er bevart.
+Den første forsikringen om skjult verktøyutskrift var dermed feil.
+
+Rettet løp: WordPress-passord går direkte til PHP-kjernens API via stdin,
+uten WP-CLI. Kontrollerte PHP-hjelpere for begge appene skriver bare fast
+status, avviser gjenbruk, og ugyldiggjør gamle sesjoner ved bytte. Eksisterende
+testdata og roller bevares. ABSPATH-advarselen i WP-CLI er også rettet.
+`rr-test-rotate-password` krever at eieren selv skriver og bekrefter et helt
+nytt passord. Først etter vellykket bytte og isolasjonskontroll åpnes portene.
+Faktisk passordbytte, nettleserinnlogging og fornyelses-dry-run gjenstår.

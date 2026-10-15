@@ -18,5 +18,5 @@ define('DISALLOW_FILE_MODS', true);
 define('FORCE_SSL_ADMIN', true);
 define('WP_DEBUG', false);
 define('WP_MEMORY_LIMIT', '256M');
-define('ABSPATH', __DIR__ . '/');
+if (!defined('ABSPATH')) define('ABSPATH', __DIR__ . '/');
 require_once ABSPATH . 'wp-settings.php';
