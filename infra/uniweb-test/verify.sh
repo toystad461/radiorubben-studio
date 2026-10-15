@@ -29,7 +29,9 @@ if [[ -f /var/lib/radiorubben-test/accounts-created ]]; then
     test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/)" == 302
 fi
 if [[ -f /etc/nginx/conf.d/rr-test-tls.conf ]]; then
-    curl -fsS --resolve 5.249.252.78:443:127.0.0.1 https://5.249.252.78/local/login.php >/dev/null
-    curl -fsS --resolve 5.249.252.78:8443:127.0.0.1 https://5.249.252.78:8443/wp-login.php >/dev/null
+    # Follow the real entry point, so an internal port in a redirect fails here.
+    test "$(curl -fsSL --max-redirs 5 --proto-redir '=https' --resolve 5.249.252.78:443:127.0.0.1 -o /dev/null -w '%{http_code} %{url_effective}' https://5.249.252.78/)" == '200 https://5.249.252.78/local/login.php'
+    wp_destination=$(curl -fsSL --max-redirs 5 --proto-redir '=https' --resolve 5.249.252.78:8443:127.0.0.1 -o /dev/null -w '%{http_code} %{url_effective}' https://5.249.252.78:8443/)
+    [[ $wp_destination == '200 https://5.249.252.78:8443/wp-login.php'* ]]
 fi
 echo 'PASS: private files, login gates, disabled external auth, network isolation and blocked email.'
