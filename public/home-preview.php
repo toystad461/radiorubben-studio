@@ -37,6 +37,15 @@ require dirname(__DIR__) . '/app/views/head.php';
     <a href="/sending.php" class="rr-home-stat"><strong><?= $boardError ? '—' : $ready ?></strong><span>Klare redaksjonspunkter</span><small>Ikke bekreftet sendt ↗</small></a>
     <a href="/ai-studio.php" class="rr-home-stat"><strong>—</strong><span>Planlagte innslag</span><small>Ikke tilkoblet planstatus ↗</small></a>
   </section>
+  <section class="rr-home-listeners" aria-labelledby="rr-home-listener-title">
+    <div class="rr-home-panel-head"><h2 id="rr-home-listener-title">Lyttere og radiostatistikk</h2><a href="/listener-stats-preview.php">Se lytterstatistikk ↗</a></div>
+    <div class="rr-home-stats rr-home-listener-cards">
+      <a class="rr-home-stat" href="/listener-stats-preview.php"><strong>—</strong><span>Lyttere nå</span><small>Sanntid · ikke tilkoblet</small></a>
+      <a class="rr-home-stat" href="/listener-stats-preview.php"><strong>—</strong><span>Unike lyttere</span><small>Siste 24 timer</small></a>
+      <a class="rr-home-stat" href="/listener-stats-preview.php"><strong>—</strong><span>Lyttetimer (TTSL)</span><small>Siste 7 dager</small></a>
+      <a class="rr-home-stat" href="/listener-stats-preview.php"><strong>—</strong><span>Topp samtidige</span><small>Siste 24 timer</small></a>
+    </div>
+  </section>
   <div class="rr-home-grid">
     <section class="rr-home-panel rr-home-editorial" aria-labelledby="rr-home-editor-title">
       <div class="rr-home-panel-head"><h2 id="rr-home-editor-title">Redaksjonell arbeidskø</h2><a href="/control.php">Åpne kontrollsenter ↗</a></div>
