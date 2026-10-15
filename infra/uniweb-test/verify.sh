@@ -5,7 +5,7 @@ root=/srv/radiorubben-test
 systemctl is-active --quiet nginx php8.3-fpm mariadb
 [[ $(systemctl show php8.3-fpm -p PrivateNetwork --value) == yes ]]
 test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/local/login.php)" == 200
-test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/)" == 302
+test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/)" == 303
 test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/auth/start.php)" == 403
 test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/config/local.php)" == 404
 test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8081/wp-config.php)" == 403

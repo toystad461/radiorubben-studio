@@ -70,4 +70,15 @@ miljøet brukes til komplette publiserings- eller kampreiser.
 2026-10-15: innlogging og root-tilgang bekreftet, Ubuntu 24.04.5 x86_64,
 2 CPU, 3,8 GiB RAM og 96 GiB filsystem. Ingen feilede systemtjenester.
 Ubuntu-oppdatering/pakker fullført og UFW aktivert med SSH bevart.
-Appinstallasjon, sertifikat, kontoer og nettleserprøve registreres etter faktisk kontroll.
+Node.js 24.22.0 LTS / npm 11.19.1 er installert og signatur-/SHA256-kontrollert.
+Robot-main `8feae8aa35d604a817dd50a3ece091d6b3da8d4e` er klonet uten hemmeligheter:
+`npm ci --ignore-scripts`, bygg og alle seks tester består i eget nettverksrom.
+Studio sin fulle Composer-testpakke består på VPS-ens PHP 8.3.6, i separat
+kildekopi og nettverksrom. Denne testen skrev ikke til testappens runtime-data.
+
+WordPress 7.1.3 nb_NO er klargjort. Første WP-CLI-utpakking ga avkuttede lange
+filnavn og ble avvist av kontrollsummesjekken. Uttrekket er bevart privat for
+feilsøking. Offisiell ZIP pakket ut med native unzip består full kjernesjekk.
+Ingen databasebruker eller offentlig tilgang ble aktivert fra det feilede uttrekket.
+Nginx/PHP-FPM/MariaDB er aktive med loopback-appporter. Node-jobber er ikke aktivert.
+Sertifikat, kontoer og nettleserprøve registreres etter faktisk sluttføring.
