@@ -103,3 +103,11 @@ testdata og roller bevares. ABSPATH-advarselen i WP-CLI er også rettet.
 `rr-test-rotate-password` krever at eieren selv skriver og bekrefter et helt
 nytt passord. Først etter vellykket bytte og isolasjonskontroll åpnes portene.
 Faktisk passordbytte, nettleserinnlogging og fornyelses-dry-run gjenstår.
+
+Rettelse 461247b er installert på VPS-en. Bash/PHP-syntaks, kontokontroller
+og isolasjonskontroll består. Direkte prøver mot begge appenes hjelpere med
+syntetiske inndata bekrefter at gyldig/ugyldig lengde håndteres og at ingen av
+prøveverdiene finnes i stdout/stderr. Disse prøvene endret ingen passord.
+WordPress nullstiller den generelle globale variabelen `$action` under oppstart;
+hjelperen bruker derfor et eget variabelnavn, kontrollert på faktisk runtime.
+Ingen reell nettleserinnlogging eller vellykket passordrotasjon er bekreftet ennå.
