@@ -56,8 +56,8 @@ require dirname(__DIR__) . '/app/views/head.php';
       <div class="rr-home-panel-head"><h2 id="rr-home-radio-title">Musikk og radiotid</h2><a href="/ai-studio.php">Gå i Studio ↗</a></div>
       <div class="rr-home-onair"><span class="rr-home-eyebrow">SPILLES NÅ</span><strong>Ikke tilkoblet</strong><small>Radio.co-status er ikke verifisert her. Ingen antatt livedata.</small></div>
       <div class="rr-home-tiles">
-        <a href="/ai-studio.php"><span aria-hidden="true">♫</span><strong>Musikk</strong><small>Arbeidsflate og kø ↗</small></a>
-        <a href="/sending.php"><span aria-hidden="true">◷</span><strong>Radiotid</strong><small>Sendeliste ↗</small></a>
+        <a href="/music-library.php"><span aria-hidden="true">♫</span><strong>Musikk</strong><small>Musikkbibliotek ↗</small></a>
+        <a href="/music-plan.php"><span aria-hidden="true">◷</span><strong>Radiotid</strong><small>Musikk- og programplan ↗</small></a>
       </div>
       <p class="rr-home-system">Systemstatus: <strong>ikke kontrollert</strong> · Ingen publisering eller avspilling kan startes fra denne testsiden.</p>
     </section>
