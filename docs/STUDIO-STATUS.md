@@ -5,8 +5,10 @@
 Bestilt: ny VPS 5363103 som testmiljø, Ubuntu 24.04 LTS uten kontrollpanel,
 ingen DNS/endringer i produksjon. Server- og root-innlogging er bekreftet.
 Systemoppdateringer er utført, brannmur aktivert, PHP/Nginx/MariaDB installert.
-Thomas ønsker også Node.js; 24 LTS klargjøres som tillegg til eksisterende PHP.
-Egen gren `infra/uniweb-vps-test-5363103` fra main 96ff332, uten merge.
+Node.js 24.22.0 LTS/npm 11.19.1 er installert; robotens seks tester består.
+Studio sin fulle Composer-testpakke består på VPS-ens PHP 8.3.6. Faktiske
+HTTP-/fil-/nettverks-/mailkontroller består med appene på loopback.
+Egen gren `infra/uniweb-vps-test-5363103`, draft PR96 fra main 96ff332, uten merge.
 Vertssperret bootstrap bruker egne data/systembrukere og blokkerer PHP-utgående
 trafikk, mail og produksjonsintegrasjoner. WordPress-testen har separat database.
 HTTPS og nye testkontoer fullføres av eierens interaktive sluttsteg; passord

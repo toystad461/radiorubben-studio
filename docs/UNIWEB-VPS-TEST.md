@@ -81,4 +81,8 @@ filnavn og ble avvist av kontrollsummesjekken. Uttrekket er bevart privat for
 feilsøking. Offisiell ZIP pakket ut med native unzip består full kjernesjekk.
 Ingen databasebruker eller offentlig tilgang ble aktivert fra det feilede uttrekket.
 Nginx/PHP-FPM/MariaDB er aktive med loopback-appporter. Node-jobber er ikke aktivert.
+Sluttkontrollen består: Studio-login 200, gjest sendes til innlogging, ekstern
+auth og private filer avvises, faktisk PHP-socket mot internett mislykkes,
+Studio kan ikke lese WordPress-konfigurasjon, og mail-funksjonen er deaktivert.
+Studio merkes synlig som TESTMILJØ av testserverens Nginx-konfigurasjon.
 Sertifikat, kontoer og nettleserprøve registreres etter faktisk sluttføring.
