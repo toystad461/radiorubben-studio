@@ -33,7 +33,7 @@ Før sluttføring kjører appene bare på `127.0.0.1:8080/8081`. Port 80 svarer
 kun på ACME-verifisering, ellers 404. Etter eierens sluttføring:
 
 - Studio: `https://5.249.252.78`, lokal testkonto `thomas@example.test`.
-- WordPress: `https://5.249.252.78:8443`, administrator `thomas`.
+- WordPress: `https://5.249.252.78/wordpress/`, administrator `thomas`.
 - Innlogging kreves også for WordPress-forsiden og REST. Begge har noindex.
 - Eieren velger passord direkte i terminalen. Rettingen bruker PHP direkte og
   stdin uten WP-CLI, kommandolinjeargument eller miljøvariabel; appene lagrer hash.
@@ -102,7 +102,7 @@ status, avviser gjenbruk, og ugyldiggjør gamle sesjoner ved bytte. Eksisterende
 testdata og roller bevares. ABSPATH-advarselen i WP-CLI er også rettet.
 `rr-test-rotate-password` krever at eieren selv skriver og bekrefter et helt
 nytt passord. Først etter vellykket bytte og isolasjonskontroll åpnes portene.
-Faktisk passordbytte, nettleserinnlogging og fornyelses-dry-run gjenstår.
+På dette tidspunktet gjensto passordbytte og etterkontroll; se sluttkvitteringen.
 
 Rettelse 461247b er installert på VPS-en. Bash/PHP-syntaks, kontokontroller
 og isolasjonskontroll består. Direkte prøver mot begge appenes hjelpere med
@@ -110,4 +110,30 @@ syntetiske inndata bekrefter at gyldig/ugyldig lengde håndteres og at ingen av
 prøveverdiene finnes i stdout/stderr. Disse prøvene endret ingen passord.
 WordPress nullstiller den generelle globale variabelen `$action` under oppstart;
 hjelperen bruker derfor et eget variabelnavn, kontrollert på faktisk runtime.
-Ingen reell nettleserinnlogging eller vellykket passordrotasjon er bekreftet ennå.
+Disse kontrollene alene bekreftet ikke brukerens passordbytte eller innlogging.
+
+### Sluttkvittering 15.10.2026
+
+Eieren har fullført det rettede, skjulte passordsteget. Begge passord er endret,
+gamle WordPress-sesjoner fjernet og Studio-kontoens versjon økt. Kontroller av
+ny hash, roller, isolasjon og HTTPS besto før tilgangen åpnet igjen.
+Den nye passordverdien er ikke lest eller gjengitt i verifiseringen.
+
+Certbot `renew --dry-run --non-interactive --cert-name 5.249.252.78` fullførte
+15:20 norsk tid med exit/result success. Certbot-loggen bekrefter at samtlige
+simulerte fornyelser lyktes. Nginx/PHP-FPM/MariaDB er aktive; ingen feilede
+systemtjenester og ingen markert omstart på kontrolltidspunktet.
+
+Nettleserprøven avdekket en Nginx-videresending med intern port. Relative
+videresendinger og kontroll av hele HTTPS-kjeden rettet dette. WordPress svarte
+lokalt på 8443, men denne porten var utilgjengelig fra Cloud Browser. Runtime
+551a476 serverer derfor WordPress under `/wordpress/` på samme HTTPS-adresse.
+Separate systembrukere, private data og PHP-pooler består. 8443 er stengt igjen.
+Faktisk WordPress-rot er fortsatt den samme; ingen testdata eller kontoer erstattet.
+
+Cloud Browser bekrefter Studio `/local/login.php` med synlig TESTMILJØ og
+WordPress `/wordpress/wp-login.php` med tittelen Radio Rubben TEST. Begge når
+innloggingssiden over gyldig HTTPS uten sikkerhetsunntak. HTTP 80 er fortsatt
+bare ACME. Private konfigurasjonsfiler avvises også gjennom WordPress-prefikset.
+Innlogging med eierens nye passord og funksjonsreiser inne i appene er ikke
+utført av agenten. Produksjon, DNS og eksisterende radiodrift er urørt.
