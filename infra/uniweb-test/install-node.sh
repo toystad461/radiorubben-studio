@@ -11,7 +11,7 @@ version=$(jq -r '[.[] | select(.version | startswith("v24.")) | select(.lts != f
 archive="node-$version-linux-x64.tar.xz"
 curl -fsSL https://github.com/nodejs/release-keys/raw/HEAD/gpg/pubring.kbx -o nodejs-keyring.kbx
 curl -fsSL "https://nodejs.org/dist/$version/SHASUMS256.txt.asc" -o SHASUMS256.txt.asc
-gpgv --keyring "$state/nodejs-keyring.kbx" --output "$state/SHASUMS256.txt" "$state/SHASUMS256.txt.asc"
+gpgv --keyring "$state/nodejs-keyring.kbx" --output "$state/SHASUMS256.txt" < "$state/SHASUMS256.txt.asc"
 curl -fsSL "https://nodejs.org/dist/$version/$archive" -o "$archive"
 sha256sum --check --ignore-missing SHASUMS256.txt
 tar -xJf "$archive" -C /opt

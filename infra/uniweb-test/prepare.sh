@@ -12,6 +12,12 @@ here=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 [[ ! -e $state/prepared ]] || { echo 'Already prepared; refusing to overwrite runtime data.'; exit 1; }
 studio_commit=96ff332d9b26f07b3be68c1d9cf2c9e58b6a7c60
 web_commit=c349fc24dd8e6df588755680f1e16c87bf281204
+if [[ ${1:-} == --resume-after-wordpress ]]; then
+    [[ -L $root/studio && -f $root/studio-data/local.php && ! -f $root/wordpress/wp-config.php ]]
+    [[ $(git -C "$root/sources/radiorubben-studio" rev-parse HEAD) == "$studio_commit" ]]
+    runuser -u rr-wordpress -- wp --path="$root/wordpress" core verify-checksums --locale=nb_NO
+else
+[[ $# == 0 ]]
 for account in rr-studio rr-wordpress rr-build; do
     id "$account" >/dev/null 2>&1 || useradd --system --create-home --shell /usr/sbin/nologin "$account"
 done
@@ -50,8 +56,9 @@ curl -fsSL https://raw.githubusercontent.com/wp-cli/builds/gh-pages/wp-cli.pgp -
 gpg --homedir "$state/wp-cli-verify" --import "$state/wp-cli-verify/wp-cli.pgp"
 gpg --homedir "$state/wp-cli-verify" --verify "$state/wp-cli-verify/wp-cli.phar.asc" "$state/wp-cli-verify/wp-cli.phar"
 install -m 0755 "$state/wp-cli-verify/wp-cli.phar" /usr/local/bin/wp
-runuser -u rr-wordpress -- wp --path="$root/wordpress" core download --locale=nb_NO
+bash "$here/download-wordpress.sh"
 runuser -u rr-wordpress -- wp --path="$root/wordpress" core verify-checksums --locale=nb_NO
+fi
 # Unix-socket authentication avoids a stored database password altogether.
 mariadb <<'SQL'
 CREATE DATABASE IF NOT EXISTS rr_test_wp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
