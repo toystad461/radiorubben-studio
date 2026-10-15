@@ -14,7 +14,7 @@ studio_commit=96ff332d9b26f07b3be68c1d9cf2c9e58b6a7c60
 web_commit=c349fc24dd8e6df588755680f1e16c87bf281204
 if [[ ${1:-} == --resume-after-wordpress ]]; then
     [[ -L $root/studio && -f $root/studio-data/local.php && ! -f $root/wordpress/wp-config.php ]]
-    [[ $(git -C "$root/sources/radiorubben-studio" rev-parse HEAD) == "$studio_commit" ]]
+    [[ $(runuser -u rr-build -- git -C "$root/sources/radiorubben-studio" rev-parse HEAD) == "$studio_commit" ]]
     runuser -u rr-wordpress -- wp --path="$root/wordpress" core verify-checksums --locale=nb_NO
 else
 [[ $# == 0 ]]
