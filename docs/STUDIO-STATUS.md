@@ -1,5 +1,18 @@
 # Studio – felles status og arbeidsliste
 
+## Isolert Uniweb-VPS-test — 15.10.2026
+
+Bestilt: ny VPS 5363103 som testmiljø, Ubuntu 24.04 LTS uten kontrollpanel,
+ingen DNS/endringer i produksjon. Server- og root-innlogging er bekreftet.
+Systemoppdateringer er utført, brannmur aktivert, PHP/Nginx/MariaDB installert.
+Thomas ønsker også Node.js; 24 LTS klargjøres som tillegg til eksisterende PHP.
+Egen gren `infra/uniweb-vps-test-5363103` fra main 96ff332, uten merge.
+Vertssperret bootstrap bruker egne data/systembrukere og blokkerer PHP-utgående
+trafikk, mail og produksjonsintegrasjoner. WordPress-testen har separat database.
+HTTPS og nye testkontoer fullføres av eierens interaktive sluttsteg; passord
+skal aldri leses, logges eller sendes i chat. Se UNIWEB-VPS-TEST.md for faktiske
+kontroller og gjenstående arbeid. Ingen produksjonsdeploy eller redaksjonell handling.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
