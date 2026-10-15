@@ -30,8 +30,7 @@ install -m 0644 "$state/tools/nginx-tls.conf" /etc/nginx/conf.d/rr-test-tls.conf
 nginx -t
 systemctl reload nginx
 /usr/local/sbin/rr-test-verify
-ufw allow 443/tcp comment 'Radio Rubben Studio TEST HTTPS'
-ufw allow 8443/tcp comment 'Radio Rubben WordPress TEST HTTPS'
+ufw allow 443/tcp comment 'Radio Rubben TEST HTTPS'
 mv "$state/credential-rotation-required" "$state/credential-rotation-resolved"
 printf '%s\n' "rotated=$(date -Is)" >> "$state/credential-rotation-resolved"
 printf '%s\n' "activated=$(date -Is)" > "$state/active"

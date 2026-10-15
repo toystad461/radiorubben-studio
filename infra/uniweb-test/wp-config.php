@@ -7,7 +7,7 @@ define('DB_CHARSET', 'utf8mb4');
 define('DB_COLLATE', '');
 require __DIR__ . '/wp-salts.php';
 $table_prefix = 'rrtest_';
-define('WP_HOME', 'https://5.249.252.78:8443');
+define('WP_HOME', 'https://5.249.252.78/wordpress');
 define('WP_SITEURL', WP_HOME);
 define('WP_ENVIRONMENT_TYPE', 'staging');
 define('DISABLE_WP_CRON', true);

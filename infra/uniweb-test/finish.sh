@@ -56,8 +56,7 @@ chmod 0755 /etc/letsencrypt/renewal-hooks/deploy/rr-nginx
 nginx -t
 systemctl reload nginx
 /usr/local/sbin/rr-test-verify
-# Open the two application ports only after authentication and TLS are ready.
-ufw allow 443/tcp comment 'Radio Rubben Studio TEST HTTPS'
-ufw allow 8443/tcp comment 'Radio Rubben WordPress TEST HTTPS'
+# Both isolated apps share the standard HTTPS entry point.
+ufw allow 443/tcp comment 'Radio Rubben TEST HTTPS'
 printf '%s\n' "activated=$(date -Is)" > "$state/active"
-printf '\nTESTMILJO KLART\nStudio: https://5.249.252.78 — thomas@example.test\nWordPress: https://5.249.252.78:8443 — thomas\nBegge bruker testpassordet du nettopp valgte.\n'
+printf '\nTESTMILJO KLART\nStudio: https://5.249.252.78 — thomas@example.test\nWordPress: https://5.249.252.78/wordpress/ — thomas\nBegge bruker testpassordet du nettopp valgte.\n'

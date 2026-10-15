@@ -10,9 +10,9 @@ try {
     $rr_account_action = $argv[1] ?? '';
     if (!in_array($rr_account_action, ['install', 'check', 'check-new', 'rotate'], true)) throw new RuntimeException();
     if ($rr_account_action === 'install') define('WP_INSTALLING', true);
-    $_SERVER['HTTP_HOST'] = '5.249.252.78:8443';
+    $_SERVER['HTTP_HOST'] = '5.249.252.78';
     $_SERVER['HTTPS'] = 'on';
-    $_SERVER['REQUEST_URI'] = '/';
+    $_SERVER['REQUEST_URI'] = '/wordpress/';
     require '/srv/radiorubben-test/wordpress/wp-load.php';
     if (DB_NAME !== 'rr_test_wp' || wp_get_environment_type() !== 'staging') throw new RuntimeException();
     add_filter('pre_wp_mail', '__return_true', PHP_INT_MAX);
