@@ -8,7 +8,7 @@ function studio_images_enabled(?array $config = null): bool { return (($config ?
 function studio_images_catalog(?array $config = null): array {
     $config ??= studio_wp_config();
     if (!studio_wp_ready($config)) throw new RuntimeException('WordPress-tilgang til bilderegisteret mangler.');
-    $body = ''; $curl = curl_init('https://www.radiorubben.no/wp-json/rr-news-images/v1/catalog');
+    $body = ''; $curl = curl_init(studio_wp_endpoint($config, 'GET', '/rr-news-images/v1/catalog'));
     curl_setopt_array($curl, [CURLOPT_HTTPGET=>true, CURLOPT_FOLLOWLOCATION=>false, CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,
         CURLOPT_SSL_VERIFYPEER=>true, CURLOPT_SSL_VERIFYHOST=>2, CURLOPT_CONNECTTIMEOUT=>5, CURLOPT_TIMEOUT=>20,
         CURLOPT_HTTPAUTH=>CURLAUTH_BASIC, CURLOPT_USERPWD=>$config['username'].':'.$config['application_password'],

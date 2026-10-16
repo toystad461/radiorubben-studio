@@ -3,10 +3,10 @@ declare(strict_types=1);
 require_once __DIR__.'/case-workflow.php';
 require_once __DIR__.'/web-publish.php';
 
-/** Fixed WordPress destination; GET only, no redirect and no credentials in output. */
+/** Deployment-bound WordPress destination; GET only, no redirect and no credentials in output. */
 function studio_wp_status_request(array $config,string $method,string $route):array {
     if(!studio_wp_ready($config)||$method!=='GET'||!preg_match('~^/posts(?:/[1-9][0-9]*)?\?~D',$route))throw new InvalidArgumentException('WordPress-lesetilgang mangler.');
-    $body='';$curl=curl_init('https://www.radiorubben.no/wp-json/wp/v2'.$route);
+    $body='';$curl=curl_init(studio_wp_endpoint($config, $method, '/wp/v2'.$route));
     curl_setopt_array($curl,[CURLOPT_HTTPGET=>true,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,
         CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_CONNECTTIMEOUT=>8,CURLOPT_TIMEOUT=>25,
         CURLOPT_HTTPAUTH=>CURLAUTH_BASIC,CURLOPT_USERPWD=>$config['username'].':'.$config['application_password'],
@@ -40,9 +40,9 @@ function studio_web_status_check(string $id,int $revision,array $user,array $con
     $lookup=['checkedHash'=>studio_web_approval_hash($item),'state'=>'not_found','checkedAt'=>gmdate('c'),'actor'=>$user['name']??'Administrator'];$confirmed=false;
     if(count($posts)>1)$lookup['state']='multiple';
     elseif(count($posts)===1){
-        $p=$posts[0];$url=parse_url($p['link']??'');
+        $p=$posts[0];
         if(!is_int($p['id']??null)||$p['id']<1||!in_array($p['status']??'',['publish','draft','pending','future','private'],true)
-            ||($url['scheme']??'')!=='https'||!in_array($url['host']??'',['radiorubben.no','www.radiorubben.no'],true)||isset($url['user'])||isset($url['pass'])
+            ||!is_string($p['link']??null)||!studio_wp_link_valid($p['link'])
             ||($postId?$p['id']!==$postId:($p['slug']??'')!=='studio-'.$id))throw new RuntimeException('WordPress-innleggets identitet kunne ikke bekreftes.');
         $lookup+=['id'=>$p['id'],'status'=>$p['status'],'link'=>$p['link']];
         $hash=studio_web_approval_hash($item);
@@ -70,7 +70,7 @@ function studio_web_status_check(string $id,int $revision,array $user,array $con
 }
 function studio_wp_status_message(array $lookup):string {
     return match($lookup['state']??''){
-        'matched'=>($lookup['status']??'')==='publish'?'Publisert på radiorubben.no. Overføringen er bekreftet; ingen ny publisering er gjort.':'WordPress-kladden er bekreftet. Den er ikke publisert.',
+        'matched'=>($lookup['status']??'')==='publish'?studio_wp_published_label().'. Overføringen er bekreftet; ingen ny publisering er gjort.':'WordPress-kladden er bekreftet. Den er ikke publisert.',
         'different'=>'Innlegget finnes i WordPress, men innhold eller status avviker. Åpne innlegget og avklar før nytt forsøk.',
         'multiple'=>'Flere innlegg ble funnet. Identiteten må avklares før nytt forsøk.',
         default=>'Ingen samsvarende innlegg ble funnet. Dette bekrefter ikke at overføringen feilet. Avklar før nytt forsøk.'};

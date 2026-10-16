@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/news-publication.php';
+require_once __DIR__.'/wordpress-destination.php';
 
 /** Credentials stay outside the public tree and are never sent to the browser. */
 function studio_wp_config(): array {
@@ -10,12 +11,14 @@ function studio_wp_config(): array {
     return $c;
 }
 function studio_wp_ready(array $c): bool {
-    return !empty($c['username']) && !empty($c['application_password']);
+    try { studio_wp_destination($c); } catch (InvalidArgumentException) { return false; }
+    return is_string($c['username'] ?? null) && trim($c['username']) !== ''
+        && is_string($c['application_password'] ?? null) && trim($c['application_password']) !== '';
 }
 function studio_wp_request(array $c, string $method, string $route, ?array $payload = null): array {
     if (!studio_wp_ready($c)) throw new InvalidArgumentException('WordPress-koblingen må konfigureres på serveren.');
     if (!preg_match('~^/posts(?:/[1-9][0-9]*)?$~D', $route) || $method !== 'POST') throw new InvalidArgumentException('Ugyldig WordPress-operasjon.');
-    $curl = curl_init('https://www.radiorubben.no/wp-json/wp/v2' . $route);
+    $curl = curl_init(studio_wp_endpoint($c, $method, '/wp/v2'.$route));
     $body = '';
     curl_setopt_array($curl, [CURLOPT_CUSTOMREQUEST=>$method, CURLOPT_FOLLOWLOCATION=>false,
         CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS, CURLOPT_SSL_VERIFYPEER=>true, CURLOPT_SSL_VERIFYHOST=>2,
@@ -32,8 +35,7 @@ function studio_wp_request(array $c, string $method, string $route, ?array $payl
     $r=json_decode($body,true,64,JSON_THROW_ON_ERROR);
     if (!is_array($r) || !is_int($r['id']??null) || $r['id']<1 || !in_array($r['status']??'', ['draft','publish'],true)) throw new RuntimeException('Uventet WordPress-svar.');
     if(isset($payload['rr_news_image'])&&($r['featured_media']??null)!==($payload['rr_news_image']['variants']['article_landscape']['media_id']??0))throw new RuntimeException('WordPress bekreftet ikke det valgte bildet.');
-    $url=parse_url((string)($r['link']??''));
-    if (($url['scheme']??'')!=='https' || !in_array($url['host']??'', ['radiorubben.no','www.radiorubben.no'],true)) throw new RuntimeException('Uventet WordPress-lenke.');
+    if (!studio_wp_link_valid((string)($r['link']??''))) throw new RuntimeException('Uventet WordPress-lenke.');
     return ['id'=>$r['id'],'status'=>$r['status'],'link'=>$r['link']];
 }
 function studio_web_text(array $web): string {
@@ -57,6 +59,7 @@ function studio_web_html(array $item): string {
 function studio_web_publish(string $id,int $revision,string $status,array $user,array $config,?callable $request=null,?string $path=null,?callable $imageCatalog=null): array {
     if (($user['role']??'')!=='admin') throw new InvalidArgumentException('Bare administrator kan sende til WordPress.');
     if (!in_array($status,['draft','publish'],true) || !studio_wp_ready($config)) throw new InvalidArgumentException('WordPress-koblingen er ikke konfigurert.');
+    studio_wp_require_write($config); // Before any reservation, image request or data change.
     $imageItem=studio_case_get($id,$path);
     if($imageItem['revision']!==$revision)throw new InvalidArgumentException('Saken er endret. Last siden på nytt.');
     studio_images_verify($imageItem,$imageCatalog);

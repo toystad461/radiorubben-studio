@@ -1,5 +1,25 @@
 # Studio – felles status og arbeidsliste
 
+## Testmiljø – første integrasjonsgrunnlag, 16.10.2026
+
+Thomas bekrefter at nettlesertesten fungerer og bestiller videre bygging etter
+plattformgrunnlaget. Innlogging som Thomas — TEST / Administrator, Studiooversikt,
+CRM og Nyhetsdesk er kontrollert i Cloud Browser. Egne tomme testregistre og
+frakoblet WordPress er synlig. Ingen reell publisering eller kundekontakt.
+
+Egen gren `feat/wordpress-test-destinations` fra fersk main 96ff332 samler
+WordPress-målvalget og legger til en eksplisitt, bare lesende testprofil.
+Feil mål/profil og testskriving avvises før transport eller leveringsreservasjon.
+Svarlenker og bilder avgrenses til samme miljø. Produksjonens eksisterende
+konfigurasjon og redaksjonelle sperrer bevares. Full lokal Composer-suite på
+PHP 8.3.30 består, inkludert nye negative tester og pakking.
+
+Status: kode klargjort for egen PR; ikke installert på VPS, ikke merget eller
+utrullet til produksjon. Ingen nettverkssperrer eller tilganger er endret.
+Neste: avstem Fotballrobot-koden som mangler i web-main, prøv gjenoppretting
+og avgrens intern testforbindelse før komplett kampreise.
+Se [målvalg, tester og gjenstående arbeid](WORDPRESS-TEST-DESTINATIONS.md).
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert

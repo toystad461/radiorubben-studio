@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/wordpress-destination.php';
 
 const RRNI_PACKAGE = 'RadioRubben-Nyhetsbilder-v1.2';
 const RRNI_MANIFEST_SHA = '0f090e476d8042339e1dab75b7653b34548ff24496294bb38908b3db0fabe0da';
@@ -49,10 +50,7 @@ function rrni_read_package(string $path): array {
     } finally { $zip->close(); }
 }
 function rrni_url_valid(string $url): bool {
-    $u = parse_url($url);
-    return is_array($u) && ($u['scheme'] ?? '') === 'https' && in_array($u['host'] ?? '', ['www.radiorubben.no', 'radiorubben.no'], true)
-        && !isset($u['user'], $u['pass']) && !isset($u['user']) && !isset($u['pass']) && !isset($u['port']) && !isset($u['query']) && !isset($u['fragment'])
-        && str_starts_with($u['path'] ?? '', '/wp-content/uploads/') && !str_contains(rawurldecode($u['path'] ?? ''), '..') && str_ends_with($u['path'] ?? '', '.png');
+    return studio_wp_link_valid($url, true) && str_ends_with(parse_url($url, PHP_URL_PATH) ?? '', '.png');
 }
 function rrni_catalog_validate(array $catalog): array {
     if (($catalog['package'] ?? '') !== RRNI_PACKAGE || ($catalog['manifest_sha256'] ?? '') !== RRNI_MANIFEST_SHA) throw new RuntimeException('Mediekoblingen gjelder feil bildepakke.');
