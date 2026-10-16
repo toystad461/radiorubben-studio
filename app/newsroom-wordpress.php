@@ -7,7 +7,7 @@ function studio_newsroom_wp(string $method='GET',?array $payload=null,?array $co
     $config??=studio_wp_config();
     if(!studio_wp_ready($config))throw new InvalidArgumentException('WordPress-tilkoblingen mangler.');
     if(!in_array($method,['GET','POST'],true))throw new InvalidArgumentException('Ugyldig handling.');
-    $curl=curl_init('https://www.radiorubben.no/wp-json/rr-fotballrobot/v1/newsroom');$body='';
+    $curl=curl_init(studio_wp_endpoint($config, $method, '/rr-fotballrobot/v1/newsroom'));$body='';
     curl_setopt_array($curl,[CURLOPT_CUSTOMREQUEST=>$method,CURLOPT_FOLLOWLOCATION=>false,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,
         CURLOPT_SSL_VERIFYPEER=>true,CURLOPT_SSL_VERIFYHOST=>2,CURLOPT_PROXY=>'',CURLOPT_CONNECTTIMEOUT=>5,CURLOPT_TIMEOUT=>$method==='GET'?12:90,
         CURLOPT_HTTPAUTH=>CURLAUTH_BASIC,CURLOPT_USERPWD=>$config['username'].':'.$config['application_password'],

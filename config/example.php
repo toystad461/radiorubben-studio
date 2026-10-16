@@ -1,6 +1,7 @@
 <?php
 // Copy to config/local.php on the server, outside the public document root.
 return [
+    'wordpress_environment' => 'production', // test is read-only and requires an explicit private test destination.
     'news_images_enabled' => false, // Enable only after verified WP import and review of new-draft rendering.
     'site_mode' => 'coming-soon', // app enables the configured authentication mode
     'auth_mode' => 'demo', // demo = login page only; entra or vipps = authentication required

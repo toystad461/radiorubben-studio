@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/news-script.php';
+require_once __DIR__.'/wordpress-destination.php';
 
 function studio_newsroom_url(string $selected='',string $filter='all'): string {
     $query=['filter'=>$filter];if($selected!=='')$query['item']=$selected;
@@ -22,11 +23,9 @@ function studio_newsroom_selection(array $cards,string $selected,string $filter,
     return ['selected'=>$selected,'filter'=>$filter,'visible'=>$visible];
 }
 function studio_newsroom_image_url(string $url): bool {
-    $p=parse_url($url);
-    return is_array($p)&&($p['scheme']??'')==='https'&&($p['host']??'')==='www.radiorubben.no'
-        &&!isset($p['user'])&&!isset($p['pass'])&&!isset($p['port'])&&!isset($p['query'])&&!isset($p['fragment'])
-        &&str_starts_with($p['path']??'','/wp-content/uploads/')&&!str_contains(rawurldecode($p['path']??''),'..')
-        &&(bool)preg_match('/\.(?:png|jpe?g|webp)$/i',$p['path']??'');
+    return studio_wp_link_valid($url, true)
+        && (studio_wp_environment() === 'test' || parse_url($url, PHP_URL_HOST) === 'www.radiorubben.no')
+        && (bool)preg_match('/\.(?:png|jpe?g|webp)$/i', parse_url($url, PHP_URL_PATH) ?? '');
 }
 
 /** Presentation only. Invalid timestamps never become the current time. */

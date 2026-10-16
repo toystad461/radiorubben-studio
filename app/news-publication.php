@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/wordpress-destination.php';
 require_once __DIR__.'/news-images.php';
 
 /** Verified on radiorubben.no on 2026-10-04; IDs belong to this site only. */
@@ -74,6 +75,6 @@ function studio_web_status_label(array $item): string
     if (($d['state'] ?? '') === 'pending') return 'Overføring pågår';
     if (($d['state'] ?? '') === 'unknown') return 'Overføringen må avklares';
     if (($d['state'] ?? '') === 'confirmed' && ($d['hash'] ?? '') === studio_web_approval_hash($item))
-        return ($d['status'] ?? '') === 'publish' ? 'Publisert på radiorubben.no' : 'WordPress-kladd lagret';
+        return ($d['status'] ?? '') === 'publish' ? studio_wp_published_label() : 'WordPress-kladd lagret';
     return studio_web_checked($item) ? 'Venter på din sluttgodkjenning' : 'Trenger kontroll / rettelser';
 }

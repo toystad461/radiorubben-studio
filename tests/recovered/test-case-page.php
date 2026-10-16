@@ -5,7 +5,7 @@ $render=in_array($mode,['render','render-wp-status','render-images'],true);
 if($render)$mode=$mode==='render'?'get':($mode==='render-images'?'images':'wp-status');
 $root=dirname(__DIR__,2);$tmp=sys_get_temp_dir().'/case-page-'.bin2hex(random_bytes(4));
 foreach(['/app/views','/app/data','/app/integrations','/config','/public']as$dir)mkdir($tmp.$dir,0700,true);
-foreach(['board','source-identity','programs','audio-profiles','stylebook','news-script','news-relevance','web-publish','wordpress-status','news-publication','news-images','news-images-contract','case-workflow','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage']as$name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
+foreach(['board','source-identity','programs','audio-profiles','stylebook','news-script','news-relevance','wordpress-destination','web-publish','wordpress-status','news-publication','news-images','news-images-contract','case-workflow','bulletin','weather','weather-script','audio-workflow','audio-processing','audio-pronunciation','audio-storage']as$name)copy($root.'/app/'.$name.'.php',$tmp.'/app/'.$name.'.php');
 copy($root.'/app/integrations/ElevenLabs.php',$tmp.'/app/integrations/ElevenLabs.php');
 copy($root.'/app/data/01-BILDEREGISTER.json',$tmp.'/app/data/01-BILDEREGISTER.json');
 copy($root.'/app/views/news-image-choice.php',$tmp.'/app/views/news-image-choice.php');
