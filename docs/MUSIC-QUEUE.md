@@ -48,10 +48,14 @@ faktiske ruter og lagring i en isolert PHP-testserver med syntetiske brukere.
 mock-API og syntetisk WAV-lyd for å prøve lydhendelser og layout ved 390/1280 px.
 Ingen reelle musikkfiler, brukere eller produksjonsdata brukes som test.
 
-Lokalt er JavaScript/PHP-syntaks og nettleserflyten kontrollert. Native
-lagringstester og full regresjon kjøres i CI; lokal PHP-WASM støtter ikke
-fil-låsene og er ikke bevis på serverlagring. Reell Microsoft-innlogging,
-produksjonsserverens filrettigheter og faktisk studiolydutgang er uprøvd.
+Lokalt er JavaScript/PHP-syntaks og nettleserflyten kontrollert. Kodecommit
+`6951c8739840bd10fd67c391bacc59cc9e453555` består full PHP-suite på 8.2/8.4,
+native lagring/HTTP og køens Chromium-kontroll i
+[CI 39166287907](https://github.com/toystad461/radiorubben-studio/actions/runs/39166287907).
+Lokal PHP-WASM støtter ikke fil-låsene og brukes ikke som bevis på serverlagring.
+Reell Microsoft-innlogging, produksjonsserverens filrettigheter og faktisk
+studiolydutgang er uprøvd. Gjennomgåbart utkast:
+[PR #98](https://github.com/toystad461/radiorubben-studio/pull/98).
 
 Neste funksjonelle steg er å avklare hvor den vedvarende avspilleren skal kjøre,
 og koble køen til den med entydig kontroll over aktiv spiller og sendestatus.

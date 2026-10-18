@@ -15,9 +15,11 @@ robotvert, programopprettelse, lydgenerering eller OneDrive-overføring.
 
 Lokalt kontrollert: PHP/JS-syntaks og faktisk nettleserlyd med syntetisk WAV,
 lagret rekkefølge via mock-API, redigering, konflikt og layout 390/1280.
-Native lagring/HTTP og full regresjon gjenstår i CI; lokal PHP-WASM mangler
-fil-lås og brukes ikke som bevis på disse. Reell studiolyd/innlogging er uprøvd.
-Ingen merge eller produksjonsdeploy. Neste steg: CI og PR-gjennomgang, deretter
+Kodecommit `6951c8739840bd10fd67c391bacc59cc9e453555` består full PHP-suite på
+8.2/8.4, native lagring/HTTP og køens nettlesertest i CI `39166287907`.
+Lokal PHP-WASM mangler fil-lås og brukes ikke som bevis på disse.
+Reell studiolyd/innlogging er uprøvd. Utkast [PR #98](https://github.com/toystad461/radiorubben-studio/pull/98).
+Ingen merge eller produksjonsdeploy. Neste steg: PR-gjennomgang, deretter
 avstemming av aktivt Studio før konkret autorisert publisering.
 Se [MUSIC-QUEUE.md](MUSIC-QUEUE.md) for virkemåte og neste grunnlagssteg.
 
