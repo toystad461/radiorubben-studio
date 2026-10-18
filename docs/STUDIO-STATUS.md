@@ -1,5 +1,28 @@
 # Studio – felles status og arbeidsliste
 
+## Musikkø som grunnlag – 18.10.2026
+
+Thomas prioriterer musikkø før robotvert i det nye Studioet. Separat gren
+`feat/music-queue-foundation` fra main `96ff332`, uten eldre PR-avhengigheter.
+Ny Musikkø-side lagrer rekkefølge fra eksisterende privat musikkbibliotek med
+legg til, flytt, fjern og tøm. Originalfiler bevares. Rolle, CSRF, revisjon,
+fil-lås og atomisk lagring beskytter endringer. Uavklart svar krever oppdatering.
+
+Prøvelytting skjer i fanen, med manuell start, pause/stopp/volum og valgfri
+automatisk neste låt. Åpning og køredigering starter aldri lyd. Køen deles;
+spiller og historikk er lokale per fane. Ingen serverplayout, radio.co,
+robotvert, programopprettelse, lydgenerering eller OneDrive-overføring.
+
+Lokalt kontrollert: PHP/JS-syntaks og faktisk nettleserlyd med syntetisk WAV,
+lagret rekkefølge via mock-API, redigering, konflikt og layout 390/1280.
+Kodecommit `6951c8739840bd10fd67c391bacc59cc9e453555` består full PHP-suite på
+8.2/8.4, native lagring/HTTP og køens nettlesertest i CI `39166287907`.
+Lokal PHP-WASM mangler fil-lås og brukes ikke som bevis på disse.
+Reell studiolyd/innlogging er uprøvd. Utkast [PR #98](https://github.com/toystad461/radiorubben-studio/pull/98).
+Ingen merge eller produksjonsdeploy. Neste steg: PR-gjennomgang, deretter
+avstemming av aktivt Studio før konkret autorisert publisering.
+Se [MUSIC-QUEUE.md](MUSIC-QUEUE.md) for virkemåte og neste grunnlagssteg.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
