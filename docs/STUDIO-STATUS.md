@@ -26,7 +26,12 @@ og faktisk PHP/FFmpeg/Chromium-integrasjon. Integrasjonen dekker Oslo/DST i
 regeltesten, samtidige operatører, låser, én spiller, hørbare PCM-data,
 pause/fortsett, lukket nettleser, varige utfall, prosessdød/omstart, manglende lyd,
 stopp/pause ved uleselig bibliotek og uendrede musikkoriginaler. Mobil/desktop
-390/1280 er kontrollert. Ny CI-jobb kjører den faktiske lydtesten.
+390/1280 er kontrollert. Ny CI-jobb kjører den faktiske lydtesten. Kodecommit
+`da3ae3faad047e5e6eb84750202d14dad833862e` består PHP 8.2/8.4,
+Composer/pakking og faktisk lyd-/nettlesertest i [CI 39234430778](https://github.com/toystad461/radiorubben-studio/actions/runs/39234430778).
+Release-verifikasjon 39234430732 består; deploy er hoppet over.
+Utkast [PR #99](https://github.com/toystad461/radiorubben-studio/pull/99).
+
 
 VPS-status 19.10: autentisert Uniweb viser server 5363103 aktiv/kjørende,
 Ubuntu 24.04, 2 vCPU, 4 GB RAM og 100 GB disk. VNC viser Ubuntu 24.04.5 ved
@@ -36,6 +41,16 @@ PHP-isolasjon, filhasher og bibliotek må kontrolleres der før installasjon.
 med førkontroll, avviksstopp, privat backup og tilbakeføring er klart.
 Neste steg: Linux-innlogging direkte i Uniweb, fersk preflight, eksakt testet
 commit på test-VPS og faktisk lyd-/nettleserlukkingstest der.
+Ny sperre 19.10 ca. kl. 12:08 Europe/Oslo: Uniweb viser
+«Cloud Serveren din kunne ikke startes på nytt.» etter brukerens omstartsforsøk.
+Oversikten sier fortsatt «Aktiv / Kjører». VNC er frakoblet; seriell konsoll
+viser kode 1000 og avslutningsmeldinger. Cloud Browser gir 502 / Connection
+refused ved åpning av test-Studio. Lokal direkte nettverkstest er sperret i
+agentmiljøet og beviser ikke serverstatus. Uniweb må avklare faktisk maskin-/
+kontrollplanstatus før installasjon. Agenten har ikke utført omstart, reset,
+reinstallasjon eller endringer på VPS-en. Microsoft-innlogging er satt på vent;
+Thomas har presisert at neste arbeid er installasjon av musikkstudioet.
+
 Se [MUSIC-STUDIO-PLAYOUT.md](MUSIC-STUDIO-PLAYOUT.md).
 
 ## Musikkø som grunnlag – 18.10.2026

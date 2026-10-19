@@ -175,6 +175,20 @@ på VPS i denne leveransen. Historisk oppsett er ikke bevis for dagens server.
 Brukeren skriver inn administratorpassordet direkte i Uniweb; passordet skal
 ikke leses, lagres eller gjengis av agenten.
 
+**Oppdatert sperre ca. kl. 12:08 Europe/Oslo:** Brukerens omstartsforsøk
+feiler i Uniweb, samtidig som oversikten viser «Aktiv / Kjører». VNC sier
+«connection is closed»; seriell konsoll er frakoblet (1000). Test-Studio kan
+ikke nås fra Cloud Browser (502 / Connection refused). Årsaken er ikke fastslått;
+leverandørens maskin-/kontrollplanstatus må avklares. Ingen agentutført omstart,
+reset eller installasjon. Microsoft-innlogging avventes etter Thomas sin
+presisering om at installasjon av musikkstudioet skal prioriteres.
+
+Kodecommit `da3ae3faad047e5e6eb84750202d14dad833862e` er grønn i
+[CI 39234430778](https://github.com/toystad461/radiorubben-studio/actions/runs/39234430778)
+(PHP 8.2/8.4, Composer/pakking og faktisk lyd-/nettlesertest).
+Release-verifikasjon 39234430732 består og deploy er hoppet over.
+[PR #99](https://github.com/toystad461/radiorubben-studio/pull/99) er utkast.
+
 Klargjort, men ikke kjørt på VPS:
 
 - `infra/music-playout/preflight.sh`: sjekker hostname **vps-5363103**, IP
