@@ -28,6 +28,8 @@ jobs:
         run: bash tests/test-deploy-block.sh
       - run: python3 tests/test-audio-key.py
       - run: composer test
+      - name: Check separate music player and web service users
+        run: sudo php tests/music-playout-permissions.php
       - if: matrix.php == '8.4'
         run: php scripts/package.php
       - if: matrix.php == '8.4'

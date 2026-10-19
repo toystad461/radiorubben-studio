@@ -30,7 +30,15 @@ function music_playout_json(string $path,array $default=[]): array {
 function music_playout_lock(string $root) {
     music_playout_root($root);$path=$root.'/control.lock';
     if (is_link($path)) throw new RuntimeException('Ugyldig spillerlås.');
-    $h=fopen($path,'c+b');if (!$h || !flock($h,LOCK_EX)) throw new RuntimeException('Spilleren er opptatt.');chmod($path,0660);return $h;
+    $h=fopen($path,'c+b');if (!$h) throw new RuntimeException('Spilleren er opptatt.');
+    try {
+        if (!flock($h,LOCK_EX)) throw new RuntimeException('Spilleren er opptatt.');
+        // The web and player users share a group, not ownership. Only adjust a
+        // newly created/nonconforming lock; chmod on the peer's 0660 file fails.
+        $stat=fstat($h);
+        if ($stat===false || (($stat['mode']&0777)!==0660 && !chmod($path,0660))) throw new RuntimeException('Spillerlåsen har feil rettigheter.');
+        return $h;
+    } catch (Throwable $e) {flock($h,LOCK_UN);fclose($h);throw $e;}
 }
 function music_playout_empty(): array {return ['seq'=>0,'mode'=>'stopped','current'=>null,'outcomes'=>[],'lastCompleted'=>null,'lastStarted'=>null,'ack'=>null,'message'=>'Ikke startet'];}
 /** Journal is authoritative; state changes and their events share a single fsynced record. */
