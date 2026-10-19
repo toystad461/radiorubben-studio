@@ -65,6 +65,11 @@ jobs:
         run: |
           node tests/music-queue-http.cjs
           node tests/music-queue-browser.cjs
+      - name: Check persistent isolated music studio and actual audio
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          node tests/music-studio-integration.cjs
       - name: Check private music upload and library
         run: node tests/music-library-mobile.cjs
       - name: Check WordPress status controls on small and large screens

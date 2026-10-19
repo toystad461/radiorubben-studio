@@ -1,0 +1,38 @@
+[Unit]
+Description=Radio Rubben isolated test music player
+After=local-fs.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=rr-playout
+Group=rr-playout
+UMask=0007
+ExecStart=/usr/bin/php -n /srv/radiorubben-test/player-code/scripts/music-playout.php /srv/radiorubben-test/playout
+Restart=on-failure
+RestartSec=3
+KillMode=control-group
+TimeoutStopSec=10
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+PrivateNetwork=yes
+RestrictAddressFamilies=AF_UNIX
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+ReadWritePaths=/srv/radiorubben-test/playout
+ReadOnlyPaths=/srv/radiorubben-test/playout/audio
+InaccessiblePaths=-/srv/radiorubben-test/studio-data -/srv/radiorubben-test/studio-sessions -/srv/radiorubben-test/wordpress
+MemoryMax=256M
+TasksMax=32
+CPUQuota=100%
+
+[Install]
+WantedBy=multi-user.target

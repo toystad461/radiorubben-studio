@@ -1,5 +1,43 @@
 # Studio – felles status og arbeidsliste
 
+## Musikkstudio med regelstyrt kø og testavvikler – 19.10.2026
+
+Bestilt: fungerende musikkstudio før robotvert. Gren
+`feat/music-scheduler-vps-playout` bygger på PR #98
+(`bf46227247195e5f64b5b816b1253b206f66dc6b`). PR #96 er en driftsavhengighet
+for isolert VPS, ikke kodebase. Begge er fortsatt åpne utkast ved ny kontroll
+19.10.2026; ingen merge eller produksjonsdeploy er utført.
+
+Implementert: egen Musikkstudio-side, redigerbar God morgen Bømlo-profil,
+program/dato/start i Europe/Oslo, tre begrunnede forslag, låsing/bytte/flytting,
+synlige sperrer og preferanser. Eksisterende kildebundne analyser gjenbrukes;
+manuelle rettelser veier tyngst. Manglende/utdaterte data og for lite bibliotek
+vises uten skjult regelavslapping. Repetisjon/energiskifter er merkede forslag.
+
+Separat PHP/FFmpeg-avspiller har én aktiv prosess, privat faktisk lydmonitor,
+start/pause/stopp, vedvarende kø og hendelser. Prøvelytting er ikke sending.
+Omstart av aktiv avspilling registrerer avbrudd og krever ny manuell start.
+PHP/Composer beholdes; ingen Node-server eller nye appavhengigheter trengs.
+Jingle/programstikk-typer og cue-grunnlag er reservert; robotvert, ElevenLabs,
+offentlig utgang, miksing og automatisk start etter veggklokken er ikke aktivert.
+
+Kontrollert lokalt med native PHP 8.3.6: hele Composer-suiten, regel-/lagringstester
+og faktisk PHP/FFmpeg/Chromium-integrasjon. Integrasjonen dekker Oslo/DST i
+regeltesten, samtidige operatører, låser, én spiller, hørbare PCM-data,
+pause/fortsett, lukket nettleser, varige utfall, prosessdød/omstart, manglende lyd,
+stopp/pause ved uleselig bibliotek og uendrede musikkoriginaler. Mobil/desktop
+390/1280 er kontrollert. Ny CI-jobb kjører den faktiske lydtesten.
+
+VPS-status 19.10: autentisert Uniweb viser server 5363103 aktiv/kjørende,
+Ubuntu 24.04, 2 vCPU, 4 GB RAM og 100 GB disk. VNC viser Ubuntu 24.04.5 ved
+Linux-innlogging. Det foreligger ennå ingen autentisert shell-økt; nåværende
+PHP-isolasjon, filhasher og bibliotek må kontrolleres der før installasjon.
+**Denne leveransen er foreløpig ikke installert på VPS.** Installasjonsverktøy
+med førkontroll, avviksstopp, privat backup og tilbakeføring er klart.
+Neste steg: Linux-innlogging direkte i Uniweb, fersk preflight, eksakt testet
+commit på test-VPS og faktisk lyd-/nettleserlukkingstest der.
+Se [MUSIC-STUDIO-PLAYOUT.md](MUSIC-STUDIO-PLAYOUT.md).
+
 ## Musikkø som grunnlag – 18.10.2026
 
 Thomas prioriterer musikkø før robotvert i det nye Studioet. Separat gren
