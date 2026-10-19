@@ -256,6 +256,10 @@ forbindelse. Privat nøkkel skal bli på den valgte klienten/hemmelighetslageret
 ikke legg den eller administratorpassord i chat, repository eller dokumentasjon.
 Produksjonswebhotellets SSH-konto er ikke denne VPS-ens administrator.
 
+Windows og MacBook skal bruke samme `ssh rubben-test`, med separate lokale
+nøkler og samme serverdata. Se [TEST-VPS-SSH.md](TEST-VPS-SSH.md) for verifisert
+serverstatus, klientalias, vertskontroll og hva som fortsatt ikke er satt opp.
+
 ## Verifikasjon og begrensninger
 
 - Native PHP-regeltester: Oslo/ukedag, DST-gap/fold, fremtidig morgen,

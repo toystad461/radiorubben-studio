@@ -78,6 +78,14 @@ Neste steg er et arbeidsmiljø med faktisk SSH-adgang og en avgrenset
 utrullingsbruker for testserveren. Produksjonens personlige SSH-konto gjenbrukes
 ikke som VPS-tilgang.
 
+Thomas presiserte kl. 13:09 at også MacBook skal støttes uten forvirring ved
+maskinbytte. Felles klientalias `rubben-test`, samme VPS/data og separate
+personlige nøkler per maskin er dokumentert i [TEST-VPS-SSH.md](TEST-VPS-SSH.md).
+Serverkontroll bekrefter UFW OpenSSH tillatt, passord satt for ubuntu,
+nøkkel-/passordautentisering aktiv og root-passordinnlogging sperret.
+Klientoppsett og faktisk SSH-innlogging fra begge maskiner gjenstår;
+ingen klientfiler eller offentlige nøkler er installert ennå.
+
 Se [MUSIC-STUDIO-PLAYOUT.md](MUSIC-STUDIO-PLAYOUT.md).
 
 ## Musikkø som grunnlag – 18.10.2026
