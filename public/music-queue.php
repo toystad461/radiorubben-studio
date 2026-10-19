@@ -13,7 +13,7 @@ require dirname(__DIR__).'/app/views/head.php';
 <div class="shell"><?php $activePage='music-queue'; require dirname(__DIR__).'/app/views/sidebar.php'; ?>
 <div class="workspace"><header class="topbar"><span>Studio / <strong>Musikkø</strong></span><?php require dirname(__DIR__).'/app/views/account.php'; ?></header>
 <main id="main" class="music-queue-page" data-csrf="<?=escape($_SESSION['csrf'])?>" data-can-control="<?=$canControl?'1':'0'?>">
- <header class="queue-heading"><div><p class="eyebrow">RADIO RUBBEN / MUSIKK</p><h1>Musikkø</h1><p>Sett rekkefølgen. Lytt gjennom. Gjør klart til programmet.</p></div><a class="button" href="/music-library.php">Åpne musikkbibliotek</a></header>
+ <header class="queue-heading"><div><p class="eyebrow">RADIO RUBBEN / MUSIKK</p><h1>Musikkø</h1><p>Lytt gjennom lokalt. Åpne Musikkstudio for programregler og VPS-avvikling.</p></div><a class="button" href="/music-studio.php">Åpne Musikkstudio</a></header>
  <p class="queue-mode">Prøvelytting i denne fanen. Køen lagres på serveren. Lyd sendes ikke ut på radio.</p>
  <p id="queue-message" role="status"><?=escape($error?:'Legg låter i køen for å begynne. Ingen lyd starter automatisk.')?></p>
  <div class="queue-grid">

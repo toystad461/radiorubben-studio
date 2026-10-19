@@ -1,5 +1,93 @@
 # Studio – felles status og arbeidsliste
 
+## Musikkstudio med regelstyrt kø og testavvikler – 19.10.2026
+
+Bestilt: fungerende musikkstudio før robotvert. Gren
+`feat/music-scheduler-vps-playout` bygger på PR #98
+(`bf46227247195e5f64b5b816b1253b206f66dc6b`). PR #96 er en driftsavhengighet
+for isolert VPS, ikke kodebase. Begge er fortsatt åpne utkast ved ny kontroll
+19.10.2026; ingen merge eller produksjonsdeploy er utført.
+
+Implementert: egen Musikkstudio-side, redigerbar God morgen Bømlo-profil,
+program/dato/start i Europe/Oslo, tre begrunnede forslag, låsing/bytte/flytting,
+synlige sperrer og preferanser. Eksisterende kildebundne analyser gjenbrukes;
+manuelle rettelser veier tyngst. Manglende/utdaterte data og for lite bibliotek
+vises uten skjult regelavslapping. Repetisjon/energiskifter er merkede forslag.
+
+Separat PHP/FFmpeg-avspiller har én aktiv prosess, privat faktisk lydmonitor,
+start/pause/stopp, vedvarende kø og hendelser. Prøvelytting er ikke sending.
+Omstart av aktiv avspilling registrerer avbrudd og krever ny manuell start.
+PHP/Composer beholdes; ingen Node-server eller nye appavhengigheter trengs.
+Jingle/programstikk-typer og cue-grunnlag er reservert; robotvert, ElevenLabs,
+offentlig utgang, miksing og automatisk start etter veggklokken er ikke aktivert.
+
+Kontrollert lokalt med native PHP 8.3.6: hele Composer-suiten, regel-/lagringstester
+og faktisk PHP/FFmpeg/Chromium-integrasjon. Integrasjonen dekker Oslo/DST i
+regeltesten, samtidige operatører, låser, én spiller, hørbare PCM-data,
+pause/fortsett, lukket nettleser, varige utfall, prosessdød/omstart, manglende lyd,
+stopp/pause ved uleselig bibliotek og uendrede musikkoriginaler. Mobil/desktop
+390/1280 er kontrollert. Ny CI-jobb kjører den faktiske lydtesten. Kodecommit
+`da3ae3faad047e5e6eb84750202d14dad833862e` består PHP 8.2/8.4,
+Composer/pakking og faktisk lyd-/nettlesertest i [CI 39234430778](https://github.com/toystad461/radiorubben-studio/actions/runs/39234430778).
+Release-verifikasjon 39234430732 består; deploy er hoppet over.
+Utkast [PR #99](https://github.com/toystad461/radiorubben-studio/pull/99).
+
+
+VPS-status 19.10, oppdatert etter kl. 12:53 Europe/Oslo: Linux-innlogging og
+sudo er bekreftet på **vps-5363103 / 5.249.252.78**, Ubuntu 24.04.5 LTS.
+Den tidligere konsoll-/omstartsfeilen er ikke lenger en tilgangssperre.
+Fersk preflight bekreftet forventet release `96ff332`, gyldig Nginx/PHP og
+bevarte PHP-sperrer. Installasjonen av `961a6d3` ble fullført kl. 12:39,
+inkludert FFmpeg 6.1.1 fra Ubuntu og separat systemd-tjeneste `rr-music-playout`.
+
+Faktisk kontroll med rr-studio avdekket en chmod-advarsel på låsefil eid av
+rr-playout. Rettet i `fad12a2320de0ff0a036854c414accee794143bb`: behold allerede
+korrekt 0660-modus på den andre brukerens fil. Ny test med to Unix-UID-er består
+på VPS og i [CI 39239703318](https://github.com/toystad461/radiorubben-studio/actions/runs/39239703318)
+på PHP 8.2/8.4. Full lyd-/nettleserintegrasjon består lokalt og i samme CI.
+Den lokale containeren har bare UID/GID 0 mappet; den separate UID-testen
+rapporteres derfor som kjørt på VPS/CI, ikke lokalt.
+
+**Installert testkode: `fad12a2320de0ff0a036854c414accee794143bb`.** Aktiv release:
+`/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb`.
+Web-/spillerkopien av `app/music-playout.php` er lest tilbake med identisk
+SHA-256 `b92a1dc3c7e393f12462cd0cbbcd7bd3341ee851cd475b27ffdd57c52c45552b`.
+Tjenesten er aktiv som rr-playout, med PrivateNetwork=yes, AF_UNIX og
+NoNewPrivileges=yes. rr-studio leser status uten advarsel: online=true,
+mode=stopped, current=null. En ny avspillerprosess ble avvist med exit 3
+(`One active player only`). Testmediemappen er tom; ingen musikk er importert.
+Kontrollert stopp/start bevarte journalen.
+Privat originalbackup ligger under `/var/lib/radiorubben-test/music-playout-961a6d3f730d665cc18da6f9d26976eb5c73900b`;
+rettelsens backup/forrige release under `music-fix-fad12a2320de0ff0a036854c414accee794143bb`
+i samme private mappe.
+
+HTTPS viser test-Studios lokale innloggingsside. **Gjenstår på den faktiske
+VPS-en:** innlogging i Studio, klargjøring/godkjenning av testbibliotek og faktisk
+lyd-/nettleserlukkingstest fra Studio. Disse er testet lokalt/CI, men skal ikke
+rapporteres som verifisert på VPS ennå. Ingen produksjon, WordPress, DNS,
+Entra eller offentlig radioutgang er endret. Microsoft-innlogging er fortsatt
+utsatt etter Thomas sin prioritering. Administratorpassordet ble ikke lest,
+lagret eller gjengitt.
+
+SSH prioriteres for videre arbeid etter Thomas sin beskjed kl. 13:00.
+Tjenesten er aktiv og lytter på IPv4/IPv6 port 22. Direkte TCP-forsøk fra
+agentmiljøet feiler med `Network is unreachable` før autentisering; dette
+beviser ikke feil på VPS-ens SSH. Ny nøkkel alene løser ikke nettverkssperren.
+Ingen ny nøkkel, konto, brannmurregel eller SSH-konfigurasjon er opprettet/endret.
+Neste steg er et arbeidsmiljø med faktisk SSH-adgang og en avgrenset
+utrullingsbruker for testserveren. Produksjonens personlige SSH-konto gjenbrukes
+ikke som VPS-tilgang.
+
+Thomas presiserte kl. 13:09 at også MacBook skal støttes uten forvirring ved
+maskinbytte. Felles klientalias `rubben-test`, samme VPS/data og separate
+personlige nøkler per maskin er dokumentert i [TEST-VPS-SSH.md](TEST-VPS-SSH.md).
+Serverkontroll bekrefter UFW OpenSSH tillatt, passord satt for ubuntu,
+nøkkel-/passordautentisering aktiv og root-passordinnlogging sperret.
+Klientoppsett og faktisk SSH-innlogging fra begge maskiner gjenstår;
+ingen klientfiler eller offentlige nøkler er installert ennå.
+
+Se [MUSIC-STUDIO-PLAYOUT.md](MUSIC-STUDIO-PLAYOUT.md).
+
 ## Musikkø som grunnlag – 18.10.2026
 
 Thomas prioriterer musikkø før robotvert i det nye Studioet. Separat gren

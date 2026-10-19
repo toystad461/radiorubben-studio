@@ -3,7 +3,11 @@ declare(strict_types=1);
 const MUSIC_LIBRARY_FILE_LIMIT=20*1024*1024;
 const MUSIC_LIBRARY_TOTAL_LIMIT=512*1024*1024;
 function music_library_can_upload(?array $user):bool{return in_array($user['role']??'', ['admin','producer'],true);}
-function music_library_root():string{return dirname(__DIR__).'/media/music';}
+function music_library_root():string{
+    // Deployment may keep media beside a versioned release. Resolve the server-owned parent link.
+    $media=realpath(dirname(__DIR__).'/media') ?: dirname(__DIR__).'/media';
+    return $media.'/music';
+}
 function music_library_directory(string $root,bool $create):bool {
     // Internal fixed path (or isolated test path); never supplied by HTTP.
     $parent=dirname(dirname($root));if(!is_dir($parent)||is_link($parent)||str_replace('\\','/',(string)realpath($parent))!==str_replace('\\','/',$parent))throw new RuntimeException('Privat lagringsområde er utilgjengelig.');

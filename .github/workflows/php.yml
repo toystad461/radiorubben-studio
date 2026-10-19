@@ -28,6 +28,8 @@ jobs:
         run: bash tests/test-deploy-block.sh
       - run: python3 tests/test-audio-key.py
       - run: composer test
+      - name: Check separate music player and web service users
+        run: sudo php tests/music-playout-permissions.php
       - if: matrix.php == '8.4'
         run: php scripts/package.php
       - if: matrix.php == '8.4'
@@ -65,6 +67,11 @@ jobs:
         run: |
           node tests/music-queue-http.cjs
           node tests/music-queue-browser.cjs
+      - name: Check persistent isolated music studio and actual audio
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          node tests/music-studio-integration.cjs
       - name: Check private music upload and library
         run: node tests/music-library-mobile.cjs
       - name: Check WordPress status controls on small and large screens

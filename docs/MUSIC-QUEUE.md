@@ -1,5 +1,9 @@
 # Musikkø – første grunnlag
 
+Videreføringen ligger i [Musikkstudio: regler og testavvikling](MUSIC-STUDIO-PLAYOUT.md).
+Når køen har Musikkstudio-oppsett, styres redigering der; denne sidens
+lokale prøvelytting endrer fortsatt ikke avspillingsjournalen.
+
 Første leveranse er en lagret musikkø med prøvelytting i Studio. Målet er å
 bygge grunnlaget før robotvert og programautomatikk for God morgen Bømlo.
 Radio.co inngår ikke. Denne endringen etablerer ingen radiosending.
