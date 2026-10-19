@@ -166,30 +166,42 @@ Ingen robotvert eller betalt lyd aktiveres.
 
 ## Installasjon på test-VPS
 
-**Status 19.10.2026:** Uniweb-innlogging er bekreftet i Cloud Browser.
-Server 5363103 vises aktiv/kjørende med Ubuntu 24.04, 2 vCPU, 4 GB RAM og
-100 GB disk. VNC viser Ubuntu 24.04.5 og Linux-innlogging. Ingen autentisert
-shell-økt er tilgjengelig ennå. Nåværende PHP-isolasjon, aktive filhasher,
-bibliotek og sertifikat er derfor ikke nyverifisert. Ingen filer er installert
-på VPS i denne leveransen. Historisk oppsett er ikke bevis for dagens server.
-Brukeren skriver inn administratorpassordet direkte i Uniweb; passordet skal
-ikke leses, lagres eller gjengis av agenten.
+**Installert på test-VPS 19.10.2026.** Autentisert Linux/sudo og fersk
+preflight bekreftet vps-5363103, IP 5.249.252.78, Ubuntu 24.04.5, forventet
+Studio-baseline `96ff332` og eksisterende PHP-isolasjon. Første installasjon
+av `961a6d3f730d665cc18da6f9d26976eb5c73900b` ble fullført kl. 12:39 Europe/Oslo.
+FFmpeg 6.1.1 kom fra Ubuntu-pakkene. Nginx/PHP-konfigurasjonene bestod før/etter.
 
-**Oppdatert sperre ca. kl. 12:08 Europe/Oslo:** Brukerens omstartsforsøk
-feiler i Uniweb, samtidig som oversikten viser «Aktiv / Kjører». VNC sier
-«connection is closed»; seriell konsoll er frakoblet (1000). Test-Studio kan
-ikke nås fra Cloud Browser (502 / Connection refused). Årsaken er ikke fastslått;
-leverandørens maskin-/kontrollplanstatus må avklares. Ingen agentutført omstart,
-reset eller installasjon. Microsoft-innlogging avventes etter Thomas sin
-presisering om at installasjon av musikkstudioet skal prioriteres.
+Kontroll med faktisk rr-studio-bruker avdekket chmod på en korrekt 0660-lås
+som var eid av rr-playout. Rettelsen `fad12a2320de0ff0a036854c414accee794143bb`
+er installert som ny release etter privat backup og kontrollert stopp/start.
+Aktiv symlink peker på
+`/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb`.
+Begge installerte kopier av `app/music-playout.php` har SHA-256
+`b92a1dc3c7e393f12462cd0cbbcd7bd3341ee851cd475b27ffdd57c52c45552b`;
+forrige fil i backup har `9ef159ca72e6a6231d0c9ca8bb7ab0f07196ec65eabbf977b7a4c529cd38a979`.
+Rettelsens backup ligger i
+`/var/lib/radiorubben-test/music-fix-fad12a2320de0ff0a036854c414accee794143bb`.
 
-Kodecommit `da3ae3faad047e5e6eb84750202d14dad833862e` er grønn i
-[CI 39234430778](https://github.com/toystad461/radiorubben-studio/actions/runs/39234430778)
-(PHP 8.2/8.4, Composer/pakking og faktisk lyd-/nettlesertest).
-Release-verifikasjon 39234430732 består og deploy er hoppet over.
-[PR #99](https://github.com/toystad461/radiorubben-studio/pull/99) er utkast.
+Tjenesten er aktiv som rr-playout med PrivateNetwork=yes, AF_UNIX og
+NoNewPrivileges=yes. rr-studio leser spillerstatus uten advarsel: online=true,
+mode=stopped, current=null. En ny avspillerprosess ble avvist med exit 3
+(`One active player only`). Testmediemappen er tom; ingen musikk er importert.
+Ingen lyd er startet på VPS. Journalen er bevart
+gjennom kontrollert stopp/start. HTTPS åpner test-Studios lokale innlogging.
+**Gjenstår på VPS:** innlogging i Studio, godkjent testbibliotek og faktisk
+lytting/lukking/gjenåpning av Studio-fanen. Disse siste lydkontrollene er ikke
+utført på VPS ennå. Den tidligere Uniweb-konsollfeilen blokkerer ikke lenger.
+Microsoft-innlogging er utsatt; ingen administratorpassord er lest eller lagret.
 
-Klargjort, men ikke kjørt på VPS:
+Commit `fad12a2` består [CI 39239703318](https://github.com/toystad461/radiorubben-studio/actions/runs/39239703318):
+PHP 8.2/8.4, Composer/pakking, to faktiske Unix-UID-er og lyd-/nettleserintegrasjon.
+UID-testen består også på VPS; lokal container støtter bare UID/GID 0 og er
+ikke brukt som bevis for den. Den øvrige lokale lydintegrasjonen består.
+Release-verifikasjon 39239703687 består. [PR #99](https://github.com/toystad461/radiorubben-studio/pull/99)
+er fortsatt utkast; ingen merge eller produksjonsdeploy.
+
+Installasjonsverktøy:
 
 - `infra/music-playout/preflight.sh`: sjekker hostname **vps-5363103**, IP
   **5.249.252.78**, Ubuntu 24.04, aktiv release, PHP-isolasjon og webkonfigurasjon.
@@ -204,18 +216,45 @@ Klargjort, men ikke kjørt på VPS:
 - Systemd-enheten holder også spilleren uten nettverk og gjør lydspoolen
   skrivebeskyttet for spilleren. Den åpner ingen ny brannmurport.
 
+Kildekopien eies av rr-build. Ved root-kjøring brukes en avgrenset Git-innstilling
+for akkurat denne kontrollerte kopien, ikke et globalt unntak:
+
+```sh
+sudo env GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory \
+  GIT_CONFIG_VALUE_0=/srv/radiorubben-test/sources/radiorubben-studio \
+  bash infra/music-playout/install-test.sh <eksakt-commit>
+```
+
+Installeren bruker `GIT_OPTIONAL_LOCKS=0`, slik at statuskontrollen ikke erstatter
+rr-builds indeks med en root-eid fil. Første installasjon manglet dette;
+eierskapet til akkurat `.git/index` ble kontrollert og gjenopprettet til rr-build.
+Ikke kjør førstegangsinstalleren på nytt over en eksisterende spillerbuss.
+
 Kjør først fersk preflight, avstem avvik og velg eksakt testet commit. Etter
 installasjon må `systemctl is-active rr-music-playout`, PHP-isolasjon,
 innlogging, bibliotek og privat monitor kontrolleres. Godkjenn en liten testkø,
 start, lytt, lukk fanen og kontroller fortsatt avvikling i ny fane. Kontroller
-også omstart, journal og manglende fil. Installasjon/lydkontroll på den faktiske
-VPS-en gjenstår selv når lokal integrasjonstest består.
+også omstart, journal og manglende fil. Lydkontroll på den faktiske
+VPS-en må fullføres selv når lokal integrasjonstest består.
 
 Tilbakeføring: stopp og deaktiver `rr-music-playout`; bruk `previous-release`
 og `php-pools.conf` fra `/var/lib/radiorubben-test/music-playout-<commit>` til å
 gjenopprette symlenken og testpoolen, flytt `music-playout.local.php` til privat
 backup og last PHP-FPM på nytt. Bevar kø, bibliotek, originale filer, spool og
 journal for avstemming. Ikke kjør hovedgrenens produksjonsdeploy.
+
+## Videre arbeidsmåte: SSH
+
+Thomas prioriterte SSH 19.10 kl. 13:00. VPS-ens SSH-tjeneste er aktiv og
+lytter på port 22 på IPv4/IPv6. Agentens direkte TCP-forsøk feiler med
+`Network is unreachable` før autentisering. Dette er en konkret nettverkssperre
+fra dette arbeidsmiljøet, ikke bevis på feil passord/nøkkel eller SSH-tjeneste.
+Ingen ny nøkkel eller SSH-tilgang er opprettet. Neste steg er å koble til fra et
+miljø som faktisk når VPS-en, og etablere nøkkelbasert, avgrenset testutrulling.
+Verifiser serverens offentlige vertsnøkkel via Uniweb-konsollen ved første
+forbindelse. Privat nøkkel skal bli på den valgte klienten/hemmelighetslageret;
+ikke legg den eller administratorpassord i chat, repository eller dokumentasjon.
+Produksjonswebhotellets SSH-konto er ikke denne VPS-ens administrator.
 
 ## Verifikasjon og begrensninger
 

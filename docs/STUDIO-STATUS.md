@@ -33,23 +33,50 @@ Release-verifikasjon 39234430732 består; deploy er hoppet over.
 Utkast [PR #99](https://github.com/toystad461/radiorubben-studio/pull/99).
 
 
-VPS-status 19.10: autentisert Uniweb viser server 5363103 aktiv/kjørende,
-Ubuntu 24.04, 2 vCPU, 4 GB RAM og 100 GB disk. VNC viser Ubuntu 24.04.5 ved
-Linux-innlogging. Det foreligger ennå ingen autentisert shell-økt; nåværende
-PHP-isolasjon, filhasher og bibliotek må kontrolleres der før installasjon.
-**Denne leveransen er foreløpig ikke installert på VPS.** Installasjonsverktøy
-med førkontroll, avviksstopp, privat backup og tilbakeføring er klart.
-Neste steg: Linux-innlogging direkte i Uniweb, fersk preflight, eksakt testet
-commit på test-VPS og faktisk lyd-/nettleserlukkingstest der.
-Ny sperre 19.10 ca. kl. 12:08 Europe/Oslo: Uniweb viser
-«Cloud Serveren din kunne ikke startes på nytt.» etter brukerens omstartsforsøk.
-Oversikten sier fortsatt «Aktiv / Kjører». VNC er frakoblet; seriell konsoll
-viser kode 1000 og avslutningsmeldinger. Cloud Browser gir 502 / Connection
-refused ved åpning av test-Studio. Lokal direkte nettverkstest er sperret i
-agentmiljøet og beviser ikke serverstatus. Uniweb må avklare faktisk maskin-/
-kontrollplanstatus før installasjon. Agenten har ikke utført omstart, reset,
-reinstallasjon eller endringer på VPS-en. Microsoft-innlogging er satt på vent;
-Thomas har presisert at neste arbeid er installasjon av musikkstudioet.
+VPS-status 19.10, oppdatert etter kl. 12:53 Europe/Oslo: Linux-innlogging og
+sudo er bekreftet på **vps-5363103 / 5.249.252.78**, Ubuntu 24.04.5 LTS.
+Den tidligere konsoll-/omstartsfeilen er ikke lenger en tilgangssperre.
+Fersk preflight bekreftet forventet release `96ff332`, gyldig Nginx/PHP og
+bevarte PHP-sperrer. Installasjonen av `961a6d3` ble fullført kl. 12:39,
+inkludert FFmpeg 6.1.1 fra Ubuntu og separat systemd-tjeneste `rr-music-playout`.
+
+Faktisk kontroll med rr-studio avdekket en chmod-advarsel på låsefil eid av
+rr-playout. Rettet i `fad12a2320de0ff0a036854c414accee794143bb`: behold allerede
+korrekt 0660-modus på den andre brukerens fil. Ny test med to Unix-UID-er består
+på VPS og i [CI 39239703318](https://github.com/toystad461/radiorubben-studio/actions/runs/39239703318)
+på PHP 8.2/8.4. Full lyd-/nettleserintegrasjon består lokalt og i samme CI.
+Den lokale containeren har bare UID/GID 0 mappet; den separate UID-testen
+rapporteres derfor som kjørt på VPS/CI, ikke lokalt.
+
+**Installert testkode: `fad12a2320de0ff0a036854c414accee794143bb`.** Aktiv release:
+`/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb`.
+Web-/spillerkopien av `app/music-playout.php` er lest tilbake med identisk
+SHA-256 `b92a1dc3c7e393f12462cd0cbbcd7bd3341ee851cd475b27ffdd57c52c45552b`.
+Tjenesten er aktiv som rr-playout, med PrivateNetwork=yes, AF_UNIX og
+NoNewPrivileges=yes. rr-studio leser status uten advarsel: online=true,
+mode=stopped, current=null. En ny avspillerprosess ble avvist med exit 3
+(`One active player only`). Testmediemappen er tom; ingen musikk er importert.
+Kontrollert stopp/start bevarte journalen.
+Privat originalbackup ligger under `/var/lib/radiorubben-test/music-playout-961a6d3f730d665cc18da6f9d26976eb5c73900b`;
+rettelsens backup/forrige release under `music-fix-fad12a2320de0ff0a036854c414accee794143bb`
+i samme private mappe.
+
+HTTPS viser test-Studios lokale innloggingsside. **Gjenstår på den faktiske
+VPS-en:** innlogging i Studio, klargjøring/godkjenning av testbibliotek og faktisk
+lyd-/nettleserlukkingstest fra Studio. Disse er testet lokalt/CI, men skal ikke
+rapporteres som verifisert på VPS ennå. Ingen produksjon, WordPress, DNS,
+Entra eller offentlig radioutgang er endret. Microsoft-innlogging er fortsatt
+utsatt etter Thomas sin prioritering. Administratorpassordet ble ikke lest,
+lagret eller gjengitt.
+
+SSH prioriteres for videre arbeid etter Thomas sin beskjed kl. 13:00.
+Tjenesten er aktiv og lytter på IPv4/IPv6 port 22. Direkte TCP-forsøk fra
+agentmiljøet feiler med `Network is unreachable` før autentisering; dette
+beviser ikke feil på VPS-ens SSH. Ny nøkkel alene løser ikke nettverkssperren.
+Ingen ny nøkkel, konto, brannmurregel eller SSH-konfigurasjon er opprettet/endret.
+Neste steg er et arbeidsmiljø med faktisk SSH-adgang og en avgrenset
+utrullingsbruker for testserveren. Produksjonens personlige SSH-konto gjenbrukes
+ikke som VPS-tilgang.
 
 Se [MUSIC-STUDIO-PLAYOUT.md](MUSIC-STUDIO-PLAYOUT.md).
 

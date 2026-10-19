@@ -3,6 +3,8 @@
 # Usage: sudo bash infra/music-playout/install-test.sh <reviewed exact 40-char source commit>
 set -Eeuo pipefail
 umask 027
+# Inspection must not rewrite rr-build's index as root.
+export GIT_OPTIONAL_LOCKS=0
 [[ $(id -u) == 0 && $# == 1 && $1 =~ ^[a-f0-9]{40}$ ]]
 here=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 source_repo=$(cd "$here/../.." && pwd)
