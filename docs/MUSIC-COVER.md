@@ -1,11 +1,9 @@
-# Albumcover i Studio
+# Albumcover og låtvalg
 
-Henter støttet innebygd JPEG/PNG ved MP3-opplasting, inkludert gjenbruk av en identisk fil når cover mangler. Eksisterende låter får knappen Hent cover fra MP3. Admin/produsent kan laste opp eget bilde eller velge plassholder. Manuelle bilder og eksplisitt plassholder overskrives aldri automatisk.
+Cover hentes automatisk fra innebygd MP3-bilde ved opplasting. JPEG/PNG kan velges manuelt (2 MiB, opptil 4096×4096 og 16 millioner piksler). Manglende cover gir Radio Rubben-plassholder. Private bildefiler følger låtens originalhash og egen revisjon; manuelle valg beholdes. Original, cue-punkter og AI-resultater endres ikke.
 
-Bilder lagres privat som atomiske JSON-filer i musikkbibliotekets covers-mappe, kildebundet til originalens SHA256. Egen revisjon/CSRF/rolle og lås beskytter endring. Bibliotekets delte lås hindrer samtidig sletting under skriving. Originalen, bibliotekregisteret, cue-punktene og AI-vurderingen endres ikke. Sletting av låt forsøker også å rydde coverfiler. Ingen eksterne oppslag eller publisering.
+⋯ ved hver låt åpner redigering, cue-punkter, cover og detaljer. «Legg sist i køen» bruker eksisterende music-studio-api.php med produsentrolle, CSRF og fersk køversjon. Program/dato må være valgt først. Ingen startkommando sendes. Ved usikkert svar skal operatøren kontrollere køen før nytt forsøk; klienten gjentar aldri POST automatisk. Menyen fungerer med tastatur og Escape.
 
-Kun JPEG/PNG, inntil 2 MiB, 4096 per side og 16 millioner piksler. Bildedata leveres gjennom innlogget endepunkt med fast MIME, nosniff, sandbox og private/no-store. Filnavn fra bruker brukes aldri i lagringssti. SVG-opplasting er avvist; plassholderen er fast servergenerert grafikk. Manglende/skadet cover gir plassholder og stopper ikke lydanalyse.
+Testet køkontrakt samsvarer med VPS-snapshot: music-studio.php SHA256 50b2cf650bf6d12b03885d7964499cfe7e326feb34bb1adc599fdb089b4c399e; music-studio-api.php SHA256 f89b4ea7753f9e4fd3d627a0db99b744744c5305e882993ad63a0f86d33a4093. Disse runtime-filene skal ikke erstattes av denne leveransen.
 
-Visning: biblioteksrad, låtdetaljer og bibliotekets forhåndslytter. Ingen endring i separat VPS-playout-grensesnitt. Internt i Studio; ingen automatisk distribusjon av grafikk til nettside eller strøm.
-
-Base er PR103s selektivt installerte 8ace4d83. Kun public/music-library.php endres blant eksisterende kjørefiler; førhash i VPS-snapshot 39631001793 er c0ed0a0df93e6e90638463973efc0722671fa7ec1788622186780019c3256507, lik valgt base. Nye filer går i allerede eksisterende app/views og public/assets. Ikke publiser hele grenen, da aktiv VPS inneholder andre selektive rettelser.
+Validering: PHP coverregresjon via tests/run.php; node tests/recovered/test-music-track-actions.mjs. Gateway skal kontrollere nøyaktige før/etter-hasher før selektiv utrulling. Nettbasert coveroppslag er ikke med.

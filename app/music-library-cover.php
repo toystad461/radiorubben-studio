@@ -39,10 +39,10 @@ function music_cover_read(array $track,?string $root=null):?array {
 function music_cover_embedded(array $track,string $root):?string {
     $h=music_library_verified_handle($track,$root);fclose($h);
     require_once dirname(__DIR__).'/vendor/autoload.php';
-    $reader=new getID3();$reader->option_save_attachments=MUSIC_COVER_LIMIT;
+    $reader=new getID3();$reader->option_save_attachments=true;
     $reader->option_tags_html=false;$reader->option_tag_lyrics3=false;
     $info=$reader->analyze($root.'/originals/'.$track['id'].'.mp3');
-    $pictures=$info['id3v2']['comments']['picture']??[];
+    $pictures=$info['comments']['picture']??$info['id3v2']['comments']['picture']??[];
     usort($pictures,fn($a,$b)=>(int)str_contains(strtolower((string)($b['picturetype']??'')),'front')<=>(int)str_contains(strtolower((string)($a['picturetype']??'')),'front'));
     foreach($pictures as$p){if(!is_string($p['data']??null))continue;try{music_cover_validate($p['data']);return $p['data'];}catch(InvalidArgumentException){}}
     return null;
