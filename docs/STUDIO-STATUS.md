@@ -1,5 +1,16 @@
 # Studio – felles status og arbeidsliste
 
+## Utviklingskontroll – 21.10.2026
+
+Start med [DEVELOPMENT.md](DEVELOPMENT.md) for kort miljø-/kodekart og testvalg.
+Resten av denne filen er bevart historisk journal, ikke én samlet nå-status.
+Audit fra main `96ff332d`: oppdaterte AGENTS, avklart TTS-produktmål og rettet
+CI-kommandokjede som kunne skjule JavaScript-syntaksfeil. Ingen runtime-policy,
+server eller innhold er endret av dette arbeidet. Eksakt ny head og CI i audit-PR.
+VPS-kvittering fra Actions 39642309764 gjelder åtte filer fra #106 / `5d995a78`;
+samme head har feilet full mobiltest. Ny serveravstemming og feilretting gjenstår.
+
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
