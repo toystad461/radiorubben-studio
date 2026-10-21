@@ -1,5 +1,19 @@
 # GitHub → Radio Rubben test-VPS
 
+## Connection follow-up, 21.10.2026
+
+Bootstrap completed on VPS: snapshot reported 176 code files. First GitHub run
+39622129381 passed verification, then failed before SSH with an encrypted-key
+passphrase error. No app files changed. A workflow update supports optional
+`VPS_TEST_SSH_PASSPHRASE` through a temporary ssh-agent and SSH_ASKPASS helper.
+Keep existing key encryption; save the passphrase only as an environment secret.
+Private-key contents and passphrase are never printed. Agent and temporary files
+are cleaned up at exit. New synthetic CI cases cover plain/encrypted keys and
+incorrect/missing passphrases. Local agent execution was blocked by this sandbox's
+socket restrictions; fresh GitHub validation is required before promotion to the
+deploy branch. The deploy branch still uses the original workflow until that step.
+
+
 Status 21.10.2026: prepared infrastructure; not installed or connected to VPS.
 Scope: Studio test code at 5.249.252.78. Old Uniweb production workflow remains unchanged.
 
