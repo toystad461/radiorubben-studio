@@ -1,5 +1,5 @@
 {
-  "mode": "check",
+  "mode": "apply",
   "commit": "5d995a78e05d3bc1a83427a1e4de7f822083f74f",
   "files": [
     {
