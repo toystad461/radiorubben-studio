@@ -1,0 +1,113 @@
+name: Studio VPS test deployment
+on:
+  push:
+    branches: [deploy/vps-test, feat/vps-github-deploy]
+  pull_request:
+    paths:
+      - '.github/workflows/vps-test-deploy.yml'
+      - 'scripts/vps-deploy-*'
+      - 'tests/test-vps-deploy.py'
+      - 'deploy/vps-test.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: studio-vps-test-deploy
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, openssl, mbstring, zip, fileinfo
+          tools: composer:v2
+          coverage: none
+      - name: Test gateway and build reviewed file set
+        run: |
+          set -Eeuo pipefail
+          python3 tests/test-vps-deploy.py
+          bash -n scripts/vps-deploy-bootstrap.sh
+          python3 -m py_compile scripts/vps-deploy-gateway.py scripts/vps-deploy-package.py
+          python3 scripts/vps-deploy-package.py "$RUNNER_TEMP/vps-payload.json"
+      - name: Test candidate source without deployment credentials
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          commit=$(python3 -c 'import json; print(json.load(open("deploy/vps-test.json")).get("commit", ""))')
+          if [[ -z "$commit" ]]; then exit 0; fi
+          [[ "$commit" =~ ^[0-9a-f]{40}$ ]]
+          candidate="$RUNNER_TEMP/vps-source"
+          mkdir "$candidate"
+          git archive "$commit" | tar -x -C "$candidate"
+          cd "$candidate"
+          composer install --no-dev --prefer-dist --no-interaction
+          composer test
+          python3 - <<'PY'
+          from pathlib import Path
+          import subprocess
+          for folder in ('app', 'public'):
+              for path in Path(folder).rglob('*'):
+                  if path.suffix == '.php':
+                      subprocess.run(['php', '-l', str(path)], check=True, stdout=subprocess.DEVNULL)
+                  elif folder == 'public' and path.suffix in ('.js', '.mjs'):
+                      subprocess.run(['node', '--check', str(path)], check=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vps-payload
+          path: ${{ runner.temp }}/vps-payload.json
+          retention-days: 3
+  transfer:
+    needs: verify
+    if: github.ref == 'refs/heads/deploy/vps-test' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment: studio-vps-test
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: vps-payload
+          path: payload
+      - name: Send to fixed VPS gateway
+        shell: bash
+        env:
+          DEPLOY_KEY: ${{ secrets.VPS_TEST_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.VPS_TEST_KNOWN_HOSTS }}
+        run: |
+          set -Eeuo pipefail
+          [[ -n "$DEPLOY_KEY" && -n "$KNOWN_HOSTS" ]] || { echo 'Missing VPS test secrets'; exit 1; }
+          umask 077
+          ssh_dir=$(mktemp -d)
+          trap 'rm -rf -- "$ssh_dir"' EXIT
+          printf '%s\n' "$DEPLOY_KEY" > "$ssh_dir/key"
+          printf '%s\n' "$KNOWN_HOSTS" > "$ssh_dir/known_hosts"
+          unset DEPLOY_KEY KNOWN_HOSTS
+          ssh-keygen -y -P '' -f "$ssh_dir/key" >/dev/null
+          ssh-keygen -F 5.249.252.78 -f "$ssh_dir/known_hosts" >/dev/null
+          timeout 180 ssh -F /dev/null -T -p 22 -i "$ssh_dir/key" \
+            -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
+            -o "UserKnownHostsFile=$ssh_dir/known_hosts" -o GlobalKnownHostsFile=/dev/null \
+            -o ConnectTimeout=15 -o ServerAliveInterval=15 -o ServerAliveCountMax=2 \
+            -o ForwardAgent=no -o ClearAllForwardings=yes \
+            rr-deploy@5.249.252.78 < payload/vps-payload.json > vps-receipt.json
+          python3 - <<'PY'
+          import json, os
+          d=json.load(open('vps-receipt.json'))
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
+              f.write('VPS result: **'+d['status']+'**\n\n')
+              for key in ('commit','backup','recoveryRequired'):
+                  if key in d: f.write(key+': '+str(d[key])+'\n\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vps-receipt
+          path: vps-receipt.json
+          if-no-files-found: error
+          retention-days: 14
