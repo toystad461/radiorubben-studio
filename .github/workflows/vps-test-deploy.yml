@@ -100,12 +100,18 @@ jobs:
             cat > "$ssh_dir/askpass" <<'PY'
           #!/usr/bin/python3
           import os
+          from pathlib import Path
+          marker = Path(__file__).with_suffix('.used')
+          try:
+              marker.touch(exist_ok=False)
+          except FileExistsError:
+              raise SystemExit(1)
           print(os.environ['DEPLOY_PASSPHRASE'])
           PY
             chmod 700 "$ssh_dir/askpass"
             eval "$(ssh-agent -s)" >/dev/null
             if ! DISPLAY=rr-deploy SSH_ASKPASS="$ssh_dir/askpass" SSH_ASKPASS_REQUIRE=force \
-              ssh-add "$ssh_dir/key" </dev/null >/dev/null 2>&1; then
+              timeout --kill-after=2s 15s ssh-add "$ssh_dir/key" </dev/null >/dev/null 2>&1; then
               echo 'Cannot unlock deploy key; verify key and passphrase secrets.'
               exit 1
             fi
