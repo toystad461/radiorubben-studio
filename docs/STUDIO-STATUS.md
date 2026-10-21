@@ -7,12 +7,16 @@ lytterstream mangler. Eksisterende PHP-Studio beholdes. Separat gren
 `feat/liquidsoap-icecast-pilot` fra main `96ff332` inneholder beslutning,
 privat pilotkonfigurasjon og en faktisk syntetisk HTTP/MP3-lydtest i egen CI.
 Lokal konfigurasjons-/syntakskontroll består med Liquidsoap 2.2.4 fra Ubuntu;
-full lydtest rapporteres separat etter kjøring. Ingen VPS-installasjon,
+full lydtest består i [CI 39687727865](https://github.com/toystad461/radiorubben-studio/actions/runs/39687727865)
+for kodecommit `c97977a73a8c0991774e77786c3b6099d96b6efe`: faktisk MP3,
+begge spor, målt crossfade, ingen klipping i testlyden, reconnect og uendrede
+originaler. Utkast [PR108](https://github.com/toystad461/radiorubben-studio/pull/108).
+Ingen VPS-installasjon,
 Studio-kobling, offentlig stream, merge eller produksjonsendring er utført.
 Direkte VPS-SSH fra agentmiljøet svarer Network is unreachable; eksisterende
 GitHub-port har ikke tilgang til pakke-/tjenesteinstallasjon.
 Ukommittert PHP-crossfade-utkast bevares, men videre lydmotorarbeid følger
-Liquidsoap-beslutningen. Neste steg: full lydtest og VPS-administratortilgang.
+Liquidsoap-beslutningen. Neste steg: VPS-administratortilgang, isolerte tjenester og Studio-kobling.
 Se [arkitekturbeslutningen](STREAM-ARCHITECTURE.md) og
 [pilotoppskriften](../infra/stream-pilot/README.md).
 

@@ -68,3 +68,11 @@ Denne grensen skal ikke omgås gjennom PHP eller endring av deployporten.
 
 Bruk dokumentasjon og syntakskontroll for den faktisk installerte versjonen.
 Utviklingsdokumentasjon alene er ikke bevis for støtte i Ubuntu-pakken.
+
+## Verifisering av pilot
+
+Kodecommit `c97977a73a8c0991774e77786c3b6099d96b6efe` består faktisk lydtest
+i [CI 39687727865](https://github.com/toystad461/radiorubben-studio/actions/runs/39687727865).
+MP3 mottatt over HTTP er dekodet og målt: begge syntetiske spor, hørbar
+overlapping, ingen klipping i denne testlyden, ny lyttertilkobling og uendrede
+originaler. Dette er test av pilotkoden, ikke VPS eller Studio-integrasjonen.
