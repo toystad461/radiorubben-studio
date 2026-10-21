@@ -1,5 +1,23 @@
 # Studio – felles status og arbeidsliste
 
+## VPS musikkbibliotek – open_basedir-rettelse, 21.10.2026
+
+Operatørens CLI-test som rr-studio bekrefter tomt lesbart bibliotek uten
+filbegrensning, og feil med samme open_basedir som FPM. Årsak: kontroll av
+/srv/radiorubben-test utenfor tillatt mediemappe. Ingen registerdata er slettet.
+
+Avgrenset gren fra main. Bevarer VPS-ens allerede installerte oppløsning av
+media-symlink; bibliotekets mappekontroll bruker eksisterende mediemappe som
+grense. Bare dersom mediemappen mangler, kontrolleres foreldremappen før
+oppretting. Symlink-/kanonisk sti-, lås-, register- og originalkontroller består.
+
+Standalone tests/music-library-open-basedir.php er lagt til for faktisk
+open_basedir, tom lesing uten skriving, oppretting og negative integritetstilfeller.
+Testen er ennå ikke kjørt: lokal PHP mangler. Må bestå på VPS før selektiv
+utrulling av app/music-library.php. Forventet førblob på VPS:
+065986dd097aa3c5c67b8f422823cb5ff44e70a1. Ingen endring i FPM-rettigheter,
+Entra, WordPress, musikkdata eller opplastingsgrenser. Ingen merge/deploy bekreftet.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
