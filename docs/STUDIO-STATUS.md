@@ -1,5 +1,21 @@
 # Studio – felles status og arbeidsliste
 
+## AI-worker – testfeil rettet og VPS-forbindelse verifisert, 21.10.2026
+
+GitHub-run 39631001793, forsøk 2, returnerte snapshot av 176 kodefiler,
+recoveryRequired=false. Ingen Studio-kode ble endret av snapshot-kallet.
+Worker-testens tre metadataredigeringer bevarer nå artist Fixture; tidligere
+fjernet de artist og testet dermed manglende metadata i stedet for retry/CAS.
+Commit 2962dfc562615ed7ae99bcc41f195642ba5f68bf består PHP 8.2 og 8.4 i
+run 39635160501. Loggen bekrefter test-music-ai-worker.php og kontrollene for
+forutsetninger, gjenbruk, retry, lås, samtidig redigering og originalbevaring.
+Dette er syntetisk CI, ikke en aktiv AI-jobb på VPS. Gatewayen støtter bare
+app/public-kode; scripts, systemd, proxy og konfigurasjon er utenfor dens
+rettigheter. Egen administrativ engangsinstallasjon av worker og begrenset
+nettverk kreves før API-smoke og periodisk drift. Ikke utvid gatewayens
+rettigheter eller legg oppsett av tjenester i webkode for å omgå grensen.
+
+
 ## VPS AI-musikkjobb – klargjøring 21.10.2026
 
 Brukeren har installert PR103-kilde 8ace4d83 selektivt: begge cue-tester og seks
