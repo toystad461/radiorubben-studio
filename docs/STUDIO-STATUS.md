@@ -1,5 +1,17 @@
 # Studio – felles status og arbeidsliste
 
+## Albumcover – 21.10.2026
+
+Bestilt automatisk innebygd cover, manuelt bytte og plassholder. Avgrenset gren
+feat/music-album-artwork bygger på installert PR103; ingen AI-worker/systemd-endring.
+Privat separat coverlager med kildehash, egen revisjon, roller/CSRF og atomisk lagring.
+Visning i liste, detaljer og bibliotekets forhåndslytter. Ingen eksternt coversøk.
+Syntetiske tester for APIC, manual forrang, ugyldige bilder, roller/CSRF/revisjon,
+symlinks og original/registerbevaring er lagt til; GitHub-resultat og deploy gjenstår.
+Se docs/MUSIC-COVER.md. AI-worker PR104 er bekreftet aktiv fra brukerens VPS-logg:
+API-smoke besto, første vurdering prepared, proxy og timer active.
+
+
 ## Automatisk lydanalyse og cue-punkter – 21.10.2026
 
 Bestilt: hele den eksisterende lydanalysen skal kjøre automatisk etter opplasting,
