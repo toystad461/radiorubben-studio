@@ -22,7 +22,8 @@ jobs:
       - run: composer audit
       - name: Check Studio JavaScript and automatic case preparation
         run: |
-          find public \( -name '*.mjs' -o -name '*.js' \) -exec node --check {} \;
+          bash tests/test-javascript-check.sh
+          bash scripts/check-javascript.sh
           node tests/recovered/test-case-flow.mjs
       - name: Check full-package deployment stop before any server access
         run: bash tests/test-deploy-block.sh

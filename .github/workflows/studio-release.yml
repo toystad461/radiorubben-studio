@@ -45,7 +45,8 @@ jobs:
           bash -n scripts/studio-auto-publish.sh
       - name: Check Studio JavaScript and automatic case preparation
         run: |
-          find public \( -name '*.mjs' -o -name '*.js' \) -exec node --check {} \;
+          bash tests/test-javascript-check.sh
+          bash scripts/check-javascript.sh
           node tests/recovered/test-case-flow.mjs
       - name: Build versioned release using the existing packager
         run: |

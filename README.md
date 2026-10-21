@@ -1,9 +1,16 @@
 # Radio Rubben Studio – PHP-utgave
 
-> **Videre utvikling og gjeldende status:** Start i [Studio-status og arbeidsliste](docs/STUDIO-STATUS.md) og følg [Codex-reglene](AGENTS.md). Main og teksten nedenfor beskriver en eldre grunnversjon. Aktivt Uniweb-Studio har selektivt publiserte tillegg; standardpakken må ikke brukes som full erstatning før filgrunnlaget er avstemt.
+> **Start her:** [Utvikling, miljøer og kontroller](docs/DEVELOPMENT.md) og
+> [Codex-reglene](AGENTS.md). [Studio-status](docs/STUDIO-STATUS.md) er historisk
+> leveringsjournal. Teksten nedenfor beskriver i stor grad oppstarten i september;
+> påstander om venteside, manglende HTTPS og inaktive integrasjoner er ikke en
+> fersk driftsstatus. Standardpakken skal ikke overskrive et uavstemt miljø.
 
 
-Norsk, responsivt kontrollsenter for `studio.radiorubben.no`, tilpasset vanlig PHP-webhotell. **Ingen Node.js, npm eller JavaScript-bygging kreves.** GitHub er fortsatt kode-master, og repoet skal være privat.
+Norsk, responsivt kontrollsenter for `studio.radiorubben.no`, skrevet i PHP med
+nettleser-JavaScript. Node/npm brukes i testverktøy, men er ikke Studios webserver.
+GitHub er kode-master. Repoet er offentlig ved kontroll 21.10.2026; private
+innstillinger, medier og driftsdata skal fortsatt holdes utenfor Git.
 
 ## Venteside
 
@@ -43,7 +50,7 @@ composer test
 php scripts/package.php
 ```
 
-Pakkeskriptet trenger PHP-utvidelsen zip. GitHub Actions kjører kontrollene med PHP 8.2 og 8.4 og lager artefakten `uniweb-package`. Den inneholder `radiorubben-studio-uniweb.zip` med alle PHP-avhengighetene, men aldri `config/local.php`. Last ned artefakten fra den grønne kjøringen under **Actions** i det private repoet.
+Pakkeskriptet trenger PHP-utvidelsen zip. GitHub Actions kjører kontrollene med PHP 8.2 og 8.4 og lager artefakten `uniweb-package`. Den inneholder `radiorubben-studio-uniweb.zip` med alle PHP-avhengighetene, men aldri `config/local.php`. Last ned artefakten fra den grønne kjøringen under **Actions** i repoet.
 
 ## Uniweb: egen mappe før opplasting
 
@@ -89,6 +96,6 @@ Før intern bruk: test tildelt og ikke-tildelt bruker, utløpt sesjon, utlogging
 - `tests/`: syntaks-, konfigurasjons- og HTTP-tester.
 - `scripts/`: lager opplastingspakke uten lokale hemmeligheter.
 
-Repo: https://github.com/toystad461/radiorubben-studio (privat). Den tidligere Next.js-utgaven er bevart i Git-historikken, blant annet commit `edd36fd`. Bruk `git pull --ff-only` før videre arbeid. Commit `composer.lock`; aldri `vendor/` eller `config/local.php`.
+Repo: https://github.com/toystad461/radiorubben-studio (offentlig ved kontroll 21.10.2026). Den tidligere Next.js-utgaven er bevart i Git-historikken, blant annet commit `edd36fd`. Bruk `git pull --ff-only` før videre arbeid. Commit `composer.lock`; aldri `vendor/` eller `config/local.php`.
 
 Referanser: [PHP lokal server](https://www.php.net/features.commandline.webserver.php), [OpenID Connect-biblioteket](https://github.com/jumbojett/OpenID-Connect-PHP), [Uniweb webhotell](https://www.uniweb.no/hosting/webhotell/).
