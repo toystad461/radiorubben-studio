@@ -1,5 +1,30 @@
 # Studio – felles status og arbeidsliste
 
+## VPS AI-musikkjobb – klargjøring 21.10.2026
+
+Brukeren har installert PR103-kilde 8ace4d83 selektivt: begge cue-tester og seks
+filhasher besto på VPS; manuell cue-lagring er bekreftet etter ny innlasting.
+AI-nøkkel leses fra studio-data/openai.key via eksisterende config-mappelenke.
+GET /v1/models gir HTTP200; gpt-4.1-mini og gpt-5-mini er oppført.
+Ingen nøkkel er lagret i kode eller utskrift.
+
+Ny avgrenset CLI-jobb på gren feat/music-ai-background-worker bygger på den
+installerte PR103-kilden. Venter på full lydprofil og tempo/toneart, bruker
+eksisterende produsentfunksjon uten krav om nettidentifisering, lagrer
+producerAssessment og bevarer manuelle tags/cues. AI-tags blir liggende som
+kildemerkede AI-vurderinger i eksisterende detaljvisning; ingen kopiering til
+manuelle merkelapper. Gyldige vurderinger gjenbrukes. En privat lås, atomisk
+revisjonskontroll og maksimalt tre forsøk per inngangsgrunnlag begrenser kjøring.
+Standardmodell for denne CLI-jobben er gpt-4.1-mini; global Studio-modell endres ikke.
+
+Native PHP-test er skrevet for forutsetninger, lagring/gjenbruk, retry, lås,
+samtidig redigering og bevaring. Lokal PHP er utilgjengelig; test på VPS/CI
+og én syntetisk API-kjøring gjenstår. Ingen timer/tjeneste er installert eller
+aktivert. Web-FPM, Entra-proxy og nettidentifisering er uendret.
+Neste: staged PHP-test og syntetisk API-smoke, deretter egen begrenset
+proxy/systemd-timer og faktisk én-låts-kontroll før periodisk drift.
+
+
 ## Automatisk lydanalyse og cue-punkter – 21.10.2026
 
 Bestilt: hele den eksisterende lydanalysen skal kjøre automatisk etter opplasting,
