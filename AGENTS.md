@@ -1,5 +1,22 @@
 # Radio Rubben Studio – arbeidsregler for Codex
 
+## Bekreftelse og neste handling
+
+Avklart med Thomas 21.10.2026 for utviklings- og driftssamtaler:
+
+- Fullfør det bekreftede, avgrensede steget med nødvendige kontroller og
+  feilrettinger. Ikke be om samme bekreftelse for hvert delsteg.
+- Avslutt med hva som er bekreftet, pågående og uavklart. Foreslå én konkret
+  neste handling, forklar omfang og forventet resultat, og be Thomas bekrefte
+  før dette neste steget starter. Allerede uttrykkelig godkjente steg kan fullføres.
+- «Ja», «utfør» eller «fortsett» gjelder det beskrevne steget, ikke generell
+  tillatelse til andre oppgaver, merge eller utrulling.
+- Hvis Thomas må handle selv, oppgi verifisert lenke eller konkret app/side,
+  hva han skal trykke på eller kjøre, og hvilket resultat han skal se.
+  Merk kommandoer med Windows, Mac eller VPS; ikke finn på tilgang eller lenker.
+- Bekreftelse på utviklingsarbeid er separat fra redaksjonell godkjenning.
+  Denne arbeidsregelen innfører ikke godkjenning av hvert TTS-innslag.
+
 ## Start her
 Les docs/DEVELOPMENT.md først for kodegrunnlag, miljø og testvalg. Les relevante
 deler av docs/STUDIO-STATUS.md som historisk journal. Les eksisterende dokumentasjon,
@@ -28,7 +45,7 @@ bevis for dagens kode eller produksjon. Bevar ukommittert arbeid.
   løpet: siste avstemming, pakke/manifest, privat kodebackup, publisering,
   etterkontroll og tilbakeføring ved feil. Ikke be om samme godkjenning på nytt
   midt i dette løpet. Fastlås kildecommit, filsett og faktisk deploykvittering.
-- Stopp og avklar bare ved vesentlig endret omfang, nødvendige opplysninger som
+- Innenfor det bekreftede steget: stopp og avklar ved vesentlig endret omfang, opplysninger som
   mangler, reell teknisk/sikkerhetsmessig sperre eller handling utenfor gitt
   autorisasjon. Oppgi den konkrete årsaken, og fullfør upåvirket arbeid.
 - Redaksjonell innholdsgodkjenning og kodeutrulling er separate. Ikke publiser
