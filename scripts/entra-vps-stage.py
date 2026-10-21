@@ -66,7 +66,7 @@ def candidates(app, pool, tls):
     auth_pool = auth_pool.replace('[rr-studio]', '[rr-entra]')
     auth_pool = auth_pool.replace('listen = /run/php/rr-studio.sock', 'listen = /run/rr-entra/entra.sock')
     auth_pool += '\nenv[https_proxy] = http://127.0.0.1:3139\nenv[HTTPS_PROXY] = http://127.0.0.1:3139\n'
-    fpm = '[global]\npid = /run/rr-entra/php-fpm.pid\nerror_log = /proc/self/fd/2\ndaemonize = no\n\n' + auth_pool
+    fpm = '[global]\npid = /run/rr-entra/php-fpm.pid\nerror_log = syslog\ndaemonize = no\n\n' + auth_pool
     return new_app, fpm
 
 
