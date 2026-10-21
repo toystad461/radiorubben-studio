@@ -33,6 +33,7 @@ jobs:
         run: |
           set -Eeuo pipefail
           python3 tests/test-vps-deploy.py
+          python3 tests/test-vps-ssh-key.py
           bash -n scripts/vps-deploy-bootstrap.sh
           python3 -m py_compile scripts/vps-deploy-gateway.py scripts/vps-deploy-package.py
           python3 scripts/vps-deploy-package.py "$RUNNER_TEMP/vps-payload.json"
@@ -79,17 +80,37 @@ jobs:
         shell: bash
         env:
           DEPLOY_KEY: ${{ secrets.VPS_TEST_SSH_KEY }}
+          DEPLOY_PASSPHRASE: ${{ secrets.VPS_TEST_SSH_PASSPHRASE }}
           KNOWN_HOSTS: ${{ secrets.VPS_TEST_KNOWN_HOSTS }}
         run: |
           set -Eeuo pipefail
           [[ -n "$DEPLOY_KEY" && -n "$KNOWN_HOSTS" ]] || { echo 'Missing VPS test secrets'; exit 1; }
           umask 077
           ssh_dir=$(mktemp -d)
-          trap 'rm -rf -- "$ssh_dir"' EXIT
+          cleanup() {
+            if [[ -n "${SSH_AGENT_PID:-}" ]]; then ssh-agent -k >/dev/null 2>&1 || true; fi
+            rm -rf -- "$ssh_dir"
+          }
+          trap cleanup EXIT
           printf '%s\n' "$DEPLOY_KEY" > "$ssh_dir/key"
           printf '%s\n' "$KNOWN_HOSTS" > "$ssh_dir/known_hosts"
           unset DEPLOY_KEY KNOWN_HOSTS
-          ssh-keygen -y -P '' -f "$ssh_dir/key" >/dev/null
+          if ! ssh-keygen -y -P '' -f "$ssh_dir/key" >/dev/null 2>&1; then
+            [[ -n "${DEPLOY_PASSPHRASE:-}" ]] || { echo 'Encrypted or invalid key: configure VPS_TEST_SSH_PASSPHRASE'; exit 1; }
+            cat > "$ssh_dir/askpass" <<'PY'
+          #!/usr/bin/python3
+          import os
+          print(os.environ['DEPLOY_PASSPHRASE'])
+          PY
+            chmod 700 "$ssh_dir/askpass"
+            eval "$(ssh-agent -s)" >/dev/null
+            if ! DISPLAY=rr-deploy SSH_ASKPASS="$ssh_dir/askpass" SSH_ASKPASS_REQUIRE=force \
+              ssh-add "$ssh_dir/key" </dev/null >/dev/null 2>&1; then
+              echo 'Cannot unlock deploy key; verify key and passphrase secrets.'
+              exit 1
+            fi
+          fi
+          unset DEPLOY_PASSPHRASE
           ssh-keygen -F 5.249.252.78 -f "$ssh_dir/known_hosts" >/dev/null
           timeout 180 ssh -F /dev/null -T -p 22 -i "$ssh_dir/key" \
             -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes \
