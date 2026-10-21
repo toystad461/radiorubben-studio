@@ -1,5 +1,21 @@
 # Studio – felles status og arbeidsliste
 
+## GitHub-styrt test-VPS – 21.10.2026
+
+Thomas prioriterer å erstatte gjentatte manuelle SSH-deployer med GitHub-utrulling.
+Avgrenset gren feat/vps-github-deploy fra main 96ff332; gammel Uniweb-produksjon
+og dens workflow er uendret. Egen workflow, miljø studio-vps-test og begrenset
+forced-command SSH-inngang. Første manifest er snapshot-only. Selektiv kodepakke
+har eksakt commit/før-/etter-hasher, privat kodebackup, etterkontroll og rollback.
+Ingen automatisk fullbranch-kopiering, runtime-data eller systemkonfig i pakken.
+Sju lokale negative/positive tester og Bash/YAML-kontroller består. Servertilgang,
+secrets, bootstrap, faktisk deploy og UI-test er ikke verifisert. GitHub-connector
+kan ikke opprette secrets eller starte workflow_dispatch; push på egen deploygren
+brukes først etter oppsett. Ingen merge, produksjonsdeploy eller VPS-endring utført.
+Neste: grønn PR-kontroll, engangsoppsett/nøkkel i GitHub, første lesende snapshot.
+Se docs/VPS-GITHUB-DEPLOY.md. AI-worker PR104 er fortsatt ikke aktivert; tidligere
+syntetisk test stoppet før smoke-kall og installasjon.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
