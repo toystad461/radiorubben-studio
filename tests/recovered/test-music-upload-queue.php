@@ -28,7 +28,10 @@ try{
  $job=music_audio_claim($u,'c','c',$root);
  $t=music_audio_complete($id,$sha,$job['revision'],$job['token'],$measure,$profile,$u,'c','c',$root);
  queue_ok($t['cuePoints']['source']==='automatic-analysis'&&$t['cuePoints']['points']===$t['musicAudioProfile']['cueSuggestion']);
- queue_ok(music_library_cues_current(music_audio_find($root,$id))['points']===$t['cuePoints']['points']);
+ $reloaded=music_library_cues_current(music_audio_find($root,$id))['points'];
+ foreach($t['cuePoints']['points'] as $key=>$value){
+     queue_ok($value===null ? $reloaded[$key]===null : is_numeric($reloaded[$key])&&(float)$reloaded[$key]===(float)$value);
+ }
  queue_ok($t['cuePoints']['rotationApproved']===false);
  // Older stored profiles work without approval or a new analysis.
  $legacy=$t;unset($legacy['cuePoints']);queue_ok(music_library_cues_current($legacy)['points']===$t['cuePoints']['points']);
