@@ -1,5 +1,23 @@
 # Studio – felles status og arbeidsliste
 
+## Automatisk lydanalyse og cue-punkter – 21.10.2026
+
+Bestilt: hele den eksisterende lydanalysen skal kjøre automatisk etter opplasting,
+og cue-punktene skal brukes uten godkjenningsklikk. Manuell cue-redigering beholdes.
+Avgrenset gren fra main 96ff332; ingen av de åpne VPS-/Entra-/playout-grenene tas inn.
+
+Endret: atomisk lagring av automatiske cue-punkter, gjenbruk av tidligere gyldige
+profiler, manuell forrang og gjenopptakelse etter ny opplasting/eksplisitt retry.
+Ingen oppdiktede vokalpunkter; ukjente verdier vises fortsatt. Ingen sending,
+rotasjonsgodkjenning eller eksterne AI-kall. Nettleserkøen krever åpent bibliotek.
+
+JavaScript-syntaks kontrollert lokalt. PHP-regresjonstest og eksisterende
+nettlesertest er oppdatert; native PHP kunne ikke installeres i arbeidsmiljøet.
+CI og faktisk opplasting/analyse/manuell lagring på VPS gjenstår.
+Ingen merge eller VPS-utrulling. Eksisterende VPS-fikser må bevares ved selektiv deploy.
+Se MUSIC-UPLOAD-ANALYSIS-QUEUE.md.
+
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
