@@ -1,0 +1,26 @@
+name: Music AI worker bootstrap
+on:
+  push:
+    branches: [feat/music-ai-background-worker]
+  pull_request:
+    paths:
+      - 'scripts/music-ai-*'
+      - 'tests/test-music-ai-*'
+      - 'tests/recovered/test-music-ai-worker.php'
+      - '.github/workflows/music-ai-worker.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, mbstring, fileinfo
+          tools: composer:v2
+      - run: composer install --no-dev --prefer-dist --no-interaction
+      - run: python3 tests/test-music-ai-vps-install.py
+      - run: php tests/recovered/test-music-ai-worker.php
