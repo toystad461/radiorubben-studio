@@ -14,7 +14,7 @@ try{
     $r=music_library_upload(['name'=>'Cover.mp3','tmp_name'=>$file,'size'=>strlen($bytes),'error'=>0],$u,'c','c',$root,fn()=>true,fn($a,$b)=>copy($a,$b));$t=$r['track'];
     $indexBefore=hash_file('sha256',$root.'/library.json');
     cover_ok(music_cover_read($t,$root)===null);
-    music_cover_auto($t,$u,'c','c',$root);
+    music_cover_save($t['id'],$t['sha256'],0,'embedded',null,$u,'c','c',$root);
     $v=music_cover_read($t,$root);cover_ok($v!==null&&$v['source']==='embedded'&&$v['bytes']===$png);
     cover_denied(fn()=>music_cover_save($t['id'],$t['sha256'],1,'manual',$png,['role'=>'observer'],'c','c',$root));
     cover_denied(fn()=>music_cover_save($t['id'],$t['sha256'],1,'manual',$png,$u,'bad','c',$root));
