@@ -20,7 +20,8 @@ with tempfile.TemporaryDirectory() as folder:
         subprocess.run(['ssh-keygen', '-q', '-t', 'ed25519', '-N', phrase, '-f', str(key)], check=True)
         env = {**os.environ, 'DEPLOY_KEY': key.read_text(), 'KNOWN_HOSTS': 'synthetic',
                'DEPLOY_PASSPHRASE': supplied}
-        result = subprocess.run(['bash', '-c', script], env=env, text=True, capture_output=True)
+        print('Checking synthetic key case; expected exit:', expected, flush=True)
+        result = subprocess.run(['bash', '-c', script], env=env, text=True, capture_output=True, timeout=30)
         if result.returncode != expected:
             raise RuntimeError('Unexpected unlock result for synthetic fixture')
 print('PASS: plain/encrypted keys accepted; incorrect/missing passphrases rejected')
