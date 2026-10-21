@@ -48,7 +48,11 @@ function music_audio_complete(string $id,string $sha,int $revision,string $token
     if($vocal!==null&&$transition!==null&&$transition<$vocal)$transition=null;
     $points=music_cue_values(['start'=>$start,'vocalStart'=>$vocal,'transition'=>$transition,'end'=>$end],$duration);
     $a+=['source'=>'authenticated-browser-analysis','sourceSha256'=>$sha,'generatedAt'=>gmdate('c'),'generatedBy'=>(string)$user['id'],'rotationApproved'=>false];
-    $p+=['sourceSha256'=>$sha,'generatedAt'=>gmdate('c'),'source'=>'authenticated-browser-analysis','cueSuggestion'=>$points,'cueSuggestionStatus'=>'unapproved','limitations'=>'Vokal er YAMNet-estimat med ca.0,48sek tidssteg og kan forveksles med instrumenter. Overgang avhenger av neste låt. Lydnivå er dBFS, ikke LUFS.'];
-    // Suggestions are stored separately. Never overwrite manual cue points or corrected measurements.
-    return music_worker_commit($root,$t,['audioAnalysis'=>$a,'musicAudioProfile'=>$p,'audioQueue'=>['jobKey'=>$q['jobKey'],'status'=>'prepared','attempts'=>$q['attempts'],'updatedAt'=>time()]]);
+    $p+=['sourceSha256'=>$sha,'generatedAt'=>gmdate('c'),'source'=>'authenticated-browser-analysis','cueSuggestion'=>$points,'cueSuggestionStatus'=>'automatic','limitations'=>'Vokal er YAMNet-estimat med ca.0,48sek tidssteg og kan forveksles med instrumenter. Overgang avhenger av neste låt. Lydnivå er dBFS, ikke LUFS.'];
+    // Save automatic cues in the same atomic commit as the completed analysis.
+    // Legacy/manual points remain authoritative, including deliberately empty values.
+    $current=music_library_cues_current($t);
+    $changes=(!$current||($current['source']??null)==='automatic-analysis')
+        ? ['cuePoints'=>music_library_cues_automatic($t,$p)] : [];
+    return music_worker_commit($root,$t,$changes+['audioAnalysis'=>$a,'musicAudioProfile'=>$p,'audioQueue'=>['jobKey'=>$q['jobKey'],'status'=>'prepared','attempts'=>$q['attempts'],'updatedAt'=>time()]]);
 }
