@@ -2,15 +2,35 @@
 declare(strict_types=1);
 // Local/CI checks only: no requests, session, configuration writes or secret output.
 if (PHP_SAPI !== 'cli') { http_response_code(404); exit; }
-require_once dirname(__DIR__).'/app/config.php';
+// The deployment excludes scripts/. Allow checking its own private config from a source checkout.
+$appRoot = dirname(__DIR__);
+if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) {
+    foreach (array_slice($argv, 1) as $argument) {
+        if (!str_starts_with($argument, '--app-root=')) {
+            fwrite(STDERR, "Usage: php entra-preflight.php [--app-root=/absolute/app/path]\n");
+            exit(2);
+        }
+        $candidate = substr($argument, strlen('--app-root='));
+        $resolved = str_starts_with($candidate, '/') ? realpath($candidate) : false;
+        if ($resolved === false || !is_file($resolved.'/app/config.php')) {
+            fwrite(STDERR, "BLOCKED: application root unavailable.\n");
+            exit(2);
+        }
+        $appRoot = $resolved;
+    }
+}
+require_once $appRoot.'/app/config.php';
 function entra_preflight(array $config): array
 {
     $url = is_string($config['base_url'] ?? null) ? parse_url($config['base_url']) : false;
     $uuid = '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/iD';
+    $placeholderUuid = '/^0{8}-0{4}-0{4}-0{4}-[0-9a-f]{12}$/iD';
     $checks = [
         'entra_mode' => ($config['auth_mode'] ?? null) === 'entra',
-        'tenant_uuid' => is_string($config['tenant_id'] ?? null) && preg_match($uuid, $config['tenant_id']) === 1,
-        'client_uuid' => is_string($config['client_id'] ?? null) && preg_match($uuid, $config['client_id']) === 1,
+        'tenant_uuid' => is_string($config['tenant_id'] ?? null) && preg_match($uuid, $config['tenant_id']) === 1
+            && preg_match($placeholderUuid, $config['tenant_id']) !== 1,
+        'client_uuid' => is_string($config['client_id'] ?? null) && preg_match($uuid, $config['client_id']) === 1
+            && preg_match($placeholderUuid, $config['client_id']) !== 1,
         'secret_present' => is_string($config['client_secret'] ?? null) && trim($config['client_secret']) !== '',
         'https_origin' => is_array($url) && ($url['scheme'] ?? '') === 'https'
             && !empty($url['host']) && !isset($url['user'], $url['pass'])
@@ -26,8 +46,10 @@ if (realpath($_SERVER['SCRIPT_FILENAME'] ?? '') === __FILE__) {
         $checks = entra_preflight(load_config());
         $checks['php_version'] = PHP_VERSION_ID >= 80200;
         foreach (['curl','json','openssl','session'] as $extension) $checks['extension_'.$extension] = extension_loaded($extension);
-        $checks['vendor_installed'] = is_file(dirname(__DIR__).'/vendor/autoload.php');
+        $checks['vendor_installed'] = is_file($appRoot.'/vendor/autoload.php');
+        foreach (['curl_init','curl_exec','openssl_verify'] as $function) $checks['function_'.$function] = function_exists($function);
         foreach ($checks as $label=>$ok) echo ($ok ? 'PASS' : 'BLOCKED').': '.$label.PHP_EOL;
+        echo "NOTE: CLI checks do not verify PHP-FPM network isolation or environment.\n";
         echo "MANUAL: app assignment, member/guest login, fallback account, permissions, logout and web-server HTTPS remain unverified.".PHP_EOL;
         exit(in_array(false, $checks, true) ? 1 : 0);
     } catch (Throwable $error) {
