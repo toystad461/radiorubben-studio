@@ -21,5 +21,33 @@ try{
  $t=music_audio_enqueue($id,$sha,$u,'c','c',$root,true);$job=music_audio_claim($u,'c','c',$root);$t=music_library_edit($id,$sha,$job['revision'],['title'=>'Manuell rettelse','tags'=>'Min tag'],$u,'c','c',$root);queue_no(fn()=>music_audio_complete($id,$sha,$job['revision'],$job['token'],$measure,$profile,$u,'c','c',$root));music_audio_release($id,$job['token'],$u,'c','c',false,$root);queue_ok(music_audio_find($root,$id)['manualOverrides']['title']==='Manuell rettelse');
  $job=music_audio_claim($u,'c','c',$root);$index=music_library_index($root);$index['tracks'][0]['audioQueue']['leaseUntil']=time()-1;file_put_contents($root.'/library.json',json_encode($index,JSON_THROW_ON_ERROR));usleep(200000);queue_no(fn()=>music_audio_lease(music_audio_find($root,$id),$job['token'],$u));$resumed=music_audio_claim($u,'c','c',$root);queue_ok($resumed!==null&&$resumed['token']!==$job['token']);music_audio_release($id,$resumed['token'],$u,'c','c',true,$root);queue_ok(music_audio_status($root)[0]['status']==='failed');
  $index=music_library_index($root);$index['tracks'][0]['musicAudioProfile']['engine']='old-engine';$index['tracks'][0]['audioQueue']['status']='prepared';file_put_contents($root.'/library.json',json_encode($index,JSON_THROW_ON_ERROR));$t=music_audio_enqueue($id,$sha,$u,'c','c',$root);queue_ok($t['audioQueue']['status']==='queued'&&music_audio_profile_current($t)===null);
- echo "PASS audio queue: role/CSRF, exclusive lease/resume, stale/manual preservation, profile limits, dedupe, corrections and explicit cue approval\n";
+
+ // A fresh track without manual cues gets persisted automatic points in the same commit.
+ $index=music_library_index($root);unset($index['tracks'][0]['cuePoints'],$index['tracks'][0]['cueHistory']);
+ file_put_contents($root.'/library.json',json_encode($index,JSON_THROW_ON_ERROR));
+ $job=music_audio_claim($u,'c','c',$root);
+ $t=music_audio_complete($id,$sha,$job['revision'],$job['token'],$measure,$profile,$u,'c','c',$root);
+ queue_ok($t['cuePoints']['source']==='automatic-analysis'&&$t['cuePoints']['points']===$t['musicAudioProfile']['cueSuggestion']);
+ $reloaded=music_library_cues_current(music_audio_find($root,$id))['points'];
+ foreach($t['cuePoints']['points'] as $key=>$value){
+     queue_ok($value===null ? $reloaded[$key]===null : is_numeric($reloaded[$key])&&(float)$reloaded[$key]===(float)$value);
+ }
+ queue_ok($t['cuePoints']['rotationApproved']===false);
+ // Older stored profiles work without approval or a new analysis.
+ $legacy=$t;unset($legacy['cuePoints']);queue_ok(music_library_cues_current($legacy)['points']===$t['cuePoints']['points']);
+ $legacy['musicAudioProfile']['sourceSha256']=str_repeat('0',64);queue_ok(music_library_cues_current($legacy)===null);
+ // Rerunning analysis updates automatic points; undetected voice stays null.
+ music_audio_enqueue($id,$sha,$u,'c','c',$root,true);$job=music_audio_claim($u,'c','c',$root);
+ $noVoice=$profile;$noVoice['vocalStartSeconds']=null;$noVoice['lastVocalSeconds']=null;
+ $t=music_audio_complete($id,$sha,$job['revision'],$job['token'],$measure,$noVoice,$u,'c','c',$root);
+ queue_ok($t['cuePoints']['points']['vocalStart']===null&&$t['cuePoints']['points']['transition']===null);
+ // A manual correction survives subsequent full automatic analysis, including nulls.
+ $manualNull=['start'=>1.0,'vocalStart'=>null,'transition'=>null,'end'=>25.0];
+ $t=music_library_cues_save($id,$sha,$t['revision'],$manualNull,$u,'c','c',$root);
+ music_audio_enqueue($id,$sha,$u,'c','c',$root,true);$job=music_audio_claim($u,'c','c',$root);
+ $t=music_audio_complete($id,$sha,$job['revision'],$job['token'],$measure,$profile,$u,'c','c',$root);
+ queue_ok($t['cuePoints']['source']==='manual'&&$t['cuePoints']['points']==$manualNull);
+ queue_ok(hash_file('sha256',$root.'/originals/'.$id.'.mp3')===$sha);
+
+ echo "PASS audio queue: automatic cue persistence, legacy reuse, unknown points and manual precedence; role/CSRF, exclusive lease/resume, stale/manual preservation, profile limits, dedupe, corrections and explicit cue approval\n";
 }finally{foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir,FilesystemIterator::SKIP_DOTS),RecursiveIteratorIterator::CHILD_FIRST)as$f)$f->isDir()?rmdir($f->getPathname()):unlink($f->getPathname());rmdir($dir);}

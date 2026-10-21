@@ -2,6 +2,8 @@ const root=document.querySelector('[data-audio-queue]');
 if(root){
  const status=root.querySelector('[role=status]'),list=root.querySelector('ul'),start=root.querySelector('[data-queue-start]'),pause=root.querySelector('[data-queue-pause]');
  let running=false,stopping=false,current=null,worker=null,heartbeat=null;
+ // A new upload/retry explicitly resumes a previously paused queue.
+ if(root.dataset.autostart==='yes')sessionStorage.removeItem('rrAudioQueuePaused');
  const pending=j=>j.status==='queued'||(j.status==='running'&&!j.leaseActive);
  const active=j=>j.status==='running'&&j.leaseActive;
  const summary=jobs=>jobs.some(active)?'Klargjør musikk i en Studio-fane …':jobs.some(pending)?'Musikk venter på klargjøring.':jobs.some(j=>j.status==='failed')?'Noen låter trenger hjelp. Ferdige analyser er lagret.':'Klar. Alle analyser er lagret.';
