@@ -26,7 +26,7 @@ try {
  ai_ok($t['cuePoints']==$before['cuePoints']&&$t['tags']===$before['tags']&&$t['audioAnalysis']==$before['audioAnalysis']);
  ai_ok(hash_file('sha256',$root.'/originals/'.$id.'.mp3')===$sha);
  ai_ok(music_ai_worker_run($config,$root,$mock)['status']==='idle'&&$calls===1);
- $t=music_library_edit($id,$sha,$t['revision'],['title'=>'New title','tags'=>'Min tag'],$u,'c','c',$root);
+ $t=music_library_edit($id,$sha,$t['revision'],['artist'=>'Fixture','title'=>'New title','tags'=>'Min tag'],$u,'c','c',$root);
  $locked=fopen($root.'/ai-worker.lock','c+b');flock($locked,LOCK_EX);
  ai_ok(music_ai_worker_run($config,$root,$mock)['status']==='busy'&&$calls===1);flock($locked,LOCK_UN);fclose($locked);
  $fail=function()use(&$calls){$calls++;throw new RuntimeException('synthetic');};
@@ -35,10 +35,10 @@ try {
  ai_ok(music_ai_worker_run($config,$root,$fail,$now+901)['status']==='retry');
  ai_ok(music_ai_worker_run($config,$root,$fail,$now+1802)['status']==='failed');
  ai_ok(music_ai_worker_run($config,$root,$fail,$now+3000)['status']==='idle'&&$calls===4);
- $t=music_audio_find($root,$id);$t=music_library_edit($id,$sha,$t['revision'],['title'=>'Concurrent fixture','tags'=>'Min tag'],$u,'c','c',$root);
+ $t=music_audio_find($root,$id);$t=music_library_edit($id,$sha,$t['revision'],['artist'=>'Fixture','title'=>'Concurrent fixture','tags'=>'Min tag'],$u,'c','c',$root);
  $concurrent=function($c,$payload)use($mock,$root,$id,$sha,$u){
      $t=music_audio_find($root,$id);
-     music_library_edit($id,$sha,$t['revision'],['title'=>'Operator edit','tags'=>'Behold'],$u,'c','c',$root);
+     music_library_edit($id,$sha,$t['revision'],['artist'=>'Fixture','title'=>'Operator edit','tags'=>'Behold'],$u,'c','c',$root);
      return $mock($c,$payload);
  };
  ai_ok(music_ai_worker_run($config,$root,$concurrent)['status']==='changed');
