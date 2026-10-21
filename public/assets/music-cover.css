@@ -1,0 +1,5 @@
+.library-cover-thumb{width:44px;height:44px;object-fit:contain;border-radius:6px;flex:0 0 44px;background:#0d2235}
+.library-cover-large{width:min(240px,100%);height:auto;aspect-ratio:1;object-fit:contain;border-radius:12px;background:#0d2235}
+.library-cover-panel{display:flex;gap:20px;align-items:flex-start;margin:20px 0;flex-wrap:wrap}
+.library-cover-panel>div{flex:1;min-width:180px}.library-cover-panel form{display:grid;gap:10px;margin-top:12px}.library-cover-panel input[type=file]{max-width:100%}
+#library-preview-cover{width:72px;height:72px;object-fit:contain;border-radius:8px;vertical-align:middle}
