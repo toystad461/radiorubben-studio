@@ -1,5 +1,22 @@
 # Studio – felles status og arbeidsliste
 
+## Entra på IP-basert test-VPS – klargjøring 21.10.2026
+
+Thomas har bestilt Entra-klargjøring for eksisterende VPS. Innloggingsmotoren
+finnes allerede. Kontroll via Uniweb bekrefter auth_mode=entra, app-modus og
+lokal reserveinnlogging, men syntetiske tenant/client-ID-er og secret-plassholder.
+Delt PHP-FPM for Studio og WordPress har PrivateNetwork=yes og bare AF_UNIX:
+Microsoft kan ikke nås. Ingen hemmelighetsverdi er lest ut eller overført.
+
+Separat klargjøringsgren fra main; ingen avhengighet av musikk-PR #99.
+Forhåndskontrollen avviser nå nullbaserte plassholder-ID-er, kontrollerer
+tilgjengelige cURL/signaturfunksjoner og kan lese aktiv app via --app-root,
+siden deploypakken mangler scripts/. Eksisterende OIDC og roller er uendret.
+Se [konkret oppsett og gjenstående arbeid](ENTRA-VPS.md).
+Testresultat føres i PR. Ingen merge, aktiv konfigurasjonsendring eller
+Entra-registrering utført. Neste: separat autentiseringstjeneste med avgrenset
+utgang, privat appkonfigurasjon og faktisk pålogging; WP/spiller skal forbli isolert.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
