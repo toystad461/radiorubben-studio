@@ -1,4 +1,46 @@
 {
-  "mode": "snapshot",
-  "reason": "Manuell start av tilkoblingskontroll"
+  "mode": "check",
+  "commit": "5d995a78e05d3bc1a83427a1e4de7f822083f74f",
+  "files": [
+    {
+      "path": "app/music-library-cover.php",
+      "before": null,
+      "after": "9260245c52bf915ec8cd7b1cddd698ff7674eb40875f08a2b36522ad37fc7ee2"
+    },
+    {
+      "path": "app/views/music-library-cover.php",
+      "before": null,
+      "after": "51cad5a3eb7fafe6305882b0ea0b86ccf6bd896483219429b7d956761ab0ac62"
+    },
+    {
+      "path": "app/views/music-track-actions.php",
+      "before": null,
+      "after": "858b314c7e858416f3f92ac55d0f0b83c3b4825a7b851da6718401fad3acff28"
+    },
+    {
+      "path": "public/music-library-cover.php",
+      "before": null,
+      "after": "8e325d5ad7c0910dd25a70a794261aad4412eb1a75c32a11453c2695956c8ec9"
+    },
+    {
+      "path": "public/music-library.php",
+      "before": "c0ed0a0df93e6e90638463973efc0722671fa7ec1788622186780019c3256507",
+      "after": "7922cccfb1b233ec6bc8b5d2e49224de1d50876a254b656d46815412b3e68b25"
+    },
+    {
+      "path": "public/assets/music-cover.js",
+      "before": null,
+      "after": "206897a3f962e0106e1a191cb47977a89ba56e6be9f0ab72b0f57dcc399234f5"
+    },
+    {
+      "path": "public/assets/music-cover.css",
+      "before": null,
+      "after": "f4842d88e0175003551789a200d5c28066b395cf45c4affbd0ef9a59d94b145b"
+    },
+    {
+      "path": "public/assets/music-track-actions.js",
+      "before": null,
+      "after": "623fd23d091cf25ff1c6111b491d52c976f733d1d138e7ecbdcc315154528cb4"
+    }
+  ]
 }
