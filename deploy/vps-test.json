@@ -1,3 +1,4 @@
 {
-  "mode": "snapshot"
+  "mode": "snapshot",
+  "reason": "Verify encrypted deploy key after passphrase secret setup"
 }
