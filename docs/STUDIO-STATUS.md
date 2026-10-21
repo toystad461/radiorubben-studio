@@ -1,5 +1,21 @@
 # Studio – felles status og arbeidsliste
 
+## Valgt sendemotor: Liquidsoap og Icecast
+
+Thomas har valgt Liquidsoap/Icecast etter avklaring om at ferdig avspiller og
+lytterstream mangler. Eksisterende PHP-Studio beholdes. Separat gren
+`feat/liquidsoap-icecast-pilot` fra main `96ff332` inneholder beslutning,
+privat pilotkonfigurasjon og en faktisk syntetisk HTTP/MP3-lydtest i egen CI.
+Lokal konfigurasjons-/syntakskontroll består med Liquidsoap 2.2.4 fra Ubuntu;
+full lydtest rapporteres separat etter kjøring. Ingen VPS-installasjon,
+Studio-kobling, offentlig stream, merge eller produksjonsendring er utført.
+Direkte VPS-SSH fra agentmiljøet svarer Network is unreachable; eksisterende
+GitHub-port har ikke tilgang til pakke-/tjenesteinstallasjon.
+Ukommittert PHP-crossfade-utkast bevares, men videre lydmotorarbeid følger
+Liquidsoap-beslutningen. Neste steg: full lydtest og VPS-administratortilgang.
+Se [arkitekturbeslutningen](STREAM-ARCHITECTURE.md) og
+[pilotoppskriften](../infra/stream-pilot/README.md).
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert

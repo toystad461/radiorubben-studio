@@ -1,0 +1,27 @@
+name: Liquidsoap and Icecast pilot
+on:
+  push:
+    branches: ['feat/liquidsoap-icecast-pilot']
+  pull_request:
+    paths:
+      - 'infra/stream-pilot/**'
+      - 'tests/test-stream-pilot.py'
+      - '.github/workflows/stream-pilot.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audio-path:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Ubuntu audio test dependencies
+        run: |
+          sudo apt-get update
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends liquidsoap icecast2 ffmpeg
+          sudo systemctl stop icecast2 || true
+          liquidsoap --version
+          icecast2 -v
+      - name: Test isolated loopback stream as unprivileged runner
+        run: python3 tests/test-stream-pilot.py
