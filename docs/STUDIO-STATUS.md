@@ -1,5 +1,17 @@
 # Studio – felles status og arbeidsliste
 
+## VPS SSH-test – rettelse 21.10.2026
+
+Run 39628139446 stopper i verify etter sju beståtte gateway-tester.
+SSH_ASKPASS returnerte samme feil syntetiske passfrase ved hvert nytt forsøk.
+Hjelperen svarer nå bare én gang, ssh-add har 15 sekunders grense og testen
+har 30 sekunders grense per tilfelle med fremdriftsmelding.
+Lokal kontroll bekrefter engangssvar og avvisning ved andre forsøk; full
+agenttest kan ikke kjøres i lokal sandbox. GitHub-verifisering gjenstår.
+Bootstrap på VPS rapporterte 176 kodefiler. Manifest er fortsatt snapshot-only;
+GitHub-tilkobling, faktisk deploy og AI-worker er ennå ikke verifisert/aktivert.
+
+
 ## GitHub-styrt test-VPS – 21.10.2026
 
 Thomas prioriterer å erstatte gjentatte manuelle SSH-deployer med GitHub-utrulling.
