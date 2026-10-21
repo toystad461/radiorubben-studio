@@ -1,5 +1,27 @@
 # Studio – felles status og arbeidsliste
 
+## Entra VPS – operatørbekreftet konfigurasjon og staging, 21.10.2026
+
+Thomas har opprettet separat VPS-testapp og lagt inn tenant/client/secret lokalt.
+Konsollutskrift bekrefter PHP-syntaks og alle 15 preflight-kontroller PASS.
+Hemmeligheten er ikke sendt i chat eller Git. Dette er operatørens resultat,
+ikke en bekreftet Microsoft-pålogging. Delt FPM er fortsatt PrivateNetwork=yes,
+AF_UNIX; Nginx avviser /auth/ og omdirigerer /login.php til lokal login.
+
+`scripts/entra-vps-stage.py` lager bare kandidater og førkopier under /root.
+Ingen pakker installeres, tjenester startes eller aktiv konfigurasjon endres.
+Kandidaten bruker separat FPM med samme bruker/økter, loopback-begrenset
+IP-utgang og Squid CONNECT kun til login.microsoftonline.com:443. Kun eksakte
+start/callback-ruter åpnes; øvrig /auth/ avvises. WP-blokken bevares bytevis.
+Proxy settes via FPM-miljø/libcurl, uten endring i Studio eller vendor.
+
+Lokalt kontrollert: rutegenerering, bevaring av WordPress/økter og fem negative
+avvikstilfeller. PHP-FPM/Squid/systemd/Nginx-kandidatene er IKKE runtime-validert.
+Staging på VPS, pakkeberedskap, faktisk cgroup-egress-sperre og tillatt proxytest
+må verifiseres før aktivering. Ingen merge eller nettverksåpning utført.
+Neste: kjør fastlåst staging-skript; deretter kontrollert installasjon/aktivering
+med førhash-kontroll, Nginx-test og tilbakeføring til førkopien ved feil.
+
 ## Entra på IP-basert test-VPS – klargjøring 21.10.2026
 
 Thomas har bestilt Entra-klargjøring for eksisterende VPS. Innloggingsmotoren
