@@ -1,17 +1,39 @@
-# Automatisk lydanalyse og enklere cue-punkter – 14.10.2026
+# Automatisk lydanalyse og manuell cue-redigering
 
-Behov: Klargjør én eller flere opplastede låter etter hverandre, med en enkel kontroll av inn- og utpunkter.
+## Endring 21.10.2026
 
-Leveransen er lokal, ikke utrullet. Opplasting setter nye låter i en vedvarende analysekø. Studio må være åpent under behandling. Køen måler BPM, toneart, signalnivå og stillhet, og bruker YAMNet til å foreslå vokalpunkter. Manuelle rettelser og lagrede cue-punkter beholdes. Cue-forslag krever ett menneskelig godkjenningsklikk. Ingen automatisk rotasjon, sending, fading eller betalt tekst-AI kjøres.
+Thomas ønsker automatisk måling og bruk av cue-punkter, uten separat godkjenning
+av hvert analyseresultat. Dette gjelder musikkteknisk klargjøring.
 
-Cue-flaten viser lydbølge, fire markører i minutter/sekunder, intro- og avslutningslytting og én godkjenningsknapp. Sekundfelt og detaljjustering ligger under «Juster punktene».
+Opplasting har analyse valgt som standard. Den eksisterende nettleserkøen måler
+BPM, toneart, signalnivå, stillhet, vokal og lydbølge. Når analysen er ferdig,
+lagres automatiske cue-punkter atomisk med målingene. Nye analyser oppdaterer
+automatiske punkter, men bevarer manuelle punkter (også tomme vokal-/overgangsfelt).
+Tidligere gyldige kildebundne profiler brukes uten nytt godkjenningsklikk eller
+reanalysering dersom manuelle punkter mangler. Originalfilen endres ikke.
 
-Køen har én aktiv låt, kildehash, revisjonskontroll, brukerbundet tidsbegrenset leie, gjenopptakelse, pause etter gjeldende låt og separat nytt forsøk. Originalfilen sendes ikke til en ekstern analysetjeneste. Modellen lastes fra Studios egne filer.
+Manuelle justeringer lagres med «Lagre endringene mine». En egen handling kan
+erstatte manuelle punkter med analysepunkt; historikk og revisjonskontroll beholdes.
+Ny opplasting eller eksplisitt nytt analyseforsøk gjenopptar en tidligere pauset
+kø. Vanlig åpning respekterer fortsatt operatørens pause.
 
-YAMNet: Google TFJS-modell v1, TensorFlow.js 4.22.0, Apache 2.0. Kilde: https://tfhub.dev/google/tfjs-model/yamnet/tfjs/1/model.json?tfjs-format=file . Dokumentasjon: https://www.tensorflow.org/hub/tutorials/yamnet . Lisens følger modellen. Eksisterende Essentia.js har AGPL-lisens.
+Dette er nettleserbasert analyse: musikkbiblioteket må fortsatt være åpent mens
+køen arbeider. Ingen serverbasert bakgrunnsarbeider er lagt til. Ikke forveksle
+lydanalyse med MusicBrainz/nettidentifisering eller betalt tekst-AI-vurdering.
 
-Begrensninger: BPM, toneart og vokalpunkter er estimater. Signalnivå er dBFS, ikke LUFS. Ingen bekreftet treffsikkerhet mot et representativt musikksett ennå. Nettleseren gjør tung analyse, ikke webhotellets PHP. En avbrutt nettleser kan kreve at leien utløper før køen fortsetter.
+Ukjente vokal-/overgangspunkter forblir null og vises som ukjent. BPM, toneart og
+vokal er estimater. Nivå måles i dBFS, ikke LUFS. Ingen automatisk avspilling,
+rotasjonsgodkjenning, sending eller fading aktiveres.
 
-Kontrollert: PHP 8.2/8.4 køtester; eksisterende cue-, analyse- og arbeidertester; isolert nettlesertest med virkelig WASM og YAMNet, syntetisk lyd, opplasting, feilstatus, manuell bevaring, godkjenning og responsivitet 320/390/768/1280. Ingen ekte sending eller musikkfiler endret i disse testene.
+Kontroll: målrettet PHP-test utvidet for automatisk lagring, gamle profiler,
+ny analyse, ukjente punkter og manuell forrang. Eksisterende nettlesertest oppdatert
+for eksplisitt erstatning av manuelle punkter. JavaScript-syntaks kontrollert lokalt.
+PHP-runtime mangler lokalt; PHP og nettleserintegrasjon må bekreftes i CI.
+Ingen VPS-utrulling er utført for denne endringen.
 
-Ferdigkriterier: nye opplastinger starter køen; feil isoleres per låt; rettelser beholdes; forslag kan godkjennes eller justeres uten flere vinduer. Gjenstår: PR/CI, autorisert utrulling og kvalitativ kontroll av forslag på ekte musikk.
+## Motor og opprinnelse
+
+YAMNet: Google TFJS-modell v1, TensorFlow.js 4.22.0, Apache 2.0.
+https://www.tensorflow.org/hub/tutorials/yamnet
+Modell og lisens leveres med Studio. Essentia.js er AGPL-lisensiert.
+Originalmusikken sendes ikke til ekstern analysetjeneste.
