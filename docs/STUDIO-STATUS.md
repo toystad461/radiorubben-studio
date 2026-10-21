@@ -1,5 +1,22 @@
 # Studio – felles status og arbeidsliste
 
+## PR104 – administrativt engangsoppsett klart, 21.10.2026
+
+scripts/music-ai-vps-install.py --install installerer bare nye rr-music-ai-enheter.
+Før installasjon: eksakte worker/test-blobber, syntetisk test mot aktiv app,
+Squid/systemd-syntaks og faktisk IP-denial med to levende lokale lyttere.
+Deretter egen localhost:3140-proxy med kun api.openai.com:443, rr-studio-jobb
+med ProtectSystem=strict, kun studio-media skrivbar og ingen direkte egress.
+Check/syntetisk API-smoke og én vurdering må bestå før timer hvert minutt.
+Original lyd lastes ikke opp til OpenAI; eksisterende produsentfunksjon bruker
+metadata og lydmålinger. Manuelle felt beholdes. Krever ferdig nettleserlydanalyse.
+Ved feil fjernes bare det nye tjenesteoppsettet; bibliotekets eventuelle jobbstatus
+eller fullførte vurdering tilbakeføres ikke. Eksisterende oppsett avvises ved
+omkjøring. Ingen pakkeinstallasjon, FPM-, Entra-, WP- eller nøkkelendringer.
+Fire lokale syntetiske installasjonstester består. Egen PHP8.3-CI lagt til;
+faktisk installasjon, API-smoke og periodisk kjøring på VPS gjenstår.
+
+
 ## AI-worker – testfeil rettet og VPS-forbindelse verifisert, 21.10.2026
 
 GitHub-run 39631001793, forsøk 2, returnerte snapshot av 176 kodefiler,
