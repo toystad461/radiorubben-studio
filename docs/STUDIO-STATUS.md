@@ -1,5 +1,11 @@
 # Studio – felles status og arbeidsliste
 
+## Nyhetsdesk: delt bildekontrakt, 22.10.2026 — klargjort
+
+Produksjonens WordPress-kø returnerer fatal feil når Studio laster rrni_manifest en gang til. Avgrenset rettelse i app/news-images.php gjenbruker en allerede lastet kontrakt bare ved identisk SHA-256; avvik avvises tydelig. Ingen medie-, kø- eller publiseringsdata endres. Base main 96ff332; egen gren, ikke en hel main-utrulling.
+
+Lokalt bestått i PHP WASM 8.5: eksisterende nyhetsbildetest, identisk WordPress-først-kontrakt og negativ test med ulik kontrakt. Full Composer/CI og reell nyhetsdesk etter selektiv utrulling gjenstår. Neste steg: konkret godkjenning, fersk serverhash, privat backup, selektiv utskifting av bare app/news-images.php og kontroll av køsvaret. Ikke publisert i denne runden.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert

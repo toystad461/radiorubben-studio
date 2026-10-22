@@ -1,6 +1,18 @@
 <?php
 declare(strict_types=1);
-require_once __DIR__.'/news-images-contract.php';
+// The newsroom bridge runs inside WordPress, where the same pinned contract
+// may already be loaded by rr-news-images. Never redeclare its global functions.
+if (!function_exists('rrni_manifest')) {
+    require_once __DIR__.'/news-images-contract.php';
+} else {
+    $rrniLoaded = (new ReflectionFunction('rrni_manifest'))->getFileName();
+    $rrniExpected = hash_file('sha256', __DIR__.'/news-images-contract.php');
+    $rrniActual = $rrniLoaded && is_file($rrniLoaded) ? hash_file('sha256', $rrniLoaded) : false;
+    if (!is_string($rrniExpected) || !is_string($rrniActual) || !hash_equals($rrniExpected, $rrniActual)) {
+        throw new RuntimeException('WordPress og Studio har ulike bildekontrakter. Samordne versjonene før nyhetsdesken brukes.');
+    }
+    unset($rrniLoaded, $rrniExpected, $rrniActual);
+}
 
 function studio_images_enabled(?array $config = null): bool { return (($config ?? $GLOBALS['config'] ?? [])['news_images_enabled'] ?? false) === true; }
 
