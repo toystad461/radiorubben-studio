@@ -40,7 +40,7 @@ function music_playout_lock(string $root) {
         return $h;
     } catch (Throwable $e) {flock($h,LOCK_UN);fclose($h);throw $e;}
 }
-function music_playout_empty(): array {return ['seq'=>0,'mode'=>'stopped','current'=>null,'outcomes'=>[],'lastCompleted'=>null,'lastStarted'=>null,'ack'=>null,'message'=>'Ikke startet'];}
+function music_playout_empty(): array {return ['seq'=>0,'mode'=>'stopped','current'=>null,'reserved'=>[],'active'=>[],'outcomes'=>[],'lastCompleted'=>null,'lastStarted'=>null,'ack'=>null,'message'=>'Ikke startet'];}
 /** Journal is authoritative; state changes and their events share a single fsynced record. */
 function music_playout_state(string $root): array {
     $path=$root.'/events.jsonl';if (is_link($path)) throw new RuntimeException('Ugyldig hendelseslogg.');
@@ -64,17 +64,44 @@ function music_playout_event(string $root,array &$s,string $event,array $detail=
 function music_playout_history(string $root): array {
     return music_playout_history_from_state(music_playout_state($root));
 }
+/** Reserved audio and every contributor to a crossfade remain owned by the engine. */
+function music_playout_inflight_entries(array $s): array {
+    $entries=[];
+    foreach (['reserved','active'] as $key) foreach ($s[$key]??[] as $entry) $entries[$entry['id']]=$entry;
+    if ($s['current']??null) $entries[$s['current']['id']]=$s['current'];
+    return $entries;
+}
+function music_playout_protected_ids(array $s): array {
+    return array_values(array_unique(array_merge(array_keys($s['outcomes']??[]),array_keys(music_playout_inflight_entries($s)))));
+}
+/** A heartbeat proves only the matching engine is alive, never that audio is connected. */
+function music_playout_heartbeat_fresh(array $s,array $live,?float $now=null): bool {
+    $timestamp=$live['timestamp']??null;
+    if ((!is_int($timestamp) && !is_float($timestamp)) || !is_finite((float)$timestamp)
+        || ($live['engine']??null)!==($s['engine']??null)) return false;
+    $age=($now??microtime(true))-$timestamp;
+    return $age>=0 && $age<5;
+}
 function music_playout_history_from_state(array $s): array {
     $history=[];
-    foreach ($s['outcomes'] as $outcome) if (isset($outcome['startedAt'])) $history[]=['entryId'=>$outcome['id'],'trackId'=>$outcome['trackId'],'artist'=>$outcome['artist'],'at'=>strtotime($outcome['startedAt'])];
-    if ($s['current']['startedAt']??null) $history[]=['entryId'=>$s['current']['id'],'trackId'=>$s['current']['trackId'],'artist'=>$s['current']['artist'],'at'=>strtotime($s['current']['startedAt'])];
-    return $history;
+    $entries=array_merge(array_values($s['outcomes']??[]),array_values($s['active']??[]),($s['current']??null)?[$s['current']]:[]);
+    foreach ($entries as $entry) {
+        if (!isset($entry['startedAt']) || isset($history[$entry['id']])) continue;
+        $at=strtotime($entry['startedAt']);if ($at===false) continue;
+        $history[$entry['id']]=['entryId'=>$entry['id'],'trackId'=>$entry['trackId'],'artist'=>$entry['artist'],'at'=>$at];
+    }
+    return array_values($history);
 }
 function music_playout_snapshot(string $root): array {
     $h=music_playout_lock($root);
     try {$s=music_playout_state($root);$live=music_playout_json($root.'/heartbeat.json');$control=music_playout_json($root.'/control.json');
-        $s['online']=isset($live['timestamp']) && microtime(true)-$live['timestamp']<5;$s['position']=$live['position']??0;$s['segments']=$s['online']?($live['segments']??[]):[];
-        $s['next']=null;foreach ($control['entries']??[] as $entry) if (!isset($s['outcomes'][$entry['id']]) && ($s['current']['id']??null)!==$entry['id']) {$s['next']=$entry;break;}
+        $s['online']=music_playout_heartbeat_fresh($s,$live);
+        $s['streamConnected']=$s['online'] && ($live['connected']??false)===true;
+        $s['capabilities']=['pause'=>($s['engine']??null)!=='liquidsoap'];
+        $position=$live['position']??0;$s['position']=$s['online'] && (is_int($position)||is_float($position)) && is_finite((float)$position) && $position>=0?$position:0;
+        $s['segments']=$s['online'] && ($s['engine']??null)!=='liquidsoap'?($live['segments']??[]):[];
+        $protected=music_playout_protected_ids($s);
+        $s['next']=null;foreach ($control['entries']??[] as $entry) if (!in_array($entry['id'],$protected,true)) {$s['next']=$entry;break;}
         $s['programProfile']=$control['profile']??null;
         $s['pendingCommand']=isset($control['command']['id']) && $control['command']['id']!==$s['ack'];$s['ready']=$control['ready']??false;$s['manifestRevision']=$control['revision']??null;
         return $s;
@@ -100,6 +127,8 @@ function music_playout_publish(string $root,array $q,array $plan,array $tracks,s
         $entries[]=$entry;
     }
     music_playout_atomic($root.'/control.json',['ready'=>true,'revision'=>$q['revision'],'entries'=>$entries,'profile'=>$plan['profile'],'command'=>$command??($old['command']??null)]);
-    $keep=array_column($entries,'sha256');$state=music_playout_state($root);if ($state['current']) $keep[]=$state['current']['sha256'];
+    $keep=array_column($entries,'sha256');$state=music_playout_state($root);
+    foreach (['reserved','active'] as $key) foreach ($state[$key]??[] as $entry) $keep[]=$entry['sha256'];
+    if ($state['current']??null) $keep[]=$state['current']['sha256'];
     foreach (glob($root.'/audio/*.mp3')?:[] as $copy) if (!is_link($copy) && preg_match('/^[a-f0-9]{64}\.mp3$/D',basename($copy)) && !in_array(basename($copy,'.mp3'),$keep,true)) unlink($copy);
 }
