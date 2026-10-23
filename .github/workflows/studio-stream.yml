@@ -1,8 +1,6 @@
 name: Studio Liquidsoap queue
 on:
   pull_request:
-  push:
-    branches: [feat/studio-liquidsoap-queue]
   workflow_dispatch:
 permissions:
   contents: read

@@ -141,11 +141,15 @@ Eksisterende PHP-, pakke- og nettleserkontroller beholdes.
 
 Lokal kontroll 23.10.2026: full Composer-suite, 60 tilstandskontroller,
 79 hendelseskontroller, mediegrense, ny UI-test og gammel PHP/FFmpeg-integrasjon
-består. Den samlede native lydtesten består på 79,56 sekunder før opprydding:
-430 704 byte mottatt MP3, 17,946 sekunder dekodet lyd og 440/660/880 Hz i riktig
-rekkefølge. Inn-/uttoning ble målt til henholdsvis 0,269/0,208 av midtnivået.
+består. Den samlede native lydtesten består på 87,62 sekunder før opprydding:
+430 056 byte mottatt MP3, 17,92 sekunder dekodet lyd og 440/660/880 Hz i riktig
+rekkefølge. Inn-/uttoning ble målt til henholdsvis 0,246/0,160 av midtnivået.
 Opptaket inneholder et bevisst lytteravbrudd; motorens tre fullførte forekomster
-kontrolleres i tillegg i journalen. CI-kjøring og eksakt commit lenkes i PR-en.
+kontrolleres i tillegg i journalen. Testen fremprovoserer gammel blokkert status
+med en ubehandlet Start-kommando og krever kvittering for den nye kommandoen før
+reconnect-kontrollen. Ved krasj kreves faktisk frigitt spillerlås og heartbeat
+fra den nye supervisor-PID-en. CI-kjøring og eksakt commit lenkes i
+[PR #111](https://github.com/toystad461/radiorubben-studio/pull/111).
 
 ## Konkret neste steg: avgrenset test-VPS-utrulling
 

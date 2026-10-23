@@ -3,7 +3,8 @@
 ## L01 – Studio-kø til Liquidsoap/Icecast – 23.10.2026
 
 Bestilt neste steg etter målregister v1.3 og [hovedmål #109](https://github.com/toystad461/radiorubben-studio/issues/109):
-gjennomgåbar PR som kobler eksisterende Studio-kø til Liquidsoap-piloten.
+gjennomgåbar [PR #111](https://github.com/toystad461/radiorubben-studio/pull/111)
+som kobler eksisterende Studio-kø til Liquidsoap-piloten.
 Gren `feat/studio-liquidsoap-queue` bygger direkte på PR #99,
 `3b34aad9dae654d19853a216070f85549530f2f0`, med PR #98 som underliggende grunnlag.
 Isolasjonsprinsippet fra #108 og den minimale bibliotekrettelsen fra #102
@@ -30,9 +31,13 @@ ekte nettleserlyd ved 390/1280 px og regresjon av gammel PHP/FFmpeg-integrasjon.
 Ny `tests/test-studio-stream.py` kontrollerer reell HTTP-kø → Liquidsoap →
 Icecast → separat MP3-lytter, rekkefølge/fades, lukket/gjenåpnet lytter,
 Stopp, parent-death/SIGKILL, filfeil, forbindelsesbrudd og PCM-heng/SIGSTOP.
-Den samlede native lydtesten består lokalt: 430 704 byte mottatt HTTP-MP3,
-17,946 sekunder dekodet lyd og testtoner 440/660/880 Hz i riktig rekkefølge.
+Den samlede native lydtesten består lokalt: 430 056 byte mottatt HTTP-MP3,
+17,92 sekunder dekodet lyd og testtoner 440/660/880 Hz i riktig rekkefølge.
 Målte inn-/uttoninger, originalhasher og alle feil-/omstartsscenarier består.
+Etter første CI-kontroll krever testen kvittering for den konkrete nye
+Start-kommandoen, frigitt spillerlås og heartbeat fra den nye supervisor-PID-en.
+Dette hindrer at gammel feilstatus godtas før asynkront arbeid er behandlet;
+hele lydtesten består igjen på 87,62 sekunder før opprydding.
 Eksakt kildecommit, resultat og GitHub CI-kvittering skal leses i tilhørende PR;
 testskriptets eksistens alene er ikke bevis på bestått lydtest.
 

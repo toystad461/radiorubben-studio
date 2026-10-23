@@ -246,7 +246,9 @@ class Integration:
     def start_worker(self):
         self.worker = self.launch('supervisor', [self.php, str(REPO / 'scripts/music-liquidsoap.php'),
                                                   'serve', str(self.bus), str(self.runtime / 'engine.json')])
-        self.until(lambda: self.player().get('online'), 'supervisor heartbeat')
+        self.until(lambda: self.player().get('online')
+                   and json.loads((self.bus / 'heartbeat.json').read_text()).get('pid') == self.worker.pid,
+                   'heartbeat from this supervisor')
 
     def start_icecast(self):
         self.icecast = self.launch('icecast', [self.icecast_bin, '-c', str(self.runtime / 'icecast.xml')])
@@ -502,6 +504,18 @@ $_SESSION = ['csrf'=>'synthetic']; $config = [];
         self.stop(self.worker, signal.SIGKILL)
         self.worker = None
         self.until(lambda: all(not process_running(pid) for pid in children), 'parent-death guard closes child', timeout=5)
+        # A short-lived request.dynamic -> PHP claim descendant can retain the
+        # inherited singleton descriptor after the engine PID has exited. Keep
+        # the guard assertion above and require the actual lock to be released;
+        # a persistent descriptor leak must still fail within five seconds.
+        def singleton_released():
+            with (self.bus / 'daemon.lock').open('r+b') as lock:
+                try:
+                    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    return True
+                except BlockingIOError:
+                    return False
+        self.until(singleton_released, 'guarded engine descendants release daemon.lock', timeout=5)
         self.start_worker()
         self.until(lambda: self.player()['outcomes'].get(ids[1], {}).get('status') == 'interrupted',
                    'restart reconciles actual interrupted occurrence')
@@ -538,10 +552,43 @@ $_SESSION = ['csrf'=>'synthetic']; $config = [];
         self.stop(self.icecast)
         self.icecast = None
         journal_before = len(self.journal())
-        self.change({'action': 'start'})
-        self.until(lambda: self.player()['mode'] == 'blocked' and not self.child_pids(),
-                   'missing Icecast blocks output')
+        # Make the asynchronous-command race deterministic: the preceding spool
+        # failure already left a blocked, childless player. That old state must
+        # not count as the result of this new Start. Freeze only our supervisor,
+        # while owning control.lock so it cannot be paused holding the API lock.
+        paused_at = time.monotonic()
+        try:
+            with (self.bus / 'control.lock').open('a+b') as lock:
+                fcntl.flock(lock, fcntl.LOCK_EX)
+                os.kill(self.worker.pid, signal.SIGSTOP)
+                self.until(lambda: Path(f'/proc/{self.worker.pid}/stat').read_text()
+                           .split(') ', 1)[1][0] == 'T', 'supervisor paused before command', timeout=1)
+            pending = self.change({'action': 'start'})['player']
+            assert pending['pendingCommand'] and pending['mode'] == 'blocked' and not self.child_pids()
+            start_id = json.loads((self.bus / 'control.json').read_text())['command']['id']
+            assert pending['ack'] != start_id
+        finally:
+            os.kill(self.worker.pid, signal.SIGCONT)
+        assert time.monotonic() - paused_at < 5, 'Command-race probe exceeded heartbeat freshness'
+
+        def this_start_has_stopped():
+            player = self.player()
+            records = self.journal()[journal_before:]
+            return (not player['pendingCommand'] and player['ack'] == start_id
+                    and player['mode'] == 'blocked' and not self.child_pids()
+                    and records and records[-1]['event'] == 'engine_stopped'
+                    and records[-1]['state']['ack'] == start_id
+                    and records[-1]['seq'] <= player['seq'])
+
+        self.until(this_start_has_stopped, 'this Start fails and stops with Icecast unavailable')
         records = self.journal()[journal_before:]
+        command = next(row for row in records if row['event'] == 'command')
+        fault = next(row for row in records if row['event'] == 'engine_fault')
+        stopped = records[-1]
+        assert command['detail']['action'] == 'start' and command['state']['ack'] == start_id
+        assert fault['detail']['kind'] == 'output_error'
+        assert command['state']['session'] and command['state']['session'] == fault['state']['session']
+        assert command['seq'] < fault['seq'] < stopped['seq']
         assert not any(row['event'] in ['reserved', 'started', 'completed'] for row in records), records
         assert all(identity not in self.player()['outcomes'] for identity in ids)
         self.start_icecast()
@@ -559,7 +606,7 @@ $_SESSION = ['csrf'=>'synthetic']; $config = [];
         assert all(not process_running(pid) for pid in child)
         assert ids[1] not in self.started_ids()
         assert not self.player()['streamConnected']
-        self.checks.append('no decode/claim before connection, loss stops active audio, no automatic reconnection playback')
+        self.checks.append('pending Start cannot reuse stale blocked status; no claim before connection, loss interrupts, no automatic reconnect playback')
 
         self.phase('SIGSTOP freezes PCM: watchdog blocks and terminates the still-live child')
         self.start_icecast()
