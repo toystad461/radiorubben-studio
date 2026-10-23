@@ -1,5 +1,57 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – Studio-kø til Liquidsoap/Icecast – 23.10.2026
+
+Bestilt neste steg etter målregister v1.3 og [hovedmål #109](https://github.com/toystad461/radiorubben-studio/issues/109):
+gjennomgåbar [PR #111](https://github.com/toystad461/radiorubben-studio/pull/111)
+som kobler eksisterende Studio-kø til Liquidsoap-piloten.
+Gren `feat/studio-liquidsoap-queue` bygger direkte på PR #99,
+`3b34aad9dae654d19853a216070f85549530f2f0`, med PR #98 som underliggende grunnlag.
+Isolasjonsprinsippet fra #108 og den minimale bibliotekrettelsen fra #102
+gjenbrukes. Senere cue-/analysegrener er ikke tatt inn som full kodebase.
+
+Implementert: separat PHP-supervisor, Studio-manifest til `request.dynamic`,
+Liquidsoap 2.2.4, privat loopback-Icecast og faktisk MP3-monitor bak en
+planlagt autorisert Nginx-rute. Én spillerlås deles med gammel PHP-spiller;
+forhåndslasting, faktisk start og fullført PCM er ulike tilstander. Lydmotorens
+livstegn kontrolleres separat fra supervisorens. Filer og køforekomster beholder
+kontrollsum/identitet; originaler endres ikke. Stopp, filfeil, tap av forbindelse
+og omstart gir tydelig utfall og krever ny Start. Generert motorkode/passord
+ligger utenfor den webskrivbare kontrollbussen.
+
+Overgangsvalget i L01 er ett sekund inn-/uttoning uten overlapp. Crossfade og
+andre overganger følger L02 med egen observasjon av begge lydkildene. Pause er
+deaktivert for Liquidsoap; gammel PHP/FFmpeg-pause og monitor beholdes.
+Nettleserlytting starter bare ved klikk og styrer ikke serverens avspilling.
+UI skiller tjenestestatus, Icecast-tilkobling og lokal lytting.
+
+Kontrollgrunnlag: hele eksisterende Composer-suite på native PHP 8.3.6,
+60 kø-/tilstandskontroller, 79 hendelses-/claim-kontroller, `open_basedir`-regresjon,
+ekte nettleserlyd ved 390/1280 px og regresjon av gammel PHP/FFmpeg-integrasjon.
+Ny `tests/test-studio-stream.py` kontrollerer reell HTTP-kø → Liquidsoap →
+Icecast → separat MP3-lytter, rekkefølge/fades, lukket/gjenåpnet lytter,
+Stopp, parent-death/SIGKILL, filfeil, forbindelsesbrudd og PCM-heng/SIGSTOP.
+Den samlede native lydtesten består lokalt: 430 056 byte mottatt HTTP-MP3,
+17,92 sekunder dekodet lyd og testtoner 440/660/880 Hz i riktig rekkefølge.
+Målte inn-/uttoninger, originalhasher og alle feil-/omstartsscenarier består.
+Etter første CI-kontroll krever testen kvittering for den konkrete nye
+Start-kommandoen, frigitt spillerlås og heartbeat fra den nye supervisor-PID-en.
+Dette hindrer at gammel feilstatus godtas før asynkront arbeid er behandlet;
+hele lydtesten består igjen på 87,62 sekunder før opprydding.
+Eksakt kildecommit, resultat og GitHub CI-kvittering skal leses i tilhørende PR;
+testskriptets eksistens alene er ikke bevis på bestått lydtest.
+
+**Ikke installert eller kjørt på VPS i denne leveransen.** Ingen main-merge,
+produksjonsdeploy, offentlig strøm eller endring av DNS, Entra, WordPress eller
+TTS er utført. L01 står åpen til den faktiske test-VPS-kjeden er kontrollert.
+
+Neste konkrete steg etter gjennomgang: avstem de berørte filene mot aktiv
+testrelease og selektive senere rettelser, lag et fast filmanifest med backup,
+og installer den isolerte testkjeden. Behold PHP-FPMs nettverk-/exec-sperrer.
+Kontroller deretter tre godkjente låter, faktisk lytting via Studio, lukket
+nettleser, omstart og tilbakeføring. Tjeneste- og Nginx-malene er reviewgrunnlag,
+ikke en installasjonskvittering. Se [L01-arkitektur, tester og VPS-plan](STUDIO-LIQUIDSOAP.md).
+
 ## Musikkstudio med regelstyrt kø og testavvikler – 19.10.2026
 
 Bestilt: fungerende musikkstudio før robotvert. Gren

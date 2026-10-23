@@ -1,0 +1,89 @@
+name: Studio Liquidsoap queue
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  queue-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl, openssl, mbstring, pcntl
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-dev --prefer-dist --no-interaction
+      - name: Check persistent queue, event ownership and media boundary
+        run: |
+          php tests/recovered/test-music-play-queue.php
+          php tests/recovered/test-music-scheduling.php
+          php tests/recovered/test-music-studio-store.php
+          php tests/music-library-open-basedir.php
+          php tests/music-liquidsoap-state.php
+          php tests/music-liquidsoap-events.php
+      - name: Check changed executable syntax
+        run: |
+          node --check public/assets/music-studio.mjs
+          node --check tests/music-liquidsoap-ui.cjs
+          python3 -m py_compile scripts/liquidsoap-child.py infra/studio-stream/prepare.py tests/test-studio-stream.py
+  actual-stream:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, openssl, mbstring, pcntl
+          tools: composer:v2
+          coverage: none
+      - run: composer install --no-dev --prefer-dist --no-interaction
+      - name: Install native Ubuntu audio tools
+        run: |
+          sudo apt-get update -qq
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends liquidsoap icecast2 ffmpeg
+          liquidsoap --version
+          icecast2 -v
+          systemd-analyze verify infra/studio-stream/rr-studio-stream.service infra/studio-stream/rr-studio-icecast.service
+      - name: Exercise real Studio HTTP, Liquidsoap PCM and Icecast MP3
+        env:
+          RR_STREAM_TEST_ARTIFACTS: ${{ runner.temp }}/studio-stream-evidence
+        run: PHP_BIN="$(command -v php)" python3 tests/test-studio-stream.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: studio-stream-synthetic-evidence
+          if-no-files-found: error
+          path: ${{ runner.temp }}/studio-stream-evidence/
+  monitor-interface:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
+      - run: npx playwright install --with-deps chromium
+      - name: Check real browser audio and operator controls at 390 and 1280 px
+        env:
+          RR_STUDIO_SCREENSHOTS: ${{ runner.temp }}/studio-stream-ui
+        run: node tests/music-liquidsoap-ui.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: studio-stream-interface
+          path: ${{ runner.temp }}/studio-stream-ui/

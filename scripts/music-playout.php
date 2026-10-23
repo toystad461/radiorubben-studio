@@ -28,7 +28,9 @@ function pl_outcome(string $root,array &$s,string $event,string $message): void 
 $lock=music_playout_lock($root);
 try {
     $s=music_playout_state($root);
-    if ($s['current']) {$s['mode']='stopped';pl_outcome($root,$s,'interrupted','Tjenesten ble startet på nytt. Avbrutt innslag spilles ikke automatisk om igjen.');}
+    $active=$s['active']??[];if($s['current'])$active[$s['current']['id']]=$s['current'];
+    foreach($active as $entry){$s['current']=$entry;$s['mode']='stopped';pl_outcome($root,$s,'interrupted','Tjenesten ble startet på nytt. Avbrutt innslag spilles ikke automatisk om igjen.');}
+    $s['active']=[];$s['reserved']=[];unset($s['engine'],$s['session'],$s['connected']);
     $s['mode']='stopped';$control=music_playout_json($root.'/control.json');
     // Never execute a start command left by an old process/browser after a restart.
     $s['ack']=$control['command']['id']??$s['ack'];music_playout_event($root,$s,'service_started');
