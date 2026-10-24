@@ -1,6 +1,7 @@
 import base64
 import importlib.util
 import json
+from types import SimpleNamespace
 from pathlib import Path
 import tempfile
 import unittest
@@ -78,6 +79,30 @@ class DeployTests(unittest.TestCase):
         self.request['files'] *= 2
         with self.assertRaises(ValueError):
             g.validate(self.app, self.request)
+    def test_status_uses_only_fixed_units_and_no_request_commands(self):
+        calls = []
+        def fake_run(args, **kwargs):
+            calls.append((args, kwargs))
+            return SimpleNamespace(returncode=0,
+                stdout='LoadState=loaded\\nActiveState=active\\nSubState=running\\n')
+        result = g.service_status(fake_run)
+        self.assertEqual(result['status'], 'service-status')
+        self.assertEqual(set(result['services']), set(g.STATUS_UNITS))
+        self.assertTrue(all(x['active'] == 'active' for x in result['services'].values()))
+        self.assertEqual(len(calls), len(g.STATUS_UNITS))
+        self.assertTrue(all(args[:2] == ['/usr/bin/systemctl', 'show']
+                            and kwargs['timeout'] == 5 for args, kwargs in calls))
+
+    def test_status_handles_missing_service_and_untrusted_output(self):
+        def fake_run(args, **kwargs):
+            if args[2] == 'rr-stream.service':
+                return SimpleNamespace(returncode=1, stdout='')
+            return SimpleNamespace(returncode=0,
+                stdout='LoadState=loaded\\nActiveState=active\\nSubState=unexpected secret')
+        result = g.service_status(fake_run)
+        self.assertEqual(result['services']['rr-stream.service']['active'], 'unknown')
+        self.assertEqual(result['services']['nginx.service']['sub'], 'unknown')
+
     def test_snapshot_excludes_private_data(self):
         (self.app / 'config').mkdir()
         (self.app / 'config/local.php').write_text('private')
