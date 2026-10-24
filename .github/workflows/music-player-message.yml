@@ -1,0 +1,19 @@
+name: Music player message
+on:
+  pull_request:
+    paths:
+      - 'public/assets/music-studio.mjs'
+      - 'tests/music-player-message.cjs'
+      - '.github/workflows/music-player-message.yml'
+permissions:
+  contents: read
+jobs:
+  status-rendering:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - run: node --check public/assets/music-studio.mjs
+      - run: node tests/music-player-message.cjs
