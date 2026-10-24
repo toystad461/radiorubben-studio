@@ -84,7 +84,7 @@ class DeployTests(unittest.TestCase):
         def fake_run(args, **kwargs):
             calls.append((args, kwargs))
             return SimpleNamespace(returncode=0,
-                stdout='LoadState=loaded\\nActiveState=active\\nSubState=running\\n')
+                stdout='LoadState=loaded\nActiveState=active\nSubState=running\n')
         result = g.service_status(fake_run)
         self.assertEqual(result['status'], 'service-status')
         self.assertEqual(set(result['services']), set(g.STATUS_UNITS))
@@ -98,7 +98,7 @@ class DeployTests(unittest.TestCase):
             if args[2] == 'rr-stream.service':
                 return SimpleNamespace(returncode=1, stdout='')
             return SimpleNamespace(returncode=0,
-                stdout='LoadState=loaded\\nActiveState=active\\nSubState=unexpected secret')
+                stdout='LoadState=loaded\nActiveState=active\nSubState=unexpected secret')
         result = g.service_status(fake_run)
         self.assertEqual(result['services']['rr-stream.service']['active'], 'unknown')
         self.assertEqual(result['services']['nginx.service']['sub'], 'unknown')
