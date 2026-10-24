@@ -1,5 +1,22 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – faktisk VPS-avspilling og statusrettelse, 24.10.2026
+
+Innlogget test-VPS viser tre køinnslag. Første låt (Alison Moyet) ble fullført
+kl. 12:15:50 Europe/Oslo, og andre startet automatisk. Privat WAV-monitor er
+slått på og melder lytting uten observert console-feil. Dette er ikke personlig
+avlytting, tre fullførte låter eller Icecast-stream. Ingen køendring utført av
+assistenten. Første rapport om usynlig kø er ikke reprodusert.
+
+Observerte gamle statusmeldinger ved aktiv låt rettes avgrenset i UI: kjente
+sluttmeldinger vises som pågående testavspilling når motorstatus er playing og
+current finnes. Feilmeldinger, journal og sist fullført beholdes. Lokal test av
+faktisk renderPlayer og JS-syntaks består. Ikke installert på VPS.
+Base #99 3b34aad9, fordi dette gjelder samme legacy-spiller; ingen main-/produksjonsmerge.
+PR111/Liquidsoap-avhengigheter tas ikke inn. Neste: PR/CI og avstem aktuell filhash
+før konkret autorisert selektiv testdeploy. Liquidsoap/Icecast gjenstår separat.
+
+
 ## Musikkstudio med regelstyrt kø og testavvikler – 19.10.2026
 
 Bestilt: fungerende musikkstudio før robotvert. Gren
