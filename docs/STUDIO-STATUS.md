@@ -1,5 +1,36 @@
 # Studio – felles status og arbeidsliste
 
+## PR #112 – installert gateway, 24.10.2026 kl. 11:47:19 Europe/Oslo
+
+Thomas gjennomførte den særskilt godkjente installasjonen via eksisterende ubuntu SSH.
+Brukerlevert installasjonskvittering: installed-local-fixed-sudo-verified.
+Kilde e3cda33b39b77abc7cf06ee4488ee5f7bb8ac4c0; installert SHA256
+8e59a4527f348e1caaa0a99d92a94df54c05bdc8985e832cb4641858cbdfd146.
+Privat backup /var/lib/rr-vps-deploy/gateway-upgrades/112-g6hfrnr7.
+Aktiv release studio-music-fad12a2320de0ff0a036854c414accee794143bb;
+183 kodefiler uendret ved før/etter-snapshot ifølge installerens kvittering.
+nginx, php8.3-fpm, rr-entra og rr-music-playout er active/running.
+rr-playout og rr-stream er not-found/inactive/dead; dette er ikke feil ved gatewayinstallasjonen.
+Lokal fixed-sudo-status/snapshot er kontrollert på server; sshTransportVerified=false.
+Ny status gjennom GitHub Actions/forced-command er ennå ikke verifisert.
+PR-grenens manifest klargjøres til status; ingen apply eller app-kodeutrulling.
+Neste: kontrollert promotering av PR112 til deploy/vps-test og fersk statuskvittering.
+Dette er ikke bevis for Liquidsoap/Icecast-stream eller ferdig L01.
+
+
+## PR #112 – installasjonsklargjøring, 24.10.2026 kl. 11:29 Europe/Oslo
+
+Hovedsak #109, gren feat/vps-readonly-status-20261024. Runtime-kilde e3cda33b39b77abc7cf06ee4488ee5f7bb8ac4c0:
+ni lokale gatewaytester, Python-/Bash-syntaks og isolert snapshot/status-pakking består.
+GitHub-kontroller er grønne; transfer/deploy er skipped. Ingen merge/installasjon.
+Eksakt kildefil er Git blob-verifisert. Direkte SSH til test-IP ga Network is unreachable;
+aktiv gateway-hash, rettigheter og drift er derfor IKKE kontrollert i denne runden.
+Privat backup/atomisk erstatning/tilbakeføring og kontrollgrenser er klargjort i
+[VPS-GATEWAY-112-INSTALL.md](VPS-GATEWAY-112-INSTALL.md). Ingen serverbackup tatt.
+Neste: lesende førkontroll via eksisterende administratorøkt; beskyttet gateway krever
+særskilt installasjonsautorisasjon. Ingen nye nøkler/rettigheter eller produksjonsendring.
+
+
 ## VPS SSH-test – rettelse 21.10.2026
 
 Run 39628139446 stopper i verify etter sju beståtte gateway-tester.

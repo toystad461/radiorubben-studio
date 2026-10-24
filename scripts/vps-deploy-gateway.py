@@ -18,6 +18,41 @@ STATE = Path('/var/lib/rr-vps-deploy')
 LIMIT = 12 * 1024 * 1024
 
 
+# Fixed, read-only operational checks. Never accept unit names or shell from requests.
+STATUS_UNITS = (
+    'nginx.service', 'php8.3-fpm.service', 'rr-entra.service',
+    'rr-music-playout.service', 'rr-playout.service', 'rr-stream.service',
+)
+
+
+def service_status(run=None):
+    """Return bounded systemd state without logs, environment or credentials."""
+    if run is None:
+        run = subprocess.run
+    result = {}
+    for unit in STATUS_UNITS:
+        proc = run(
+            ['/usr/bin/systemctl', 'show', unit,
+             '--property=LoadState,ActiveState,SubState', '--no-pager'],
+            capture_output=True, text=True, timeout=5, check=False,
+        )
+        if proc.returncode != 0:
+            result[unit] = {'load': 'unknown', 'active': 'unknown', 'sub': 'unknown'}
+            continue
+        props = dict(line.split('=', 1) for line in proc.stdout.splitlines()
+                     if '=' in line)
+        # Only bounded, known state strings are exposed in receipts.
+        def state(key):
+            value = props.get(key, 'unknown')
+            return value if re.fullmatch(r'[a-z-]{1,32}', value) else 'unknown'
+        result[unit] = {
+            'load': state('LoadState'),
+            'active': state('ActiveState'),
+            'sub': state('SubState'),
+        }
+    return {'status': 'service-status', 'services': result}
+
+
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -186,7 +221,9 @@ def main():
             raise ValueError('Request too large')
         request = json.loads(raw)
         mode = request.get('mode')
-        if mode == 'snapshot':
+        if mode == 'status':
+            result = service_status()
+        elif mode == 'snapshot':
             result = {'status': 'snapshot', 'app': str(app), 'files': snapshot(app),
                       'recoveryRequired': (STATE / 'pending.json').exists()}
         elif mode in ('check', 'apply'):
