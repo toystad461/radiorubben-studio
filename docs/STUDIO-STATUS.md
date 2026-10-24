@@ -1,5 +1,18 @@
 # Studio – felles status og arbeidsliste
 
+## PR #112 – installasjonsklargjøring, 24.10.2026 kl. 11:29 Europe/Oslo
+
+Hovedsak #109, gren feat/vps-readonly-status-20261024. Runtime-kilde e3cda33b39b77abc7cf06ee4488ee5f7bb8ac4c0:
+ni lokale gatewaytester, Python-/Bash-syntaks og isolert snapshot/status-pakking består.
+GitHub-kontroller er grønne; transfer/deploy er skipped. Ingen merge/installasjon.
+Eksakt kildefil er Git blob-verifisert. Direkte SSH til test-IP ga Network is unreachable;
+aktiv gateway-hash, rettigheter og drift er derfor IKKE kontrollert i denne runden.
+Privat backup/atomisk erstatning/tilbakeføring og kontrollgrenser er klargjort i
+[VPS-GATEWAY-112-INSTALL.md](VPS-GATEWAY-112-INSTALL.md). Ingen serverbackup tatt.
+Neste: lesende førkontroll via eksisterende administratorøkt; beskyttet gateway krever
+særskilt installasjonsautorisasjon. Ingen nye nøkler/rettigheter eller produksjonsendring.
+
+
 ## VPS SSH-test – rettelse 21.10.2026
 
 Run 39628139446 stopper i verify etter sju beståtte gateway-tester.
