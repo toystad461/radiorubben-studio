@@ -22,12 +22,18 @@ function renderProfile() {
   $('rule-artist').value=p.hard.artistMinutes;$('rule-track').value=p.hard.trackMinutes;$('rule-days').value=p.hard.weekdays.join(', ');
   $('pref-energy').value=p.preferences.energy;$('pref-energy-step').value=p.preferences.maxEnergyStep;$('pref-tempo-step').value=p.preferences.maxTempoStep;$('pref-key').value=p.preferences.keyWeight;$('pref-tags').value=p.preferences.tags.join(', ');$('pref-genres').value=p.preferences.genres.join(', ');
 }
+function playerMessage(p) {
+  const previousOutcome = ['Køen er ferdig.', 'Fullført på isolert testutgang.'];
+  return p.mode === 'playing' && p.current && previousOutcome.includes(p.message)
+    ? 'Avspilling pågår på isolert testutgang.'
+    : p.message;
+}
 function renderPlayer() {
   const p=view?.player;if(!p)return;
   const modes={playing:'Spiller på VPS',paused:'Pauset på VPS',stopped:'Stoppet',blocked:'Stoppet – må kontrolleres',unconfigured:'VPS-spiller ikke installert'};
   $('player-mode').textContent=p.online?modes[p.mode]:(p.mode==='unconfigured'?modes[p.mode]:'Spillertjenesten svarer ikke');
   $('player-current').textContent=p.current?`${title(p.current)} · ${duration(p.position)}`:'Ingen aktiv låt';
-  $('player-detail').textContent=[p.message,p.pendingCommand?'Venter på kommandobekreftelse':'',p.ready===false?'Køen må synkroniseres':''].filter(Boolean).join(' · ');
+  $('player-detail').textContent=[playerMessage(p),p.pendingCommand?'Venter på kommandobekreftelse':'',p.ready===false?'Køen må synkroniseres':''].filter(Boolean).join(' · ');
   for(const action of ['start','pause','stop']) $('player-'+action).disabled=!control||busy||stale||!p.online||p.pendingCommand;
   $('player-sync').disabled=!control||busy||stale||p.mode==='unconfigured'||p.pendingCommand;
   $('monitor').disabled=!control||!p.online;
