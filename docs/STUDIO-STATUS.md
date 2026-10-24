@@ -1,5 +1,28 @@
 # Studio – felles status og arbeidsliste
 
+## Arkitekturgjennomgang 24.10.2026
+
+[Gjennomgangen](ARCHITECTURE-REVIEW-20261024.md) kartlegger WordPress,
+Studio og Robot mot fastlåste kodeversjoner, fersk PR-status og daterte
+driftskvitteringer. Nyere brukerretning er WordPress som redaksjonelt
+grensesnitt, Robåt som bakgrunnsmotor på VPS og Studio som lydproduksjons-
+og avspillingssystem. Dette er et gjennomgått målbilde, ikke implementert flytting.
+
+Dokumentasjonen beskriver lokal Studio-avhengighet i WordPress,
+ulike kildeidentiteter, nye avgrensede API-rettigheter, versjonering,
+rettelser og en gradvis migreringsplan. Eksisterende manuelle lydsperrer
+er kartlagt og skal senere avstemmes mot automatisk TTS i L04.
+
+Studio #109/L01 har fortsatt førsteprioritet. PR111 er et åpent utkast;
+siste dokumenterte lyttetest meldte hakkete lyd. PR113 retter statusmelding.
+Avstem også tjenestenavn: PR111 bruker rr-studio-stream/rr-studio-icecast,
+mens gatewaystatusen har undersøkt rr-playout/rr-stream. Gjenbruk nåværende
+kø, bibliotek, programregler og journal; L01 får ingen Robåt-avhengighet.
+
+Kontroll: kun lesende kode-/dokumentasjonsgjennomgang og dokumentasjonsdiff.
+Ingen nye runtime-tester, serverkontroll, merge, deploy, modellkall eller
+innholdspublisering. Neste: fortsett avgrenset L01-avstemming i #109.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
