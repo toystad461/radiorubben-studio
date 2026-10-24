@@ -13,8 +13,8 @@ g = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(g)
 request = json.loads(Path('deploy/vps-test.json').read_text())
 mode = request.get('mode')
-if mode == 'snapshot':
-    result = {'mode': 'snapshot'}
+if mode in ('snapshot', 'status'):
+    result = {'mode': mode}
 else:
     if mode not in ('check', 'apply'):
         raise SystemExit('Invalid deployment mode')
