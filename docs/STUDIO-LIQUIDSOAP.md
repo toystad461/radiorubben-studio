@@ -203,6 +203,34 @@ avstemme filer og konfigurasjon, og gjøre den begrensede installasjonen med
 privat backup og tilbakeføring konkret. Ingen VPS-resultater er bekreftet av
 den lokale førkontrolltesten. Trelåters-test, omstart og lydkontroll gjenstår.
 
+#### Kjør eksisterende lesekontroll fra Windows
+
+Kjør i **PowerShell på Windows** med det allerede avtalte SSH-aliaset
+`rubben-test`. Kilden er fastlåst til `a346ebc2c3e234daaa72819a3a4843cd1d67e0b1`
+og SHA-256 kontrolleres før den sendes til VPS. Skriptet er ren ASCII; bruk
+`Get-Content -Raw` som vist. Det opprettes bare en tilfeldig midlertidig fil på
+Windows. Serverkontrollen leser, installerer ingenting og starter ingen tjeneste.
+Eksisterende SSH-vertskontroll beholdes. Passord/passfrase skrives i terminalen,
+aldri i chat; send bare JSON-resultatet tilbake.
+
+```powershell
+$l01Fil = Join-Path $env:TEMP ("rr-l01-" + [guid]::NewGuid().ToString() + ".py")
+try {
+    Invoke-WebRequest -UseBasicParsing -ErrorAction Stop -Uri 'https://raw.githubusercontent.com/toystad461/radiorubben-studio/a346ebc2c3e234daaa72819a3a4843cd1d67e0b1/infra/studio-stream/preflight.py' -OutFile $l01Fil
+    if ((Get-FileHash -LiteralPath $l01Fil -Algorithm SHA256).Hash -ne '9497113ebca4f8858301e2cec6d15d71caf1ee39ca9fdcd7a515638ba68e1182') {
+        throw 'Kontrollsummen stemmer ikke. Ingenting er kjort pa VPS.'
+    }
+    Get-Content -LiteralPath $l01Fil -Raw | ssh rubben-test 'sudo -n python3 -B -'
+    if ($LASTEXITCODE -ne 0) { throw 'VPS-kontrollen ble ikke fullfort. Behold feilmeldingen.' }
+} finally {
+    if (Test-Path -LiteralPath $l01Fil) { Remove-Item -LiteralPath $l01Fil }
+}
+```
+
+Denne kommandoen er en klargjort klientoppskrift, ikke en bekreftet kjøring på
+Thomas sin Windows-maskin eller VPS. Ved tilgangsfeil skal eksisterende tilgang
+avklares; ikke legg til nøkler, omgå vertsverifikasjon eller endre sudo-rettigheter.
+
 1. Kontroller gjeldende PR-head, grønn CI, aktiv release og faktiske hasher på
    test-VPS-en. Avstem de berørte filene mot selektive PR #102/#103/#104/#106-
    endringer og annen nyere kode. Ta privat backup og fastlås et begrenset

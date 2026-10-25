@@ -1,5 +1,31 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – fersk nettleserkontroll og avgrenset tilgangsstopp, 25.10.2026
+
+Thomas har bedt om å fortsette #109/L01. De tre PR-kjøringene på
+`a346ebc2c3e234daaa72819a3a4843cd1d67e0b1` er etterkontrollert som success.
+Den eksisterende lesende VPS-førkontrollen består igjen med ni lokale tester.
+Dette er kode-/testbelegg, ikke en installasjonskvittering.
+
+Eksisterende Microsoft-innlogging åpnet Studio VPS – test i brukerens Chrome.
+Musikkstudio viser tre lagrede forekomster som completed, spillermodus Stoppet,
+ingen aktiv låt og siste fullføring 12:22:53 uten dato i visningen. Skjemaet og
+køen har dato 21.10.2026; dette er lagrede planleggingsverdier, ikke dagens
+avspilling. Fem bibliotekoppføringer vises som godkjent for God morgen Bømlo.
+Lastet scriptadresse er `/assets/music-studio.mjs?v=20261018`; adressen beviser
+ikke filhash eller installert release. Ingen error/warn var fanget i denne
+fanens konsolllogg. Kø, godkjenninger, regler og avspilling er ikke endret.
+Ingen ny lytting, MP3-måling eller serveromstart er utført.
+
+Direkte SSH fra assistentmiljøet svarer fortsatt `Network is unreachable`.
+Nettleserinnloggingen gir ikke administratoradgang til systemtjenester.
+Neste nødvendige input er den faktiske lesekvitteringen gjennom eksisterende
+`rubben-test`/ubuntu-tilgang. Fastlåst kilde og kontrollsum for kjøringen er
+lagt i [L01-planen](STUDIO-LIQUIDSOAP.md). Deretter avstemmes installasjonsfiler,
+privat backup og tilbakeføring før den faktiske Liquidsoap/Icecast-testen.
+L01 og rapportert lydhakking er fortsatt uavklart. Ingen merge, deploy eller
+produksjonsendring er utført.
+
 ## L01 – tidligere sluttmelding skilt fra aktuell status, 25.10.2026
 
 Arkitekturmandatet viderefører #109/L01 som førsteprioritet. Den dokumenterte
