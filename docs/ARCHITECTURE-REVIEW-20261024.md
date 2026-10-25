@@ -2,11 +2,37 @@
 
 WordPress som redaksjonelt grensesnitt, Robåt som bakgrunnsmotor og Studio som lydsystem
 
-24. oktober 2026 · Versjon 1.0 · Europe/Oslo
+24. oktober 2026 · Presisert 25. oktober 2026 · Versjon 1.1 · Europe/Oslo
 
 **Anbefaling:** Viderefør denne ansvarsdelingen, med gradvis utskifting av eksisterende koblinger. WordPress skal eie redigering og redaksjonelle beslutninger. Robåt skal utføre kildearbeid og generering på VPS. Studio skal eie lydproduksjon, bibliotek, sendekø og avvikling. Gjenbruk dagens PHP-kode og kontroller. Studio #109/L01 beholder førsteprioritet; robotflytting skal ikke bli en forutsetning for teststrømmen.
 
 **Leveransestatus:** Arkitekturen er gjennomgått mot kode, ferske GitHub-opplysninger og dokumenterte driftskvitteringer. API-ene og migreringen nedenfor er forslag. Ingen produksjonsendring, tjenesteoppstart, publisering, modellkjøring eller merge inngår. Arbeidsområde: System & Kvalitet, med Teknisk Produksjon og IT & Utstyr.
+
+## 0 Miljøer og navn – presisering 25.10.2026
+
+Dagens Studio på Uniweb og Studio under utvikling på VPS er to installasjoner med forskjellig driftsstatus. Samme repository eller sidenavn innebærer ikke samme installerte versjon, konfigurasjon, data, kø eller rettigheter. Bruk navnene nedenfor i oppgaver, PR-er, status og utrullingsplaner; de er dokumentasjonsnavn, ikke nye konfigurasjonsverdier.
+
+| Entydig navn | Plassering og nåværende rolle | Avgrensning |
+| --- | --- | --- |
+| **WordPress Uniweb – produksjon** | `https://www.radiorubben.no`. Dagens nettsted med publisert innhold, Fotballrobot og øvrige WordPress-funksjoner. | «WordPress» alene angir ikke et testmiljø. Produksjonsinnhold og eksisterende godkjenningsflyter bevares. |
+| **Studio Uniweb – drift** | `https://studio.radiorubben.no`. Eksisterende PHP-applikasjon på samme webhotell som WordPress, med dagens nyhetsdesk, RSS-/manusflyter og øvrige Studio-funksjoner. | En egen applikasjon, ikke det samme som WordPress eller VPS-Studio. «Drift» betyr at løsningen er i bruk, ikke at den avvikler en radiosending. Eksisterende CRM og andre funksjoner har ingen besluttet flytting i denne presiseringen. |
+| **Studio VPS – test** | Separat installasjon på test-VPS. Eksisterende testlenke er `https://5.249.252.78/music-studio.php`. #109/L01 gjelder bibliotek, musikkø, avspilling og teststrøm her. | Under utvikling og kontroll. Testlenken er en miljøreferanse fra brukerens test, ikke en ny tilgjengelighets- eller lydkontroll. Installasjonen har ikke overtatt rollen eller domenet til Studio Uniweb – drift. |
+| **Robåt VPS – planlagt bakgrunnsmotor** | Mål for gradvis flytting av kildehenting, generering og kontroller. | En komplett selvstendig bakgrunnsmotor er ikke dokumentert i drift. Dagens robotarbeid er fortsatt fordelt på WordPress, Studio Uniweb og eksterne automatiseringer. |
+
+En separat WordPress-instans på test-VPS må også omtales med eget miljønavn og verifisert adresse når den brukes. Ingen produksjonsadresse skal brukes som plassholder for denne. Den konkrete testinstansens adresse og aktuelle tilstand er ikke kontrollert i denne dokumentasjonsendringen.
+
+ChatGPTs tidsstyrte oppgaver er eksterne støtteoppgaver. De er verken WordPress-pluginen eller en VPS-tjeneste, og må registreres med hvilket miljø de leser eller skriver i. «Radio Rubben Robåt» kan brukes som samlebetegnelse for robotarbeidet; et samlenavn flytter ikke kode, data eller jobbansvar.
+
+### Arbeidsregel for videre oppgaver
+
+- Oppgi alltid **komponent, miljø, konkret adresse/instans, repo og gren/commit, berørte data og ønsket resultat**. «Oppdater Studio» eller «roboten kjører» er ikke en tilstrekkelig teknisk målbeskrivelse.
+- Rapporter **kode/PR**, **installert i navngitt miljø** og **verifisert resultat i samme miljø** hver for seg. En test på VPS bekrefter ikke funksjon i Studio Uniweb, og en vellykket jobb i WordPress bekrefter ikke at Robåt er flyttet.
+- Avklar én eier per jobb og én autoritativ original per datatype før overføring. Testkopier gir ingen rett til å skrive til produksjon; verifiser målendepunkt og miljøets data/nøkler før kjøring.
+- Bevar Studio Uniweb – drift under utviklingen av Studio VPS – test. WordPress har dokumenterte lokale fil-/regelavhengigheter til Uniweb-Studio (A1); flytting eller stenging krever at disse først er erstattet og kontrollert.
+- Målbildet i kapittel 1 beskriver senere ansvar. Det innebærer ingen automatisk flytting av dagens redaksjon, CRM, URL-er eller køer. Overgang skjer per funksjon med avstemte data, testbevis, konkret utrullingsautorisasjon og tilbakeføring.
+- Studio #109/L01 på **Studio VPS – test** beholder førsteprioritet. Miljøpresiseringen oppretter ingen konkurrerende Studio-løsning eller ny robotimplementasjon.
+
+**Kontrollgrunnlag for presiseringen:** Brukerens avklaring 25.10.2026, eksisterende kode-/driftsbelegg i denne gjennomgangen, fersk lesing av #109 og PR #114. Ingen ny serverkontroll, produksjonsendring eller endring av automatikk er utført.
 
 ## 1 Ansvar i målbildet
 
