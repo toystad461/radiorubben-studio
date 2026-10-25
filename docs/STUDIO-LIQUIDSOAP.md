@@ -156,6 +156,43 @@ fra den nye supervisor-PID-en. CI-kjøring og eksakt commit lenkes i
 Dette er en **plan for neste avtalte steg**, ikke en installasjonskvittering.
 Ingen av tjenestemalene eller Nginx-eksemplet installeres av denne PR-en.
 
+### Lesende førkontroll klargjort 25.10.2026
+
+Miljø: **Studio VPS – test**, separat fra **Studio Uniweb – drift** og
+**WordPress Uniweb – produksjon**. L01 har fortsatt førsteprioritet i #109.
+
+`infra/studio-stream/preflight.py` samler en avgrenset JSON-kvittering gjennom
+eksisterende administratoradgang. Den krever vertsnavnet `vps-5363103` og
+en aktiv Studio-symlink direkte under `/srv/radiorubben-test/releases`.
+Kjør som administrator med `python3 -B`; ingen installasjon, tjenestestart,
+konfigurasjonsendring eller køendring inngår. Ikke kjør den gamle
+`infra/music-playout/install-test.sh` på nytt over eksisterende installasjon.
+
+Kontrollen bruker de faktiske L01-tjenestenavnene `rr-studio-stream.service`
+og `rr-studio-icecast.service`, i tillegg til eksisterende `rr-music-playout`.
+`rr-playout` og `rr-stream` er tjenestebrukere og må ikke alene brukes som
+tjenestenavn ved vurdering av om L01 er installert.
+
+Kvitteringen inneholder pakkeversjoner, utvalgte systemd-felt, web-/spillerkodehasher
+og antall kø-/manifestinnslag samt heartbeat-alder. Kode sammenlignes med
+L01-kandidaten `a34d50b`, PR99-base og sist rapporterte testrelease `fad12a2`.
+Ukjente selektive endringer merkes `unreconciled` og skal avstemmes før skriving.
+Manglende/uleselig kø rapporteres som manglende/ukjent, aldri som en tom kø.
+Rapporten er ikke et atomisk øyeblikksbilde av flere filer; den beviser ikke
+synkron kø, lyd eller ferdig installasjon. Ingen rå konfigurasjon, journal,
+sesjoner, passord, originalmedier eller spor-/personnavn skrives ut.
+
+Tilgangskontroll 25.10: direkte SSH fra assistentøkten ga `Network is unreachable`.
+Cloud-nettleseren stoppet IP-testadressen med `ERR_CERT_COMMON_NAME_INVALID`.
+Eksisterende GitHub-gateway har fortsatt begrenset `app/public`-utrulling og
+faste statusprober; den gir ikke administratoradgang til installasjon av
+systemd-/Nginx-konfigurasjon. Tilgangsgrensene omgås ikke.
+
+Neste avhengige handling er å lese en faktisk førkontrollkvittering fra VPS,
+avstemme filer og konfigurasjon, og gjøre den begrensede installasjonen med
+privat backup og tilbakeføring konkret. Ingen VPS-resultater er bekreftet av
+den lokale førkontrolltesten. Trelåters-test, omstart og lydkontroll gjenstår.
+
 1. Kontroller gjeldende PR-head, grønn CI, aktiv release og faktiske hasher på
    test-VPS-en. Avstem de berørte filene mot selektive PR #102/#103/#104/#106-
    endringer og annen nyere kode. Ta privat backup og fastlås et begrenset

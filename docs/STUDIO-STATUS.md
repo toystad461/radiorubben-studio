@@ -1,5 +1,26 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – lesende VPS-førkontroll klargjort, 25.10.2026
+
+Thomas har bedt om å fullføre L01. Miljøet er **Studio VPS – test**;
+**Studio Uniweb – drift** og **WordPress Uniweb – produksjon** er separate.
+Eksakt runtime-kandidat i #111 er fortsatt `a34d50b`, og de tre tilhørende
+GitHub-kjøringene ble kontrollert som success. Dette er ikke VPS-bevis.
+
+Ny avgrenset `infra/studio-stream/preflight.py` identifiserer riktig testvert,
+aktiv release, faktiske tjenestenavn, pakkeversjoner, berørte kodehasher og
+kø-/manifestantall/heartbeat uten skriving eller rå sensitive utdata.
+Lokal Python-test dekker feil vert/bruker, symlinks/FIFO/størrelsesgrense,
+filtrering av utdata, manglende data, kommando-/timeoutfeil, kodegrunnlag og
+bevarte testfiler. Runtime- og lydkoden er uendret. CI inkluderer kontrollen.
+
+Direkte SSH fra denne assistentøkten er utilgjengelig (`Network is unreachable`),
+og cloud-nettleseren stopper IP-testadressen på sertifikatnavnet. Den etablerte
+GitHub-gatewayen gir ikke administratoradgang til tjenesteinstallasjon.
+Neste: faktisk lesekvittering via eksisterende VPS-administratorøkt, deretter
+avstemt installasjonsgrunnlag/backup og tre låter gjennom Liquidsoap/Icecast.
+Ingen merge, VPS-installasjon, tjenesteomstart eller lydtest utført i dette steget.
+
 ## L01 – Studio-kø til Liquidsoap/Icecast – 23.10.2026
 
 Bestilt neste steg etter målregister v1.3 og [hovedmål #109](https://github.com/toystad461/radiorubben-studio/issues/109):
