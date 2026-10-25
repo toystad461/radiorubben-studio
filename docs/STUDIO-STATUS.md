@@ -1,5 +1,77 @@
 # Studio – felles status og arbeidsliste
 
+## Robåt – utvidet arkitekturgjennomgang og avgrenset L01-forbedring, 25.10.2026
+
+Thomas sitt helhetlige mandat er fulgt opp i eksisterende PR #114 og
+[arkitekturgjennomgang v1.2](ARCHITECTURE-REVIEW-20261024.md), kapittel 10–15.
+Tre kodebaser, installert WP-plugin-/croninventar, utvalgt produksjonskode,
+13 ChatGPT-oppgaver og Actions-belegg er kontrollert. Matrisen dekker nyheter,
+fotball, Dagens Bremnesing, manus, lyd, status, dataeierskap og migrering.
+WP/Studio Uniwebs lokale filavhengighet er bekreftet i installert kode.
+Bortekampstøtte for selve avstemningen er ikke implementert i lest importør.
+WP-status-API-ene bruker eldre versjonsfelt enn aktiv Fotballrobot 0.10.8.
+Ingen full live-filavstemming eller ende-til-ende-avstemningstest er utført.
+
+Første kodeforbedring ligger i eksisterende #111, commit a346ebc2c3e234daaa72819a3a4843cd1d67e0b1:
+statusrettelsen fra #113 er tilpasset L01 og skiller fersk pågående avspilling
+fra ubekreftet status ved nettbrudd. Lokal renderer-/syntakskontroll og ni
+førkontrolltester består. Alle tre relevante CI-kjøringer på eksakt commit består: 40186421968
+(Liquidsoap/kø/nettleser), 40186421963 (PHP/pakke), 40186421961 (releasekontroll).
+Motor, kø og produksjon er uendret. #109/L01 beholder førsteprioritet og er
+ikke ferdig på VPS. Ingen merge, schedulerendring eller produksjonsflytting.
+
+Neste: faktisk VPS-førkontroll gjennom eksisterende administratoradgang,
+avstemt installasjons-/tilbakeføringsgrunnlag og trelåters-test. Ny Robåt-tjeneste
+og kontraktendepunkter er designgrunnlag, ikke aktive installasjoner.
+Kontrollsenterets etablerte samtale er identifisert, men direkte levering dit
+er ikke tilgjengelig; milepælen er dokumentert her og i samtalesvaret.
+
+## Miljøskille – presisering 25.10.2026
+
+Bruk alltid **Studio Uniweb – drift** for dagens PHP-applikasjon på
+`https://studio.radiorubben.no`, og **Studio VPS – test** for den separate
+installasjonen der #109/L01 utvikles. **WordPress Uniweb – produksjon** er
+`https://www.radiorubben.no`; den eksisterende Studio-applikasjonen er
+ikke en WordPress-plugin selv om den deler webhotell og har lokale koblinger.
+
+[Miljøregister og arbeidsregler](ARCHITECTURE-REVIEW-20261024.md#0-miljøer-og-navn--presisering-25102026)
+presiserer adresse, rolle, dataeierskap og overgang. Robåt på VPS er fortsatt
+et målbilde, ikke en bekreftet erstatning for dagens robotarbeid. ChatGPTs
+planlagte oppgaver registreres separat med sitt faktiske målmiljø.
+
+Eksisterende redaksjonelle flyter og øvrige funksjoner i Studio Uniweb
+videreføres mens VPS-Studio testes. WordPress' lokale fil-/regelavhengigheter
+til Uniweb-Studio må håndteres før flytting eller avvikling. Ingen automatisk
+domeneflytting, datakopiering eller overtakelse følger av målarkitekturen.
+Studio #109/L01 på test-VPS beholder førsteprioritet.
+
+Leveranse: kun presisering av de to eksisterende dokumentene i PR #114.
+Dokumentinnhold og uendret historikk er kontrollert; ingen runtime-test,
+serverkontroll, merge, utrulling eller endring av planlagte oppgaver inngår.
+
+## Arkitekturgjennomgang 24.10.2026
+
+[Gjennomgangen](ARCHITECTURE-REVIEW-20261024.md) kartlegger WordPress,
+Studio og Robot mot fastlåste kodeversjoner, fersk PR-status og daterte
+driftskvitteringer. Nyere brukerretning er WordPress som redaksjonelt
+grensesnitt, Robåt som bakgrunnsmotor på VPS og Studio som lydproduksjons-
+og avspillingssystem. Dette er et gjennomgått målbilde, ikke implementert flytting.
+
+Dokumentasjonen beskriver lokal Studio-avhengighet i WordPress,
+ulike kildeidentiteter, nye avgrensede API-rettigheter, versjonering,
+rettelser og en gradvis migreringsplan. Eksisterende manuelle lydsperrer
+er kartlagt og skal senere avstemmes mot automatisk TTS i L04.
+
+Studio #109/L01 har fortsatt førsteprioritet. PR111 er et åpent utkast;
+siste dokumenterte lyttetest meldte hakkete lyd. PR113 retter statusmelding.
+Avstem også tjenestenavn: PR111 bruker rr-studio-stream/rr-studio-icecast,
+mens gatewaystatusen har undersøkt rr-playout/rr-stream. Gjenbruk nåværende
+kø, bibliotek, programregler og journal; L01 får ingen Robåt-avhengighet.
+
+Kontroll: kun lesende kode-/dokumentasjonsgjennomgang og dokumentasjonsdiff.
+Ingen nye runtime-tester, serverkontroll, merge, deploy, modellkall eller
+innholdspublisering. Neste: fortsett avgrenset L01-avstemming i #109.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert
