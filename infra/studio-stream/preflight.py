@@ -34,6 +34,7 @@ PLAYER_FILES = ('app/music-playout.php', 'app/music-liquidsoap.php',
                 'infra/studio-stream/radio.liq')
 # Populated from reviewed Git objects, not from a running server.
 REVIEWED_HASHES = {
+    "verified_vps_pr102_library": {"app/music-library.php": "a98f2bd03c07ee9ad8df98cf9f0a64e2cccc8c71a4b9494200ae853b6d32d0a1"},
     "l01_before_queue_reliability": {"public/assets/music-studio.mjs": "7a7aa0391aac098a4abe977edfdb60dcf2933c8ea001eaf97bb60adb6e19703b"},
     "l01_before_player_message": {"public/assets/music-studio.mjs": "a013cecdb174065527ba5cccb01b253286018bdab1a4d1741d8ff92d6acd72b1"},
     "candidate_l01": {

@@ -1,5 +1,34 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – faktisk førkontroll mottatt og bibliotek avstemt, 25.10.2026
+
+Thomas kjørte fastlåst lesekontroll via eksisterende Windows/ubuntu SSH.
+Tid 14:33:15 UTC / 15:33:15 Europe/Oslo (etter overgang til vintertid).
+Aktiv gammel release fad12a2; kø og manifest har 3 innslag, revisjon 24,
+ready=true, heartbeat-alder 0,1 sekunder. Ingen ny avspilling er bekreftet.
+Liquidsoap 2.2.4-1 og Icecast 2.4.4-4build4 er installert, men
+rr-studio-stream/rr-studio-icecast og L01-motor-/auth-filer mangler.
+nginx=unverified er ufullstendig observasjon, ikke bevis på tjenestestopp.
+
+Bibliotekets a98f2bd... er nøyaktig app/music-library.php fra PR102,
+ea1b86c447c0ee40fe0af1fb8e0f2d48f22066ed. Mot L01-kandidaten er eneste
+forskjell to kommentarer; eksisterende bibliotekfil skal bevares uten erstatning.
+Førkontrollen kjenner nå denne hashen som verified_vps_pr102_library.
+
+Alle CI-kontroller på runtime/UI-kandidat 59f7dc07 er success, inkludert
+native stream, Chromium og PHP. Dette er fortsatt ikke VPS-installasjon.
+Lesende install-inventory.py er klargjort for eksakt Nginx-testkonfig,
+eksisterende FPM-socket, auth_request-støtte, lokale tjenestebrukere, ledig
+loopback-port og om spilleren har aktivt innslag. Ingen rå config eller
+journal skrives ut. Tre lokale tester og syntaks består. Ny CI gjelder
+kontrollverktøy/manifest/dokumentasjon; avspillingskoden er uendret.
+
+Neste: les denne metadata-kvitteringen, fastlås minimal installasjon med
+privat backup/tilbakeføring og bevar bibliotek/kø/journal. Ingen merge,
+serverinstallasjon, reload, restart eller produksjonsendring er utført.
+
+
+
 ## L01 – køvisning, klikk under polling og monitorbuffer, 25.10.2026
 
 Videreført i eksisterende PR #111 fra 04b3924. To konkrete kodefeil er
