@@ -1,5 +1,31 @@
 # Studio – felles status og arbeidsliste
 
+## Robåt – utvidet arkitekturgjennomgang og avgrenset L01-forbedring, 25.10.2026
+
+Thomas sitt helhetlige mandat er fulgt opp i eksisterende PR #114 og
+[arkitekturgjennomgang v1.2](ARCHITECTURE-REVIEW-20261024.md), kapittel 10–15.
+Tre kodebaser, installert WP-plugin-/croninventar, utvalgt produksjonskode,
+13 ChatGPT-oppgaver og Actions-belegg er kontrollert. Matrisen dekker nyheter,
+fotball, Dagens Bremnesing, manus, lyd, status, dataeierskap og migrering.
+WP/Studio Uniwebs lokale filavhengighet er bekreftet i installert kode.
+Bortekampstøtte for selve avstemningen er ikke implementert i lest importør.
+WP-status-API-ene bruker eldre versjonsfelt enn aktiv Fotballrobot 0.10.8.
+Ingen full live-filavstemming eller ende-til-ende-avstemningstest er utført.
+
+Første kodeforbedring ligger i eksisterende #111, commit a346ebc2c3e234daaa72819a3a4843cd1d67e0b1:
+statusrettelsen fra #113 er tilpasset L01 og skiller fersk pågående avspilling
+fra ubekreftet status ved nettbrudd. Lokal renderer-/syntakskontroll og ni
+førkontrolltester består. Alle tre relevante CI-kjøringer på eksakt commit består: 40186421968
+(Liquidsoap/kø/nettleser), 40186421963 (PHP/pakke), 40186421961 (releasekontroll).
+Motor, kø og produksjon er uendret. #109/L01 beholder førsteprioritet og er
+ikke ferdig på VPS. Ingen merge, schedulerendring eller produksjonsflytting.
+
+Neste: faktisk VPS-førkontroll gjennom eksisterende administratoradgang,
+avstemt installasjons-/tilbakeføringsgrunnlag og trelåters-test. Ny Robåt-tjeneste
+og kontraktendepunkter er designgrunnlag, ikke aktive installasjoner.
+Kontrollsenterets etablerte samtale er identifisert, men direkte levering dit
+er ikke tilgjengelig; milepælen er dokumentert her og i samtalesvaret.
+
 ## Miljøskille – presisering 25.10.2026
 
 Bruk alltid **Studio Uniweb – drift** for dagens PHP-applikasjon på
