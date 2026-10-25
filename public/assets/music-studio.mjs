@@ -1,6 +1,7 @@
 const $ = id => document.getElementById(id), root = $('music-studio');
 const control = root.dataset.control === '1', settings = root.dataset.settings === '1';
 let view = null, busy = false, stale = true, proposal = null, policyTrack = null, profileDirty = false;
+let refreshing = null;
 let monitorContext = null, monitorSeen = new Set(), monitorSources = [], monitorNext = 0, monitorBusy = false;
 let monitorAudio = null, monitorStreamUrl = null;
 const outcomeLabels = {planned:'Planlagt',started:'Startet',completed:'Fullført',interrupted:'Avbrutt',failed:'Feilet'};
@@ -33,8 +34,19 @@ function hasInflight() {
   const p=view?.player;
   return !!p && (!!p.current || Object.keys(p.reserved||{}).length>0 || Object.keys(p.active||{}).length>0);
 }
+// Saved occurrences own the list. A partial timing plan must never hide them.
+function queueRows() {
+  const planned = new Map((view.plan?.rows || []).map(e => [e.id, e]));
+  let timingKnown = true;
+  return view.entries.map(e => {
+    const row = planned.get(e.id);
+    if (row && timingKnown) return {...e, ...row};
+    timingKnown = false;
+    return {...e, plannedAt: null, blocked: ['Spilletid kan ikke beregnes. Kontroller fil, varighet og køen foran dette innslaget.']};
+  });
+}
 function renderQueueStatus() {
-  const rows=view.plan?.rows||view.entries, p=view.player;
+  const rows=queueRows(), p=view.player;
   const protectedEntry=e=>!!e && (heldEntry(e.id) || !!p.outcomes?.[e.id]);
   const fixedEntry=e=>!!e && (protectedEntry(e) || e.locked);
   const byId=new Map(rows.map((e,i)=>[e.id,{e,i}]));
@@ -98,7 +110,7 @@ function render() {
   $('suggest').disabled=!control||busy||stale||!view.studio.schedule;$('refresh').disabled=busy;$('reset-queue').disabled=!control||busy||stale||!!view.player.current;
   for(const e of $('schedule-form').elements)e.disabled=!control||busy||stale;
   for(const e of $('profile-form').elements)e.disabled=!settings||busy||stale;
-  const rows=view.plan?.rows||view.entries;
+  const rows=queueRows();
   if(view.libraryError)say(view.libraryError);
   $('queue-summary').textContent=`${view.entries.length} innslag · ${view.studio.schedule?view.studio.schedule.date+' · Europe/Oslo':'Velg program, dato og starttid'}`;
   $('studio-entries').replaceChildren(...rows.map((e,i)=>{
@@ -125,17 +137,22 @@ function render() {
   renderPlayer();renderProfile();
 }
 async function refresh(silent=false) {
-  if(busy)return;busy=true;
+  if(busy||refreshing)return;
+  refreshing=(async()=>{
   try {
     const data=await request();const first=!view;const changed=first||data.revision!==view.revision;view=data;stale=false;
     if(first){options($('schedule-program'),Object.values(view.studio.profiles).map(p=>[p.programId,p.name]),[view.studio.schedule?.programId||'god-morgen-bomlo']);const now=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Oslo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());$('schedule-date').value=view.studio.schedule?.date||now;$('schedule-time').value=view.studio.schedule?.time||'07:00';$('schedule-occurrence').value=view.studio.schedule?.occurrence||'';}
     if(changed){proposal=null;$('proposals').hidden=true;}
     if(!silent)say('Lagret kø og spillerstatus er oppdatert.');
-    busy=false;if(changed||!silent)render();else renderPlayer();
+    if(changed||!silent)render();else renderPlayer();
     if(monitorContext)void monitorPump();
-  } catch(e){stale=true;say(e.message+' Oppdater før du fortsetter.');busy=false;renderPlayer();}
+  } catch(e){stale=true;say(e.message+' Oppdater før du fortsetter.');render();}
+  })();
+  try {await refreshing;} finally {refreshing=null;}
 }
 async function mutate(body) {
+  // A click during background polling must wait, not disappear silently.
+  if(refreshing)await refreshing;
   if(!control||busy||stale)return false;
   if(body.action==='pause'&&view.player.capabilities?.pause===false)return false;
   if(body.id&&['lock','replace','move','remove'].includes(body.action)&&heldEntry(body.id)) {
@@ -181,7 +198,7 @@ async function stopMonitor(message='Monitor av. VPS-avspillingen fortsetter uavh
 }
 async function monitorPump(){
   if(!monitorContext||monitorBusy||view.player.engine==='liquidsoap')return;monitorBusy=true;const ctx=monitorContext;
-  try{for(const segment of view.player.segments||[]){if(monitorSeen.has(segment))continue;monitorSeen.add(segment);const response=await fetch('/music-monitor-audio.php?segment='+encodeURIComponent(segment),{cache:'no-store'});if(!response.ok)throw Error('Testlyden kunne ikke hentes.');const buffer=await ctx.decodeAudioData(await response.arrayBuffer());if(monitorContext!==ctx)break;const source=ctx.createBufferSource();source.buffer=buffer;source.connect(ctx.destination);monitorNext=Math.max(monitorNext,ctx.currentTime+.08);source.start(monitorNext);monitorNext+=buffer.duration;monitorSources.push(source);source.onended=()=>{monitorSources=monitorSources.filter(s=>s!==source);};}if(monitorSeen.size>200)monitorSeen=new Set(view.player.segments||[]);}
+  try{for(const segment of view.player.segments||[]){if(monitorSeen.has(segment))continue;monitorSeen.add(segment);const response=await fetch('/music-monitor-audio.php?segment='+encodeURIComponent(segment),{cache:'no-store'});if(!response.ok)throw Error('Testlyden kunne ikke hentes.');const buffer=await ctx.decodeAudioData(await response.arrayBuffer());if(monitorContext!==ctx)break;const source=ctx.createBufferSource();source.buffer=buffer;source.connect(ctx.destination);if(monitorNext<ctx.currentTime+.08){monitorNext=ctx.currentTime+2.5;$('monitor-status').textContent='Bufrer privat monitorlyd. Lyttingen er forsinket; serveravspillingen fortsetter.';}source.start(monitorNext);monitorNext+=buffer.duration;monitorSources.push(source);source.onended=()=>{monitorSources=monitorSources.filter(s=>s!==source);};}if(monitorSeen.size>200)monitorSeen=new Set(view.player.segments||[]);}
   catch{if(monitorContext===ctx)await stopMonitor('Monitor feilet. VPS-avspillingen er uendret.');}finally{monitorBusy=false;}
 }
 $('monitor').addEventListener('click',async()=>{
@@ -203,7 +220,7 @@ $('monitor').addEventListener('click',async()=>{
   try {
     await context.resume();if(monitorContext!==context)return;
     const segments=view.player.segments||[];monitorSeen=new Set(segments.slice(0,-1));monitorNext=0;
-    $('monitor-status').textContent='Lytter til faktisk dekodet testlyd fra VPS. Forsinkelse ca. 2–5 sekunder.';void monitorPump();
+    $('monitor-status').textContent='Lytter til faktisk dekodet testlyd fra VPS. Forsinkelse ca. 5–8 sekunder.';void monitorPump();
   }catch{if(monitorContext===context)await stopMonitor('Monitor kunne ikke startes. VPS-avspillingen er uendret.');}
 });
 // Closing the tab only closes the monitor. No server pause/stop request is sent.

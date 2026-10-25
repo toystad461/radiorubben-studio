@@ -1,5 +1,33 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – køvisning, klikk under polling og monitorbuffer, 25.10.2026
+
+Videreført i eksisterende PR #111 fra 04b3924. To konkrete kodefeil er
+reprodusert: UI viser bare plan.rows, som kan være kortere enn den lagrede
+køen; og mutate avviser klikk lydløst mens refresh bruker samme busy-flagg.
+Listen bruker nå alle lagrede forekomst-ID-er, supplerer med tilgjengelig
+tidsplan og merker innslag uten beregnbar tid. Klikk venter på pågående GET
+og bruker fersk kø-/spillerrevisjon; ingen automatisk gjentakelse av skriver.
+
+Legacy-WAV-monitorens 80 ms oppstartsmargin kan gi hull ved leveringsjitter.
+Kontrollert tidsmodell reproduserer 0,8 s gap når neste 2 s segment leveres ved
+2,8 s. Ny 2,5 s monitorbuffer gir sammenhengende planlegging i samme scenario
+og bygger buffer igjen ved reelt underskudd. Dette er en reprodusert svakhet,
+ikke målt forklaring på Thomas sin konkrete lydhakking. Mer lytteforsinkelse
+er bevisst. Liquidsoap bruker fortsatt egen kontinuerlig native MP3-monitor.
+
+Lokalt: faktisk produksjonskode for kø/polling/monitor, eksisterende renderer,
+JS-syntaks og ni Python-førkontrolltester består. Nettlesertest er utvidet med
+ufullstendig plan, klikk under utsatt GET og sammenhengende ekte WAV-dekoding.
+CI på ny eksakt commit må avleses. Ingen PHP-runtime finnes i denne økten;
+full lyd-/PHP-/Chromium-kontroll kjøres i eksisterende GitHub-workflow.
+
+Installert VPS-versjon er ikke ferskt avstemt. Lesende førkontroll er sendt til
+Thomas for eksisterende Windows SSH. Ingen installasjon, merge, restart, ny
+lyttetest, køendring eller produksjonsendring i dette steget. L01 er ikke bestått
+før tre riktige forekomster er synlige og faktisk privat lyd er kontrollert.
+
+
 ## L01 – fersk nettleserkontroll og avgrenset tilgangsstopp, 25.10.2026
 
 Thomas har bedt om å fortsette #109/L01. De tre PR-kjøringene på

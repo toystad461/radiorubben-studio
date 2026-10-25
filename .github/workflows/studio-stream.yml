@@ -27,6 +27,8 @@ jobs:
         run: python3 -B tests/test-studio-preflight.py
       - name: Check current versus stale player messages
         run: node tests/music-player-message.cjs
+      - name: Check visible saved queue, polling clicks and monitor jitter
+        run: node tests/music-studio-reliability.cjs
       - name: Check persistent queue, event ownership and media boundary
         run: |
           php tests/recovered/test-music-play-queue.php

@@ -31,7 +31,7 @@ function fixture(engine='liquidsoap'){
 }
 async function instrument(page){
   await page.addInitScript(()=>{
-    window.__monitorTest={created:[],plays:0,playing:0,paused:0,legacyStarts:0,legacyPeak:0};
+    window.__monitorTest={created:[],plays:0,playing:0,paused:0,legacyStarts:0,legacyPeak:0,legacyTimes:[]};
     const NativeAudio=window.Audio;
     window.Audio=function(src){
       const audio=new NativeAudio(src),play=audio.play.bind(audio),pause=audio.pause.bind(audio);
@@ -46,7 +46,7 @@ async function instrument(page){
     AudioContext.prototype.createBufferSource=function(){
       const source=create.call(this),start=source.start;
       source.start=function(...args){
-        window.__monitorTest.legacyStarts++;
+        window.__monitorTest.legacyStarts++;window.__monitorTest.legacyTimes.push(args[0]);
         window.__monitorTest.legacyPeak=Math.max(...this.buffer.getChannelData(0).slice(0,1000).map(Math.abs));
         return start.apply(this,args);
       };
@@ -61,6 +61,7 @@ async function setup(browser,html,width,engine){
     const req=route.request(),url=new URL(req.url());
     if(url.pathname.startsWith('/assets/'))return route.fulfill({path:path.join(repo,'public',url.pathname)});
     if(url.pathname==='/music-studio-api.php'){
+      if(req.method()==='GET'&&state.holdNextGet){const wait=state.holdNextGet;state.holdNextGet=null;state.getHeld=true;await wait;state.getHeld=false;}
       if(state.failApi)return route.fulfill({status:503,json:{error:'Synthetic API unavailable'}});
       if(req.method()==='POST'){
         const body=req.postDataJSON();state.posts.push(body);
@@ -99,6 +100,20 @@ async function setup(browser,html,width,engine){
       assert.equal(await page.locator('#monitor-status').innerText(),'Testlytting er ikke konfigurert i dette miljøet.');
       assert.match(await page.locator('#player-connection').innerText(),/Motor: svarer · Icecast: ikke bekreftet tilkoblet/);
       assert.equal(state.streamRequests+state.segmentRequests,0,'opening Studio never starts audio');
+      // Timing failure must not hide saved occurrences, including later rows.
+      state.snapshot.plan.rows=[];state.snapshot.plan.missing=['Synthetic missing duration'];state.snapshot.revision++;
+      await page.waitForFunction(()=>document.querySelector('#studio-entries').textContent.includes('Synthetic missing duration'));
+      assert.equal(await page.locator('#studio-entries [data-entry-id]').count(),4);
+      state.snapshot.plan.rows=state.snapshot.entries;state.snapshot.plan.missing=[];state.snapshot.revision++;
+      await page.waitForFunction(()=>!document.querySelector('#studio-entries').textContent.includes('Synthetic missing duration'));
+      // A background GET must not consume an operator's add click.
+      let releaseGet;state.holdNextGet=new Promise(resolve=>releaseGet=resolve);
+      await new Promise((resolve,reject)=>{const started=Date.now();const timer=setInterval(()=>{if(state.getHeld){clearInterval(timer);resolve();}else if(Date.now()-started>10000){clearInterval(timer);reject(Error('GET was not held'));}},20);});
+      await page.getByRole('button',{name:'Legg i kø',exact:true}).click();
+      assert.equal(state.posts.length,0,'add waits for the status GET');
+      releaseGet();
+      await page.waitForFunction(()=>document.querySelector('#studio-message').textContent.startsWith('Lagret.'));
+      assert.deepEqual(state.posts.map(x=>x.action),['add']);state.posts=[];
       await page.locator('#player-start').click();
       await page.waitForFunction(()=>document.querySelector('#player-mode').textContent==='Klargjør teststrøm');
       assert.deepEqual(state.posts.map(x=>x.action),['start']);
@@ -186,6 +201,11 @@ async function setup(browser,html,width,engine){
       await legacy.page.waitForFunction(()=>window.__monitorTest.legacyStarts>0&&window.__monitorTest.legacyPeak>0.001);
       assert.equal(legacy.state.streamRequests,0);assert.equal(legacy.state.segmentRequests,1,'legacy PHP monitor still decodes WAV');
       assert.deepEqual(await legacy.page.evaluate(()=>window.__monitorTest.created),[]);
+      legacy.state.snapshot.player.segments=['old-php-segment.wav','next-php-segment.wav'];legacy.state.snapshot.player.seq++;
+      await legacy.page.waitForFunction(()=>window.__monitorTest.legacyStarts>=2);
+      const scheduled=await legacy.page.evaluate(()=>window.__monitorTest.legacyTimes.slice(0,2));
+      assert(Math.abs(scheduled[1]-scheduled[0]-2)<0.001,'real decoded WAV segments are contiguous');
+
       await legacy.page.locator('#player-pause').click();
       await legacy.page.waitForFunction(()=>document.querySelector('#monitor').textContent==='Lytt til testutgangen');
       assert.deepEqual(legacy.state.posts.map(x=>x.action),['pause']);

@@ -34,6 +34,7 @@ PLAYER_FILES = ('app/music-playout.php', 'app/music-liquidsoap.php',
                 'infra/studio-stream/radio.liq')
 # Populated from reviewed Git objects, not from a running server.
 REVIEWED_HASHES = {
+    "l01_before_queue_reliability": {"public/assets/music-studio.mjs": "7a7aa0391aac098a4abe977edfdb60dcf2933c8ea001eaf97bb60adb6e19703b"},
     "l01_before_player_message": {"public/assets/music-studio.mjs": "a013cecdb174065527ba5cccb01b253286018bdab1a4d1741d8ff92d6acd72b1"},
     "candidate_l01": {
         "app/music-library.php": "124ff696e0eb1e596be383a00362711214c4f2bda9db062dd4df6adaa9f5ff79",
@@ -41,7 +42,7 @@ REVIEWED_HASHES = {
         "app/music-playout.php": "b96df4046c4e5130277f8a9587518b9f8f7d8f0d5afa671f203d1a7c51006e3e",
         "app/music-studio.php": "7f6d9f8814c5c9c5cc950fa7cb0f9f79df668009c5e81c1a3cee32201203c732",
         "infra/studio-stream/radio.liq": "ad5fc0f904bac0980b29d4b8118d39b7def12c3d8e7878fec44f22ee17ecd5b7",
-        "public/assets/music-studio.mjs": "7a7aa0391aac098a4abe977edfdb60dcf2933c8ea001eaf97bb60adb6e19703b",
+        "public/assets/music-studio.mjs": "18e29e380783a104302d779789061ff0ae29ef3651ee55c956aeb309c8a42524",
         "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",
         "public/music-studio.php": "3551b2ef117e80f62d1fbc7bb4bbb83b71d746a87375d7338053477ff447ea88",
         "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
@@ -192,7 +193,7 @@ def collect(root=ROOT):
         'environment': 'Studio VPS - test',
         'observed_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'reviewed_audio_runtime_source': AUDIO_RUNTIME_SOURCE,
-        'candidate_ui_revision': '2026-10-25.1',
+        'candidate_ui_revision': '2026-10-25.2',
         'snapshot_atomic': False,
         'active_release': release.name,
         'services': {name: service_status(name) for name in SERVICES},
