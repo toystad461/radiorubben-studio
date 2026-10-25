@@ -1,5 +1,23 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – tidligere sluttmelding skilt fra aktuell status, 25.10.2026
+
+Arkitekturmandatet viderefører #109/L01 som førsteprioritet. Den dokumenterte
+statusfeilen fra #113 er gjenbrukt og tilpasset direkte i #111: når neste låt
+spiller, erstattes de to kjente gamle sluttmeldingene i visningen. Ved foreldet
+API-svar eller frakoblet motor vises «Avspillingen kan ikke bekreftes» med siste
+mottatte melding. Feiltekst, kommandokvittering, kø, historikk og motor bevares.
+
+Lokal test av faktisk renderPlayer for PHP/Liquidsoap, JS-syntaks og de ni
+førkontrolltestene består. Eksisterende nettlesertest er utvidet med normal
+avspilling, frakoblet motor, API-feil/gjenoppretting og legacy-monitor ved
+390/1280 px; resultat på eksakt ny commit føres i #111. Førkontrollens hasher
+skiller tidligere UI fra kandidaten; lydmotorens kilde er fortsatt a34d50b.
+#113 beholdes som historisk/separat legacy-kandidat og skal ikke legges over
+#111 som hel fil. Ingen ny robot, ny kø, merge eller utrulling er utført.
+Neste driftssteg er fortsatt den faktiske VPS-førkontrollen før installasjon
+og trelåters-test; endringen løser ikke rapportert lydhakking.
+
 ## L01 – lesende VPS-førkontroll klargjort, 25.10.2026
 
 Thomas har bedt om å fullføre L01. Miljøet er **Studio VPS – test**;

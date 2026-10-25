@@ -60,6 +60,15 @@ function renderMonitorControl() {
   if(liquidsoap&&!configured)$('monitor-status').textContent=monitorUnconfigured;
   else if($('monitor-status').textContent===monitorUnconfigured)$('monitor-status').textContent='Av. Start testlytting her; serveravspillingen påvirkes ikke.';
 }
+// PR #113: a previous terminal message can remain while the next track plays.
+// Do not turn an old snapshot into a claim that playback is still running.
+function playerMessage(p) {
+  const previousOutcome = ['Køen er ferdig.', 'Fullført på isolert testutgang.'];
+  if (p.mode !== 'playing' || !p.current || !previousOutcome.includes(p.message)) return p.message;
+  return !stale && p.online === true
+    ? 'Avspilling pågår på testserveren.'
+    : `Avspillingen kan ikke bekreftes. Sist mottatt: ${p.message}`;
+}
 function renderPlayer() {
   const p=view?.player;if(!p)return;
   const liquidsoap=p.engine==='liquidsoap';
@@ -67,7 +76,7 @@ function renderPlayer() {
   $('player-mode').textContent=stale?'Spillerstatus må oppdateres':p.online?(modes[p.mode]||'Ukjent spillerstatus'):(p.mode==='unconfigured'?modes[p.mode]:'Spillertjenesten svarer ikke');
   $('player-connection').textContent=stale?'Motor og utgang: status er uavklart.':`Motor: ${p.online?'svarer':'svarer ikke'}${liquidsoap?' · Icecast: '+(p.online&&p.streamConnected?'tilkoblet':'ikke bekreftet tilkoblet'):' · Utgang: privat lydmonitor'}`;
   $('player-current').textContent=p.current?`${title(p.current)} · ${duration(p.position)}`:'Ingen aktiv låt';
-  $('player-detail').textContent=[p.message,p.pendingCommand?'Venter på kommandobekreftelse':'',p.ready===false?'Køen må synkroniseres':''].filter(Boolean).join(' · ');
+  $('player-detail').textContent=[playerMessage(p),p.pendingCommand?'Venter på kommandobekreftelse':'',p.ready===false?'Køen må synkroniseres':''].filter(Boolean).join(' · ');
   for(const action of ['start','pause','stop']) $('player-'+action).disabled=!control||busy||stale||!p.online||p.pendingCommand;
   if(p.capabilities?.pause===false)$('player-pause').disabled=true;
   $('player-start').textContent=liquidsoap?'Start testavspilling':'Start / fortsett';

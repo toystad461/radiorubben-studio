@@ -2,6 +2,16 @@
 
 Dato: **23.10.2026**, Europe/Oslo. Hovedmål: [#109](https://github.com/toystad461/radiorubben-studio/issues/109).
 
+Oppfølging 25.10.2026: den eksisterende statusrettelsen fra #113 er tilpasset
+L01-grenen. Gamle sluttmeldinger erstattes bare ved fersk, bekreftet aktiv
+motorstatus. Ved nettbrudd/foreldet svar vises siste melding som ubekreftet.
+Dette er en visningsrettelse, ikke en ny sendemotor eller løsning på lydhakking.
+Førkontrollen beholder hashen fra tidligere UI og registrerer kandidatens nye
+hash; feltet `reviewed_audio_runtime_source` viser uendret lydkodegrunnlag,
+mens `candidate_ui_revision` identifiserer visningsrettelsen. Den tidligere
+fastlåste kontrollfilen fra 07d0d25 er fortsatt en gyldig historisk inventory;
+en avvikende UI-hash skal avstemmes, aldri overskrives automatisk.
+
 Denne leveransen kobler den eksisterende musikkøen til en egen Liquidsoap-motor
 og en privat Icecast-teststrøm. PHP/Composer, biblioteket, programreglene,
 godkjenninger og køens forekomst-ID-er beholdes. Radio.co/Playout.co er

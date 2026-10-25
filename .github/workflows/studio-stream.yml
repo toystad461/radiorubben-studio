@@ -25,6 +25,8 @@ jobs:
       - run: composer install --no-dev --prefer-dist --no-interaction
       - name: Check read-only VPS inventory and redaction
         run: python3 -B tests/test-studio-preflight.py
+      - name: Check current versus stale player messages
+        run: node tests/music-player-message.cjs
       - name: Check persistent queue, event ownership and media boundary
         run: |
           php tests/recovered/test-music-play-queue.php
