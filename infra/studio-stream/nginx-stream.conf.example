@@ -10,6 +10,7 @@ location = /music-test-stream/ {
     proxy_read_timeout 20s;
     proxy_set_header Cookie "";
     proxy_set_header Authorization "";
+    add_header X-Accel-Buffering "no" always;
     add_header Cache-Control "no-store" always;
 }
 
@@ -19,6 +20,8 @@ location = /_music_stream_auth {
     fastcgi_param SCRIPT_FILENAME /srv/radiorubben-test/studio/public/music-stream-auth.php;
     fastcgi_param SCRIPT_NAME /music-stream-auth.php;
     fastcgi_param REQUEST_METHOD GET;
+    fastcgi_param HTTPS on;
+    fastcgi_param SERVER_PORT 443;
     fastcgi_param CONTENT_LENGTH "";
     fastcgi_param HTTP_COOKIE $http_cookie;
     fastcgi_pass_request_body off;

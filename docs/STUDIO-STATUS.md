@@ -1,5 +1,18 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – konkret installasjonsgrunnlag klargjort, 25.10.2026
+
+Thomas har levert nødvendige Nginx-/socket-/brukerdata kl.15:43:46 Europe/Oslo.
+Auth_request støttes; ledig18980, avspiller stopped, ingen current; ingen nye
+kontoer/pakker trengs. Konkret filsett og driftstrinn står i
+[STUDIO-LIQUIDSOAP-INSTALL.md](STUDIO-LIQUIDSOAP-INSTALL.md).
+Selvstendig installer med lesende standardmodus, førhash-sperrer, privat backup,
+atomiske kodefiler og rollback er klargjort. Åtte lokale installasjonstester
+består med simulerte tjenestekommandoer; ikke en faktisk VPS-installasjon/rollback.
+Beskyttede enheter/Nginx-endring krever egen konkret autorisasjon før --apply.
+Ingen serverendring, merge eller avspilling er utført i dette steget.
+
+
 ## L01 – faktisk førkontroll mottatt og bibliotek avstemt, 25.10.2026
 
 Thomas kjørte fastlåst lesekontroll via eksisterende Windows/ubuntu SSH.

@@ -27,6 +27,9 @@ jobs:
         run: |
           python3 -B tests/test-studio-preflight.py
           python3 -B tests/test-studio-install-inventory.py
+          sudo -n /usr/bin/python3 -B tests/test-studio-installer.py
+          python3 -B infra/studio-stream/build-test-installer.py --source-commit "$GITHUB_SHA" --output "$RUNNER_TEMP/L01-install-test.py"
+          python3 -m py_compile "$RUNNER_TEMP/L01-install-test.py"
       - name: Check current versus stale player messages
         run: node tests/music-player-message.cjs
       - name: Check visible saved queue, polling clicks and monitor jitter
