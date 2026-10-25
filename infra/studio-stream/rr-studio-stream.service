@@ -1,0 +1,47 @@
+# Review/install only on the isolated test VPS; this file installs nothing.
+[Unit]
+Description=Radio Rubben Studio queue to private Liquidsoap test stream
+After=local-fs.target rr-studio-icecast.service
+Wants=rr-studio-icecast.service
+Conflicts=rr-music-playout.service
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=rr-playout
+Group=rr-playout
+UMask=0007
+Environment=PHP_BIN=/usr/bin/php
+Environment=LIQUIDSOAP_BIN=/usr/bin/liquidsoap
+Environment=RR_PYTHON_BIN=/usr/bin/python3
+ExecStart=/usr/bin/php /srv/radiorubben-test/player-code/scripts/music-liquidsoap.php serve /srv/radiorubben-test/playout /srv/radiorubben-test/stream-runtime/engine.json
+Restart=on-failure
+RestartSec=3
+KillMode=control-group
+TimeoutStopSec=10
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+# Only this separate audio service gets loopback TCP. PHP-FPM stays AF_UNIX.
+PrivateNetwork=no
+RestrictAddressFamilies=AF_UNIX AF_INET
+IPAddressDeny=any
+IPAddressAllow=localhost
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+ReadWritePaths=/srv/radiorubben-test/playout /srv/radiorubben-test/stream-runtime/engine
+ReadOnlyPaths=/srv/radiorubben-test/playout/audio /srv/radiorubben-test/stream-runtime/engine.json
+InaccessiblePaths=-/srv/radiorubben-test/studio-data -/srv/radiorubben-test/studio-sessions -/srv/radiorubben-test/studio-media -/srv/radiorubben-test/wordpress -/srv/radiorubben-test/stream-runtime/icecast.xml
+MemoryMax=512M
+TasksMax=96
+CPUQuota=100%
+
+[Install]
+WantedBy=multi-user.target

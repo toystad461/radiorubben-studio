@@ -1,5 +1,192 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – konkret installasjonsgrunnlag klargjort, 25.10.2026
+
+Thomas har levert nødvendige Nginx-/socket-/brukerdata kl.15:43:46 Europe/Oslo.
+Auth_request støttes; ledig18980, avspiller stopped, ingen current; ingen nye
+kontoer/pakker trengs. Konkret filsett og driftstrinn står i
+[STUDIO-LIQUIDSOAP-INSTALL.md](STUDIO-LIQUIDSOAP-INSTALL.md).
+Selvstendig installer med lesende standardmodus, førhash-sperrer, privat backup,
+atomiske kodefiler og rollback er klargjort. Åtte lokale installasjonstester
+består med simulerte tjenestekommandoer; ikke en faktisk VPS-installasjon/rollback.
+Beskyttede enheter/Nginx-endring krever egen konkret autorisasjon før --apply.
+Ingen serverendring, merge eller avspilling er utført i dette steget.
+
+
+## L01 – faktisk førkontroll mottatt og bibliotek avstemt, 25.10.2026
+
+Thomas kjørte fastlåst lesekontroll via eksisterende Windows/ubuntu SSH.
+Tid 14:33:15 UTC / 15:33:15 Europe/Oslo (etter overgang til vintertid).
+Aktiv gammel release fad12a2; kø og manifest har 3 innslag, revisjon 24,
+ready=true, heartbeat-alder 0,1 sekunder. Ingen ny avspilling er bekreftet.
+Liquidsoap 2.2.4-1 og Icecast 2.4.4-4build4 er installert, men
+rr-studio-stream/rr-studio-icecast og L01-motor-/auth-filer mangler.
+nginx=unverified er ufullstendig observasjon, ikke bevis på tjenestestopp.
+
+Bibliotekets a98f2bd... er nøyaktig app/music-library.php fra PR102,
+ea1b86c447c0ee40fe0af1fb8e0f2d48f22066ed. Mot L01-kandidaten er eneste
+forskjell to kommentarer; eksisterende bibliotekfil skal bevares uten erstatning.
+Førkontrollen kjenner nå denne hashen som verified_vps_pr102_library.
+
+Alle CI-kontroller på runtime/UI-kandidat 59f7dc07 er success, inkludert
+native stream, Chromium og PHP. Dette er fortsatt ikke VPS-installasjon.
+Lesende install-inventory.py er klargjort for eksakt Nginx-testkonfig,
+eksisterende FPM-socket, auth_request-støtte, lokale tjenestebrukere, ledig
+loopback-port og om spilleren har aktivt innslag. Ingen rå config eller
+journal skrives ut. Tre lokale tester og syntaks består. Ny CI gjelder
+kontrollverktøy/manifest/dokumentasjon; avspillingskoden er uendret.
+
+Neste: les denne metadata-kvitteringen, fastlås minimal installasjon med
+privat backup/tilbakeføring og bevar bibliotek/kø/journal. Ingen merge,
+serverinstallasjon, reload, restart eller produksjonsendring er utført.
+
+
+
+## L01 – køvisning, klikk under polling og monitorbuffer, 25.10.2026
+
+Videreført i eksisterende PR #111 fra 04b3924. To konkrete kodefeil er
+reprodusert: UI viser bare plan.rows, som kan være kortere enn den lagrede
+køen; og mutate avviser klikk lydløst mens refresh bruker samme busy-flagg.
+Listen bruker nå alle lagrede forekomst-ID-er, supplerer med tilgjengelig
+tidsplan og merker innslag uten beregnbar tid. Klikk venter på pågående GET
+og bruker fersk kø-/spillerrevisjon; ingen automatisk gjentakelse av skriver.
+
+Legacy-WAV-monitorens 80 ms oppstartsmargin kan gi hull ved leveringsjitter.
+Kontrollert tidsmodell reproduserer 0,8 s gap når neste 2 s segment leveres ved
+2,8 s. Ny 2,5 s monitorbuffer gir sammenhengende planlegging i samme scenario
+og bygger buffer igjen ved reelt underskudd. Dette er en reprodusert svakhet,
+ikke målt forklaring på Thomas sin konkrete lydhakking. Mer lytteforsinkelse
+er bevisst. Liquidsoap bruker fortsatt egen kontinuerlig native MP3-monitor.
+
+Lokalt: faktisk produksjonskode for kø/polling/monitor, eksisterende renderer,
+JS-syntaks og ni Python-førkontrolltester består. Nettlesertest er utvidet med
+ufullstendig plan, klikk under utsatt GET og sammenhengende ekte WAV-dekoding.
+CI på ny eksakt commit må avleses. Ingen PHP-runtime finnes i denne økten;
+full lyd-/PHP-/Chromium-kontroll kjøres i eksisterende GitHub-workflow.
+
+Installert VPS-versjon er ikke ferskt avstemt. Lesende førkontroll er sendt til
+Thomas for eksisterende Windows SSH. Ingen installasjon, merge, restart, ny
+lyttetest, køendring eller produksjonsendring i dette steget. L01 er ikke bestått
+før tre riktige forekomster er synlige og faktisk privat lyd er kontrollert.
+
+
+## L01 – fersk nettleserkontroll og avgrenset tilgangsstopp, 25.10.2026
+
+Thomas har bedt om å fortsette #109/L01. De tre PR-kjøringene på
+`a346ebc2c3e234daaa72819a3a4843cd1d67e0b1` er etterkontrollert som success.
+Den eksisterende lesende VPS-førkontrollen består igjen med ni lokale tester.
+Dette er kode-/testbelegg, ikke en installasjonskvittering.
+
+Eksisterende Microsoft-innlogging åpnet Studio VPS – test i brukerens Chrome.
+Musikkstudio viser tre lagrede forekomster som completed, spillermodus Stoppet,
+ingen aktiv låt og siste fullføring 12:22:53 uten dato i visningen. Skjemaet og
+køen har dato 21.10.2026; dette er lagrede planleggingsverdier, ikke dagens
+avspilling. Fem bibliotekoppføringer vises som godkjent for God morgen Bømlo.
+Lastet scriptadresse er `/assets/music-studio.mjs?v=20261018`; adressen beviser
+ikke filhash eller installert release. Ingen error/warn var fanget i denne
+fanens konsolllogg. Kø, godkjenninger, regler og avspilling er ikke endret.
+Ingen ny lytting, MP3-måling eller serveromstart er utført.
+
+Direkte SSH fra assistentmiljøet svarer fortsatt `Network is unreachable`.
+Nettleserinnloggingen gir ikke administratoradgang til systemtjenester.
+Neste nødvendige input er den faktiske lesekvitteringen gjennom eksisterende
+`rubben-test`/ubuntu-tilgang. Fastlåst kilde og kontrollsum for kjøringen er
+lagt i [L01-planen](STUDIO-LIQUIDSOAP.md). Deretter avstemmes installasjonsfiler,
+privat backup og tilbakeføring før den faktiske Liquidsoap/Icecast-testen.
+L01 og rapportert lydhakking er fortsatt uavklart. Ingen merge, deploy eller
+produksjonsendring er utført.
+
+## L01 – tidligere sluttmelding skilt fra aktuell status, 25.10.2026
+
+Arkitekturmandatet viderefører #109/L01 som førsteprioritet. Den dokumenterte
+statusfeilen fra #113 er gjenbrukt og tilpasset direkte i #111: når neste låt
+spiller, erstattes de to kjente gamle sluttmeldingene i visningen. Ved foreldet
+API-svar eller frakoblet motor vises «Avspillingen kan ikke bekreftes» med siste
+mottatte melding. Feiltekst, kommandokvittering, kø, historikk og motor bevares.
+
+Lokal test av faktisk renderPlayer for PHP/Liquidsoap, JS-syntaks og de ni
+førkontrolltestene består. Eksisterende nettlesertest er utvidet med normal
+avspilling, frakoblet motor, API-feil/gjenoppretting og legacy-monitor ved
+390/1280 px; resultat på eksakt ny commit føres i #111. Førkontrollens hasher
+skiller tidligere UI fra kandidaten; lydmotorens kilde er fortsatt a34d50b.
+#113 beholdes som historisk/separat legacy-kandidat og skal ikke legges over
+#111 som hel fil. Ingen ny robot, ny kø, merge eller utrulling er utført.
+Neste driftssteg er fortsatt den faktiske VPS-førkontrollen før installasjon
+og trelåters-test; endringen løser ikke rapportert lydhakking.
+
+## L01 – lesende VPS-førkontroll klargjort, 25.10.2026
+
+Thomas har bedt om å fullføre L01. Miljøet er **Studio VPS – test**;
+**Studio Uniweb – drift** og **WordPress Uniweb – produksjon** er separate.
+Eksakt runtime-kandidat i #111 er fortsatt `a34d50b`, og de tre tilhørende
+GitHub-kjøringene ble kontrollert som success. Dette er ikke VPS-bevis.
+
+Ny avgrenset `infra/studio-stream/preflight.py` identifiserer riktig testvert,
+aktiv release, faktiske tjenestenavn, pakkeversjoner, berørte kodehasher og
+kø-/manifestantall/heartbeat uten skriving eller rå sensitive utdata.
+Lokal Python-test dekker feil vert/bruker, symlinks/FIFO/størrelsesgrense,
+filtrering av utdata, manglende data, kommando-/timeoutfeil, kodegrunnlag og
+bevarte testfiler. Runtime- og lydkoden er uendret. CI inkluderer kontrollen.
+
+Direkte SSH fra denne assistentøkten er utilgjengelig (`Network is unreachable`),
+og cloud-nettleseren stopper IP-testadressen på sertifikatnavnet. Den etablerte
+GitHub-gatewayen gir ikke administratoradgang til tjenesteinstallasjon.
+Neste: faktisk lesekvittering via eksisterende VPS-administratorøkt, deretter
+avstemt installasjonsgrunnlag/backup og tre låter gjennom Liquidsoap/Icecast.
+Ingen merge, VPS-installasjon, tjenesteomstart eller lydtest utført i dette steget.
+
+## L01 – Studio-kø til Liquidsoap/Icecast – 23.10.2026
+
+Bestilt neste steg etter målregister v1.3 og [hovedmål #109](https://github.com/toystad461/radiorubben-studio/issues/109):
+gjennomgåbar [PR #111](https://github.com/toystad461/radiorubben-studio/pull/111)
+som kobler eksisterende Studio-kø til Liquidsoap-piloten.
+Gren `feat/studio-liquidsoap-queue` bygger direkte på PR #99,
+`3b34aad9dae654d19853a216070f85549530f2f0`, med PR #98 som underliggende grunnlag.
+Isolasjonsprinsippet fra #108 og den minimale bibliotekrettelsen fra #102
+gjenbrukes. Senere cue-/analysegrener er ikke tatt inn som full kodebase.
+
+Implementert: separat PHP-supervisor, Studio-manifest til `request.dynamic`,
+Liquidsoap 2.2.4, privat loopback-Icecast og faktisk MP3-monitor bak en
+planlagt autorisert Nginx-rute. Én spillerlås deles med gammel PHP-spiller;
+forhåndslasting, faktisk start og fullført PCM er ulike tilstander. Lydmotorens
+livstegn kontrolleres separat fra supervisorens. Filer og køforekomster beholder
+kontrollsum/identitet; originaler endres ikke. Stopp, filfeil, tap av forbindelse
+og omstart gir tydelig utfall og krever ny Start. Generert motorkode/passord
+ligger utenfor den webskrivbare kontrollbussen.
+
+Overgangsvalget i L01 er ett sekund inn-/uttoning uten overlapp. Crossfade og
+andre overganger følger L02 med egen observasjon av begge lydkildene. Pause er
+deaktivert for Liquidsoap; gammel PHP/FFmpeg-pause og monitor beholdes.
+Nettleserlytting starter bare ved klikk og styrer ikke serverens avspilling.
+UI skiller tjenestestatus, Icecast-tilkobling og lokal lytting.
+
+Kontrollgrunnlag: hele eksisterende Composer-suite på native PHP 8.3.6,
+60 kø-/tilstandskontroller, 79 hendelses-/claim-kontroller, `open_basedir`-regresjon,
+ekte nettleserlyd ved 390/1280 px og regresjon av gammel PHP/FFmpeg-integrasjon.
+Ny `tests/test-studio-stream.py` kontrollerer reell HTTP-kø → Liquidsoap →
+Icecast → separat MP3-lytter, rekkefølge/fades, lukket/gjenåpnet lytter,
+Stopp, parent-death/SIGKILL, filfeil, forbindelsesbrudd og PCM-heng/SIGSTOP.
+Den samlede native lydtesten består lokalt: 430 056 byte mottatt HTTP-MP3,
+17,92 sekunder dekodet lyd og testtoner 440/660/880 Hz i riktig rekkefølge.
+Målte inn-/uttoninger, originalhasher og alle feil-/omstartsscenarier består.
+Etter første CI-kontroll krever testen kvittering for den konkrete nye
+Start-kommandoen, frigitt spillerlås og heartbeat fra den nye supervisor-PID-en.
+Dette hindrer at gammel feilstatus godtas før asynkront arbeid er behandlet;
+hele lydtesten består igjen på 87,62 sekunder før opprydding.
+Eksakt kildecommit, resultat og GitHub CI-kvittering skal leses i tilhørende PR;
+testskriptets eksistens alene er ikke bevis på bestått lydtest.
+
+**Ikke installert eller kjørt på VPS i denne leveransen.** Ingen main-merge,
+produksjonsdeploy, offentlig strøm eller endring av DNS, Entra, WordPress eller
+TTS er utført. L01 står åpen til den faktiske test-VPS-kjeden er kontrollert.
+
+Neste konkrete steg etter gjennomgang: avstem de berørte filene mot aktiv
+testrelease og selektive senere rettelser, lag et fast filmanifest med backup,
+og installer den isolerte testkjeden. Behold PHP-FPMs nettverk-/exec-sperrer.
+Kontroller deretter tre godkjente låter, faktisk lytting via Studio, lukket
+nettleser, omstart og tilbakeføring. Tjeneste- og Nginx-malene er reviewgrunnlag,
+ikke en installasjonskvittering. Se [L01-arkitektur, tester og VPS-plan](STUDIO-LIQUIDSOAP.md).
+
 ## Musikkstudio med regelstyrt kø og testavvikler – 19.10.2026
 
 Bestilt: fungerende musikkstudio før robotvert. Gren
