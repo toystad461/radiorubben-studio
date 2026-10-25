@@ -78,7 +78,7 @@ async function setup(browser,html,width,engine){
       state.streamRequests++;
       return state.failStream?route.fulfill({status:503,body:'Synthetic unavailable stream'}):route.fulfill({contentType:'audio/wav',body:wave()});
     }
-    if(url.pathname==='/music-monitor-audio.php'){state.segmentRequests++;return route.fulfill({contentType:'audio/wav',body:wave(2)});}
+    if(url.pathname==='/music-monitor-audio.php'){state.segmentRequests++;if(url.searchParams.get('segment')==='next-php-segment.wav')await new Promise(resolve=>setTimeout(resolve,2800));return route.fulfill({contentType:'audio/wav',body:wave(2)});}
     if(url.pathname==='/music-studio.php')return route.fulfill({contentType:'text/html',body:html});
     return route.fulfill({status:404,body:''});
   });
@@ -128,9 +128,10 @@ async function setup(browser,html,width,engine){
       await page.getByRole('button',{name:'Godkjenning / rettelser',exact:true}).click();
       await page.locator('#policy-days').fill('1, 3, 5');
       await page.evaluate(()=>window.__savedRow=document.querySelector('[data-entry-id="occurrence-2"]'));
+      const savedRevision=state.snapshot.revision;
       p.message='Køen er ferdig.';p.mode='playing';p.streamConnected=true;p.current=state.snapshot.entries[0];p.active={'occurrence-1':state.snapshot.entries[0],'occurrence-3':state.snapshot.entries[2]};p.reserved={'occurrence-2':state.snapshot.entries[1]};p.seq++;
       await page.waitForFunction(()=>document.querySelector('[data-entry-id="occurrence-2"]').dataset.playbackState==='reserved');
-      assert.equal(state.snapshot.revision,7,'only player sequence changed');
+      assert.equal(state.snapshot.revision,savedRevision,'only player sequence changed');
       assert.equal(await page.locator('#player-detail').innerText(),'Avspilling pågår på testserveren.');
       assert.equal(p.message,'Køen er ferdig.','rendering leaves stored state intact');
       assert(await page.evaluate(()=>window.__savedRow===document.querySelector('[data-entry-id="occurrence-2"]')),'row DOM identity survives player status');
