@@ -1,5 +1,28 @@
 # Studio – felles status og arbeidsliste
 
+## Miljøskille – presisering 25.10.2026
+
+Bruk alltid **Studio Uniweb – drift** for dagens PHP-applikasjon på
+`https://studio.radiorubben.no`, og **Studio VPS – test** for den separate
+installasjonen der #109/L01 utvikles. **WordPress Uniweb – produksjon** er
+`https://www.radiorubben.no`; den eksisterende Studio-applikasjonen er
+ikke en WordPress-plugin selv om den deler webhotell og har lokale koblinger.
+
+[Miljøregister og arbeidsregler](ARCHITECTURE-REVIEW-20261024.md#0-miljøer-og-navn--presisering-25102026)
+presiserer adresse, rolle, dataeierskap og overgang. Robåt på VPS er fortsatt
+et målbilde, ikke en bekreftet erstatning for dagens robotarbeid. ChatGPTs
+planlagte oppgaver registreres separat med sitt faktiske målmiljø.
+
+Eksisterende redaksjonelle flyter og øvrige funksjoner i Studio Uniweb
+videreføres mens VPS-Studio testes. WordPress' lokale fil-/regelavhengigheter
+til Uniweb-Studio må håndteres før flytting eller avvikling. Ingen automatisk
+domeneflytting, datakopiering eller overtakelse følger av målarkitekturen.
+Studio #109/L01 på test-VPS beholder førsteprioritet.
+
+Leveranse: kun presisering av de to eksisterende dokumentene i PR #114.
+Dokumentinnhold og uendret historikk er kontrollert; ingen runtime-test,
+serverkontroll, merge, utrulling eller endring av planlagte oppgaver inngår.
+
 ## Arkitekturgjennomgang 24.10.2026
 
 [Gjennomgangen](ARCHITECTURE-REVIEW-20261024.md) kartlegger WordPress,
