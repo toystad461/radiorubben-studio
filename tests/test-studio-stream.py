@@ -290,7 +290,7 @@ $_SESSION = ['csrf'=>'synthetic']; $config = [];
             duration = float(subprocess.check_output([self.ffprobe, '-v', 'error', '-show_entries',
                                                      'format=duration', '-of', 'default=nw=1:nk=1', str(path)], timeout=5))
             digest = sha256(path)
-            self.tracks.append({'id': identity, 'sha256': digest, 'bytes': path.stat().st_size,
+            self.tracks.append({'kind': 'jingle' if index == 1 else 'music', 'id': identity, 'sha256': digest, 'bytes': path.stat().st_size,
                                 'originalName': f'Synthetic {index}.mp3', 'tags': ['Varm'],
                                 'metadata': {'source': 'file', 'sourceSha256': digest,
                                              'durationSeconds': duration,
@@ -341,6 +341,8 @@ $_SESSION = ['csrf'=>'synthetic']; $config = [];
         self.change({'action': 'schedule', 'schedule': {'programId': 'god-morgen-bomlo',
                                                       'date': '2026-10-19', 'time': '07:00'}})
         for track in self.tracks:
+            if track['kind'] == 'jingle':
+                continue
             self.change({'action': 'policy', 'trackId': track['id'], 'sha256': track['sha256'],
                          'policy': {'approved': True, 'blocked': False, 'programs': ['god-morgen-bomlo'],
                                     'weekdays': [1, 2, 3, 4, 5, 6, 7], 'periods': [],

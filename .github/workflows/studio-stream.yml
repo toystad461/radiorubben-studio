@@ -42,6 +42,7 @@ jobs:
           php tests/music-library-open-basedir.php
           php tests/music-liquidsoap-state.php
           php tests/music-liquidsoap-events.php
+          php tests/jingles.php
       - name: Check changed executable syntax
         run: |
           node --check public/assets/music-studio.mjs

@@ -24,7 +24,7 @@ function music_liquidsoap_runtime(string $path): array {
 
 function music_liquidsoap_entry(array $entry): void {
     if (!music_liquidsoap_id($entry['id'] ?? null) || !music_liquidsoap_id($entry['trackId'] ?? null)
-        || ($entry['kind'] ?? null) !== 'music'
+        || !in_array($entry['kind'] ?? null, ['music','jingle'], true)
         || !is_string($entry['sha256'] ?? null) || !preg_match('/^[a-f0-9]{64}$/D', $entry['sha256'])
         || !is_numeric($entry['duration'] ?? null) || !is_finite((float)$entry['duration'])
         || $entry['duration'] <= 0 || $entry['duration'] > 14400

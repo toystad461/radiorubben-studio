@@ -7,8 +7,9 @@ function music_studio_settings(array $q): array {
     return $q['studio']??['profiles'=>['god-morgen-bomlo'=>music_schedule_defaults()],'policies'=>[],'schedule'=>null];
 }
 function music_studio_view(?string $path=null,?string $library=null,?array $playout=null): array {
-    $q=music_play_queue_read($path);$libraryError=null;try {$tracks=music_library_read($library);}catch(Throwable){$tracks=[];$libraryError='Biblioteket kunne ikke leses. Stopp er fortsatt tilgjengelig; kontroller biblioteket før ny start.';}$q['studio']=music_studio_settings($q);
+    $q=music_play_queue_read($path);$libraryError=null;try {$tracks=music_library_read($library,'all');}catch(Throwable){$tracks=[];$libraryError='Biblioteket kunne ikke leses. Stopp er fortsatt tilgjengelig; kontroller biblioteket før ny start.';}$q['studio']=music_studio_settings($q);
     $result=music_play_queue_snapshot($q,$tracks);$result['libraryError']=$libraryError;$result['studio']=$q['studio'];$result['catalog']=array_values(music_schedule_catalog($tracks,$q['studio']['policies']));
+    $result['catalog']=array_values(array_filter($result['catalog'],fn($t)=>($t['kind']??'music')==='music'));
     $result['player']=$playout?music_playout_snapshot($playout['root']):['online'=>false,'mode'=>'unconfigured'];
     // This same-origin route is served by an authenticated Nginx proxy; never
     // expose loopback addresses, upstream credentials or arbitrary URLs.
@@ -27,7 +28,7 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
     try {
         if (!flock($lock,LOCK_EX)) throw new RuntimeException('Køen er opptatt.');chmod($path.'.lock',0600);
         $q=music_play_queue_load($path);if ($q['revision']!==$input['revision']) throw new DomainException('Køen er endret av en annen operatør. Oppdater først.');$before=$q['entries'];
-        $q['studio']=music_studio_settings($q);$action=$input['action']??'';$tracks=in_array($action,['pause','stop'],true)?[]:music_library_read($library);$s=$playout?music_playout_state($playout['root']):music_playout_empty();
+        $q['studio']=music_studio_settings($q);$action=$input['action']??'';$tracks=in_array($action,['pause','stop'],true)?[]:music_library_read($library,'all');$s=$playout?music_playout_state($playout['root']):music_playout_empty();
         $history=$playout?music_playout_history($playout['root']):[];$action=$input['action']??'';$command=null;
         $oldControl=$playout?music_playout_json($playout['root'].'/control.json'):[];
         if (isset($oldControl['command']['id']) && $oldControl['command']['id']!==$s['ack']) throw new DomainException('En spillerkommando venter på bekreftelse. Oppdater først.');
@@ -47,7 +48,7 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
         } elseif ($action==='policy') {
             if (!studio_can($user,'settings')) throw new InvalidArgumentException('Bare produsent/administrator kan godkjenne musikk.');
             $track=null;foreach ($tracks as $t) if ($t['id']===($input['trackId']??null) && $t['sha256']===($input['sha256']??null)) $track=$t;
-            if (!$track) throw new InvalidArgumentException('Lydversjonen finnes ikke lenger.');
+            if (!$track || ($track['kind']??'music')!=='music') throw new InvalidArgumentException('Lydversjonen finnes ikke lenger eller er ikke musikk.');
             $handle=music_library_verified_handle($track,$library);fclose($handle);
             $v=music_schedule_policy($input['policy']??[],$track['sha256']);foreach ($v['programs'] as $program) if (!isset($q['studio']['profiles'][$program])) throw new InvalidArgumentException('Ukjent programtilhørighet.');$v['updatedAt']=gmdate('c');$v['updatedBy']=(string)($user['id']??$user['role']);$q['studio']['policies'][$track['id']]=$v;$changed=true;
         } elseif ($action==='suggest' || $action==='replace') {
@@ -66,7 +67,8 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
         } elseif ($action==='add') {
             $track=null;foreach ($tracks as $t) if ($t['id']===($input['trackId']??null) && $t['sha256']===($input['sha256']??null) && $t['available']) $track=$t;
             if (!$track) throw new InvalidArgumentException('Lydfilen mangler eller er endret.');
-            $q['entries'][]=['id'=>bin2hex(random_bytes(16)),'kind'=>'music','trackId'=>$track['id'],'sha256'=>$track['sha256'],'locked'=>false];$changed=true;
+            if(($track['kind']??'music')==='jingle' && (($track['jingle']['disabled']??false)||!music_library_metadata($track)))throw new InvalidArgumentException('Jinglen er deaktivert eller ikke klargjort.');
+            $q['entries'][]=['id'=>bin2hex(random_bytes(16)),'kind'=>$track['kind']??'music','trackId'=>$track['id'],'sha256'=>$track['sha256'],'locked'=>false];$changed=true;
         } elseif ($action==='lock') {
             if ($entryIndex===false) throw new InvalidArgumentException('Innslaget finnes ikke.');
             if (isset(music_playout_inflight_entries($s)[$input['id']])) throw new InvalidArgumentException('Innslaget er reservert eller aktivt i motoren. Stopp før endring.');

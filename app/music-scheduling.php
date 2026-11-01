@@ -60,6 +60,7 @@ function music_schedule_track(array $t,?array $policy=null): array {
         if (is_string($manual) && trim($manual)!=='') {$fields[$k]=$manual;$used[$k]='manuell rettelse';}
         elseif (!empty($fields[$k])) $used[$k]='filmetadata';
     }
+    if(($t['kind']??'music')==='jingle'){$fields['title']=$t['jingle']['name']??$t['originalName'];$fields['artist']='';}
     $manualPolicy=($policy['sha256']??null)===$t['sha256']?$policy:null;
     $f=$manualPolicy['fields']??[];$energy=array_key_exists('energy',$f)?$f['energy']:($ai['energy']??null);
     $tags=[];
@@ -78,7 +79,7 @@ function music_schedule_track(array $t,?array $policy=null): array {
     if (!$a) $warnings[]='Tempo og toneart er ukjent eller utdaterte';
     if (!$ai && isset($t['producerAssessment'])) $warnings[]='Utdatert AI-vurdering brukes ikke';
     if ($energy===null) $warnings[]='Energi ukjent';
-    return ['trackId'=>$t['id'],'sha256'=>$t['sha256'],'title'=>$fields['title']??$t['originalName'],'artist'=>$fields['artist']??null,'genre'=>$fields['genre']??null,
+    return ['kind'=>$t['kind']??'music','jingle'=>$t['jingle']??null,'trackId'=>$t['id'],'sha256'=>$t['sha256'],'title'=>$fields['title']??$t['originalName'],'artist'=>$fields['artist']??null,'genre'=>$fields['genre']??null,
         'duration'=>$m['durationSeconds']??null,'bpm'=>$a['bpm']??null,'key'=>$a?($a['key'].' '.$a['scale']):null,'energy'=>$energy,'tags'=>$tags,
         'periods'=>$ai['periods']??[],'policy'=>$manualPolicy,'available'=>($t['available']??false)===true,'sources'=>$used,'warnings'=>$warnings,
         'cuePoints'=>$cue,'audioAnalysis'=>$a,'analysisSha256'=>$a?hash('sha256',json_encode($a,JSON_THROW_ON_ERROR)):null];
@@ -87,6 +88,11 @@ function music_schedule_artist(?string $artist): string { return mb_strtolower(t
 /** Only hard constraints exclude a track. Preferences can lose points without relaxing a rule. */
 function music_schedule_evaluate(array $t,array $p,DateTimeImmutable $at,array $context,?array $previous): array {
     $blocked=[];$reasons=[];$score=0;$policy=$t['policy'];$mood=music_mood($at);
+    if(($t['kind']??'music')==='jingle'){
+        if(!$t['available'] || !$t['duration'] || $t['duration']>14400)$blocked[]='Jinglefil eller gyldig varighet mangler';
+        if($t['jingle']['disabled']??false)$blocked[]='Jinglen er deaktivert';
+        return ['blocked'=>$blocked,'score'=>0,'reasons'=>['Jingle · lagt inn manuelt, uten musikkrotasjon'],'plannedAt'=>$at->format('c'),'warnings'=>[]];
+    }
     if (!$t['available']) $blocked[]='Lydfil mangler eller er endret';
     if (!$t['duration'] || !$t['artist'] || music_schedule_artist($t['artist'])==='ukjent artist') $blocked[]='Klargjør varighet og artist';
     if (!$policy || !$policy['approved']) $blocked[]='Mangler manuell testgodkjenning for denne lydversjonen';
@@ -130,33 +136,34 @@ function music_schedule_plan(array $q,array $tracks,array $history=[],int $count
     $queueIds=array_column($q['entries'],'id');$played=array_column($history,null,'entryId');$history=array_values(array_filter($history,fn($h)=>!isset($h['entryId']) || !in_array($h['entryId'],$queueIds,true)));
     $context=$history;$previous=null;$rows=[];$suggestions=[];$missing=[];$replaceAt=null;
     foreach ($q['entries'] as $i=>$e) {
-        if ($e['id']===$replace) { if ($e['locked']??false) throw new InvalidArgumentException('Lås opp innslaget før bytte.');$replaceAt=$i; }
+        if ($e['id']===$replace) { if($e['kind']!=='music')throw new InvalidArgumentException('Jingler byttes fra Jingler-siden.'); if ($e['locked']??false) throw new InvalidArgumentException('Lås opp innslaget før bytte.');$replaceAt=$i; }
         $t=$catalog[$e['trackId']]??null;
         if (!$t || $t['sha256']!==$e['sha256'] || !$t['duration']) { $missing[]='Køinnslag '.($i+1).' mangler gyldig fil/varighet. Beregning av senere spilletider er stoppet.';break; }
         $evaluation=music_schedule_evaluate($t,$profile,$at,$context,$previous);
-        if ($e['kind']!=='music') $evaluation['blocked'][]='Jingler og programstikk krever egen innholds- og avviklingsgodkjenning; ikke aktivert ennå.';
+        if (!in_array($e['kind'],['music','jingle'],true) || $e['kind']!==($t['kind']??'music')) $evaluation['blocked'][]='Lydtypen samsvarer ikke med biblioteket.';
         $rows[]=array_merge($e,$t,$evaluation);
-        $context[]=['trackId'=>$t['trackId'],'artist'=>$t['artist'],'at'=>$played[$e['id']]['at']??$at->getTimestamp(),'entryId'=>$e['id']];
-        $at=$at->modify('+'.(int)round($t['duration']*1000).' milliseconds');$previous=$t;
+        if($e['kind']==='music'){$context[]=['trackId'=>$t['trackId'],'artist'=>$t['artist'],'at'=>$played[$e['id']]['at']??$at->getTimestamp(),'entryId'=>$e['id']];$previous=$t;}
+        $at=$at->modify('+'.(int)round($t['duration']*1000).' milliseconds');
     }
     if ($replace!==null && $replaceAt===null) throw new InvalidArgumentException('Innslaget finnes ikke.');
     if ($missing) return compact('rows','suggestions','missing','profile');
     if ($replace!==null) {
-        $at=new DateTimeImmutable($rows[$replaceAt]['plannedAt']);$previous=$replaceAt>0?$rows[$replaceAt-1]:null;
+        $at=new DateTimeImmutable($rows[$replaceAt]['plannedAt']);$priorMusic=array_values(array_filter(array_slice($rows,0,$replaceAt),fn($row)=>$row['kind']==='music'));$previous=$priorMusic?end($priorMusic):null;
         $beforeIds=array_column(array_slice($rows,0,$replaceAt),'id');
         $context=array_values(array_filter($context,fn($c)=>!isset($c['entryId']) || !in_array($c['entryId'],$queueIds,true) || in_array($c['entryId'],$beforeIds,true)));$count=1;
     }
     for ($i=0;$i<$count;$i++) {
         $candidates=[];$deficits=[];
         foreach ($catalog as $t) {
+            if(($t['kind']??'music')!=='music')continue;
             if ($replace!==null && $t['trackId']===$rows[$replaceAt]['trackId']) continue;
             $v=music_schedule_evaluate($t,$profile,$at,$context,$previous);
             // A replacement shifts later airtimes. Revalidate the entire resulting queue before offering it.
             if ($replace!==null && !$v['blocked']) {
                 $futureAt=$at->modify('+'.(int)round($t['duration']*1000).' milliseconds');$before=array_slice($rows,0,$replaceAt);$futureContext=$history;
-                foreach ($before as $b) $futureContext[]=['trackId'=>$b['trackId'],'artist'=>$b['artist'],'at'=>strtotime($b['plannedAt'])];
+                foreach ($before as $b) if($b['kind']==='music') $futureContext[]=['trackId'=>$b['trackId'],'artist'=>$b['artist'],'at'=>strtotime($b['plannedAt'])];
                 $futureContext[]=['trackId'=>$t['trackId'],'artist'=>$t['artist'],'at'=>$at->getTimestamp()];$prior=$t;
-                foreach (array_slice($rows,$replaceAt+1) as $later) { $check=music_schedule_evaluate($later,$profile,$futureAt,$futureContext,$prior);if ($check['blocked']) $v['blocked'][]='Byttet bryter regler for senere køinnslag';$futureContext[]=['trackId'=>$later['trackId'],'artist'=>$later['artist'],'at'=>$futureAt->getTimestamp()];$futureAt=$futureAt->modify('+'.(int)round($later['duration']*1000).' milliseconds');$prior=$later; }
+                foreach (array_slice($rows,$replaceAt+1) as $later) { $check=music_schedule_evaluate($later,$profile,$futureAt,$futureContext,$prior);if ($check['blocked']) $v['blocked'][]='Byttet bryter regler for senere køinnslag';if($later['kind']==='music'){$futureContext[]=['trackId'=>$later['trackId'],'artist'=>$later['artist'],'at'=>$futureAt->getTimestamp()];$prior=$later;}$futureAt=$futureAt->modify('+'.(int)round($later['duration']*1000).' milliseconds'); }
             }
             if ($v['blocked']) {foreach ($v['blocked'] as $reason) $deficits[$reason]=($deficits[$reason]??0)+1;continue;}
             $candidates[]=array_merge($t,$v);

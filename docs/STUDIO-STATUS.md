@@ -1,5 +1,22 @@
 # Studio – felles status og arbeidsliste
 
+## L02 – Jingler klar for kontrollert testinstallasjon, 01.11.2026
+
+Egen produsentside med privat forhåndslytting, navn/kategori, deaktivering og
+manuell innlegging i felles sendekø. Jingler har egen lydtype og er utelatt fra
+musikkvisning, forslag og repetisjonshistorikk. Originaler lagres i eksisterende
+private medielager. Musikkens godkjenningskrav er bevart.
+
+Isolerte Linux-tester består: roller, CSRF, revisjoner, typekontroll, deaktivering,
+planlegging og motorhendelser. Faktisk syntetisk HTTP/Liquidsoap/Icecast-test
+med musikk–jingle–musikk besto (73 sekunder; 440/660/880 Hz i rett rekkefølge).
+PHP-syntaks og Node-køregresjon består. Windows atomiske rename-tester kunne
+ikke fullføres; de samme testene er derfor kjørt på Linux.
+
+Installasjon og ekte jingleimport er ennå ikke bekreftet i denne statusen.
+Cue-/overgangsstyring i motoren gjenstår. PR #115 beholdes som draft.
+
+
 ## L02 – første kontrollromsdel installert, 01.11.2026 kl. 21:23 Europe/Oslo
 
 Thomas autoriserte videreføring av L02. Første avgrensede leveranse er i PR #115,

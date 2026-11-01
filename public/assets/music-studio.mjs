@@ -10,7 +10,7 @@ const monitorUnconfigured = 'Testlytting er ikke konfigurert i dette miljøet.';
 const txt = (tag, value, cls) => { const n = document.createElement(tag); n.textContent = value; if (cls) n.className = cls; return n; };
 const say = value => { $('studio-message').textContent = value; };
 const split = value => value.split(',').map(s => s.trim()).filter(Boolean);
-const title = t => `${t.artist || 'Ukjent artist'} – ${t.title}`;
+const title = t => t.kind==='jingle' ? `Jingle · ${t.title}` : `${t.artist || 'Ukjent artist'} – ${t.title}`;
 const when = iso => new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date(iso));
 const duration = s => Number.isFinite(s) ? `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}` : 'ukjent varighet';
 function button(label, callback, disabled = false) { const b=txt('button',label);b.type='button';b.disabled=disabled;b.addEventListener('click',callback);return b; }
@@ -59,7 +59,7 @@ function renderQueueStatus() {
     const disabled=!control||busy||stale||!!p.pendingCommand||heldEntry(e.id), fixed=disabled||!!outcome||e.locked;
     for(const action of li.querySelectorAll('[data-queue-action]')) {
       const kind=action.dataset.queueAction;
-      action.disabled=kind==='preview'?(!control||!e.available):kind==='lock'?disabled:fixed||(kind==='up'&&(i===0||fixedEntry(rows[i-1])))||(kind==='down'&&(i===rows.length-1||fixedEntry(rows[i+1])))||(kind==='remove'&&rows.slice(i+1).some(protectedEntry));
+      action.disabled=kind==='preview'?(!control||!e.available):kind==='lock'?disabled:fixed||(kind==='replace'&&e.kind==='jingle')||(kind==='up'&&(i===0||fixedEntry(rows[i-1])))||(kind==='down'&&(i===rows.length-1||fixedEntry(rows[i+1])))||(kind==='remove'&&rows.slice(i+1).some(protectedEntry));
     }
   }
   $('reset-queue').disabled=!control||busy||stale||!!p.pendingCommand||hasInflight()||['starting','playing'].includes(p.mode);
@@ -143,7 +143,8 @@ function openPreview(track) {
   const audio = $('studio-preview-audio');
   audio.pause(); audio.src = `/music-library-audio.php?id=${track.trackId}&version=${track.sha256}`;
   $('preview-title').textContent = title(track);
-  $('preview-details').href = `/music-library.php?detail=1&track=${track.trackId}#track-detail`;
+  $('preview-details').href = track.kind==='jingle' ? `/jingles.php#jingle-${track.trackId}` : `/music-library.php?detail=1&track=${track.trackId}#track-detail`;
+  $('preview-details').textContent=track.kind==='jingle'?'�pne jingleinnstillinger':'�pne l�tdetaljer og cue-punkter i egen fane';
   $('preview-status').textContent = 'Privat forhåndslytting. Trykk Play for å lytte; sendekø og sending er uendret.';
   if (track.id) selectedEntry = track.id;
   for (const row of $('studio-entries').children) row.classList.toggle('is-selected', row.dataset.entryId === selectedEntry);

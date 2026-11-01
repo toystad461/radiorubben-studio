@@ -86,7 +86,7 @@ function music_playout_history_from_state(array $s): array {
     $history=[];
     $entries=array_merge(array_values($s['outcomes']??[]),array_values($s['active']??[]),($s['current']??null)?[$s['current']]:[]);
     foreach ($entries as $entry) {
-        if (!isset($entry['startedAt']) || isset($history[$entry['id']])) continue;
+        if (($entry['kind']??'music')!=='music' || !isset($entry['startedAt']) || isset($history[$entry['id']])) continue;
         $at=strtotime($entry['startedAt']);if ($at===false) continue;
         $history[$entry['id']]=['entryId'=>$entry['id'],'trackId'=>$entry['trackId'],'artist'=>$entry['artist'],'at'=>$at];
     }
