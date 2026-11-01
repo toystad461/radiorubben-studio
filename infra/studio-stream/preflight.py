@@ -52,17 +52,17 @@ REVIEWED_HASHES = {
         "app/music-scheduling.php": "bd09f9f807da1c93feea177e361a4e2a360beadf31f1ec41435d3ab9f9483eeb",
         "app/music-studio.php": "b095f1a1a0946f6f666a57f45064ed2a66c52ad5f342124561c6f2d2f9579a4e",
         "app/views/navigation.php": "f65f245826ecb1cfb817b66a303b9e504ba0910ef3d14c4f4c43529813bc2a65",
-        "infra/studio-stream/radio.liq": "486460bd4d4b367d3872039a39ca594a5c0b0c72668f81c8d17d3df06b7fd402",
+        "infra/studio-stream/radio.liq": "ad5fc0f904bac0980b29d4b8118d39b7def12c3d8e7878fec44f22ee17ecd5b7",
         "public/assets/jingles.css": "301ee1ebf0883c833fe93afffde11d795ea6c3c5f6d1ba9789123053f06006ae",
         "public/assets/jingles.mjs": "cc1122212cc5a111011e1ad2afaa60210e218427305a80dfbfd512e170a54d92",
         "public/assets/music-studio.css": "a7cdd298d9c684ddf9800f53f993b23788ca3b34d71cdfdac1afc7ca71fcacaf",
         "public/assets/music-studio.mjs": "d8c5f0551305b95cfd2bcb38f0972c95c995a31ac6e9b2da448f495526a2b269",
         "public/jingles.php": "964565b5ce9b9dfb1fbba8ced8f3a5661e2f81f06413be7d12598c5cc6eece1f",
         "public/music-library-audio.php": "b77828707570cfc9f31554a055413ea42b0312f9c909e5f64ff1e99fea4d3b67",
-        "public/music-stream-auth.php": "a726b5d1a9e770c44bdaf4751625152c13f10c7cc33dc32f6f729e2db700809b",
+        "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",
         "public/music-studio.php": "d2a2b5fe9c1967441a9868e4475349c64065f7484dc14fdbb07cdd006bdc4ffa",
-        "scripts/liquidsoap-child.py": "f354a9966e28f1ce535f97d8dc3efb3f19f272488a1e4b47c37af09c3012320f",
-        "scripts/music-liquidsoap.php": "c0897afa6ce1269c24920996d7aea022a032e05408fd12e9904966cc3de9a9e6"
+        "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
+        "scripts/music-liquidsoap.php": "52a9fd6f2e46854f53e5447b2abaa6c7cec29e8893707f9800795494c0028ae1"
 },
     "candidate_l01": {
         "public/assets/music-studio.css": "a7cdd298d9c684ddf9800f53f993b23788ca3b34d71cdfdac1afc7ca71fcacaf",
