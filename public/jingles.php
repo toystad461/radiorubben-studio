@@ -18,7 +18,7 @@ if($method==='POST'){
             foreach($f['name'] as $i=>$name){
                 try{
                     $result=music_library_upload(['name'=>$name,'tmp_name'=>$f['tmp_name'][$i],'size'=>$f['size'][$i],'error'=>$f['error'][$i]],$user,$csrf,$expected,null,null,null,'jingle');
-                    if(!$result['duplicate'])music_library_prepare($result['track']['id'],$result['track']['sha256'],0,$user,$csrf,$expected);
+                    if(!music_library_metadata($result['track']))music_library_prepare($result['track']['id'],$result['track']['sha256'],$result['track']['revision']??0,$user,$csrf,$expected);
                     $results[]=$name.($result['duplicate']?' finnes allerede.':' er lastet opp og klargjort.');
                 }catch(InvalidArgumentException $e){$results[]=(string)$name.': '.$e->getMessage();}
                 catch(Throwable){$results[]=(string)$name.': Klargjøringen kunne ikke fullføres. Kontroller listen før nytt forsøk.';}

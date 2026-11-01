@@ -46,6 +46,8 @@ jobs:
       - name: Check changed executable syntax
         run: |
           node --check public/assets/music-studio.mjs
+          node --check public/assets/jingles.mjs
+          php -l public/jingles.php
           node --check tests/music-liquidsoap-ui.cjs
           python3 -m py_compile scripts/liquidsoap-child.py infra/studio-stream/prepare.py tests/test-studio-stream.py
   actual-stream:
