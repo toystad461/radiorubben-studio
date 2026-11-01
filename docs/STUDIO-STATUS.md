@@ -1,5 +1,48 @@
 # Studio – felles status og arbeidsliste
 
+## L02 – første kontrollromsdel installert, 01.11.2026 kl. 21:23 Europe/Oslo
+
+Thomas autoriserte videreføring av L02. Første avgrensede leveranse er i PR #115,
+gren feat/studio-l02-controlroom, kodecommit 39e58b13a83b93f5d472c5abfa34ff21fc614d23.
+Base er merget L01 på feat/music-scheduler-vps-playout, ikke main.
+
+Kø og bibliotek beholder uendrede rader, utvalg, tastaturfokus og rulleposisjon.
+Privat forhåndslytting/detaljer åpnes separat. Eksisterende cue-editor gjenbrukes
+i egen fane. Nå/neste viser reservert låt før senere ureservert innslag og
+skiller sist kjent status fra bekreftet motorstatus.
+
+Alle tre CI-workflows på kodecommitten besto: 41346214350 (PHP/mobil),
+41346214368 (Liquidsoap/kontrakt/nettleser) og 41346214450 (releasekontroll).
+Lokale syntaks-/regresjonstester og utvidet ekte Chromium/Edge ved 390/1280
+besto også. Én lokal kjøring fikk tidsavbrudd ved køplanoppdatering; ny kjøring
+med diagnostikk besto, og samme funksjonelle tester besto i CI.
+
+**Faktisk installert:** eksisterende root-eide VPS-gateway returnerte deployed.
+Kun public/music-studio.php, public/assets/music-studio.mjs og
+public/assets/music-studio.css ble endret. Før-/etter-snapshot av alle gatewayens
+kodefiler viser nøyaktig disse tre endringene; recoveryRequired=false.
+Privat backup: /var/lib/rr-vps-deploy/backup-2c5kcroc.
+
+Etter vanlig Microsoft-innlogging ble ny visning og dialog kontrollert på VPS.
+Alison Moyet-originalen spilte privat i nettleseren: currentTime 7,777 sekunder,
+readyState 4, ingen mediefeil, varighet 239,334 sekunder. Lukking stoppet lokal
+lytting; motoren sto stoppet. Dette er faktisk dekoding/avspilling i nettleser,
+ikke en ny subjektiv lyttebekreftelse eller testsending gjennom Liquidsoap.
+Kø33 med fire forekomster, kontrollmanifest, journal, bibliotek og alle fem
+originalfiler har identiske SHA-256 før deploy og etter privat lytting.
+
+Tilbakeføring: bruk den klargjorte tre-filers reverspakken gjennom samme gateway.
+Den verifiserer nåværende etterhasher før den gjenoppretter nøyaktig L01-UI.
+Lokal kvittering og reverspakke ligger i denne oppgavens output/l02-deploy-receipt.json
+og output/l02-rollback.json. Ved senere full L01-rollback må L02-UI tilbakeføres
+først; L01-installeren skal fortsatt avvise ukjent nyere UI-kode. L02-rollback er
+klargjort, ikke kjørt som ny gjenopprettingstest.
+
+**L02 er fortsatt under arbeid:** lagrede cue-/overgangsverdier må inn i faktisk
+Liquidsoap-avvikling, øvrige lydtyper må avstemmes, og redigering/privat lytting
+under faktisk sending må prøves. Se STUDIO-L02-CONTROLROOM.md. Ingen merge av
+#115, ingen produksjons-, WordPress-, DNS- eller radio.co-endring.
+
 ## L01 – PR #111 merget og testinstallasjon avstemt, 01.11.2026 kl. 20:26 Europe/Oslo
 
 Thomas autoriserte «merge og rull ut». PR #111 er merget til eksisterende base `feat/music-scheduler-vps-playout`, merge-commit `be795df67ff87399dfc0b9fd1ec4d51d7d89bd13`. #98/#99 er ikke merget til main som del av dette.
