@@ -1,5 +1,15 @@
 # Studio – felles status og arbeidsliste
 
+## Offentlig lytting fra hjemmesiden, 01.11.2026 Europe/Oslo
+
+Hjemmesidens play-knapp er koblet til https://5.249.252.78/radio.mp3 etter
+Thomas sin nye bestilling. Anonym HTTPS-lyd, faktisk nettleseravspilling og syv
+samtidige lyttere er verifisert. Studio beholder innlogging. Backup, eksakte
+endringer, rollback og begrensninger står i [lytternotatet](STUDIO-PUBLIC-LISTENER-20261101.md).
+Grense100 klienter er konfigurert; full kapasitetsprøve er ikke utført.
+Neste tre steg: reell nå/neste-info, drift etter omstart, lengre lytteprøve.
+
+
 ## L02 – 100 Radio Edit-spor, automatiske cue-punkter og timekø, 01.11.2026 Europe/Oslo
 
 90 nye filer er importert gjennom eksisterende bibliotekflyt, slik at biblioteket
