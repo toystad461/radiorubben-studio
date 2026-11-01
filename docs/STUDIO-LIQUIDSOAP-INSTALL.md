@@ -70,3 +70,17 @@ inn som nye forekomster, synkroniser og Start. Kontroller rekkefølge og hørbar
 sammenhengende lyd, lukk/gjenåpne Studio og avstem journal/filhash.
 Filfeil, omstart og tilbakeføring må kontrolleres før L01 lukkes.
 Produksjon er utenfor. Ingen ferdig milepæl kan rapporteres fra installasjon alene.
+
+## Gjeninstallasjon etter faktisk lydtest – 01.11.2026
+
+Den opprinnelige førkontrollen krever fortsatt kø24 med tre innslag som standard.
+For en allerede kontrollert nyere kø støtter samme installer nå `--queue-sha256`
+med SHA-256 for hele den ferskt avstemte køfilen. Feil format, endret innhold,
+endret revisjon, rekkefølge eller selv endrede bytes stopper installasjonen.
+Alle øvrige verts-, kode-, pakke-, Nginx-, tilstands- og backupkontroller beholdes.
+Flagget brukes både ved lesende førkontroll og --apply etter autorisert rollback.
+Kvitteringen registrerer faktisk kø-revisjon, antall og hash. Ingen kødata skrives
+av denne endringen. Testene omfatter standard sperre, eksakt nyere kø, drift i
+bytes/revisjon/rekkefølge og ugyldig format/struktur. 11 installasjonstester
+består på test-VPS i isolerte midlertidige kataloger med simulerte tjenester.
+Runtime/lyd/UI er uendret fra a312ca5; bare installasjonshjelperen er utvidet.

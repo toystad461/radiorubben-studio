@@ -12,6 +12,22 @@ spec=importlib.util.spec_from_file_location('installer',Path(__file__).parents[1
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 
 class InstallerTests(unittest.TestCase):
+    def test_original_queue_guard_remains_default(self):
+        self.assertEqual(m.validate_queue(b'{"revision":24,"entries":[1,2,3]}')['revision'],24)
+        with self.assertRaisesRegex(RuntimeError,'queue_changed'):
+            m.validate_queue(b'{"revision":29,"entries":[1,2,3,4]}')
+    def test_reinstall_requires_exact_new_queue_bytes(self):
+        data=b'{"revision":29,"entries":[1,2,3,4]}'
+        self.assertEqual(m.validate_queue(data,m.sha(data))['revision'],29)
+        for changed in (data+b' ',data.replace(b'29',b'30'),data.replace(b'1,2',b'2,1')):
+            with self.assertRaisesRegex(RuntimeError,'queue_snapshot_changed'):
+                m.validate_queue(changed,m.sha(data))
+    def test_invalid_queue_pins_and_structure_are_rejected(self):
+        data=b'{"revision":29,"entries":[]}'
+        for pin in ('','bad','A'*64,'0'*63):
+            with self.assertRaisesRegex(RuntimeError,'invalid_queue_pin'):m.validate_queue(data,pin)
+        for data in (b'[]',b'{"revision":true,"entries":[]}',b'{"revision":-1,"entries":[]}',b'{"revision":29,"entries":{}}'):
+            with self.assertRaisesRegex(RuntimeError,'invalid_queue'):m.validate_queue(data,m.sha(data))
     def test_nginx_patch_only_test_studio_server(self):
         conf='server {\n listen 127.0.0.1:8080;\n root /srv/radiorubben-test/studio/public;\n}\nserver {\n root /srv/radiorubben-test;\n}'
         result=m.patch_nginx(conf,'# private test route\n',True)
@@ -75,3 +91,4 @@ class InstallerTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'command_failed:php'):m.command(['/usr/bin/php'])
 
 if __name__=='__main__':unittest.main()
+

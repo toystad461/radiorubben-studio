@@ -26,6 +26,7 @@ ROOT=Path('/srv/radiorubben-test')
 STATE=Path('/var/lib/rr-vps-deploy')
 CONF=Path('/etc/nginx/rr-test-apps.conf')
 UNITS=('rr-studio-icecast','rr-studio-stream')
+QUEUE_SHA256=None  # Optional exact, operator-reviewed queue snapshot for reinstall.
 PAYLOAD_B64=''  # populated in the checksum-pinned downloadable copy only
 NGINX_SECTION='295a1fbd410bd38b33025a2908d6a2aa6e6fbdc909d01778ee583472bbed2e4f'
 
@@ -100,6 +101,17 @@ def data_fingerprint(app):
         files[str(p)]=sha(read(p))
     return files
 
+def validate_queue(data,expected_sha256=None):
+    queue=json.loads(data)
+    need(isinstance(queue,dict) and type(queue.get('revision')) is int
+         and queue['revision']>=0 and isinstance(queue.get('entries'),list),'invalid_queue')
+    if expected_sha256 is None:
+        need(queue['revision']==24 and len(queue['entries'])==3,'queue_changed')
+    else:
+        need(re.fullmatch('[a-f0-9]{64}',expected_sha256) is not None,'invalid_queue_pin')
+        need(sha(data)==expected_sha256,'queue_snapshot_changed')
+    return queue
+
 def probe(b):
     need(os.geteuid()==0 and socket.gethostname()=='vps-5363103','wrong_environment')
     app=(ROOT/'studio').resolve(strict=True)
@@ -139,8 +151,7 @@ def probe(b):
         need(before==item['before'],'code_drift:'+rel)
         if p.exists():ancestors(p)
         if p.suffix=='.php':command(['/usr/bin/php','-l'],input=base64.b64decode(item['data']))
-    queue=json.loads(read(ROOT/'studio-data/music-play-queue.private.json'))
-    need(queue['revision']==24 and len(queue['entries'])==3,'queue_changed')
+    validate_queue(read(ROOT/'studio-data/music-play-queue.private.json'),QUEUE_SHA256)
     cfg=ROOT/'studio-data/music-playout.local.php'
     need(cfg.is_file() and not cfg.is_symlink(),'player_config_missing')
     check=command(['/usr/sbin/runuser','-u','rr-studio','--','/usr/bin/php','-r',"$c=require $argv[1]; if(($c['enabled']??false)!==true || ($c['root']??null)!=='/srv/radiorubben-test/playout')exit(1);",str(cfg)])
@@ -188,6 +199,7 @@ def rollback(backup):
     print(json.dumps({'status':'rolled_back','backup':str(backup),'runtime_data_preserved':True}))
 
 def apply(b,app,conf,data_before):
+    queue=validate_queue(read(ROOT/'studio-data/music-play-queue.private.json'),QUEUE_SHA256)
     parent=STATE/'l01-installs';parent.mkdir(mode=0o700,exist_ok=True);ancestors(parent)
     need(stat.S_IMODE(parent.stat().st_mode)==0o700,'unsafe_backup_parent')
     backup=Path(tempfile.mkdtemp(prefix='l01-',dir=parent))
@@ -257,7 +269,9 @@ def apply(b,app,conf,data_before):
             '-H','Host: 5.249.252.78','http://127.0.0.1:8080/music-test-stream/']).stdout.decode()
         need(status in ('401','403'),'anonymous_stream_not_denied')
         receipt={'status':'installed_stopped_not_audio_pass','source':b['source'],'backup':str(backup),
-            'app':str(app),'queue_revision':24,'queue_entries':3,'data_hashes_unchanged':True,
+            'app':str(app),'queue_revision':queue['revision'],'queue_entries':len(queue['entries']),
+            'queue_sha256':data_before[str(ROOT/'studio-data/music-play-queue.private.json')],
+            'data_hashes_unchanged':True,
             'anonymous_stream_http':status,'private_route':'/music-test-stream/',
             'authenticated_listening_verified':False,'external_tls_stream_verified':False,'timeUTC':datetime.datetime.now(datetime.timezone.utc).isoformat()}
         atomic(backup/'receipt.json',json.dumps(receipt,indent=2).encode(),0o600)
@@ -268,8 +282,12 @@ def apply(b,app,conf,data_before):
         raise
 
 def main():
+    global QUEUE_SHA256
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--apply',action='store_true');parser.add_argument('--rollback')
+    parser.add_argument('--queue-sha256',help='Exact reviewed queue file SHA-256; required to preserve a newer queue during reinstall')
     args=parser.parse_args();os.umask(0o077)
+    QUEUE_SHA256=args.queue_sha256
+    if QUEUE_SHA256 is not None:need(re.fullmatch('[a-f0-9]{64}',QUEUE_SHA256) is not None,'invalid_queue_pin')
     need(os.geteuid()==0 and socket.gethostname()=='vps-5363103','wrong_environment')
     if args.rollback:
         with (STATE/'lock').open('a') as lock:
