@@ -68,7 +68,7 @@ REVIEWED_HASHES = {
         "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
         "scripts/music-autocue.py": "0519faf71ea28fdeab9455dd4d0c831d3d4c0316ced13ded89fb997c1fcddd0a",
         "scripts/music-liquidsoap.php": "6cd2cf31c0bf2ffaa17a70b30c6eaed38c416d39ed5c77ce2c37877fc0c8ea23",
-        "scripts/music-rotation.php": "fbf0e52bad6c3cad59bfb7783f6bf14bf1777a64ea55de1a14682238cd2b04a7"
+        "scripts/music-rotation.php": "4ad195ecf96d8f284ca4059ad848812588668ef5045c74e10a49902bdd7dd259"
     },
     "candidate_l01": {
         "public/assets/music-studio.css": "a7cdd298d9c684ddf9800f53f993b23788ca3b34d71cdfdac1afc7ca71fcacaf",
