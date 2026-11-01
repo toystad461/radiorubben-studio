@@ -3,24 +3,27 @@ declare(strict_types=1);
 require_once __DIR__.'/users.php';
 require_once __DIR__.'/music-library-preparation.php';
 
+// Stable typed occurrence contract. Only music can be created/played in this delivery.
+const MUSIC_PLAY_QUEUE_KINDS=['music','jingle','program_break'];
 // A saved rundown, not an on-air state or an audio transport.
-function music_play_queue_path(): string { return dirname(__DIR__).'/config/music-play-queue.private.json'; }
+function music_play_queue_path(): string { return (realpath(dirname(__DIR__).'/config') ?: dirname(__DIR__).'/config').'/music-play-queue.private.json'; }
 function music_play_queue_empty(): array { return ['schemaVersion'=>1,'revision'=>0,'entries'=>[]]; }
 function music_play_queue_load(string $path): array
 {
     if (is_link($path)) throw new RuntimeException('Ugyldig køfil.');
     if (!file_exists($path)) return music_play_queue_empty();
-    if (!is_file($path) || filesize($path)>131072) throw new RuntimeException('Køfilen må kontrolleres.');
-    try { $q=json_decode((string)file_get_contents($path),true,16,JSON_THROW_ON_ERROR); }
+    if (!is_file($path) || filesize($path)>2097152) throw new RuntimeException('Køfilen må kontrolleres.');
+    try { $q=json_decode((string)file_get_contents($path),true,32,JSON_THROW_ON_ERROR); }
     catch (JsonException $e) { throw new RuntimeException('Køfilen må kontrolleres.',0,$e); }
     if (!is_array($q) || ($q['schemaVersion']??null)!==1 || !is_int($q['revision']??null) || $q['revision']<0
         || !is_array($q['entries']??null) || !array_is_list($q['entries']) || count($q['entries'])>100) throw new RuntimeException('Køfilen må kontrolleres.');
     $seen=[];
     foreach ($q['entries'] as $e) {
-        if (!is_array($e) || ($e['kind']??null)!=='music') throw new RuntimeException('Ugyldig køinnslag.');
+        if (!is_array($e) || !in_array($e['kind']??null,MUSIC_PLAY_QUEUE_KINDS,true)) throw new RuntimeException('Ugyldig køinnslag.');
         foreach (['id'=>32,'trackId'=>32,'sha256'=>64] as $key=>$length) {
             if (!is_string($e[$key]??null) || !preg_match('/^[a-f0-9]{'.$length.'}$/D',$e[$key])) throw new RuntimeException('Ugyldig køreferanse.');
         }
+        if (isset($e['locked']) && !is_bool($e['locked'])) throw new RuntimeException('Ugyldig innslagslås.');
         if (isset($seen[$e['id']])) throw new RuntimeException('Duplikat i køfilen.');
         $seen[$e['id']]=true;
     }
@@ -65,15 +68,17 @@ function music_play_queue_change(array $input,?array $user,string $csrf,string $
         $q=music_play_queue_load($path);
         if ($q['revision']!==$input['revision']) throw new DomainException('Køen er endret i en annen fane. Oppdater før du prøver igjen.');
         $before=$q['entries'];
+        if (isset($q['studio'])) throw new InvalidArgumentException('Bruk Musikkstudio for å endre den planlagte køen.');
         if ($action==='add') {
             if (count($before)>=100) throw new InvalidArgumentException('Køen kan ha inntil 100 innslag.');
             $q['entries'][]=['id'=>bin2hex(random_bytes(16)),'kind'=>'music','trackId'=>$track['id'],'sha256'=>$track['sha256']];
         } elseif ($action==='clear') {
+            if (array_filter($q['entries'],fn($e)=>$e['locked']??false)) throw new InvalidArgumentException('Lås opp innslagene før tømming.');
             $q['entries']=[];
         } else {
             $at=array_search($input['id']??null,array_column($before,'id'),true);
             if ($at===false) throw new InvalidArgumentException('Innslaget finnes ikke lenger i køen.');
-            $entry=$q['entries'][$at]; array_splice($q['entries'],$at,1);
+            $entry=$q['entries'][$at]; if ($entry['locked']??false) throw new InvalidArgumentException('Lås opp innslaget først.'); array_splice($q['entries'],$at,1);
             if ($action==='move') {
                 if (!array_key_exists('beforeId',$input)) throw new InvalidArgumentException('Velg plassering i køen.');
                 if ($input['beforeId']===$entry['id']) $q['entries']=$before;

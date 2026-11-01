@@ -4,7 +4,7 @@
 $menuGroups = [
  'Oversikt' => [['overview','/control.php','LayoutDashboard','Studiooversikt','']],
  'Redaksjon' => [['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],['sending','/sending.php','FileText','Sendeliste','']],
- 'Studio og lyd' => [['ai-studio','/ai-studio.php','AudioLines','Studio','board'],['music-library','/music-library.php','AudioLines','Musikkbibliotek',''],['music-queue','/music-queue.php','AudioLines','Musikkø',''],['music-plan','/music-plan.php','AudioLines','Musikkplan',''],['music','/ai-studio.php#music-title','AudioLines','Musikkavspilling','music']],
+ 'Studio og lyd' => [['ai-studio','/ai-studio.php','AudioLines','Studio','board'],['music-library','/music-library.php','AudioLines','Musikkbibliotek',''],['music-studio','/music-studio.php','AudioLines','Musikkstudio',''],['music-queue','/music-queue.php','AudioLines','Musikkø',''],['music-plan','/music-plan.php','AudioLines','Musikkplan',''],['music','/ai-studio.php#music-title','AudioLines','Musikkavspilling','music']],
  'Samarbeid' => [['crm','/crm.php','FileText','Samarbeidspartnere','']],
  'Administrasjon' => [['learning','/learning.php','FileText','Robåt – læring',''],['settings','/ai-studio.php#innstillinger','SlidersHorizontal','Innstillinger','settings'],['rode','/ai-studio.php#rode','AudioLines','RØDE-kontroll','rode'],['users','/users.php','ShieldCheck','Brukere','']],
  'Ikke tilkoblet' => [['social','/workspace.php?section=social','Cloud','Sosiale medier','']],
