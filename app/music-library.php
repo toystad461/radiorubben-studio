@@ -10,7 +10,7 @@ function music_library_root():string{
 }
 function music_library_directory(string $root,bool $create):bool {
     // Internal fixed path (or isolated test path); never supplied by HTTP.
-    $parent=dirname(dirname($root));if(!is_dir($parent)||is_link($parent)||str_replace('\\','/',(string)realpath($parent))!==str_replace('\\','/',$parent))throw new RuntimeException('Privat lagringsområde er utilgjengelig.');
+    $media=dirname($root);$parent=is_dir($media)?$media:dirname($media);if(!is_dir($parent)||is_link($parent)||str_replace('\\','/',(string)realpath($parent))!==str_replace('\\','/',$parent))throw new RuntimeException('Privat lagringsområde er utilgjengelig.');
     foreach([dirname($root),$root,$root.'/originals']as$p){if(is_link($p))throw new RuntimeException('Ugyldig lagringsområde.');if(!is_dir($p)){if(!$create){if(is_file($root.'/library.json'))throw new RuntimeException('Originalmappen mangler.');return false;}if(!mkdir($p,0700)&&!is_dir($p))throw new RuntimeException('Kunne ikke opprette privat musikkmappe.');}if(str_replace('\\','/',(string)realpath($p))!==str_replace('\\','/',$p))throw new RuntimeException('Ugyldig lagringsområde.');}
     return true;
 }

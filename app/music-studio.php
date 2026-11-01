@@ -7,9 +7,12 @@ function music_studio_settings(array $q): array {
     return $q['studio']??['profiles'=>['god-morgen-bomlo'=>music_schedule_defaults()],'policies'=>[],'schedule'=>null];
 }
 function music_studio_view(?string $path=null,?string $library=null,?array $playout=null): array {
-    $q=music_play_queue_read($path);$libraryError=null;try {$tracks=music_library_read($library);}catch(Throwable){$tracks=[];$libraryError='Biblioteket kunne ikke leses. Stopp/pause er fortsatt tilgjengelig; kontroller biblioteket før ny start.';}$q['studio']=music_studio_settings($q);
+    $q=music_play_queue_read($path);$libraryError=null;try {$tracks=music_library_read($library);}catch(Throwable){$tracks=[];$libraryError='Biblioteket kunne ikke leses. Stopp er fortsatt tilgjengelig; kontroller biblioteket før ny start.';}$q['studio']=music_studio_settings($q);
     $result=music_play_queue_snapshot($q,$tracks);$result['libraryError']=$libraryError;$result['studio']=$q['studio'];$result['catalog']=array_values(music_schedule_catalog($tracks,$q['studio']['policies']));
     $result['player']=$playout?music_playout_snapshot($playout['root']):['online'=>false,'mode'=>'unconfigured'];
+    // This same-origin route is served by an authenticated Nginx proxy; never
+    // expose loopback addresses, upstream credentials or arbitrary URLs.
+    if (($result['player']['engine']??null)==='liquidsoap' && ($playout['stream_path']??null)==='/music-test-stream/') $result['player']['streamUrl']='/music-test-stream/';
     $result['plan']=null;
     if ($q['studio']['schedule']) $result['plan']=music_schedule_plan($q,$tracks,music_playout_history_from_state($result['player']+music_playout_empty()),0);
     return $result;
@@ -23,20 +26,20 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
     if (!$lock) {if($bus)fclose($bus);throw new RuntimeException('Køen kunne ikke låses.');}
     try {
         if (!flock($lock,LOCK_EX)) throw new RuntimeException('Køen er opptatt.');chmod($path.'.lock',0600);
-        $q=music_play_queue_load($path);if ($q['revision']!==$input['revision']) throw new DomainException('Køen er endret av en annen operatør. Oppdater først.');
+        $q=music_play_queue_load($path);if ($q['revision']!==$input['revision']) throw new DomainException('Køen er endret av en annen operatør. Oppdater først.');$before=$q['entries'];
         $q['studio']=music_studio_settings($q);$action=$input['action']??'';$tracks=in_array($action,['pause','stop'],true)?[]:music_library_read($library);$s=$playout?music_playout_state($playout['root']):music_playout_empty();
         $history=$playout?music_playout_history($playout['root']):[];$action=$input['action']??'';$command=null;
         $oldControl=$playout?music_playout_json($playout['root'].'/control.json'):[];
         if (isset($oldControl['command']['id']) && $oldControl['command']['id']!==$s['ack']) throw new DomainException('En spillerkommando venter på bekreftelse. Oppdater først.');
         $entryIndex=array_search($input['id']??null,array_column($q['entries'],'id'),true);
-        $protected=array_keys($s['outcomes']);if ($s['current']) $protected[]=$s['current']['id'];
+        $protected=music_playout_protected_ids($s);
         if (in_array($action,['remove','move','replace'],true) && ($entryIndex===false || in_array($input['id'],$protected,true))) throw new InvalidArgumentException('Innslaget mangler eller er allerede behandlet av spilleren.');
         if (in_array($action,['remove','move','replace'],true) && ($q['entries'][$entryIndex]['locked']??false)) throw new InvalidArgumentException('Lås opp innslaget først.');
         if ($action==='schedule') {
             $schedule=$input['schedule']??[];
             if (!isset($q['studio']['profiles'][$schedule['programId']??''])) throw new InvalidArgumentException('Velg et eksisterende program.');
             music_schedule_time((string)($schedule['date']??''),(string)($schedule['time']??''),(string)($schedule['occurrence']??''));
-            if ($s['current']) throw new InvalidArgumentException('Stopp avspilleren før du endrer programmets starttid.');
+            if (music_playout_inflight_entries($s)) throw new InvalidArgumentException('Stopp avspilleren før du endrer programmets starttid.');
             $q['studio']['schedule']=array_intersect_key($schedule,array_flip(['programId','date','time','occurrence']));$changed=true;
         } elseif ($action==='profile') {
             if (!studio_can($user,'settings')) throw new InvalidArgumentException('Bare produsent/administrator kan endre regler.');
@@ -57,7 +60,7 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
             $new=[];foreach ($plan['suggestions'] as $t) $new[]=['id'=>bin2hex(random_bytes(16)),'kind'=>'music','trackId'=>$t['trackId'],'sha256'=>$t['sha256'],'locked'=>false,'selection'=>array_intersect_key($t,array_flip(['plannedAt','reasons','sources','analysisSha256','warnings']))];
             if ($action==='replace') array_splice($q['entries'],$entryIndex,1,$new);else $q['entries']=array_merge($q['entries'],$new);$changed=true;
         } elseif ($action==='reset') {
-            if ($s['current'] || $s['mode']==='playing') throw new InvalidArgumentException('Stopp spilleren før en ny testkø.');
+            if (music_playout_inflight_entries($s) || $s['mode']==='playing') throw new InvalidArgumentException('Stopp spilleren før en ny testkø.');
             if (array_filter($q['entries'],fn($e)=>$e['locked']??false)) throw new InvalidArgumentException('Lås opp innslagene før en ny testkø.');
             $q['entries']=[];$changed=true;
         } elseif ($action==='add') {
@@ -66,6 +69,7 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
             $q['entries'][]=['id'=>bin2hex(random_bytes(16)),'kind'=>'music','trackId'=>$track['id'],'sha256'=>$track['sha256'],'locked'=>false];$changed=true;
         } elseif ($action==='lock') {
             if ($entryIndex===false) throw new InvalidArgumentException('Innslaget finnes ikke.');
+            if (isset(music_playout_inflight_entries($s)[$input['id']])) throw new InvalidArgumentException('Innslaget er reservert eller aktivt i motoren. Stopp før endring.');
             if (!is_bool($input['locked']??null)) throw new InvalidArgumentException('Ugyldig lås.');$q['entries'][$entryIndex]['locked']=$input['locked'];$changed=true;
         } elseif ($action==='remove' || $action==='move') {
             $entry=$q['entries'][$entryIndex];array_splice($q['entries'],$entryIndex,1);
@@ -74,16 +78,20 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
                 if ($target===false) throw new InvalidArgumentException('Ugyldig plassering.');
                 array_splice($q['entries'],$target,0,[$entry]);
                 // Locked and already played entries retain their positions, not just their identities.
-                $before=music_play_queue_load($path)['entries'];foreach ($before as $i=>$e) if (($e['locked']??false) || in_array($e['id'],$protected,true)) if ($q['entries'][$i]['id']!==$e['id']) throw new InvalidArgumentException('Flyttingen krysser et låst eller behandlet innslag.');
+                foreach ($before as $i=>$e) if (($e['locked']??false) || in_array($e['id'],$protected,true)) if (($q['entries'][$i]['id']??null)!==$e['id']) throw new InvalidArgumentException('Flyttingen krysser et låst eller behandlet innslag.');
             }$changed=true;
         } elseif (in_array($action,['start','pause','stop'],true)) {
             if (!$playout) throw new InvalidArgumentException('VPS-avspilleren er ikke installert.');
+            if ($action==='pause' && ($s['engine']??null)==='liquidsoap') throw new InvalidArgumentException('Pause støttes ikke av Liquidsoap-testmotoren. Bruk Stopp for å avslutte avspillingen.');
             $live=music_playout_json($playout['root'].'/heartbeat.json');
-            if (!isset($live['timestamp']) || microtime(true)-$live['timestamp']>5) throw new RuntimeException('Spillertjenesten svarer ikke.');
+            if (!music_playout_heartbeat_fresh($s,$live)) throw new RuntimeException('Spillertjenesten svarer ikke.');
             if (($input['playerRevision']??null)!==$s['seq']) throw new DomainException('Spillerstatus er endret. Oppdater først.');
             $command=['id'=>bin2hex(random_bytes(16)),'action'=>$action,'at'=>gmdate('c')];
             if (in_array($action,['pause','stop'],true)) {music_playout_atomic($playout['root'].'/control.json',array_replace($oldControl,['command'=>$command]));return ['revision'=>$q['revision'],'saved'=>true];}
         } elseif ($action!=='sync') throw new InvalidArgumentException('Ukjent studiohandling.');
+        if ($changed && in_array($action,['remove','replace'],true)) foreach ($before as $i=>$e) {
+            if (in_array($e['id'],$protected,true) && ($q['entries'][$i]['id']??null)!==$e['id']) throw new InvalidArgumentException('Endringen flytter et innslag som er reservert eller behandlet av spilleren.');
+        }
         if (count($q['entries'])>100) throw new InvalidArgumentException('Køen kan ha inntil 100 innslag.');
         if ($changed) {$q['revision']++;$q['updatedAt']=gmdate('c');$q['updatedBy']=(string)($user['id']??$user['role']);}
         // Barrier first: if any copy/write fails, no later entry from an old manifest may start.
