@@ -5,8 +5,11 @@ require dirname(__DIR__).'/app/music-boot.php';
 $config=music_playout_config();if(!$config)exit(1);
 $deadline=microtime(true)+45;
 do {
-    $q=music_play_queue_read();$s=music_playout_state($config['root']);
-    $c=music_playout_json($config['root'].'/control.json');$h=music_playout_json($config['root'].'/heartbeat.json');
+    $q=music_play_queue_read();$lock=music_playout_lock($config['root']);
+    try {
+        $s=music_playout_state($config['root']);
+        $c=music_playout_json($config['root'].'/control.json');$h=music_playout_json($config['root'].'/heartbeat.json');
+    } finally {flock($lock,LOCK_UN);fclose($lock);}
     if(($c['command']['action']??'')!=='start'||!($q['studio']['rotation']['enabled']??false)){
         echo "Boot resume not required or not permitted\n";exit(0);
     }
