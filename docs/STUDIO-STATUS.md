@@ -1,47 +1,95 @@
 # Studio – felles status og arbeidsliste
 
-## L01 – faktisk test-VPS-installasjon, 01.11.2026 kl. 19:34 Europe/Oslo
+## L01 – installert og faktisk trelåterstest gjennomført, 01.11.2026
 
-Eksisterende administratorvei fra Thomas sin Windows-PC (`rubben-test`, ubuntu,
-vert vps-5363103, sudo -n) fungerer. Før installasjon manglet begge L01-tjenestene;
-rr-music-playout kjørte og ingen L01-installasjonskvittering fantes.
+**Resultat:** Faktisk Studio-kø → Liquidsoap → privat Icecast → Chrome-monitor og
+separat Windows-mottaker er kontrollert på test-VPS. Thomas bekreftet først lyd
+uten hakking på delen han hørte, og svarte deretter «det fungerte godt» på
+spørsmål om overgangene og fortsatt lyd. Dette er faktisk VPS-belegg, ikke CI.
+
+### Installert kandidat og backup
+
+Administratorveien `rubben-test` fra Windows fungerer med ubuntu/sudo på
+vps-5363103. Fersk førkontroll fant manglende L01-units og gammel spiller.
 PR #111 var åpen draft, head `a312ca553fe9d379b8559fa8cd6a02a5d36aa830`,
 base `3b34aad9dae654d19853a216070f85549530f2f0`.
-Alle tre PR-workflows på head er success: 40204830203, 40204830168, 40204830178.
-Dette er CI-belegg, separat fra følgende faktiske installasjon.
+Alle tre PR-workflows på kandidaten er success: 40204830203, 40204830168,
+40204830178. Senere statuscommits er dokumentasjon; runtime er fortsatt a312ca5.
 
-Eksisterende installasjonspakke ble bygget fra fastlåst head. SHA-256 både lokalt
-og på server: `c489eab50622f0e49ed829535470de9d92227cb844bd79e0f4e833d7c5e474a9`.
-Alle lesende førkontrollsperrer besto uten endring. Allerede autorisert --apply
-lyktes kl. 18:34:39 UTC / 19:34:39 Europe/Oslo med
-`installed_stopped_not_audio_pass`. 11 selektive kodefiler, to isolerte units,
-privat runtime og Studio-monitorrute ble installert; ingen helbranch-deploy.
+Eksisterende fastlåste installer ble bygget og kontrollert lokalt og på VPS:
+SHA-256 `c489eab50622f0e49ed829535470de9d92227cb844bd79e0f4e833d7c5e474a9`.
+Alle førkontrollsperrer besto. Autorisert --apply lyktes 18:34:39 UTC /
+19:34:39 Europe/Oslo med `installed_stopped_not_audio_pass`.
+11 selektive kodefiler, to isolerte units, privat runtime og Studio-monitorrute.
+Aktiv releasebane beholder navnet studio-music-fad12a2320de0ff0a036854c414accee794143bb;
+baneetiketten alene beskriver derfor ikke det selektivt installerte filsettet.
 
 Privat backup: `/var/lib/rr-vps-deploy/l01-installs/l01-xrbgi7oc`.
-Mappe root0700, manifest/kvittering root0600, etterkontrollert.
-Alle 15 mål (kode, konfig, units) samsvarer med etterhasher, eksisterende
-backupfiler med førhasher. Bibliotek/originaler/kø/manifest var hash-uendret
-gjennom installasjonen; journalprefix er bevart. Kø24 hadde tre gamle fullførte
-forekomster. Begge L01-tjenester er active/running, NRestarts=0; legacy er stoppet.
-Anonym monitor gir HTTP401. Eksisterende Microsoft-innlogging i Chrome lykkes,
-og Musikkstudio viser stopped og motor svarer.
+Mappe root0700; manifest/receipt root0600. Alle 15 mål (kode, konfig, units)
+samsvarer med etterhasher; eksisterende backupfiler med førhasher.
+Journalprefix bevart. Bibliotek/originaler/kø/manifest hash-uendret gjennom installasjonen.
+Eksisterende bibliotekfil fra #102 ble bevart. Anonym monitor ga HTTP401.
+Icecast lytter bare på 127.0.0.1:18980; ingen ny offentlig lytterport.
 
-**Lydtest ikke utført:** Thomas har eksplisitt godkjent Ny testkø, men
-nettleserstyringen får tidsavbrudd ved Chrome-bekreftelsesdialogen. Lesende
-etterkontroll viste fortsatt kø24/tre innslag. Bruker er bedt om å trykke OK
-i den åpne dialogen. Ingen ny musikkstart eller trelåters-avspilling er bekreftet.
-Rapportert hakking er derfor fortsatt uavklart.
+### Faktisk avspilling og kontroll
 
-Tilbakeføring ved behov, i eksisterende VPS-administratorøkt:
+Thomas godkjente eksplisitt Ny testkø og løste en fastlåst Chrome-dialog manuelt.
+Historikken er bevart. Tre godkjente låter ble lagt inn som nye forekomster,
+synkronisert og startet gjennom eksisterende Studio-UI. Køens revisjon er 28.
+Lagret planleggingsdato 21.10 er beholdt; følgende er dagens faktiske avspilling,
+alle klokkeslett i Europe/Oslo (UTC+01:00):
+
+| Låt | Forekomst | Start | Fullført |
+| --- | --- | --- | --- |
+| Alison Moyet – Is This Love | a0e3ab738c9d4032887a38d8bf5050c1 | 19:39:27 | 19:43:26 |
+| Carly Rae Jepsen vs. Robin S. – Call Me Maybe vs. Show Me Love | cefb1069f00beb4a62709692b3784a37 | 19:43:26 | 19:47:19 |
+| Admiral P & OnkelP – Bobler | 9c4e9fea9c0ee625584cb5a3beef0012 | 19:47:19 | 19:50:16 |
+
+Køen avsluttet automatisk 19:50:17. Motorhendelsene knytter riktig forekomst
+til filhash; alle tre står som fullført i Liquidsoaps PCM-utgang mens strømmen
+var tilkoblet. Ingen tjenesteomstart under avspillingen.
+
+Begge Studio-faner ble lukket i minst 45 sekunder under første låt.
+Den uavhengige Windows-mottakeren fortsatte over samme forbindelse.
+Gjenåpnet Studio viste riktig låt og fremdrift; monitor kunne startes igjen.
+Dette tester lukkede Studio-faner, ikke avslutning av hele Chrome-prosessen.
+
+Separat mottak fra Windows over midlertidig, lokal SSH-tunnel fikk HTTP200
+audio/mpeg, 14 725 200 byte og 613,538 sekunder dekodet MP3 (192 kb/s, 44,1 kHz,
+stereo). Opptaket begynner 19:40:00, cirka 33 sekunder etter første låtstart;
+det dekker resten av første låt, begge overganger og de to siste låtene.
+Største opphold mellom 4096-byte-lesinger var 0,532 sekunder; ingen over ett sekund.
+FFmpeg dekodet hele opptaket med exit0. 230 innledende bytes ble hoppet over
+ved tilkobling midt i strømmen. Ingen senere dekoderfeil rapportert.
+Stillhet ved første overgang (~3,3 s) samsvarer med originalens avslutning
+(~3,26 s); den er ikke dokumentert transporthakking. Overgangene har myke
+fades uten overlapp; crossfade/cue-tilpasning er senere arbeid.
+Målingene alene beviser ikke subjektiv lydkvalitet; Thomas sin lyttebekreftelse
+er registrert separat ovenfor.
+
+Alle fem originalfilers SHA-256 er etterkontrollert mot biblioteket og stemmer.
+Kontrollert restart av rr-studio-stream etter fullført kø ga ny PID
+383993 → 398492, stopped, current=null, connected=false og bevart journalprefix.
+Ingen gammel forekomst ble automatisk startet. Studio viser tre fullførte og stoppet.
+Den midlertidige mottakstunnelen er avsluttet. Ingen ny musikkstart står på.
+
+### Tilbakeføring og resterende L01-kontroller
+
+Ved besluttet tilbakeføring, kjør i eksisterende VPS-administratorøkt:
 `sudo python3 /home/ubuntu/RadioRubben-L01-install-test.py --rollback /var/lib/rr-vps-deploy/l01-installs/l01-xrbgi7oc`.
-Faktisk rollback er ikke kjørt. Bevar den eksakte backupmappen; installerens
-drifts-/hashsperrer skal ikke omgås.
+Samme verifiserte pakke brukes. Ukjent nyere kode stopper rollback.
+Kø/bibliotek/originaler/journal tilbakeføres ikke. Faktisk rollback er **ikke**
+kjørt; backupinnhold og rettigheter er verifisert, ikke en gjenopprettingstest.
 
-Neste: (1) fullfør godkjent køreset og legg tre godkjente låter inn som nye
-forekomster, (2) synkroniser/start og kontroller autentisert strøm, rekkefølge,
-overganger og lukket/gjenåpnet nettleser, (3) dokumenter faktisk lydkontroll,
-filfeil, omstart og tilbakeføring før L01 lukkes.
-Ingen Uniweb-produksjon, WordPress, DNS eller radio.co endret. Ingen merge.
+Neste tre steg før hele L01 lukkes:
+1. Kontrollert test av manglende fil på test-VPS, uten å endre originalbiblioteket.
+2. Planlagt faktisk rollback-/gjeninstallasjonstest som bevarer ny kø28 og historikk.
+   Ikke kjør opprinnelig --apply blindt etter rollback: installasjonens førkontroll
+   er fastlåst til gammel kø24 og må avstemmes for en slik gjeninstallasjon.
+3. Samlet sluttvurdering av #109/L01 og PR #111 mot gjenstående ferdigkriterier.
+
+Ingen merge, Uniweb-produksjonsendring, WordPress-endring, DNS-endring eller radio.co-endring.
+Ingen parallell implementering. Arbeidsområder: Teknisk Produksjon, IT & Utstyr, Kontrollsenter.
 
 
 ## L01 – konkret installasjonsgrunnlag klargjort, 25.10.2026
