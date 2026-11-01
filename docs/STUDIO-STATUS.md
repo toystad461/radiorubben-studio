@@ -1,5 +1,21 @@
 # Studio – felles status og arbeidsliste
 
+## Nå/neste og faktisk automatisk oppstart, 01.11.2026 kl.23:30 Europe/Oslo
+
+Hjemmesiden viser faktisk artist/tittel/neste fra et offentlig feltbegrenset
+statusendepunkt. Den gamle statiske neste-låtpåstanden er skjult for VPS-strømmen.
+15 minutter offentlig HTTPS-lyd dekodet uten feil, med flere låt-/jinglebytter.
+Faktisk VPS-reboot 23:27:32 ga automatisk offentlig avspilling 23:27:58 uten
+manuell Start. Bibliotek og tidligere journal er verifisert bevart.
+Operatørstopp over restart er også testet med isolert ekte lydmotor.
+Studio 906057b og Web caa33ac er installert med grønne relevante CI-workflows.
+Se [oppstarts-/statusnotatet](STUDIO-PUBLIC-STATUS-BOOT-20261101.md).
+Åpne lytterfaner trenger Play igjen etter avbrudd; serveren går uten nettleser.
+PR115 Studio og PR111 Web er fortsatt draft, ikke merget.
+
+Neste tre steg: automatisk gjenoppkobling i lytterfanen, lengre driftsmåling,
+og et eget domenenavn for den offentlige strømmen. Ingen av disse er utført her.
+
 ## Offentlig lytting fra hjemmesiden, 01.11.2026 Europe/Oslo
 
 Hjemmesidens play-knapp er koblet til https://5.249.252.78/radio.mp3 etter
