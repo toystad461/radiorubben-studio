@@ -1,5 +1,59 @@
 # Studio – felles status og arbeidsliste
 
+## L02 – 100 Radio Edit-spor, automatiske cue-punkter og timekø, 01.11.2026 Europe/Oslo
+
+90 nye filer er importert gjennom eksisterende bibliotekflyt, slik at biblioteket
+har 100 musikkspor (omtrent 5 t 38 min) og seks separate jingler. Alle 106
+originalhasher er bekreftet uendret. Hele lydfilene dekoder; automatiske inn-/utpunkter
+og teknisk kontroll er kildebundet og lagret. Ingen av jinglene har tekniske merknader.
+To musikkfiler har målt toppnivå 0 dBFS, uten dekoderfeil; dette er en merknad,
+ikke dokumentasjon på hørbar klipping. Vokalstart/taktgrenser gjettes ikke.
+
+Standardrotasjonen er aktivert med tre sanger og én stasjonsjingle. Nyhetsjinglen
+«Nyhetene klokken 7» er utelatt. Valgene lagres omtrent en time fram og fylles av
+rr-studio-rotation.timer uten nettleser. Allerede planlagte innslag bevares.
+Crossfade 0–10 sekunder, standard 3, brukes bare musikk–musikk. Jingler går uten
+overlapping. Innstillingsendring krever stopp. Ingen automatisk start etter omstart.
+
+15 kodefiler/mål er selektivt installert fra cb6d125a0eb3e21b313bd24f29ad766d90edc2ec,
+med privat backup og kontroll av uendrede driftsdata under installasjonen. Timeren
+har egen backup. Bibliotekets PR106-visning og øvrige aktive særendringer er bevart;
+kun kapasitetstekst og en presisering om serverbasert cue-analyse er patch-et inn.
+Eksakte før-/etter-hasher og kvitteringer står i
+[rotasjonsmanifestet](STUDIO-L02-ROTATION-20261101.json). Funksjon og rollback er
+beskrevet i [rotasjonsnotatet](STUDIO-L02-ROTATION.md).
+
+Syntetisk faktisk HTTP-MP3 bekrefter cue-kutt, rekkefølge og overlapp 0, 2,96–3,00
+og 9,96 sekunder for innstilling 0/3/10. Jingleovergang målt uten overlapp. Eksisterende
+strømtest for stopp, prosesskrasj, tilkoblingsbrudd og frosset PCM består. Nye tester
+bevarer manuelle cues, avviser uautoriserte/utdaterte resultater og kjører mer enn
+en full 100-sangers rotasjonsrunde før gjentakelse. Alle tre CI-workflows for
+installert motorkode cb6d125 besto; videre dokumentasjons-/testhead skilles fra dette.
+
+Innlogget Studio viser 100 musikkfiler og seks jingler med cue-punkter. Monitorens
+avspillingsstart ble bekreftet i nettleseren før Studiosiden ble forlatt. Anonym
+stream gir401 og Jingler gir303 til innlogging. Jinglesiden passer mobilbredde390.
+
+Faktisk prøve 22:45:09–22:54:59 Europe/Oslo: William Michael Morgan – Beer
+Drinker → Stevie Wonder ft. Ariana Grande – Faith → Blackhawk – Brothers Of
+The Southland → Jingle 1. Alle fullført med PCM-bevis. Musikkoverlapp 3,00 og
+3,00 sekunder; jinglegrensen innen én 40 ms lydramme uten musikalsk overlapp.
+605,022 sekunder privat HTTP-MP3 dekodet uten feil (14 521 363 byte).
+Studiosiden var forlatt under hele låtbyttene. Kø143 ble fylt til kø150, uten
+endring av eksisterende framtidige innslag eller kandidatunderskudd. Etter
+jinglen startet Beautiful Now, og den private rotasjonen er fortsatt i gang.
+Ingen ny subjektiv lyttebekreftelse fra Thomas er påstått.
+
+CI er også grønn på 9b76889 (full 100-sangers syklustest og forklarende tekst).
+En siste avgrenset statusvisningsrettelse fb079df hindrer at forrige «Fullført»-
+melding står under en ny aktiv låt; målrettede Node-regresjonstester besto.
+Den er lagt inn uten å stoppe lydmotoren, med egen hashkvittering og backup.
+
+Neste tre steg: en hel times lytting med operatør; prøve flere musikktyper og
+vurdere de to toppnivåmerknadene; fortsette resterende L02-kontrollromsarbeid.
+PR #115 er fortsatt draft, ikke merget. Ingen offentlig sending, Uniweb,
+WordPress, DNS eller radio.co er endret.
+
 ## L02 – Jingler installert og faktisk prøvd, 01.11.2026 kl.22:14 Europe/Oslo
 
 Seks jingler er tilgjengelige på /jingles.php, separat fra ti musikkspor. Egen

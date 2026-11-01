@@ -1,0 +1,283 @@
+{
+  "scope": "isolated test VPS only",
+  "date": "2026-11-01",
+  "code": {
+    "commit": "cb6d125a0eb3e21b313bd24f29ad766d90edc2ec",
+    "backup": "/var/lib/rr-vps-deploy/l02-rotation-gqxrigpw",
+    "files": [
+      {
+        "path": "studio/app/music-autocue.php",
+        "source": "app/music-autocue.php",
+        "before": null,
+        "after": "916ccc0e1164d972890deba19fa67b75395d69eb43d73e5c2fed7c121475652d"
+      },
+      {
+        "path": "studio/app/music-rotation.php",
+        "source": "app/music-rotation.php",
+        "before": null,
+        "after": "8b2b6194939ee659b7d34524827ff1c6c8e6b86344cddd800a8278e78daef947"
+      },
+      {
+        "path": "studio/app/music-liquidsoap.php",
+        "source": "app/music-liquidsoap.php",
+        "before": "a8647c6b6b3ff98486a0a10c21302fcf43693e4ffdd2d3eaf527aa47b0968cdd",
+        "after": "5941245fdf4e523b6e10ecca10c56f3d04b3f3c0034d23ab7627b2f8bbfd7111"
+      },
+      {
+        "path": "studio/app/music-playout.php",
+        "source": "app/music-playout.php",
+        "before": "f074a9868550deb6a0e562cc9a370e4939372a4339f4e4655cfb2ef2e34a6f14",
+        "after": "46913f5ecad2da6830136422d3e91ca31dda77864ac8b5f843c351c1065da5f8"
+      },
+      {
+        "path": "studio/app/music-scheduling.php",
+        "source": "app/music-scheduling.php",
+        "before": "bd09f9f807da1c93feea177e361a4e2a360beadf31f1ec41435d3ab9f9483eeb",
+        "after": "9611eebfc254856790cf57400db7802c851dc775bad9c8f78d23ba77525cb162"
+      },
+      {
+        "path": "studio/app/music-studio.php",
+        "source": "app/music-studio.php",
+        "before": "b095f1a1a0946f6f666a57f45064ed2a66c52ad5f342124561c6f2d2f9579a4e",
+        "after": "a597e9968b66121152d0364e97136cdfc2117e3b37be7d8cb52bd9203551449d"
+      },
+      {
+        "path": "studio/scripts/music-autocue.py",
+        "source": "scripts/music-autocue.py",
+        "before": null,
+        "after": "0519faf71ea28fdeab9455dd4d0c831d3d4c0316ced13ded89fb997c1fcddd0a"
+      },
+      {
+        "path": "studio/scripts/music-rotation.php",
+        "source": "scripts/music-rotation.php",
+        "before": null,
+        "after": "fbf0e52bad6c3cad59bfb7783f6bf14bf1777a64ea55de1a14682238cd2b04a7"
+      },
+      {
+        "path": "studio/public/music-studio.php",
+        "source": "public/music-studio.php",
+        "before": "d2a2b5fe9c1967441a9868e4475349c64065f7484dc14fdbb07cdd006bdc4ffa",
+        "after": "cf38b03b98f6fb2441ad44599cea7bd95eeb3a66fd5824c94f4ebdd0eab084fc"
+      },
+      {
+        "path": "studio/public/assets/music-studio.mjs",
+        "source": "public/assets/music-studio.mjs",
+        "before": "d8c5f0551305b95cfd2bcb38f0972c95c995a31ac6e9b2da448f495526a2b269",
+        "after": "c555674eac9e2d21d13f5580ffcbd874e56707c4a2e682cd32a9a99de044252f"
+      },
+      {
+        "path": "studio/public/jingles.php",
+        "source": "public/jingles.php",
+        "before": "964565b5ce9b9dfb1fbba8ced8f3a5661e2f81f06413be7d12598c5cc6eece1f",
+        "after": "7588f7bf42eaf02169532d6e618a3d6d9083ca03b6ff0de9ed543e5e6df029f2"
+      },
+      {
+        "path": "player-code/app/music-liquidsoap.php",
+        "source": "app/music-liquidsoap.php",
+        "before": "a8647c6b6b3ff98486a0a10c21302fcf43693e4ffdd2d3eaf527aa47b0968cdd",
+        "after": "5941245fdf4e523b6e10ecca10c56f3d04b3f3c0034d23ab7627b2f8bbfd7111"
+      },
+      {
+        "path": "player-code/app/music-playout.php",
+        "source": "app/music-playout.php",
+        "before": "f074a9868550deb6a0e562cc9a370e4939372a4339f4e4655cfb2ef2e34a6f14",
+        "after": "46913f5ecad2da6830136422d3e91ca31dda77864ac8b5f843c351c1065da5f8"
+      },
+      {
+        "path": "player-code/scripts/music-liquidsoap.php",
+        "source": "scripts/music-liquidsoap.php",
+        "before": "52a9fd6f2e46854f53e5447b2abaa6c7cec29e8893707f9800795494c0028ae1",
+        "after": "6cd2cf31c0bf2ffaa17a70b30c6eaed38c416d39ed5c77ce2c37877fc0c8ea23"
+      },
+      {
+        "path": "player-code/infra/studio-stream/radio.liq",
+        "source": "infra/studio-stream/radio.liq",
+        "before": "ad5fc0f904bac0980b29d4b8118d39b7def12c3d8e7878fec44f22ee17ecd5b7",
+        "after": "f3b9351bb270ed51bad0eb9fe807da1cb073f3fb816b45ae76f6bb9ff1ba2054"
+      }
+    ],
+    "protectedBefore": {
+      "/srv/radiorubben-test/studio-data/music-play-queue.private.json": "0aa718713e4a8f0c46a3ff101d1dc1913b18006cae715c24fc8640dcb457bfb4",
+      "/srv/radiorubben-test/studio-media/music/library.json": "3f9e213a3466b56c0ca8fd421e1c74940bf044a6beb8b75dbf70d12a0477a50d",
+      "/srv/radiorubben-test/playout/control.json": "6aae5c925f650c6597fa1e75bacb761ae0e99153c0e50e1168723a3cc1146193",
+      "/srv/radiorubben-test/playout/events.jsonl": "95c4c18507f26a679fe909931835596ef2da8b09e644e94f2d25c0bcc4ca037f"
+    },
+    "utc": "2026-11-01T21:44:00.361603+00:00",
+    "journalPrefixPreserved": true,
+    "status": "deployed"
+  },
+  "timer": {
+    "backup": "/var/lib/rr-vps-deploy/l02-rotation-timer-uassh7c1",
+    "timer": "active",
+    "files": {
+      "/etc/systemd/system/rr-studio-rotation.service": "aa5844e3ee3247a468ac7126afe8116fd89f0494856c06b0eb7aa3f46c49bff9",
+      "/etc/systemd/system/rr-studio-rotation.timer": "a8fe75229040f56d18b1d476c13a1d2bbf6447bacde362043bdf557bf5ded788"
+    }
+  },
+  "libraryView": {
+    "path": "studio/app/views/music-library-queue.php",
+    "sourceMode": "exact prose patch on installed PR106 view; all other bytes preserved",
+    "before": "e83a4914937d18e1504e5393d62e33957b7785c54cf4799edd8e09f4bf321e55",
+    "after": "04fb710c04f6171a81009252b4916b2a98e53de6c2a854a95086f612e10c3a9a",
+    "backup": "/var/lib/rr-vps-deploy/l02-rotation-view-qrfv66oa",
+    "sourceCommit": "9b76889b865caf15ddd7fa2444ac2b75ad7b8e2d"
+  },
+  "libraryCheck": {
+    "utc": "2026-11-01T21:48:38Z",
+    "originalHashesVerified": 106,
+    "technicalReady": 106,
+    "automaticCues": 106,
+    "manualCuesPreserved": 0,
+    "musicSeconds": 20299.499,
+    "mode": "playing",
+    "current": "Faith (Radio Edit)",
+    "lastCompleted": "Beer Drinker (Radio Edit)",
+    "technicalWarnings": 2,
+    "technicalWarningsDetail": "Two music files have decoded peaks at 0 dBFS; no decoder failure. No jingle has a technical warning."
+  },
+  "capacity": {
+    "commit": "7ae6429ee6dd052ce240eceaada4ec329c360bd3",
+    "backup": "/var/lib/rr-vps-deploy/l02-jingles-hb8foph0",
+    "files": [
+      {
+        "path": "studio/app/music-library.php",
+        "before": "aded34f634e7d50bce299ddfe90bc7b8c0073974c5989f46d93708dc38501e97",
+        "after": "dc37fd5e471cada9f0eeb43e0370c55c3278b98b01104cb5c8d094af8ba0e689"
+      },
+      {
+        "path": "studio/public/music-library.php",
+        "before": "7922cccfb1b233ec6bc8b5d2e49224de1d50876a254b656d46815412b3e68b25",
+        "after": "3deddc1dcf04f549e92cef5a9f620b1cbf5bd02d986539a08d3511279c8b5f0e",
+        "sourceMode": "one-line capacity patch applied to verified installed PR106 page; existing cover/window functions retained"
+      }
+    ],
+    "protectedBefore": {
+      "/srv/radiorubben-test/studio-data/music-play-queue.private.json": "0aa718713e4a8f0c46a3ff101d1dc1913b18006cae715c24fc8640dcb457bfb4",
+      "/srv/radiorubben-test/studio-media/music/library.json": "47ab12d4eddc9cda1d09a4d9d8b259062a4c9575ecf5327c7415581085257702",
+      "/srv/radiorubben-test/playout/control.json": "6aae5c925f650c6597fa1e75bacb761ae0e99153c0e50e1168723a3cc1146193",
+      "/srv/radiorubben-test/playout/events.jsonl": "f0e83da364b6b8e356e1ecb7cf761734b677665c75f46c9649fac4680b878d3d"
+    },
+    "utc": "2026-11-01T21:28:21.745074+00:00",
+    "journalPrefixPreserved": true,
+    "status": "deployed"
+  },
+  "syntheticAudio": {
+    "threeSeconds": {
+      "overlaps": [
+        2.96,
+        3.0,
+        0.0
+      ],
+      "durationSeconds": [
+        14,
+        14.04,
+        14,
+        14
+      ]
+    },
+    "zeroSeconds": {
+      "overlap": 0,
+      "durationSeconds": [
+        14,
+        14
+      ]
+    },
+    "tenSeconds": {
+      "overlap": 9.96,
+      "durationSeconds": [
+        30,
+        30
+      ]
+    }
+  },
+  "ciCodeCommit": "cb6d125a0eb3e21b313bd24f29ad766d90edc2ec",
+  "ciSuccessfulRuns": [
+    41353489449,
+    41353489715,
+    41353489518
+  ],
+  "rollback": "Stop timer and playback first; coordinate code, queue and library restore; preserve current originals and journal evidence.",
+  "livePlayback": {
+    "passed": true,
+    "outcomes": [
+      {
+        "id": "120ed961dba61f83ead4e7ac721f539f",
+        "kind": "music",
+        "title": "Beer Drinker (Radio Edit)",
+        "artist": "William Michael Morgan",
+        "status": "completed",
+        "duration": 181.369,
+        "renderedSeconds": 181.4,
+        "renderClockStart": 0.28,
+        "renderClockEnd": 181.68,
+        "startedAt": "2026-11-01T21:45:09+00:00",
+        "endedAt": "2026-11-01T21:48:10+00:00"
+      },
+      {
+        "id": "f6a288bc694abdf921c38fb5753e9fa3",
+        "kind": "music",
+        "title": "Faith (Radio Edit)",
+        "artist": "Stevie Wonder ft. Ariana Grande",
+        "status": "completed",
+        "duration": 160.04399999999998,
+        "renderedSeconds": 160.07999999999998,
+        "renderClockStart": 178.68,
+        "renderClockEnd": 338.76,
+        "startedAt": "2026-11-01T21:48:07+00:00",
+        "endedAt": "2026-11-01T21:50:47+00:00"
+      },
+      {
+        "id": "092a6a4bacd2fe1ee87689fb42c6f469",
+        "kind": "music",
+        "title": "Brothers Of The Southland (Radio Edit)",
+        "artist": "Blackhawk",
+        "status": "completed",
+        "duration": 240.489,
+        "renderedSeconds": 240.51999999999998,
+        "renderClockStart": 335.76,
+        "renderClockEnd": 576.28,
+        "startedAt": "2026-11-01T21:50:44+00:00",
+        "endedAt": "2026-11-01T21:54:45+00:00"
+      },
+      {
+        "id": "4f0cb51846045b5d72c28a7ecacc5f98",
+        "kind": "jingle",
+        "title": "Jingle 1",
+        "artist": "",
+        "status": "completed",
+        "duration": 14.837,
+        "renderedSeconds": 14.879999999999995,
+        "renderClockStart": 576.24,
+        "renderClockEnd": 591.12,
+        "startedAt": "2026-11-01T21:54:45+00:00",
+        "endedAt": "2026-11-01T21:54:59+00:00"
+      }
+    ],
+    "initialRevision": 143,
+    "finalRevision": 150,
+    "futurePreserved": true,
+    "plannedUntil": "2026-11-01T23:56:26.350+01:00",
+    "shortage": null
+  },
+  "liveCapture": {
+    "decodeExit": 0,
+    "decodeErrors": "",
+    "capturedSeconds": 605.022041,
+    "mp3Bytes": 14521363,
+    "captureErrors": ""
+  },
+  "statusUi": {
+    "commit": "fb079dffac7d4a32f68ef555413fbdea4e354046",
+    "before": "c555674eac9e2d21d13f5580ffcbd874e56707c4a2e682cd32a9a99de044252f",
+    "after": "1604bc906fd792fe08db5bcefd41f084faf9d6e6ba4b1d0ac256944ce5a2be57",
+    "path": "studio/public/assets/music-studio.mjs",
+    "backup": "/var/lib/rr-vps-deploy/l02-rotation-status-q10r9q6r"
+  },
+  "ciAdditionalVerifiedCommit": "9b76889b865caf15ddd7fa2444ac2b75ad7b8e2d",
+  "ciAdditionalSuccessfulRuns": [
+    41354053651,
+    41354053577,
+    41354053605
+  ],
+  "finalState": "Rotation remains playing on private test stream; 3-second setting; timer active; monitor left off."
+}
