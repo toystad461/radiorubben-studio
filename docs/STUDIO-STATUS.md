@@ -1,5 +1,15 @@
 # Studio – felles status og arbeidsliste
 
+## Bibliotek erstattet uten country, 02.11.2026 ca.00:00 Europe/Oslo
+
+Alle tidligere 100 musikkspor er fjernet fra aktivt VPS-bibliotek og erstattet
+med 96 andre Radio Edit-spor, ca.5½ timer musikk. Country og uklar sjanger er
+utelatt. Seks jingler og journal er bevart. Cue-kontroll, filhasher og ny timekø
+med 3 musikk / 1 jingle og 3 sekunders crossfade er verifisert. Sendingen spiller.
+Se [utskiftingsnotatet](STUDIO-MUSIC-REPLACEMENT-20261102.md).
+Nettlesergjenoppkobling er også levert separat i Web PR111, versjon1.0.2;
+eldre status nedenfor beskriver situasjonen før disse endringene.
+
 ## Nå/neste og faktisk automatisk oppstart, 01.11.2026 kl.23:30 Europe/Oslo
 
 Hjemmesiden viser faktisk artist/tittel/neste fra et offentlig feltbegrenset
