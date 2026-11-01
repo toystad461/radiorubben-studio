@@ -23,3 +23,16 @@ check(array_slice($later['entries'],0,count($entries)-1)===array_slice($entries,
 $bad=$tracks;foreach($bad as&$t)$t['technicalCheck']['sourceSha256']='stale';unset($t);$none=music_rotation_extend($q,$bad,music_playout_empty(),$now);check(!$none['entries']&&!!$none['studio']['rotation']['shortage'],'unchecked files excluded');
 $bad=$q;$bad['studio']['policies']=[];check(!music_rotation_extend($bad,$tracks,music_playout_empty(),$now)['entries'],'approval remains required');
 reject(fn()=>music_rotation_playback(['cueIn'=>0,'cueOut'=>50,'crossfadeOut'=>3],40),'cue outside source rejected');
+
+// Exercise more than a full catalogue cycle, carrying real completed history.
+$cycle=$built;$state=music_playout_empty();$played=[];$catalog=music_schedule_catalog($tracks,$q['studio']['policies']);
+for($n=0;$n<145;$n++){
+ $entry=$cycle['entries'][0];$at=music_rotation_seconds($entry['plannedAt']);
+ if($entry['kind']==='music')$played[]=$entry['trackId'];
+ $state['outcomes'][$entry['id']]=$entry+['artist'=>$catalog[$entry['trackId']]['artist'],'status'=>'completed','startedAt'=>gmdate('c',(int)$at)];
+ $next=(int)($at+$entry['playback']['cueOut']-$entry['playback']['cueIn']-$entry['playback']['crossfadeOut']);
+ $cycle=music_rotation_extend($cycle,$tracks,$state,$next);
+ if($cycle['studio']['rotation']['shortage'])throw new RuntimeException('Rotation shortage at '.$n);
+}
+check(count(array_unique(array_slice($played,0,100)))===100,'all 100 songs selected before the next cycle');
+check(count($played)>100,'rotation continues into next catalogue cycle');
