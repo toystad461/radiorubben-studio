@@ -82,6 +82,8 @@ jobs:
           PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
           RR_TEST_CROSSFADE=0 PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
           RR_TEST_CROSSFADE=10 PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
+      - name: Resume after restart while preserving operator Stop
+        run: PHP_BIN="$(command -v php)" python3 tests/test-studio-boot-stream.py
       - uses: actions/upload-artifact@v4
         with:
           name: studio-stream-synthetic-evidence
