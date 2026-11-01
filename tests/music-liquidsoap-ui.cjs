@@ -25,7 +25,7 @@ function wave(seconds=20){
 function fixture(engine='liquidsoap'){
   const program={programId:'god-morgen-bomlo',name:'God morgen Bømlo',description:'Syntetisk testprofil',proposal:true,hard:{artistMinutes:30,trackMinutes:60,weekdays:[1,2,3,4,5,6,7]},preferences:{energy:'moderat',maxEnergyStep:1,maxTempoStep:20,keyWeight:1,tags:[],genres:[]}};
   // Repeated media has distinct occurrence IDs; holding one must not hold them all.
-  const entries=[1,2,3,4].map(i=>({id:'occurrence-'+i,trackId:'same-track',sha256:'a'.repeat(64),artist:'Syntetisk artist',title:'Testlåt '+i,duration:180,locked:false}));
+  const entries=[1,2,3,4].map(i=>({id:'occurrence-'+i,trackId:'b'.repeat(32),available:true,sha256:'a'.repeat(64),artist:'Syntetisk artist',title:'Testlåt '+i,duration:180,locked:false}));
   const track={...entries[0],available:true,energy:'moderat',bpm:100,sources:{energy:'manuell',bpm:'analyse'},tags:{Varm:'manuell'},policy:{approved:true,blocked:false,programs:[program.programId],weekdays:[1,2,3,4,5,6,7],periods:[],fields:{}}};
   return {revision:7,entries,catalog:[track],studio:{profiles:{[program.programId]:program},schedule:{programId:program.programId,date:'2026-10-26',time:'07:00'}},plan:{rows:entries,missing:[]},player:{engine,seq:1,online:true,streamConnected:false,capabilities:{pause:engine!=='liquidsoap'},current:null,reserved:{},active:{},outcomes:{},mode:'stopped',ready:true,pendingCommand:null,position:0,segments:['old-php-segment.wav']}};
 }
@@ -55,7 +55,7 @@ async function instrument(page){
   });
 }
 async function setup(browser,html,width,engine){
-  const page=await browser.newPage({viewport:{width,height:1000}}),state={snapshot:fixture(engine),posts:[],streamRequests:0,segmentRequests:0,failStream:false,failApi:false,errors:[]};
+  const page=await browser.newPage({viewport:{width,height:1000}}),state={snapshot:fixture(engine),posts:[],streamRequests:0,previewRequests:0,segmentRequests:0,failStream:false,failApi:false,errors:[]};
   page.on('pageerror',e=>state.errors.push(e.message));await instrument(page);
   await page.route('**/*',async route=>{
     const req=route.request(),url=new URL(req.url());
@@ -78,6 +78,7 @@ async function setup(browser,html,width,engine){
       state.streamRequests++;
       return state.failStream?route.fulfill({status:503,body:'Synthetic unavailable stream'}):route.fulfill({contentType:'audio/wav',body:wave()});
     }
+    if(url.pathname==='/music-library-audio.php'){state.previewRequests++;assert.equal(url.searchParams.get('id'),'b'.repeat(32));assert.equal(url.searchParams.get('version'),'a'.repeat(64));return route.fulfill({contentType:'audio/wav',body:wave()});}
     if(url.pathname==='/music-monitor-audio.php'){state.segmentRequests++;if(url.searchParams.get('segment')==='next-php-segment.wav')await new Promise(resolve=>setTimeout(resolve,2800));return route.fulfill({contentType:'audio/wav',body:wave(2)});}
     if(url.pathname==='/music-studio.php')return route.fulfill({contentType:'text/html',body:html});
     return route.fulfill({status:404,body:''});
@@ -100,6 +101,33 @@ async function setup(browser,html,width,engine){
       assert.equal(await page.locator('#monitor-status').innerText(),'Testlytting er ikke konfigurert i dette miljøet.');
       assert.match(await page.locator('#player-connection').innerText(),/Motor: svarer · Icecast: ikke bekreftet tilkoblet/);
       assert.equal(state.streamRequests+state.segmentRequests,0,'opening Studio never starts audio');
+      // L02: retain the same row nodes across unrelated revisions and player polls.
+      await page.evaluate(()=>{window.__queueRow=document.querySelector('#studio-entries [data-entry-id]');window.__catalogRow=document.querySelector('#studio-catalog').firstElementChild;});
+      state.snapshot.revision++;
+      await page.waitForTimeout(1300);
+      assert(await page.evaluate(()=>window.__queueRow===document.querySelector('#studio-entries [data-entry-id]')),'queue identity survives unrelated revision');
+      assert(await page.evaluate(()=>window.__catalogRow===document.querySelector('#studio-catalog').firstElementChild),'catalog identity survives unrelated revision');
+      p.next=state.snapshot.entries[2];p.reserved={[state.snapshot.entries[1].id]:state.snapshot.entries[1]};p.seq++;
+      await page.waitForFunction(()=>document.querySelector('#player-next').textContent.includes('Reservert neste: Syntetisk artist – Testlåt 2'));
+      const beforePreview=JSON.stringify(p),postCount=state.posts.length;
+      await page.locator('#studio-entries [data-queue-action="preview"]').first().click();
+      assert(await page.locator('#preview-dialog').isVisible());
+      assert(await page.locator('#studio-preview-audio').evaluate(a=>a.paused),'dialog does not autoplay');
+      assert.equal(await page.locator('#preview-details').getAttribute('target'),'_blank');
+      await page.locator('#studio-preview-audio').evaluate(a=>a.play());
+      await page.waitForFunction(()=>document.querySelector('#studio-preview-audio').currentTime>0.1);
+      state.snapshot.revision++;
+      await page.waitForTimeout(1300);
+      assert(await page.locator('#preview-dialog').isVisible(),'poll leaves editor open');
+      assert.equal(state.posts.length,postCount,'private preview never writes the bus or queue');
+      assert.equal(JSON.stringify(p),beforePreview,'preview preserves exact engine state');
+      await page.getByRole('button',{name:'Lukk forhåndslytting',exact:true}).click();
+      await page.waitForFunction(()=>{const a=document.querySelector('#studio-preview-audio');return a.paused&&!a.getAttribute('src');});
+      assert.equal(await page.locator('#studio-entries .is-selected').count(),1,'selection survives closing');
+      state.failApi=true;
+      await page.waitForFunction(()=>document.querySelector('#player-next').textContent==='Neste i motoren kan ikke bekreftes.');
+      state.failApi=false;p.reserved={};p.next=null;p.seq++;
+      await page.waitForFunction(()=>document.querySelector('#player-next').textContent==='Ingen neste i synkronisert kø.');
       // Timing failure must not hide saved occurrences, including later rows.
       state.snapshot.plan.rows=[];state.snapshot.plan.missing=['Synthetic missing duration'];state.snapshot.revision++;
       await page.waitForFunction(()=>document.querySelector('#studio-entries').textContent.includes('Synthetic missing duration'));
@@ -139,7 +167,10 @@ async function setup(browser,html,width,engine){
       assert.equal(await page.locator('#policy-days').inputValue(),'1, 3, 5');
       assert(await page.locator('#policy-dialog').evaluate(el=>el.open));
       assert(await page.locator('#policy-days').evaluate(el=>document.activeElement===el),'focused editor survives heartbeat');
-      for(const id of [1,2,3])assert(await page.locator(`[data-entry-id="occurrence-${id}"] button`).evaluateAll(buttons=>buttons.every(b=>b.disabled)),'all held-row actions are disabled');
+      for(const id of [1,2,3]) {
+        assert(await page.locator(`[data-entry-id="occurrence-${id}"] button:not([data-queue-action="preview"])`).evaluateAll(buttons=>buttons.every(b=>b.disabled)),'all held-row mutations are disabled');
+        assert(await page.locator(`[data-entry-id="occurrence-${id}"] [data-queue-action="preview"]`).isEnabled(),'private preview remains independent of reservations');
+      }
       assert.equal(await page.locator('[data-entry-id="occurrence-4"] [data-queue-action="remove"]').isDisabled(),false,'another occurrence of the same track stays editable');
       assert(await page.locator('#reset-queue').isDisabled());
       await page.locator('#policy-cancel').click();

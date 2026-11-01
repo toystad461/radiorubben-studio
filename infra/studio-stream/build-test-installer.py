@@ -10,6 +10,7 @@ import re
 
 REPO=Path(__file__).resolve().parents[2]
 WEB={
+    'public/assets/music-studio.css':'43bab865910c87d3e2362a3f96b881744f89aec0b9deb678b24ebf80e530738e',
     'app/music-playout.php':'b92a1dc3c7e393f12462cd0cbbcd7bd3341ee851cd475b27ffdd57c52c45552b',
     'app/music-liquidsoap.php':None,
     'app/music-studio.php':'50b2cf650bf6d12b03885d7964499cfe7e326feb34bb1adc599fdb089b4c399e',

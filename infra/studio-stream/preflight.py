@@ -27,7 +27,7 @@ PROPERTIES = ('LoadState', 'ActiveState', 'SubState', 'PrivateNetwork',
 PACKAGES = ('php8.3-cli', 'ffmpeg', 'liquidsoap', 'icecast2', 'nginx')
 WEB_FILES = ('app/music-library.php', 'app/music-playout.php',
              'app/music-liquidsoap.php', 'app/music-studio.php',
-             'public/assets/music-studio.mjs', 'public/music-studio.php',
+             'public/assets/music-studio.mjs', 'public/assets/music-studio.css', 'public/music-studio.php',
              'public/music-stream-auth.php')
 PLAYER_FILES = ('app/music-playout.php', 'app/music-liquidsoap.php',
                 'scripts/music-liquidsoap.php', 'scripts/liquidsoap-child.py',
@@ -37,15 +37,21 @@ REVIEWED_HASHES = {
     "verified_vps_pr102_library": {"app/music-library.php": "a98f2bd03c07ee9ad8df98cf9f0a64e2cccc8c71a4b9494200ae853b6d32d0a1"},
     "l01_before_queue_reliability": {"public/assets/music-studio.mjs": "7a7aa0391aac098a4abe977edfdb60dcf2933c8ea001eaf97bb60adb6e19703b"},
     "l01_before_player_message": {"public/assets/music-studio.mjs": "a013cecdb174065527ba5cccb01b253286018bdab1a4d1741d8ff92d6acd72b1"},
+    "installed_l01_ui_20261101": {
+        "public/music-studio.php": "3551b2ef117e80f62d1fbc7bb4bbb83b71d746a87375d7338053477ff447ea88",
+        "public/assets/music-studio.mjs": "18e29e380783a104302d779789061ff0ae29ef3651ee55c956aeb309c8a42524",
+        "public/assets/music-studio.css": "43bab865910c87d3e2362a3f96b881744f89aec0b9deb678b24ebf80e530738e"
+    },
     "candidate_l01": {
+        "public/assets/music-studio.css": "a7cdd298d9c684ddf9800f53f993b23788ca3b34d71cdfdac1afc7ca71fcacaf",
         "app/music-library.php": "124ff696e0eb1e596be383a00362711214c4f2bda9db062dd4df6adaa9f5ff79",
         "app/music-liquidsoap.php": "9cebcc0201049906e9c6d77df2f469a5f2fe684de10f8346fab0bac6e7f649c5",
         "app/music-playout.php": "b96df4046c4e5130277f8a9587518b9f8f7d8f0d5afa671f203d1a7c51006e3e",
         "app/music-studio.php": "7f6d9f8814c5c9c5cc950fa7cb0f9f79df668009c5e81c1a3cee32201203c732",
         "infra/studio-stream/radio.liq": "ad5fc0f904bac0980b29d4b8118d39b7def12c3d8e7878fec44f22ee17ecd5b7",
-        "public/assets/music-studio.mjs": "18e29e380783a104302d779789061ff0ae29ef3651ee55c956aeb309c8a42524",
+        "public/assets/music-studio.mjs": "a8fbc5f8d0e907d25dfad38c503978ce0320395289fcb959e5f875deed7026bc",
         "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",
-        "public/music-studio.php": "3551b2ef117e80f62d1fbc7bb4bbb83b71d746a87375d7338053477ff447ea88",
+        "public/music-studio.php": "3657c81d1ac5c65a6c23c60616bbd3cf3e4596967e13a5b9263849692ca2e201",
         "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
         "scripts/music-liquidsoap.php": "52a9fd6f2e46854f53e5447b2abaa6c7cec29e8893707f9800795494c0028ae1"
     },
@@ -194,7 +200,7 @@ def collect(root=ROOT):
         'environment': 'Studio VPS - test',
         'observed_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'reviewed_audio_runtime_source': AUDIO_RUNTIME_SOURCE,
-        'candidate_ui_revision': '2026-10-25.2',
+        'candidate_ui_revision': '2026-11-01-L02a',
         'snapshot_atomic': False,
         'active_release': release.name,
         'services': {name: service_status(name) for name in SERVICES},

@@ -1,7 +1,8 @@
 const $ = id => document.getElementById(id), root = $('music-studio');
 const control = root.dataset.control === '1', settings = root.dataset.settings === '1';
 let view = null, busy = false, stale = true, proposal = null, policyTrack = null, profileDirty = false;
-let refreshing = null;
+let refreshing = null, selectedEntry = null;
+const rowCache = new WeakMap();
 let monitorContext = null, monitorSeen = new Set(), monitorSources = [], monitorNext = 0, monitorBusy = false;
 let monitorAudio = null, monitorStreamUrl = null;
 const outcomeLabels = {planned:'Planlagt',started:'Startet',completed:'Fullført',interrupted:'Avbrutt',failed:'Feilet'};
@@ -58,7 +59,7 @@ function renderQueueStatus() {
     const disabled=!control||busy||stale||!!p.pendingCommand||heldEntry(e.id), fixed=disabled||!!outcome||e.locked;
     for(const action of li.querySelectorAll('[data-queue-action]')) {
       const kind=action.dataset.queueAction;
-      action.disabled=kind==='lock'?disabled:fixed||(kind==='up'&&(i===0||fixedEntry(rows[i-1])))||(kind==='down'&&(i===rows.length-1||fixedEntry(rows[i+1])))||(kind==='remove'&&rows.slice(i+1).some(protectedEntry));
+      action.disabled=kind==='preview'?(!control||!e.available):kind==='lock'?disabled:fixed||(kind==='up'&&(i===0||fixedEntry(rows[i-1])))||(kind==='down'&&(i===rows.length-1||fixedEntry(rows[i+1])))||(kind==='remove'&&rows.slice(i+1).some(protectedEntry));
     }
   }
   $('reset-queue').disabled=!control||busy||stale||!!p.pendingCommand||hasInflight()||['starting','playing'].includes(p.mode);
@@ -87,7 +88,11 @@ function renderPlayer() {
   const modes={starting:liquidsoap?'Klargjør teststrøm':'Klargjør testavspilling',playing:'Spiller på testserveren',paused:'Pauset på VPS',stopped:'Stoppet',blocked:'Stoppet – må kontrolleres',unconfigured:'VPS-spiller ikke installert'};
   $('player-mode').textContent=stale?'Spillerstatus må oppdateres':p.online?(modes[p.mode]||'Ukjent spillerstatus'):(p.mode==='unconfigured'?modes[p.mode]:'Spillertjenesten svarer ikke');
   $('player-connection').textContent=stale?'Motor og utgang: status er uavklart.':`Motor: ${p.online?'svarer':'svarer ikke'}${liquidsoap?' · Icecast: '+(p.online&&p.streamConnected?'tilkoblet':'ikke bekreftet tilkoblet'):' · Utgang: privat lydmonitor'}`;
-  $('player-current').textContent=p.current?`${title(p.current)} · ${duration(p.position)}`:'Ingen aktiv låt';
+  $('player-current').textContent=p.current?`${stale||!p.online?'Sist kjent: ':'Nå: '}${title(p.current)} · ${duration(p.position)}`:'Ingen aktiv låt';
+  // A reserved occurrence is ahead of the unclaimed next item in the manifest.
+  const reserved=Object.values(p.reserved||{}).find(e=>e.id!==p.current?.id);
+  const next=reserved||p.next;
+  if($('player-next')) $('player-next').textContent=stale||!p.online?'Neste i motoren kan ikke bekreftes.':next?`${reserved?'Reservert neste':'Neste i synkronisert kø'}: ${title(next)}${p.ready===false?' · Køendringer må synkroniseres':''}`:'Ingen neste i synkronisert kø.';
   $('player-detail').textContent=[playerMessage(p),p.pendingCommand?'Venter på kommandobekreftelse':'',p.ready===false?'Køen må synkroniseres':''].filter(Boolean).join(' · ');
   for(const action of ['start','pause','stop']) $('player-'+action).disabled=!control||busy||stale||!p.online||p.pendingCommand;
   if(p.capabilities?.pause===false)$('player-pause').disabled=true;
@@ -105,6 +110,44 @@ function renderPlayer() {
   // only row status and controls so open editors and unsaved fields stay put.
   renderQueueStatus();
 }
+// Reuse unchanged rows, including their focus and scroll position.
+function stableRows(parent, items, key, build, signature = JSON.stringify) {
+  const old = new Map(Array.from(parent.children, n => [n.dataset.rowKey, n]));
+  const cache = rowCache.get(parent) || new Map(); rowCache.set(parent, cache);
+  const wanted = new Set();
+  items.forEach((item, index) => {
+    const id = key(item), stamp = signature(item); wanted.add(id);
+    let node = old.get(id);
+    if (!node || cache.get(id) !== stamp) {
+      const fresh = build(item, index); fresh.dataset.rowKey = id;
+      if (node) {
+        const focused = node.contains(document.activeElement) ? document.activeElement : null;
+        const action = focused?.dataset.queueAction;
+        node.replaceChildren(...fresh.childNodes);
+        if (action) node.querySelector(`[data-queue-action="${action}"]`)?.focus({preventScroll:true});
+      } else node = fresh;
+      cache.set(id, stamp);
+    }
+    if (parent.children[index] !== node) parent.insertBefore(node, parent.children[index] || null);
+  });
+  for (const node of Array.from(parent.children)) if (!wanted.has(node.dataset.rowKey)) {
+    cache.delete(node.dataset.rowKey); node.remove();
+  }
+}
+function openPreview(track) {
+  if (!control || !track.available || !/^[a-f0-9]{32}$/.test(track.trackId) || !/^[a-f0-9]{64}$/.test(track.sha256)) return;
+  const audio = $('studio-preview-audio');
+  audio.pause(); audio.src = `/music-library-audio.php?id=${track.trackId}&version=${track.sha256}`;
+  $('preview-title').textContent = title(track);
+  $('preview-details').href = `/music-library.php?detail=1&track=${track.trackId}#track-detail`;
+  $('preview-status').textContent = 'Privat forhåndslytting. Trykk Play for å lytte; sendekø og sending er uendret.';
+  if (track.id) selectedEntry = track.id;
+  for (const row of $('studio-entries').children) row.classList.toggle('is-selected', row.dataset.entryId === selectedEntry);
+  $('preview-dialog').showModal();
+}
+function stopPreview() {
+  const audio=$('studio-preview-audio'); audio.pause(); audio.removeAttribute('src'); audio.load();
+}
 function render() {
   if(!view)return;
   $('suggest').disabled=!control||busy||stale||!view.studio.schedule;$('refresh').disabled=busy;$('reset-queue').disabled=!control||busy||stale||!!view.player.current;
@@ -113,8 +156,8 @@ function render() {
   const rows=queueRows();
   if(view.libraryError)say(view.libraryError);
   $('queue-summary').textContent=`${view.entries.length} innslag · ${view.studio.schedule?view.studio.schedule.date+' · Europe/Oslo':'Velg program, dato og starttid'}`;
-  $('studio-entries').replaceChildren(...rows.map((e,i)=>{
-    const li=document.createElement('li');li.dataset.entryId=e.id;
+  stableRows($('studio-entries'),rows,e=>e.id,(e,i)=>{
+    const li=document.createElement('li');li.dataset.entryId=e.id;li.classList.toggle('is-selected',e.id===selectedEntry);
     const status=txt('p','','ms-muted');status.dataset.queueStatus='';
     li.append(txt('strong',`${e.plannedAt?when(e.plannedAt)+' · ':''}${title(e)}`),status);
     if(e.reasons?.length)li.append(txt('p',e.reasons.join(' · '),'ms-reasons'));
@@ -122,17 +165,21 @@ function render() {
     if(e.blocked?.length)li.append(txt('p','Sperret: '+e.blocked.join(' · '),'ms-warning'));
     const actions=txt('div','','ms-actions');
     const rowButton=(kind,label,callback)=>{const b=button(label,callback,true);b.dataset.queueAction=kind;return b;};
-    actions.append(rowButton('lock',e.locked?'Lås opp':'Lås',()=>mutate({action:'lock',id:e.id,locked:!e.locked})),rowButton('replace','Bytt',()=>suggest(e.id)),rowButton('up','Opp',()=>mutate({action:'move',id:e.id,beforeId:rows[i-1].id})),rowButton('down','Ned',()=>mutate({action:'move',id:e.id,beforeId:rows[i+2]?.id||null})),rowButton('remove','Fjern',()=>mutate({action:'remove',id:e.id})));li.append(actions);return li;
-  }));
+    actions.append(rowButton('preview','Forhåndslytt / detaljer',()=>openPreview(e)),rowButton('lock',e.locked?'Lås opp':'Lås',()=>mutate({action:'lock',id:e.id,locked:!e.locked})),rowButton('replace','Bytt',()=>suggest(e.id)),rowButton('up','Opp',()=>mutate({action:'move',id:e.id,beforeId:queueRows()[queueRows().findIndex(row=>row.id===e.id)-1]?.id})),rowButton('down','Ned',()=>mutate({action:'move',id:e.id,beforeId:queueRows()[queueRows().findIndex(row=>row.id===e.id)+2]?.id||null})),rowButton('remove','Fjern',()=>mutate({action:'remove',id:e.id})));li.append(actions);return li;
+  });
   if(!rows.length)$('studio-entries').append(txt('li','Køen er tom. Godkjenn musikk og be om forslag.'));
   if(view.plan?.missing.length)$('studio-entries').append(txt('li',view.plan.missing.map(m=>typeof m==='string'?m:JSON.stringify(m)).join(' · '),'ms-warning'));
   const query=$('catalog-search').value.toLocaleLowerCase('nb');
-  $('studio-catalog').replaceChildren(...view.catalog.filter(t=>title(t).toLocaleLowerCase('nb').includes(query)).map(t=>{
+  stableRows($('studio-catalog'),view.catalog.filter(t=>title(t).toLocaleLowerCase('nb').includes(query)),t=>t.trackId,t=>{
     const row=txt('div','','ms-track'), info=document.createElement('div');info.append(txt('strong',title(t)),txt('p',`${duration(t.duration)} · ${t.energy?t.energy+' ('+t.sources.energy+')':'Energi ukjent'} · ${t.bpm?t.bpm+' BPM ('+t.sources.bpm+')':'Tempo ukjent'}`,'ms-muted'));
     info.append(txt('p',Object.entries(t.tags).map(([tag,source])=>`${tag} (${source})`).join(' · '),'ms-muted'));
     info.append(txt('p',t.policy?.blocked?'Manuelt sperret':t.policy?.approved?'Godkjent for: '+t.policy.programs.map(id=>view.studio.profiles[id]?.name||id).join(', '):'Mangler testgodkjenning','ms-warning'));
-    const actions=txt('div','','ms-actions');actions.append(button('Godkjenning / rettelser',()=>editPolicy(t),!settings||busy||stale),button('Legg i kø',()=>mutate({action:'add',trackId:t.trackId,sha256:t.sha256}),!control||busy||stale||!t.available));row.append(info,actions);return row;
-  }));
+    const actions=txt('div','','ms-actions');actions.append(button('Forhåndslytt / detaljer',()=>openPreview(t),!control||!t.available),button('Godkjenning / rettelser',()=>editPolicy(t),!settings||busy||stale),button('Legg i kø',()=>mutate({action:'add',trackId:t.trackId,sha256:t.sha256}),!control||busy||stale||!t.available));row.append(info,actions);return row;
+  },t=>JSON.stringify([t,view.studio.profiles]));
+  for(const row of $('studio-catalog').children) {
+    const buttons=row.querySelectorAll('button');
+    if(buttons.length===3){buttons[1].disabled=!settings||busy||stale;buttons[2].disabled=!control||busy||stale||!view.catalog.find(t=>t.trackId===row.dataset.rowKey)?.available;}
+  }
   if(!view.catalog.length)$('studio-catalog').append(txt('p','Biblioteket er tomt. Last opp og klargjør musikk i Musikkbibliotek.'));
   renderPlayer();renderProfile();
 }
@@ -140,7 +187,7 @@ async function refresh(silent=false) {
   if(busy||refreshing)return;
   refreshing=(async()=>{
   try {
-    const data=await request();const first=!view;const changed=first||data.revision!==view.revision;view=data;stale=false;
+    const data=await request();const first=!view;const changed=first||data.revision!==view.revision||JSON.stringify(data.catalog)!==JSON.stringify(view.catalog);view=data;stale=false;
     if(first){options($('schedule-program'),Object.values(view.studio.profiles).map(p=>[p.programId,p.name]),[view.studio.schedule?.programId||'god-morgen-bomlo']);const now=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Oslo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());$('schedule-date').value=view.studio.schedule?.date||now;$('schedule-time').value=view.studio.schedule?.time||'07:00';$('schedule-occurrence').value=view.studio.schedule?.occurrence||'';}
     if(changed){proposal=null;$('proposals').hidden=true;}
     if(!silent)say('Lagret kø og spillerstatus er oppdatert.');
@@ -224,7 +271,11 @@ $('monitor').addEventListener('click',async()=>{
   }catch{if(monitorContext===context)await stopMonitor('Monitor kunne ikke startes. VPS-avspillingen er uendret.');}
 });
 // Closing the tab only closes the monitor. No server pause/stop request is sent.
-window.addEventListener('pagehide',()=>{void stopMonitor();});
+$('preview-close').addEventListener('click',()=>$('preview-dialog').close());
+$('preview-dialog').addEventListener('close',stopPreview);
+$('studio-preview-audio').addEventListener('error',()=>{$('preview-status').textContent='Lydfilen kunne ikke åpnes. Sendingen er uendret.';});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopPreview();});
+window.addEventListener('pagehide',()=>{stopPreview();void stopMonitor();});
 void refresh();setInterval(()=>void refresh(true),1000);
 
 $('reset-queue').addEventListener('click',()=>{if(window.confirm('Tømme køen for en ny test? Avspillingshistorikken bevares.'))void mutate({action:'reset'});});
