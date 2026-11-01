@@ -1,5 +1,37 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – sluttvurdering og gjenoppretting kontrollert, 01.11.2026 kl. 20:22 Europe/Oslo
+
+**Vurdering:** Ferdigkriteriene for L01 på isolert test-VPS er oppfylt. Dette er ikke godkjenning av ordinær produksjonsdrift eller merge. PR #111 beholdes åpen som draft for separat kodegjennomgang. #109 forblir åpen for L02–L05.
+
+### Tre avsluttende steg
+
+1. **Manglende fil faktisk prøvd kl. 20:02:35:** Bare spool-kopien for Ariana Grande ble midlertidig flyttet til privat backup. Motoren rapporterte «Lydkopien mangler eller har feil kontrollsum», markerte forekomst 1bfa52fc417ee1613052d9b12899708a som feilet og stoppet uten lydstart. Kopien ble gjenopprettet med identisk hash. Originalbiblioteket ble ikke endret.
+2. **Faktisk rollback og gjeninstallasjon kl. 20:07:** Alle 15 installasjonsmål ble kontrollert tilbakeført til førtilstand. Kø29 med fire forekomster, kontrollmanifest, bibliotek, fem originaler og eksisterende journalprefix ble bevart. Gjeninstallasjon lyktes kl.20:07:49 med samme 11 runtime-filer som a312ca5. Alle 15 installerte mål og nye backupfiler samsvarer med manifestet.
+3. **Samlet vurdering:** Den avlyttede trelåterstesten nedenfor, separat Windows-mottak, lukkede Studio-faner, korrekte forekomster/filhasher, tom kø, manglende fil, kontrollert restart og faktisk rollback dekker L01-kriteriene.
+
+### Versjon, CI og gjeldende backup
+
+Installerendring: aada8424f02ccbef1a9ff772b8c35dae097ac6e3. Den legger til eksplisitt --queue-sha256 for å bevare en nyere kø byte-for-byte; standardkravet til gammel kø24 er beholdt. 11 installertester besto. Ingen runtime-endring.
+Alle tre CI-workflows på aada842 er success: 41340054592, 41340054606 og 41340054624. CI er separat fra VPS-belegget.
+
+Gjeldende installer: /home/ubuntu/RadioRubben-L01-reinstall-test.py.
+SHA-256: 09e166c876a37d248437bc8980c5d8fe612af4a4ba00975fe2c06d25410c98d0.
+Gjeldende private backup: /var/lib/rr-vps-deploy/l01-installs/l01-t46a3byp.
+Tilbakeføring fra Windows sin eksisterende administratorvei:
+`ssh rubben-test sudo -n python3 /home/ubuntu/RadioRubben-L01-reinstall-test.py --rollback /var/lib/rr-vps-deploy/l01-installs/l01-t46a3byp`.
+Kjør kun ved besluttet tilbakeføring. Kø, historikk og medier tilbakeføres ikke.
+Privat førkontroll: /var/lib/rr-vps-deploy/l01-recovery-check-it8zojlv.
+Den tidligere backupen l01-xrbgi7oc ble brukt i den faktiske rollbacktesten og er historisk belegg.
+
+### Avgrenset etterkontroll
+
+Etter gjeninstallasjon koblet motoren til Icecast. Et ekstra kontrollinnslag (Summer Night) ble korrekt sperret for manglende artist/varighet; ingen lydstart. Uspilte kontrolloppføringer er fjernet, og motoren er stoppet. Den planlagte ekstra dekodermålingen ble ikke kjørt fordi automatisk tillatelsesbehandling fikk tidsavbrudd. Det foreligger derfor ingen ny avlytting etter gjeninstallasjonen; lydbelegget gjelder identiske runtime-filer før rollback, ikke et nytt trelåtersløp.
+Alle fem originalhasher stemmer ved sluttkontroll. Den tilsiktede Ariana-feilen og de tre fullførte låtene er bevart i historikken. Ingen administratorblokkering eller nødvendige manuelle Windows-steg gjenstår.
+
+**Videre:** separat gjennomgang av PR #111; deretter avklar L02-omfang i eksisterende hovedspor; behold denne private testinstallasjonen som kontrollgrunnlag. Ingen Uniweb-, WordPress-, DNS- eller radio.co-endring.
+
+
 ## L01 – installert og faktisk trelåterstest gjennomført, 01.11.2026
 
 **Resultat:** Faktisk Studio-kø → Liquidsoap → privat Icecast → Chrome-monitor og
@@ -73,23 +105,9 @@ Kontrollert restart av rr-studio-stream etter fullført kø ga ny PID
 Ingen gammel forekomst ble automatisk startet. Studio viser tre fullførte og stoppet.
 Den midlertidige mottakstunnelen er avsluttet. Ingen ny musikkstart står på.
 
-### Tilbakeføring og resterende L01-kontroller
+### Historisk delstatus
 
-Ved besluttet tilbakeføring, kjør i eksisterende VPS-administratorøkt:
-`sudo python3 /home/ubuntu/RadioRubben-L01-install-test.py --rollback /var/lib/rr-vps-deploy/l01-installs/l01-xrbgi7oc`.
-Samme verifiserte pakke brukes. Ukjent nyere kode stopper rollback.
-Kø/bibliotek/originaler/journal tilbakeføres ikke. Faktisk rollback er **ikke**
-kjørt; backupinnhold og rettigheter er verifisert, ikke en gjenopprettingstest.
-
-Neste tre steg før hele L01 lukkes:
-1. Kontrollert test av manglende fil på test-VPS, uten å endre originalbiblioteket.
-2. Planlagt faktisk rollback-/gjeninstallasjonstest som bevarer ny kø28 og historikk.
-   Ikke kjør opprinnelig --apply blindt etter rollback: installasjonens førkontroll
-   er fastlåst til gammel kø24 og må avstemmes for en slik gjeninstallasjon.
-3. Samlet sluttvurdering av #109/L01 og PR #111 mot gjenstående ferdigkriterier.
-
-Ingen merge, Uniweb-produksjonsendring, WordPress-endring, DNS-endring eller radio.co-endring.
-Ingen parallell implementering. Arbeidsområder: Teknisk Produksjon, IT & Utstyr, Kontrollsenter.
+De tre kontrollene som gjensto etter trelåterstesten, er gjennomført og vurdert i sluttstatusen øverst.
 
 
 ## L01 – konkret installasjonsgrunnlag klargjort, 25.10.2026
