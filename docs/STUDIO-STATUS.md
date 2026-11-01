@@ -1,5 +1,12 @@
 # Studio – felles status og arbeidsliste
 
+## Cover og logo, 02.11.2026 ca.00:12 Europe/Oslo
+
+96 musikkfiler undersøkt: ingen brukbare innebygde cover (95 mangler, ett
+ødelagt bilde). Offentlig avspiller bruker Radio Rubben-logo og er klargjort
+for automatisk cover fra nye filer med gyldig bilde. Sendingen er ikke stoppet.
+Se [covernotatet](STUDIO-PUBLIC-ARTWORK-20261102.md).
+
 ## Bibliotek erstattet uten country, 02.11.2026 ca.00:00 Europe/Oslo
 
 Alle tidligere 100 musikkspor er fjernet fra aktivt VPS-bibliotek og erstattet
