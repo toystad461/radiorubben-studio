@@ -1,5 +1,18 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – PR #111 merget og testinstallasjon avstemt, 01.11.2026 kl. 20:26 Europe/Oslo
+
+Thomas autoriserte «merge og rull ut». PR #111 er merget til eksisterende base `feat/music-scheduler-vps-playout`, merge-commit `be795df67ff87399dfc0b9fd1ec4d51d7d89bd13`. #98/#99 er ikke merget til main som del av dette.
+Siste PR-head de33fc6 hadde tre vellykkede workflows: 41341408275, 41341408317 og 41341408298.
+
+Test-VPS var allerede installert med nøyaktig de 11 runtime-filene i det mergede kandidatmanifestet. Autorisert utrulling ble derfor avsluttet som verifisert uendret installasjon (0 kodefiler erstattet), uten unødvendig tjenesteomstart. Fersk kontroll kl.20:26:36 verifiserte alle 15 installasjons-/backupmål, fem originalfiler, bevart journalprefix og kø33 med fire forekomster. Begge L01-tjenester er aktive, avspillingen er stoppet og anonym monitor gir HTTP401. Ingen ny avlytting ble utført.
+
+Privat serverkvittering: `/var/lib/rr-vps-deploy/l01-installs/l01-t46a3byp/merge-verification-be795df67ff87399dfc0b9fd1ec4d51d7d89bd13.json`.
+Gjeldende backup og rollbackkommando i sluttvurderingen nedenfor består.
+Dette er isolert testinstallasjon; Uniweb, WordPress, DNS og radio.co er uendret.
+
+Neste: avklar L02-omfang, viderefør eksisterende hovedspor og bruk denne testinstallasjonen som kontrollgrunnlag. Tidligere omtale av PR #111 som draft nedenfor er historisk og erstattes av denne statusen.
+
 ## L01 – sluttvurdering og gjenoppretting kontrollert, 01.11.2026 kl. 20:22 Europe/Oslo
 
 **Vurdering:** Ferdigkriteriene for L01 på isolert test-VPS er oppfylt. Dette er ikke godkjenning av ordinær produksjonsdrift eller merge. PR #111 beholdes åpen som draft for separat kodegjennomgang. #109 forblir åpen for L02–L05.
