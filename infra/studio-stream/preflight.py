@@ -49,7 +49,7 @@ REVIEWED_HASHES = {
         "app/music-playout.php": "b96df4046c4e5130277f8a9587518b9f8f7d8f0d5afa671f203d1a7c51006e3e",
         "app/music-studio.php": "7f6d9f8814c5c9c5cc950fa7cb0f9f79df668009c5e81c1a3cee32201203c732",
         "infra/studio-stream/radio.liq": "ad5fc0f904bac0980b29d4b8118d39b7def12c3d8e7878fec44f22ee17ecd5b7",
-        "public/assets/music-studio.mjs": "a8fbc5f8d0e907d25dfad38c503978ce0320395289fcb959e5f875deed7026bc",
+        "public/assets/music-studio.mjs": "80826c8d3bf536b339cff81b44f6ced758b7c6b9e8d751de56d905e17909e954",
         "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",
         "public/music-studio.php": "3657c81d1ac5c65a6c23c60616bbd3cf3e4596967e13a5b9263849692ca2e201",
         "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",

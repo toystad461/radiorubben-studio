@@ -107,6 +107,15 @@ async function setup(browser,html,width,engine){
       await page.waitForTimeout(1300);
       assert(await page.evaluate(()=>window.__queueRow===document.querySelector('#studio-entries [data-entry-id]')),'queue identity survives unrelated revision');
       assert(await page.evaluate(()=>window.__catalogRow===document.querySelector('#studio-catalog').firstElementChild),'catalog identity survives unrelated revision');
+      await page.locator('#studio-entries [data-queue-action="preview"]').first().focus();
+      await page.evaluate(()=>{window.__focused=document.activeElement;window.__scroll=document.querySelector('#studio-entries').scrollTop;});
+      const initialEntries=state.snapshot.entries;
+      state.snapshot.entries=[initialEntries[1],initialEntries[0],...initialEntries.slice(2)];state.snapshot.plan.rows=state.snapshot.entries;state.snapshot.revision++;
+      await page.waitForFunction(()=>document.querySelector('#studio-entries').firstElementChild.dataset.entryId==='occurrence-2');
+      assert(await page.evaluate(()=>document.activeElement===window.__focused),'reordered nodes retain keyboard focus');
+      assert.equal(await page.locator('#studio-entries').evaluate(n=>n.scrollTop),await page.evaluate(()=>window.__scroll),'list keeps scroll position');
+      state.snapshot.entries=initialEntries;state.snapshot.plan.rows=initialEntries;state.snapshot.revision++;
+      await page.waitForFunction(()=>document.querySelector('#studio-entries').firstElementChild.dataset.entryId==='occurrence-1');
       p.next=state.snapshot.entries[2];p.reserved={[state.snapshot.entries[1].id]:state.snapshot.entries[1]};p.seq++;
       await page.waitForFunction(()=>document.querySelector('#player-next').textContent.includes('Reservert neste: Syntetisk artist – Testlåt 2'));
       const beforePreview=JSON.stringify(p),postCount=state.posts.length;

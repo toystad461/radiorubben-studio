@@ -112,6 +112,8 @@ function renderPlayer() {
 }
 // Reuse unchanged rows, including their focus and scroll position.
 function stableRows(parent, items, key, build, signature = JSON.stringify) {
+  const focus = parent.contains(document.activeElement) ? document.activeElement : null;
+  const scrollTop = parent.scrollTop;
   const old = new Map(Array.from(parent.children, n => [n.dataset.rowKey, n]));
   const cache = rowCache.get(parent) || new Map(); rowCache.set(parent, cache);
   const wanted = new Set();
@@ -133,6 +135,8 @@ function stableRows(parent, items, key, build, signature = JSON.stringify) {
   for (const node of Array.from(parent.children)) if (!wanted.has(node.dataset.rowKey)) {
     cache.delete(node.dataset.rowKey); node.remove();
   }
+  if (focus?.isConnected && document.activeElement !== focus) focus.focus({preventScroll:true});
+  parent.scrollTop = scrollTop;
 }
 function openPreview(track) {
   if (!control || !track.available || !/^[a-f0-9]{32}$/.test(track.trackId) || !/^[a-f0-9]{64}$/.test(track.sha256)) return;
