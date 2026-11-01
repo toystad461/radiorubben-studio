@@ -1,21 +1,40 @@
 # Studio – felles status og arbeidsliste
 
-## L02 – Jingler klar for kontrollert testinstallasjon, 01.11.2026
+## L02 – Jingler installert og faktisk prøvd, 01.11.2026 kl.22:14 Europe/Oslo
 
-Egen produsentside med privat forhåndslytting, navn/kategori, deaktivering og
-manuell innlegging i felles sendekø. Jingler har egen lydtype og er utelatt fra
-musikkvisning, forslag og repetisjonshistorikk. Originaler lagres i eksisterende
-private medielager. Musikkens godkjenningskrav er bevart.
+Seks jingler er tilgjengelige på /jingles.php, separat fra ti musikkspor. Egen
+produsentside har privat forhåndslytting, opplasting, navn/kategori, deaktivering
+og manuell innlegging i samme sendekø. Jingler deltar ikke i musikkforslag eller
+repetisjonshistorikk. Musikkens godkjenningskrav er bevart.
 
-Isolerte Linux-tester består: roller, CSRF, revisjoner, typekontroll, deaktivering,
-planlegging og motorhendelser. Faktisk syntetisk HTTP/Liquidsoap/Icecast-test
-med musikk–jingle–musikk besto (73 sekunder; 440/660/880 Hz i rett rekkefølge).
-PHP-syntaks og Node-køregresjon består. Windows atomiske rename-tester kunne
-ikke fullføres; de samme testene er derfor kjørt på Linux.
+Selektiv installasjon: 16 kodefiler/mål fra 5dac1c0, med to UI-rettelser fra
+460f73293f74af7b42c0cd72371bf218dbf3adf0. Ingen hel gren er installert.
+Eksakte før/etter-hasher og sikkerhetskopier står i
+[installasjonsmanifestet](STUDIO-L02-JINGLES-20261101.json).
+Første installasjonsforsøk tilbakeførte automatisk fordi streng journalhash
+reagerte på forventede omstartshendelser. Deretter ble bevart journalprefix og
+stoppet sluttstatus kontrollert; ny installasjon besto. Full datatilbakeføring
+etter import må samordne bibliotek/kø/originaler, se manifestets merknad.
 
-Installasjon og ekte jingleimport er ennå ikke bekreftet i denne statusen.
-Cue-/overgangsstyring i motoren gjenstår. PR #115 beholdes som draft.
+Faktisk prøve kl.22:13:04–22:13:35: Radio Rubben Jingle → Jingle 3 → Jingle 10.
+Alle tre fullført som jingle i Liquidsoap PCM mens Icecast var tilkoblet;
+sammenhengende rendertider 0,28–13,32–23,44–30,48 sekunder. Studiosiden ble
+forlatt under avspilling. Privat loopback-opptak 751800 byte / 31,311 sekunder
+dekodet uten FFmpeg-feil. Ingen ny subjektiv lyttebekreftelse fra Thomas.
+Sluttstatus stoppet; kø40 har tre fullførte innslag. Alle 16 originalhasher er
+verifisert. Ingen automatisk gjentakelse eller offentlig sending.
 
+Innlogget Chrome: privat original spilte 10,317 sekunder, readyState4, ingen
+mediefeil; kategorifilter og lagring prøvd. Mobilbredde390 uten horisontal
+overflyt. Anonym stream/lydfil gir401 og Jingler-siden sender til innlogging303.
+Isolerte Linux-kontraktprøver og faktisk syntetisk musikk–jingle–musikk gjennom
+HTTP/Liquidsoap/Icecast består, samt PHP-syntaks og Node-køregresjon. Windows
+atomiske rename-prøver måtte kjøres på Linux. CI for siste kodecommit følges i
+PR #115; denne teksten alene er ikke en påstand om ferdig CI.
+
+Neste tre steg: motorens bruk av lagrede cue-/overgangsverdier; prøve redigering
+og privat lytting under lengre sending; separat gjennomgang av resterende L02.
+PR #115 er fortsatt draft og ikke merget. Ingen Uniweb/WordPress/radio.co-endring.
 
 ## L02 – første kontrollromsdel installert, 01.11.2026 kl. 21:23 Europe/Oslo
 
