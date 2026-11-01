@@ -112,7 +112,7 @@ function music_playout_publish(string $root,array $q,array $plan,array $tracks,s
     $old=music_playout_json($root.'/control.json');$byId=array_column($tracks,null,'id');$entries=[];
     if (count($plan['rows'])!==count($q['entries'])) throw new InvalidArgumentException('Køen har ukjent varighet eller endrede filer. Rett den før avvikling.');
     foreach ($plan['rows'] as $row) {
-        $entry=array_intersect_key($row,array_flip(['id','kind','trackId','sha256','artist','title','duration','plannedAt','blocked','reasons','cuePoints','audioAnalysis','sources','energy','bpm','key']));
+        $entry=array_intersect_key($row,array_flip(['id','kind','trackId','sha256','artist','title','duration','plannedAt','blocked','reasons','cuePoints','audioAnalysis','sources','energy','bpm','key','playback','sourceDuration']));
         if (!$entry['blocked']) {
             $t=$byId[$row['trackId']];$source=music_library_verified_handle($t,$libraryRoot);$target=$root.'/audio/'.$row['sha256'].'.mp3';$tmp=null;
             try {
@@ -126,7 +126,7 @@ function music_playout_publish(string $root,array $q,array $plan,array $tracks,s
         }
         $entries[]=$entry;
     }
-    music_playout_atomic($root.'/control.json',['ready'=>true,'revision'=>$q['revision'],'entries'=>$entries,'profile'=>$plan['profile'],'command'=>$command??($old['command']??null)]);
+    music_playout_atomic($root.'/control.json',['transitionVersion'=>(($q['studio']['rotation']['enabled']??false)?2:1),'ready'=>true,'revision'=>$q['revision'],'entries'=>$entries,'profile'=>$plan['profile'],'command'=>$command??($old['command']??null)]);
     $keep=array_column($entries,'sha256');$state=music_playout_state($root);
     foreach (['reserved','active'] as $key) foreach ($state[$key]??[] as $entry) $keep[]=$entry['sha256'];
     if ($state['current']??null) $keep[]=$state['current']['sha256'];

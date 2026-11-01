@@ -42,6 +42,8 @@ jobs:
           php tests/music-liquidsoap-state.php
           php tests/music-liquidsoap-events.php
           php tests/jingles.php
+          php tests/music-rotation.php
+          php tests/music-autocue.php
       - name: Check changed executable syntax
         run: |
           node --check public/assets/music-studio.mjs
@@ -74,6 +76,11 @@ jobs:
         env:
           RR_STREAM_TEST_ARTIFACTS: ${{ runner.temp }}/studio-stream-evidence
         run: PHP_BIN="$(command -v php)" python3 tests/test-studio-stream.py
+      - name: Exercise cue cuts and music-only crossfades in actual MP3
+        run: |
+          PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
+          RR_TEST_CROSSFADE=0 PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
+          RR_TEST_CROSSFADE=10 PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
       - uses: actions/upload-artifact@v4
         with:
           name: studio-stream-synthetic-evidence

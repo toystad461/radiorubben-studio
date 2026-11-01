@@ -285,7 +285,7 @@ $_SESSION = ['csrf'=>'synthetic']; $config = [];
             identity = hashlib.md5(f'studio-stream-synthetic-{index}'.encode()).hexdigest()
             path = self.site / 'media/music/originals' / f'{identity}.mp3'
             subprocess.run([self.ffmpeg, '-nostdin', '-v', 'error', '-f', 'lavfi', '-i',
-                            f'sine=frequency={frequency}:duration=6', '-c:a', 'libmp3lame',
+                            f"sine=frequency={frequency}:duration={getattr(self, 'tone_duration', 6)}", '-c:a', 'libmp3lame',
                             '-b:a', '128k', str(path)], check=True, timeout=10)
             duration = float(subprocess.check_output([self.ffprobe, '-v', 'error', '-show_entries',
                                                      'format=duration', '-of', 'default=nw=1:nk=1', str(path)], timeout=5))

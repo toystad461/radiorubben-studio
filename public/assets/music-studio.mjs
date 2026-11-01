@@ -1,7 +1,7 @@
 const $ = id => document.getElementById(id), root = $('music-studio');
 const control = root.dataset.control === '1', settings = root.dataset.settings === '1';
 let view = null, busy = false, stale = true, proposal = null, policyTrack = null, profileDirty = false;
-let refreshing = null, selectedEntry = null;
+let refreshing = null, selectedEntry = null, rotationDirty = false;
 const rowCache = new WeakMap();
 let monitorContext = null, monitorSeen = new Set(), monitorSources = [], monitorNext = 0, monitorBusy = false;
 let monitorAudio = null, monitorStreamUrl = null;
@@ -56,14 +56,15 @@ function renderQueueStatus() {
     const {e,i}=row, active=p.current?.id===e.id||Object.hasOwn(p.active||{},e.id), reserved=Object.hasOwn(p.reserved||{},e.id), outcome=p.outcomes?.[e.id];
     li.querySelector('[data-queue-status]').textContent=[duration(e.duration),e.locked?'Låst':'',active?'Aktiv i motoren':reserved?'Reservert av motoren':'',outcome?outcomeLabels[outcome.status]||outcome.status:''].filter(Boolean).join(' · ');
     li.dataset.playbackState=active?'active':reserved?'reserved':outcome?.status||'queued';
-    const disabled=!control||busy||stale||!!p.pendingCommand||heldEntry(e.id), fixed=disabled||!!outcome||e.locked;
+    const disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!!p.pendingCommand||heldEntry(e.id), fixed=disabled||!!outcome||e.locked;
     for(const action of li.querySelectorAll('[data-queue-action]')) {
       const kind=action.dataset.queueAction;
       action.disabled=kind==='preview'?(!control||!e.available):kind==='lock'?disabled:fixed||(kind==='replace'&&e.kind==='jingle')||(kind==='up'&&(i===0||fixedEntry(rows[i-1])))||(kind==='down'&&(i===rows.length-1||fixedEntry(rows[i+1])))||(kind==='remove'&&rows.slice(i+1).some(protectedEntry));
     }
   }
-  $('reset-queue').disabled=!control||busy||stale||!!p.pendingCommand||hasInflight()||['starting','playing'].includes(p.mode);
-  for(const e of $('schedule-form').elements)e.disabled=!control||busy||stale||hasInflight();
+  if($('rotation-form'))for(const e of $('rotation-form').elements)e.disabled=!settings||busy||stale||hasInflight()||['starting','playing'].includes(p.mode);
+  $('reset-queue').disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!!p.pendingCommand||hasInflight()||['starting','playing'].includes(p.mode);
+  for(const e of $('schedule-form').elements)e.disabled=!!view.studio.rotation?.enabled||!control||busy||stale||hasInflight();
 }
 function renderMonitorControl() {
   const p=view.player, active=!!monitorAudio||!!monitorContext, liquidsoap=p.engine==='liquidsoap';
@@ -98,7 +99,7 @@ function renderPlayer() {
   if(p.capabilities?.pause===false)$('player-pause').disabled=true;
   $('player-start').textContent=liquidsoap?'Start testavspilling':'Start / fortsett';
   $('player-control-note').textContent=p.capabilities?.pause===false?'Denne testmotoren bruker start og stopp. Pause støttes ikke.':'';
-  $('player-output-note').textContent=liquidsoap?'Testavspillingen bruker myke overganger uten overlapp. Motorstatus og Icecast-tilkobling vises hver for seg.':'Monitoren spiller dekodet testlyd fra VPS. Lokal lytting styrer ikke serveravspillingen.';
+  $('player-output-note').textContent=view.studio?.rotation?.enabled?`Standardrotasjon: ${view.studio.rotation.crossfade} sekunder crossfade mellom sanger. Jingler spilles uten overlapp.`:liquidsoap?'Testavspillingen bruker myke overganger uten overlapp. Motorstatus og Icecast-tilkobling vises hver for seg.':'Monitoren spiller dekodet testlyd fra VPS. Lokal lytting styrer ikke serveravspillingen.';
   $('player-sync').disabled=!control||busy||stale||p.mode==='unconfigured'||p.pendingCommand;
   $('last-completed').textContent=p.lastCompleted?`${title(p.lastCompleted)} · ${when(p.lastCompleted.endedAt)}`:'Ingen fullført testavspilling';
   const outcomes=Object.values(p.outcomes||{}).slice(-8).reverse();
@@ -144,7 +145,7 @@ function openPreview(track) {
   audio.pause(); audio.src = `/music-library-audio.php?id=${track.trackId}&version=${track.sha256}`;
   $('preview-title').textContent = title(track);
   $('preview-details').href = track.kind==='jingle' ? `/jingles.php#jingle-${track.trackId}` : `/music-library.php?detail=1&track=${track.trackId}#track-detail`;
-  $('preview-details').textContent=track.kind==='jingle'?'�pne jingleinnstillinger':'�pne l�tdetaljer og cue-punkter i egen fane';
+  $('preview-details').textContent=track.kind==='jingle'?'Åpne jingleinnstillinger':'Åpne låtdetaljer og cue-punkter i egen fane';
   $('preview-status').textContent = 'Privat forhåndslytting. Trykk Play for å lytte; sendekø og sending er uendret.';
   if (track.id) selectedEntry = track.id;
   for (const row of $('studio-entries').children) row.classList.toggle('is-selected', row.dataset.entryId === selectedEntry);
@@ -155,11 +156,17 @@ function stopPreview() {
 }
 function render() {
   if(!view)return;
-  $('suggest').disabled=!control||busy||stale||!view.studio.schedule;$('refresh').disabled=busy;$('reset-queue').disabled=!control||busy||stale||!!view.player.current;
+  $('suggest').disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!view.studio.schedule;$('refresh').disabled=busy;$('reset-queue').disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!!view.player.current;
   for(const e of $('schedule-form').elements)e.disabled=!control||busy||stale;
-  for(const e of $('profile-form').elements)e.disabled=!settings||busy||stale;
+  for(const e of $('profile-form').elements)e.disabled=!!view.studio.rotation?.enabled||!settings||busy||stale;
   const rows=queueRows();
   if(view.libraryError)say(view.libraryError);
+  if($('rotation-form')) {
+    const r=view.studio.rotation||{enabled:false,crossfade:3};
+    if(!rotationDirty){$('rotation-enabled').checked=r.enabled;$('rotation-crossfade').value=r.crossfade;}
+    for(const e of $('rotation-form').elements)e.disabled=!settings||busy||stale||hasInflight()||['starting','playing'].includes(view.player.mode);
+    $('rotation-status').textContent=r.enabled?`På · ${r.crossfade} sekunder crossfade · planlagt til ${r.plannedUntil?when(r.plannedUntil):'ukjent'}${r.shortage?' · '+r.shortage:''}`:'Av. Velg standardavspilling for å planlegge neste time.';
+  }
   $('queue-summary').textContent=`${view.entries.length} innslag · ${view.studio.schedule?view.studio.schedule.date+' · Europe/Oslo':'Velg program, dato og starttid'}`;
   stableRows($('studio-entries'),rows,e=>e.id,(e,i)=>{
     const li=document.createElement('li');li.dataset.entryId=e.id;li.classList.toggle('is-selected',e.id===selectedEntry);
@@ -183,7 +190,7 @@ function render() {
   },t=>JSON.stringify([t,view.studio.profiles]));
   for(const row of $('studio-catalog').children) {
     const buttons=row.querySelectorAll('button');
-    if(buttons.length===3){buttons[1].disabled=!settings||busy||stale;buttons[2].disabled=!control||busy||stale||!view.catalog.find(t=>t.trackId===row.dataset.rowKey)?.available;}
+    if(buttons.length===3){buttons[1].disabled=!!view.studio.rotation?.enabled||!settings||busy||stale;buttons[2].disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!view.catalog.find(t=>t.trackId===row.dataset.rowKey)?.available;}
   }
   if(!view.catalog.length)$('studio-catalog').append(txt('p','Biblioteket er tomt. Last opp og klargjør musikk i Musikkbibliotek.'));
   renderPlayer();renderProfile();
@@ -284,3 +291,8 @@ window.addEventListener('pagehide',()=>{stopPreview();void stopMonitor();});
 void refresh();setInterval(()=>void refresh(true),1000);
 
 $('reset-queue').addEventListener('click',()=>{if(window.confirm('Tømme køen for en ny test? Avspillingshistorikken bevares.'))void mutate({action:'reset'});});
+
+if($('rotation-form')){
+  $('rotation-form').addEventListener('input',()=>{rotationDirty=true;});
+  $('rotation-form').addEventListener('submit',async e=>{e.preventDefault();if(await mutate({action:'standard',rotation:{enabled:$('rotation-enabled').checked,crossfade:Number($('rotation-crossfade').value)}})){rotationDirty=false;render();}});
+}

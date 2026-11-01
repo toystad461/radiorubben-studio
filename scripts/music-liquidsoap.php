@@ -127,7 +127,7 @@ try {
                 $invalid = ($control['ready'] ?? false) !== true;
                 foreach (music_playout_inflight_entries($state) as $entry) {
                     $queued = music_liquidsoap_queued($control, $entry['id']);
-                    if (!$queued || $queued['sha256'] !== $entry['sha256'] || $queued['blocked']) $invalid = true;
+                    if (!$queued || $queued['sha256'] !== $entry['sha256'] || ($queued['playback']??null)!==($entry['playback']??null) || $queued['blocked']) $invalid = true;
                 }
                 if ($invalid) {
                     $state['mode'] = 'blocked'; $state['message'] = 'Køgrunnlaget ble endret eller synkronisering feilet. Kontroller før ny start.';

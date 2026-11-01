@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require_once __DIR__.'/music-library-producer.php';
 require_once __DIR__.'/music-library-cues.php';
+require_once __DIR__.'/music-rotation.php';
 
 /** Separate test profile; does not change the editorial/robot program registry. */
 function music_schedule_defaults(): array {
@@ -79,7 +80,7 @@ function music_schedule_track(array $t,?array $policy=null): array {
     if (!$a) $warnings[]='Tempo og toneart er ukjent eller utdaterte';
     if (!$ai && isset($t['producerAssessment'])) $warnings[]='Utdatert AI-vurdering brukes ikke';
     if ($energy===null) $warnings[]='Energi ukjent';
-    return ['kind'=>$t['kind']??'music','jingle'=>$t['jingle']??null,'trackId'=>$t['id'],'sha256'=>$t['sha256'],'title'=>$fields['title']??$t['originalName'],'artist'=>$fields['artist']??null,'genre'=>$fields['genre']??null,
+    return ['technicalReady'=>(($t['technicalCheck']['ready']??false)===true&&($t['technicalCheck']['sourceSha256']??null)===$t['sha256']),'kind'=>$t['kind']??'music','jingle'=>$t['jingle']??null,'trackId'=>$t['id'],'sha256'=>$t['sha256'],'title'=>$fields['title']??$t['originalName'],'artist'=>$fields['artist']??null,'genre'=>$fields['genre']??null,
         'duration'=>$m['durationSeconds']??null,'bpm'=>$a['bpm']??null,'key'=>$a?($a['key'].' '.$a['scale']):null,'energy'=>$energy,'tags'=>$tags,
         'periods'=>$ai['periods']??[],'policy'=>$manualPolicy,'available'=>($t['available']??false)===true,'sources'=>$used,'warnings'=>$warnings,
         'cuePoints'=>$cue,'audioAnalysis'=>$a,'analysisSha256'=>$a?hash('sha256',json_encode($a,JSON_THROW_ON_ERROR)):null];
@@ -129,6 +130,7 @@ function music_schedule_catalog(array $tracks,array $policies): array {
 }
 /** All existing positions, including locks, are retained. Unknown duration stops time propagation. */
 function music_schedule_plan(array $q,array $tracks,array $history=[],int $count=3,?string $replace=null): array {
+    if(($q['studio']['rotation']['enabled']??false)===true){if($replace!==null||$count>0)throw new InvalidArgumentException('Standardrotasjonen velger musikken på forhånd.');return music_rotation_plan($q,$tracks,$history);}
     $s=$q['studio']??[];$schedule=$s['schedule']??null;
     if (!$schedule) throw new InvalidArgumentException('Lagre program, dato og starttid først.');
     $profile=$s['profiles'][$schedule['programId']]??null;if (!$profile) throw new InvalidArgumentException('Programprofilen mangler.');

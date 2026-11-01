@@ -41,21 +41,41 @@ def claim_next() =
 end
 
 queue = request.dynamic(id="rubben_queue", prefetch=1, retry_delay=0.2, timeout=5., claim_next)
-event_clock := fun () -> queue.time()
-# L01: sequential soft fades. Crossfade's read-ahead/overlapping completion
-# needs a separate observed-output contract; it is deliberately left to L02.
-music = fade.out(duration=1., track_sensitive=true, queue)
-music = fade.in(duration=1., track_sensitive=true, music)
+# End markers are released only as the final output PCM clock consumes the
+# buffered outgoing tail. Decoder read-ahead itself is never a played receipt.
+pending_ends = ref([])
+def transition(a, b) =
+  tail = source.duration(a.source)
+  clock = event_clock()
+  if a.metadata["rr_entry"] != "" then
+    pending_ends := list.append(pending_ends(), [(a.metadata["rr_entry"], clock() + tail)])
+  end
+  incoming = source.on_track(b.source, fun (_) -> emit_track("started", b.metadata))
+  if a.metadata["rr_kind"] == "music" and b.metadata["rr_kind"] == "music" and tail > 0. then
+    add(normalize=false, [fade.in(type="lin", duration=tail, incoming), fade.out(type="lin", duration=tail, a.source)])
+  else
+    sequence([a.source, incoming])
+  end
+end
+music = if {{ROTATION_MODE}} then
+  cross(duration=3., override_duration="rr_cross", persist_override=false, transition, queue)
+else
+  # Preserve L01's existing contract for non-rotation queues.
+  fade.in(duration=1., track_sensitive=true, fade.out(duration=1., track_sensitive=true, queue))
+end
 music = source.on_track(music, fun (m) -> emit_track("started", m))
-# In 2.2.4 negative delay disables the estimated-remaining branch: only a
-# real track boundary/partial PCM frame fires this callback. Integration tested.
+music = source.on_metadata(music, fun (m) -> emit_track("started", m))
 music = source.on_end(delay=-1., music, fun (_, m) -> emit_track("ended", m))
 radio = fallback(track_sensitive=false, [music, blank()])
 # This callback is pulled by the audio output clock, including during blank
 # frames. A timer on a separate thread would not detect a stalled audio path.
+event_clock := fun () -> radio.time()
 last_heartbeat = ref(-1.)
 def on_pcm_frame() =
   now = radio.time()
+  due = list.filter(fun (item) -> snd(item) <= now, pending_ends())
+  pending_ends := list.filter(fun (item) -> snd(item) > now, pending_ends())
+  list.iter(fun (item) -> emit("ended", fst(item)), due)
   if now - last_heartbeat() >= 1. then
     last_heartbeat := now
     emit("heartbeat", "")

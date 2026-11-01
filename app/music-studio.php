@@ -36,7 +36,21 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
         $protected=music_playout_protected_ids($s);
         if (in_array($action,['remove','move','replace'],true) && ($entryIndex===false || in_array($input['id'],$protected,true))) throw new InvalidArgumentException('Innslaget mangler eller er allerede behandlet av spilleren.');
         if (in_array($action,['remove','move','replace'],true) && ($q['entries'][$entryIndex]['locked']??false)) throw new InvalidArgumentException('Lås opp innslaget først.');
-        if ($action==='schedule') {
+        if(($q['studio']['rotation']['enabled']??false)&&!in_array($action,['standard','fill','start','stop','pause','sync'],true))throw new InvalidArgumentException('Slå av standardrotasjon før manuell køredigering.');
+        if($action==='standard'){
+            if(!studio_can($user,'settings'))throw new InvalidArgumentException('Bare produsent/administrator kan endre standardavspilling.');
+            if(music_playout_inflight_entries($s)||in_array($s['mode'],['starting','playing'],true))throw new InvalidArgumentException('Stopp avspillingen før du endrer standardrotasjonen.');
+            $rotation=music_rotation_settings($input['rotation']??[]);
+            if(!$q['studio']['schedule'])throw new InvalidArgumentException('Lagre program og starttid først.');
+            if(array_filter($q['entries'],fn($e)=>$e['locked']??false))throw new InvalidArgumentException('Lås opp innslag før du lager standardrotasjon.');
+            $q['studio']['rotation']=$rotation;$q['entries']=[];
+            if($rotation['enabled'])$q=music_rotation_extend($q,$tracks,$s,time());$changed=true;
+        } elseif($action==='fill'){
+            if(!($q['studio']['rotation']['enabled']??false)||!in_array($s['mode'],['playing','starting'],true))return ['revision'=>$q['revision'],'saved'=>false];
+            $next=music_rotation_extend($q,$tracks,$s,time());
+            if($next['entries']===$q['entries']&&($next['studio']['rotation']['shortage']??null)===($q['studio']['rotation']['shortage']??null))return ['revision'=>$q['revision'],'saved'=>false];
+            $q=$next;$changed=true;
+        } elseif ($action==='schedule') {
             $schedule=$input['schedule']??[];
             if (!isset($q['studio']['profiles'][$schedule['programId']??''])) throw new InvalidArgumentException('Velg et eksisterende program.');
             music_schedule_time((string)($schedule['date']??''),(string)($schedule['time']??''),(string)($schedule['occurrence']??''));
@@ -88,6 +102,11 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
             $live=music_playout_json($playout['root'].'/heartbeat.json');
             if (!music_playout_heartbeat_fresh($s,$live)) throw new RuntimeException('Spillertjenesten svarer ikke.');
             if (($input['playerRevision']??null)!==$s['seq']) throw new DomainException('Spillerstatus er endret. Oppdater først.');
+            if($action==='start'&&($q['studio']['rotation']['enabled']??false)&&!music_playout_inflight_entries($s)&&!in_array($s['mode'],['starting','playing'],true)){
+                $q['entries']=array_values(array_filter($q['entries'],fn($e)=>!isset($s['outcomes'][$e['id']])));
+                $next=(float)time();foreach($q['entries']as&$entry){$entry['plannedAt']=music_rotation_time($next);$next+=$entry['playback']['cueOut']-$entry['playback']['cueIn']-$entry['playback']['crossfadeOut'];}unset($entry);
+                $q=music_rotation_extend($q,$tracks,$s,time());$changed=true;
+            }
             $command=['id'=>bin2hex(random_bytes(16)),'action'=>$action,'at'=>gmdate('c')];
             if (in_array($action,['pause','stop'],true)) {music_playout_atomic($playout['root'].'/control.json',array_replace($oldControl,['command'=>$command]));return ['revision'=>$q['revision'],'saved'=>true];}
         } elseif ($action!=='sync') throw new InvalidArgumentException('Ukjent studiohandling.');
