@@ -17,4 +17,6 @@ if($pending){
         foreach(json_decode(file_get_contents($report),true,32,JSON_THROW_ON_ERROR)as$m)music_autocue_apply($m,$actor,$nonce,$nonce,$library);
     }finally{if(is_file($report))unlink($report);}
 }
+// Optional artwork must never prevent playout or queue maintenance.
+try{require_once dirname(__DIR__).'/app/music-public-artwork.php';music_public_artwork_build($library,1);}catch(Throwable $e){error_log('Public artwork preparation deferred');}
 echo "Rotation check completed\n";

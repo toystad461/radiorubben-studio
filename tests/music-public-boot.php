@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require __DIR__.'/../app/music-public-status.php';
 require __DIR__.'/../app/music-boot.php';
+require __DIR__.'/../app/music-public-artwork.php';
 function verify(bool $ok,string $name):void{if(!$ok)throw new RuntimeException($name);echo "PASS $name\n";}
 $entry=['id'=>'a','title'=>'Song A','artist'=>'Artist A','kind'=>'music','sha256'=>'SECRET_HASH','path'=>'/private/file','blocked'=>false];
 $second=array_replace($entry,['id'=>'b','title'=>'Song B']);$third=array_replace($entry,['id'=>'c','title'=>'Song C']);
@@ -19,3 +20,15 @@ $blocked=$c;$blocked['command']['id']='pending';verify(!music_boot_allowed($q,$s
 foreach(['playing','starting','blocked']as$mode){$changed=$s;$changed['mode']=$mode;verify(!music_boot_allowed($q,$changed,$c,$h),'no resume in '.$mode);}
 verify(!music_boot_allowed(['studio'=>[]],$s,$c,$h),'disabled rotation remains stopped');
 verify(!music_boot_allowed($q,$s,$c,array_replace($h,['timestamp'=>0])),'dead player is not started');
+$image=str_repeat('a',64);$source=str_repeat('b',64);
+verify(music_public_artwork_url(['sha256'=>$source],[$source=>$image])==='https://5.249.252.78/radio-status.php?cover='.$image,'cover URL only exposes image content hash');
+verify(music_public_artwork_url(['sha256'=>$source,'kind'=>'jingle'],[$source=>$image])===null,'jingles use logo');
+verify(music_public_artwork_url(['sha256'=>$source],[$source=>'../private'])===null,'invalid image reference rejected');
+verify(music_public_artwork_bytes(sys_get_temp_dir(),'../../secret')===null,'image traversal rejected');
+verify(music_public_artwork_bytes(sys_get_temp_dir(),['bad'])===null,'array image parameter rejected');
+verify(music_public_artwork_jpeg('<svg onload="bad"/>')===null,'active content rejected');
+if(extension_loaded('gd')){
+ $im=imagecreatetruecolor(800,400);ob_start();imagepng($im);$png=ob_get_clean();imagedestroy($im);
+ $jpeg=music_public_artwork_jpeg($png);$size=getimagesizefromstring($jpeg);
+ verify($size[0]===512&&$size[1]===256&&$size[2]===IMAGETYPE_JPEG,'raster decoded and resized to safe JPEG');
+}
