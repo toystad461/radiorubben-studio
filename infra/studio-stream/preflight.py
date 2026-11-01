@@ -45,7 +45,7 @@ REVIEWED_HASHES = {
     },
     "candidate_l02": {
         "app/jingles.php": "ca1d8dac595d29cd4911b2f0c44a1d268f98ffd44d475114f855f47eaa118df2",
-        "app/music-library.php": "aded34f634e7d50bce299ddfe90bc7b8c0073974c5989f46d93708dc38501e97",
+        "app/music-library.php": "dc37fd5e471cada9f0eeb43e0370c55c3278b98b01104cb5c8d094af8ba0e689",
         "app/music-liquidsoap.php": "a8647c6b6b3ff98486a0a10c21302fcf43693e4ffdd2d3eaf527aa47b0968cdd",
         "app/music-play-queue.php": "6a7a6fa9b211428a6590ff4b7a1242260e5de0f30d4493cc23cdcb09d3e3de23",
         "app/music-playout.php": "f074a9868550deb6a0e562cc9a370e4939372a4339f4e4655cfb2ef2e34a6f14",

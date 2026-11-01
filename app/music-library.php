@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
 const MUSIC_LIBRARY_FILE_LIMIT=20*1024*1024;
-const MUSIC_LIBRARY_TOTAL_LIMIT=512*1024*1024;
+const MUSIC_LIBRARY_TOTAL_LIMIT=2*1024*1024*1024;
+const MUSIC_LIBRARY_COUNT_LIMIT=200;
 function music_library_can_upload(?array $user):bool{return in_array($user['role']??'', ['admin','producer'],true);}
 function music_library_root():string{
     // Deployment may keep media beside a versioned release. Resolve the server-owned parent link.
@@ -20,7 +21,7 @@ function music_library_index(string $root):array {
     $p=$root.'/library.json';if(is_link($p))throw new RuntimeException('Ugyldig bibliotekregister.');
     if(!is_file($p))return ['schemaVersion'=>1,'tracks'=>[]];
     $v=json_decode((string)file_get_contents($p),true,32,JSON_THROW_ON_ERROR);
-    if(!is_array($v)||($v['schemaVersion']??null)!==1||!is_array($v['tracks']??null)||count($v['tracks'])>100)throw new RuntimeException('Bibliotekregisteret må kontrolleres.');
+    if(!is_array($v)||($v['schemaVersion']??null)!==1||!is_array($v['tracks']??null)||count($v['tracks'])>MUSIC_LIBRARY_COUNT_LIMIT)throw new RuntimeException('Bibliotekregisteret må kontrolleres.');
     $ids=[];$hashes=[];foreach($v['tracks']as$t){if(!is_array($t)||!in_array($t['kind']??'music',['music','jingle'],true)||!preg_match('/^[a-f0-9]{32}$/D',(string)($t['id']??''))||!preg_match('/^[a-f0-9]{64}$/D',(string)($t['sha256']??''))||!is_int($t['bytes']??null)||$t['bytes']<1||$t['bytes']>MUSIC_LIBRARY_FILE_LIMIT||!is_string($t['originalName']??null)||strlen($t['originalName'])>240||isset($ids[$t['id']])||isset($hashes[$t['sha256']]))throw new RuntimeException('Bibliotekregisteret må kontrolleres.');$ids[$t['id']]=true;$hashes[$t['sha256']]=true;}
     return $v;
 }
@@ -58,7 +59,7 @@ function music_library_upload(array $file,?array $user,string $csrf,string $expe
     $asset=null;$staging=null;
     try{$index=music_library_index($root);$expectedFiles=[];foreach($index['tracks']as$t){$expectedFiles[]=$t['id'].'.mp3';$p=$root.'/originals/'.$t['id'].'.mp3';if(is_link($p)||!is_file($p)||filesize($p)!==$t['bytes'])throw new RuntimeException('Eksisterende original må kontrolleres.');}foreach(new DirectoryIterator($root.'/originals')as$f)if(!$f->isDot()&&($f->isLink()||!$f->isFile()||!in_array($f->getFilename(),$expectedFiles,true)))throw new RuntimeException('Uregistrert original må kontrolleres før ny opplasting.');
       $total=0;foreach($index['tracks']as$t){$total+=$t['bytes'];if(hash_equals($t['sha256'],$sha)){if(($t['kind']??'music')!==$kind)throw new InvalidArgumentException('Filen finnes allerede som en annen lydtype.');$p=$root.'/originals/'.$t['id'].'.mp3';if(hash_file('sha256',$p)!==$sha)throw new RuntimeException('Eksisterende original må kontrolleres.');return ['duplicate'=>true,'track'=>$t];}}
-      if(count($index['tracks'])>=100||$total+$bytes>MUSIC_LIBRARY_TOTAL_LIMIT)throw new InvalidArgumentException('Prøvebibliotekets grense er nådd: 100 filer eller 512 MiB.');
+      if(count($index['tracks'])>=MUSIC_LIBRARY_COUNT_LIMIT||$total+$bytes>MUSIC_LIBRARY_TOTAL_LIMIT)throw new InvalidArgumentException('Prøvebibliotekets grense er nådd: 200 lydfiler eller 2 GiB.');
       $id=bin2hex(random_bytes(16));$asset=$root.'/originals/'.$id.'.mp3';if(file_exists($asset)||is_link($asset))throw new RuntimeException('Kunne ikke velge filidentitet.');
       if(!(($move??'move_uploaded_file')($tmp,$asset)))throw new RuntimeException('Kunne ikke lagre originalfilen.');
       if(!chmod($asset,0600)||filesize($asset)!==$bytes||hash_file('sha256',$asset)!==$sha)throw new RuntimeException('Originalfilen kunne ikke bekreftes.');
