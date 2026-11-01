@@ -1,5 +1,49 @@
 # Studio – felles status og arbeidsliste
 
+## L01 – faktisk test-VPS-installasjon, 01.11.2026 kl. 19:34 Europe/Oslo
+
+Eksisterende administratorvei fra Thomas sin Windows-PC (`rubben-test`, ubuntu,
+vert vps-5363103, sudo -n) fungerer. Før installasjon manglet begge L01-tjenestene;
+rr-music-playout kjørte og ingen L01-installasjonskvittering fantes.
+PR #111 var åpen draft, head `a312ca553fe9d379b8559fa8cd6a02a5d36aa830`,
+base `3b34aad9dae654d19853a216070f85549530f2f0`.
+Alle tre PR-workflows på head er success: 40204830203, 40204830168, 40204830178.
+Dette er CI-belegg, separat fra følgende faktiske installasjon.
+
+Eksisterende installasjonspakke ble bygget fra fastlåst head. SHA-256 både lokalt
+og på server: `c489eab50622f0e49ed829535470de9d92227cb844bd79e0f4e833d7c5e474a9`.
+Alle lesende førkontrollsperrer besto uten endring. Allerede autorisert --apply
+lyktes kl. 18:34:39 UTC / 19:34:39 Europe/Oslo med
+`installed_stopped_not_audio_pass`. 11 selektive kodefiler, to isolerte units,
+privat runtime og Studio-monitorrute ble installert; ingen helbranch-deploy.
+
+Privat backup: `/var/lib/rr-vps-deploy/l01-installs/l01-xrbgi7oc`.
+Mappe root0700, manifest/kvittering root0600, etterkontrollert.
+Alle 15 mål (kode, konfig, units) samsvarer med etterhasher, eksisterende
+backupfiler med førhasher. Bibliotek/originaler/kø/manifest var hash-uendret
+gjennom installasjonen; journalprefix er bevart. Kø24 hadde tre gamle fullførte
+forekomster. Begge L01-tjenester er active/running, NRestarts=0; legacy er stoppet.
+Anonym monitor gir HTTP401. Eksisterende Microsoft-innlogging i Chrome lykkes,
+og Musikkstudio viser stopped og motor svarer.
+
+**Lydtest ikke utført:** Thomas har eksplisitt godkjent Ny testkø, men
+nettleserstyringen får tidsavbrudd ved Chrome-bekreftelsesdialogen. Lesende
+etterkontroll viste fortsatt kø24/tre innslag. Bruker er bedt om å trykke OK
+i den åpne dialogen. Ingen ny musikkstart eller trelåters-avspilling er bekreftet.
+Rapportert hakking er derfor fortsatt uavklart.
+
+Tilbakeføring ved behov, i eksisterende VPS-administratorøkt:
+`sudo python3 /home/ubuntu/RadioRubben-L01-install-test.py --rollback /var/lib/rr-vps-deploy/l01-installs/l01-xrbgi7oc`.
+Faktisk rollback er ikke kjørt. Bevar den eksakte backupmappen; installerens
+drifts-/hashsperrer skal ikke omgås.
+
+Neste: (1) fullfør godkjent køreset og legg tre godkjente låter inn som nye
+forekomster, (2) synkroniser/start og kontroller autentisert strøm, rekkefølge,
+overganger og lukket/gjenåpnet nettleser, (3) dokumenter faktisk lydkontroll,
+filfeil, omstart og tilbakeføring før L01 lukkes.
+Ingen Uniweb-produksjon, WordPress, DNS eller radio.co endret. Ingen merge.
+
+
 ## L01 – konkret installasjonsgrunnlag klargjort, 25.10.2026
 
 Thomas har levert nødvendige Nginx-/socket-/brukerdata kl.15:43:46 Europe/Oslo.
