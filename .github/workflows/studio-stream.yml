@@ -44,6 +44,7 @@ jobs:
           php tests/jingles.php
           php tests/music-rotation.php
           php tests/music-autocue.php
+          php tests/music-public-boot.php
       - name: Check changed executable syntax
         run: |
           node --check public/assets/music-studio.mjs
