@@ -77,7 +77,7 @@ function renderMonitorControl() {
 // PR #113: a previous terminal message can remain while the next track plays.
 // Do not turn an old snapshot into a claim that playback is still running.
 function playerMessage(p) {
-  const previousOutcome = ['Køen er ferdig.', 'Fullført på isolert testutgang.'];
+  const previousOutcome = ['Køen er ferdig.', 'Fullført på isolert testutgang.', 'Fullført i Liquidsoaps PCM-utgang mens teststrømmen var tilkoblet.'];
   if (p.mode !== 'playing' || !p.current || !previousOutcome.includes(p.message)) return p.message;
   return !stale && p.online === true
     ? 'Avspilling pågår på testserveren.'

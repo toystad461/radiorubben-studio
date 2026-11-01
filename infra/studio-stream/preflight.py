@@ -60,7 +60,7 @@ REVIEWED_HASHES = {
         "public/assets/jingles.css": "301ee1ebf0883c833fe93afffde11d795ea6c3c5f6d1ba9789123053f06006ae",
         "public/assets/jingles.mjs": "cc1122212cc5a111011e1ad2afaa60210e218427305a80dfbfd512e170a54d92",
         "public/assets/music-studio.css": "a7cdd298d9c684ddf9800f53f993b23788ca3b34d71cdfdac1afc7ca71fcacaf",
-        "public/assets/music-studio.mjs": "c555674eac9e2d21d13f5580ffcbd874e56707c4a2e682cd32a9a99de044252f",
+        "public/assets/music-studio.mjs": "1604bc906fd792fe08db5bcefd41f084faf9d6e6ba4b1d0ac256944ce5a2be57",
         "public/jingles.php": "7588f7bf42eaf02169532d6e618a3d6d9083ca03b6ff0de9ed543e5e6df029f2",
         "public/music-library-audio.php": "b77828707570cfc9f31554a055413ea42b0312f9c909e5f64ff1e99fea4d3b67",
         "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",

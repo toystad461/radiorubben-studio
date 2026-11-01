@@ -24,7 +24,7 @@ function render(player, stale = false) {
   return {detail:nodes.get('player-detail').textContent,mode:nodes.get('player-mode').textContent};
 }
 for (const engine of ['php', 'liquidsoap']) {
-  for (const message of ['Køen er ferdig.', 'Fullført på isolert testutgang.']) {
+  for (const message of ['Køen er ferdig.', 'Fullført på isolert testutgang.', 'Fullført i Liquidsoaps PCM-utgang mens teststrømmen var tilkoblet.']) {
     const playing = {engine,mode:'playing',current:{},message};
     assert.equal(render(playing).detail, 'Avspilling pågår på testserveren.');
     for (const mode of ['stopped','paused','starting','blocked']) {
