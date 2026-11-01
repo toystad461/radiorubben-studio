@@ -29,8 +29,10 @@ mediefeil; kategorifilter og lagring prøvd. Mobilbredde390 uten horisontal
 overflyt. Anonym stream/lydfil gir401 og Jingler-siden sender til innlogging303.
 Isolerte Linux-kontraktprøver og faktisk syntetisk musikk–jingle–musikk gjennom
 HTTP/Liquidsoap/Icecast består, samt PHP-syntaks og Node-køregresjon. Windows
-atomiske rename-prøver måtte kjøres på Linux. CI for siste kodecommit følges i
-PR #115; denne teksten alene er ikke en påstand om ferdig CI.
+atomiske rename-prøver måtte kjøres på Linux. CI avdekket foreldede L01-hashforventninger. L02 har nå eget komplett
+kontrollmanifest; den gamle delvise L01-pakkebyggeren avviser L02-kode, med
+egen negativ test. Alle 24 installasjons-/inventartester besto på Linux.
+CI for siste commit følges i PR #115.
 
 Neste tre steg: motorens bruk av lagrede cue-/overgangsverdier; prøve redigering
 og privat lytting under lengre sending; separat gjennomgang av resterende L02.
