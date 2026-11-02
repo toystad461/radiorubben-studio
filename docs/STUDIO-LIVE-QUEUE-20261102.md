@@ -47,3 +47,34 @@ sletting av aktiv lyd og ny «Spill neste» etter reservasjon.
 Enhetstester dekker posisjon, feil/foreldet heartbeat og kompatibel supervisor.
 Nettlesertesten dekker knappenes låsing/opplåsing fra spilleroppdateringer på
 390 og 1280 piksler. CI og installert status dokumenteres separat etter kjøring.
+
+## Installert og kontrollert 02.11.2026
+
+Ni selektive mål ble installert kl.12:33:42 Europe/Oslo fra
+4a12d0fb0a4f16615f4d01cc7b4cd5b886879f74. Flagget ble aktivert kl.12:33:43,
+kørevisjon 688. Kvittering: STUDIO-LIVE-QUEUE-DEPLOY-20261102.json.
+Spiller-PID770 er uendret. Journalens eksisterende 7 817 515 byte og 110
+beskyttede filer var uendret ved installasjonskontrollen.
+Privat kodebackup: /var/lib/rr-vps-deploy/live-next-1ybalj7s.
+Privat aktiveringsbackup: studio-media/music/live-next-activation-20261102113342.json.
+Tilbakeføring: kjør /tmp/rr-live-next-20261102/activate-live.php disable som
+rr-studio, deretter backupens rollback.py som administrator. Ingen gammel
+sendekø skal gjenopprettes. Tilbakeføring er klargjort, ikke utført på aktiv sending.
+
+Alle CI-workflows på installert kildecommit er success:
+- [Kø, faktisk lyd og mobil/desktop](https://github.com/toystad461/radiorubben-studio/actions/runs/41436822802)
+- [PHP og nettlesere](https://github.com/toystad461/radiorubben-studio/actions/runs/41436822779)
+- [Release-verifikasjon](https://github.com/toystad461/radiorubben-studio/actions/runs/41436822882)
+
+VPS kl.12:35:20: My Girl spiller, posisjon15,48 av208,219 sekunder,
+streamConnected=true og reserved er tom. Knappen på lagret Jingle2 ble aktiv
+uten reload. Faktisk innlogget desktop og390px mobil er kontrollert, uten
+horisontal overflyt. En Spill neste-handling på allerede første framtidige
+Andy Grammer-innslag ga «Lagret.»; aktiv sang og neste innslag forble uendret.
+Kl.12:35:51 var samme aktive sang47,48 sekunder inn og streamen tilkoblet.
+Ingen ny testjingle ble sendt på den aktive streamen som del av kontrollen;
+ny jingleinnsetting og full avvikling er verifisert i isolert ekte lydtest.
+
+Tidligere bestilt timestikk er separat bekreftet fullført kl.12:10:58–12:11:12
+Europe/Oslo,14,32 sekunder, evidence=liquidsoap-pcm. Automatisk produksjon av
+nytt TTS-stikk og tre musikkglimt hver time gjenstår.

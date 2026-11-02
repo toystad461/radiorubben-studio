@@ -1,12 +1,15 @@
 # Studio – felles status og arbeidsliste
 
-## Spill neste under avspilling – utviklet 02.11.2026
+## Spill neste under avspilling – installert 02.11.2026, 12:33 Europe/Oslo
 
 Lagrede jingler og musikk kan settes som neste, og ulåste køinnslag fjernes,
 under standardrotasjon. Forsinket reservasjon gir redigering fram til omtrent
 elleve sekunder før overgang ved tre sekunders crossfade. Aktiv/reservert lyd
 beskyttes fortsatt. Isolert ekte lydtest viser hel første sang og 0,0 sekunders
-hull før innsatt jingle. Ikke installert ved denne statusføringen.
+hull før innsatt jingle. Ni mål fra4a12d0f er installert med backup uten restart.
+Alle tre CI-workflows er grønne. VPS desktop/390px og faktisk køhandling er
+kontrollert; kl.12:35 var neste innslag ulåst under aktiv sang og streamen tilkoblet.
+Ingen ny jingle ble sendt i VPS-kontrollen; full innsetting er lydtestet isolert.
 Se [endring, tester og innføring](STUDIO-LIVE-QUEUE-20261102.md).
 
 
