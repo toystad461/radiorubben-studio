@@ -63,9 +63,9 @@ REVIEWED_HASHES = {
         "public/assets/music-studio.mjs": "5b08c0eb5e32e5724920a983f3ad86d781de5b99ebc831f61d1ece32a762ca57",
         "public/jingles.php": "308883106c69ef14d5561d6c341b6d72217cccb88b670ff4cdc7b343e158e6fb",
         "public/music-library-audio.php": "b77828707570cfc9f31554a055413ea42b0312f9c909e5f64ff1e99fea4d3b67",
-        "public/music-stream-auth.php": "a726b5d1a9e770c44bdaf4751625152c13f10c7cc33dc32f6f729e2db700809b",
+        "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",
         "public/music-studio.php": "64701e88b5a3adbb9edf184f8071cc781f97d061da7d39f52b4ddec551e42e9c",
-        "scripts/liquidsoap-child.py": "f354a9966e28f1ce535f97d8dc3efb3f19f272488a1e4b47c37af09c3012320f",
+        "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
         "scripts/music-autocue.py": "0519faf71ea28fdeab9455dd4d0c831d3d4c0316ced13ded89fb997c1fcddd0a",
         "scripts/music-liquidsoap.php": "87b0fb2915d33880e7fab497598215462942fa7eab3c9450c545b3a5feeec348",
         "scripts/music-rotation.php": "4ad195ecf96d8f284ca4059ad848812588668ef5045c74e10a49902bdd7dd259"
