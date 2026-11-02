@@ -47,7 +47,7 @@ REVIEWED_HASHES = {
         "app/jingles.php": "0ad87e1365b6e5a632f57e50c0d2bbdcd8aec96b154e11b7fe083e211d83fb84",
         "app/music-autocue.php": "916ccc0e1164d972890deba19fa67b75395d69eb43d73e5c2fed7c121475652d",
         "app/music-library.php": "dc37fd5e471cada9f0eeb43e0370c55c3278b98b01104cb5c8d094af8ba0e689",
-        "app/music-liquidsoap.php": "4c5980d83a7c66ce1d32c3abd76c317e19e0462d6a10e232d9209bb6f673448a",
+        "app/music-liquidsoap.php": "b12d26e2d4210a35557d2990b3ee7cc944ab119e9de4e057482fc45e6f7e24bb",
         "app/music-play-queue.php": "6a7a6fa9b211428a6590ff4b7a1242260e5de0f30d4493cc23cdcb09d3e3de23",
         "app/music-playout.php": "9cd55c7f2932b9a4be5a936d56786ea12d6d0472b2cd1c172c53269a7fe7def0",
         "app/music-rotation.php": "3f9736dd50bcdc42e746f9e21715a9f04566eee3b98e4781d750b77cf007a135",

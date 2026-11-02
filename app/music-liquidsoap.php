@@ -83,6 +83,7 @@ function music_liquidsoap_claim_due(array $state,array $live):bool {
     if(($live['timestamp']??0)<($current['observedWallStart']??INF))return false;
     $position=$live['position']??null;
     if((!is_int($position)&&!is_float($position))||!is_finite((float)$position)||$position<0)return false;
+    if(!isset($live['currentId'])&&$position>(float)$live['timestamp']-(float)$current['observedWallStart']+2.)return false;
     return (float)$current['duration']-$position<=8.+(float)($current['playback']['crossfadeOut']??0);
 }
 
