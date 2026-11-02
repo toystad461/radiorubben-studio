@@ -1,5 +1,28 @@
 # Studio – felles status og arbeidsliste
 
+## Neste stikk – innhold per handling, 02.11.2026
+
+Avgrenset rettelse fra L02/PR115, base 650e24c, fordi aktivt kontrollrom
+bruker denne grenens VPS-kontekst og AI-transport. Ingen eldre PR-kjede
+eller produksjonsoverlegg er lagt til. Ny gren: codex/producer-action-content.
+Vær henter eksisterende MET-manusgrunnlag for Bømlo, Stord og Haugesund.
+Kilde, hentetid og utløp følger svaret; utløpt/utilgjengelig vær avvises.
+Trafikk er et eget valg med operatørens ferske melding som grunnlag.
+Lokal sak og Sponsor krever egne notater. Disse handlingene mottar ikke
+nå/neste-låt eller gammelt manus, og har egne instruksjoner. Kortere beholder
+manustemaet. Lokal mal følger valgt handling; eksisterende PAD-mapping beholdes.
+Manuell gjennomlesing for vær, trafikk, lokal sak og sponsor består.
+Ingen ny trafikkfeed eller generell kildekontroll av operatørnotater er innført.
+
+Målrettede PHP-/JS-tester dekker manglende fakta, gammel/utilgjengelig værkilde,
+bevaring av værgrunnlag, tema, manuell gjennomlesing og PAD-kompatibilitet.
+Eksisterende kontrollrom-, rolle/API- og VPS-konteksttester består lokalt.
+Levende MET-/modellkall og installert brukerflyt er ikke testet med rettelsen.
+Ingen merge eller utrulling. Neste steg er konkret godkjent selektiv testdeploy,
+med avstemming mot aktivt filsett og prøve av Vær/Trafikk i innlogget Studio.
+Testmiljøets nettverksisolasjon skal ikke endres for å få MET-tilgang.
+
+
 ## Køinnsetting og manus – installert 02.11.2026, 14:20–14:32 Europe/Oslo
 
 Manusknappene bruker fersk VPS-kø og den eksplisitt godkjente private AI-forbindelsen.
