@@ -69,7 +69,7 @@ REVIEWED_HASHES = {
         "scripts/music-autocue.py": "0519faf71ea28fdeab9455dd4d0c831d3d4c0316ced13ded89fb997c1fcddd0a",
         "scripts/music-liquidsoap.php": "6cd2cf31c0bf2ffaa17a70b30c6eaed38c416d39ed5c77ce2c37877fc0c8ea23",
         "scripts/music-rotation.php": "4ad195ecf96d8f284ca4059ad848812588668ef5045c74e10a49902bdd7dd259"
-        ,"app/music-hourly.php": "4dda7289a3fe2c06f00620744f0f4e592df9e5ad1c3a2364934b05b89c60ca00"
+        ,"app/music-hourly.php": "dc05acb32d05606ec58b87e2f950c68c42202236a13bb63d9e99077ae5d801ac"
     },
     "candidate_l01": {
         "public/assets/music-studio.css": "a7cdd298d9c684ddf9800f53f993b23788ca3b34d71cdfdac1afc7ca71fcacaf",

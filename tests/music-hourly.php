@@ -37,3 +37,6 @@ reject(fn()=>music_hourly_settings(['trackId'=>'bad','sha256'=>'bad','notBefore'
 $disabled=$queue;$disabled['studio']['rotation']['hourly']=null;
 $disabled=music_hourly_reconcile($disabled,$tracks,music_playout_empty(),$hour-360);
 check(!array_filter($disabled['entries'],fn($e)=>isset($e['hourlyHour'])),'disable removes only future hour signals');
+
+$persisted=json_decode(json_encode($queue),true);
+check(music_hourly_reconcile($persisted,$tracks,music_playout_empty(),$hour-360)['entries']===$persisted['entries'],'JSON round trip does not cause unnecessary queue revisions');

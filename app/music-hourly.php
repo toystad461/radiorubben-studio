@@ -45,6 +45,10 @@ function music_hourly_reconcile(array $q,array $tracks,array $state,int $now):ar
         $e['plannedAt']=music_rotation_time($cursor);$rows[]=$e;
         $cursor+=$e['playback']['cueOut']-$e['playback']['cueIn'];$previous=$e;
     }
+    // JSON storage normalizes 0.0 to 0. Reuse unchanged saved rows so a timer tick
+    // does not create a false revision conflict for an operator.
+    $saved=array_column($q['entries'],null,'id');
+    foreach($rows as &$row)if(isset($saved[$row['id']])&&json_encode($row)===json_encode($saved[$row['id']]))$row=$saved[$row['id']];unset($row);
     $q['entries']=$rows;
     $q['studio']['rotation']['plannedUntil']=music_rotation_time($cursor);
     return $q;
