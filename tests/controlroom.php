@@ -26,3 +26,27 @@ check(str_contains($html,'/users.php')===($role==='admin'),"$role users restrict
 check(str_contains($html,'/crm.php')===($role==='admin'),"$role CRM restriction");
 check(str_contains($html,'#innstillinger')===in_array($role,['admin','producer'],true),"$role settings restriction");
 check(!str_contains($html,'href="/workspace.php'),'planned pages are not links');}
+
+// The menu cleanup must preserve every existing destination and role boundary.
+foreach (['admin','producer','presenter','observer'] as $role) {
+ $user=['role'=>$role];$activePage='sending';
+ ob_start();require dirname(__DIR__).'/app/views/navigation.php';$html=ob_get_clean();
+ preg_match_all('/href="([^"]+)"/',$html,$matches);
+ $expected=['/ai-studio.php','/control.php','/music-library.php','/jingles.php',
+  '/music-studio.php','/music-queue.php','/music-plan.php','/newsdesk.php',
+  '/sending.php','/desk.php','/ai-studio.php#producer-title','/ai-studio.php#music-title','/learning.php'];
+ if(in_array($role,['admin','producer'],true))array_push($expected,'/ai-studio.php#innstillinger','/ai-studio.php#rode');
+ if($role==='admin')array_push($expected,'/users.php','/crm.php');
+ sort($expected);sort($matches[1]);
+ check($matches[1]===$expected,"$role retains all original destinations exactly once");
+ check(str_contains($html,'data-nav-group="editorial" open'),"$role editorial group opens on its current page");
+ check(!str_contains($html,'data-nav-group="library" open'),"$role unrelated library stays folded");
+ check(str_contains($html,'Redaksjonell kjøreplan')&&str_contains($html,'Sendekø'),'editorial list and playout queue have distinct names');
+ check(str_contains($html,'WordPress-tilkoblingen på VPS er ikke klar'),'no false WordPress integration claim');
+ check(str_contains($html,'data-nav-group="settings"')===in_array($role,['admin','producer'],true),"$role empty restricted settings group is omitted");
+}
+foreach(['case'=>'editorial','news-input'=>'editorial','learning-rules'=>'robot','crm-register'=>'cooperation'] as $page=>$group){
+ $user=['role'=>'admin'];$activePage=$page;
+ ob_start();require dirname(__DIR__).'/app/views/navigation.php';$html=ob_get_clean();
+ check(str_contains($html,'data-nav-group="'.$group.'" open'),"$page keeps its parent workspace open");
+}

@@ -1,5 +1,23 @@
 # Studio – felles status og arbeidsliste
 
+## Menyopprydding i #115/L02 – 02.11.2026 Europe/Oslo
+
+Avgrenset videreføring fra 650e24c. Studio har direkte kontrollrom, sendekø og
+lydproduksjon, med sammenleggbart bibliotek og forberedelse. Redaksjon, Robåt,
+Samarbeid og Innstillinger er egne grupper. Alle eksisterende adresser og roller
+beholdes; «Sendeliste» heter «Redaksjonell kjøreplan» i menyen. Planlagte,
+ikke-tilkoblede sider er fjernet fra den daglige menyen, ikke fra kodebasen.
+WP-overgang og teknisk Robåt-jobboversikt er uttrykkelig ikke ferdigmeldt.
+Nyere kø-/manus-/timeinnslagsarbeid beholdes.
+
+Kode og målrettede tester klargjøres i samme PR. Selektiv VPS-installasjon er
+ikke utført: denne økten har ingen konfigurert VPS-SSH-forbindelse, og nettleseren
+stopper på sertifikatfeil for test-IP-en. Ingen sikkerhetssperre er omgått.
+Se [omfang, filsett og kontrollstatus](STUDIO-MENU-20261102.md).
+Neste steg er CI-kontroll, deretter fersk VPS-filavstemming, selektiv installasjon
+av seks filer med privat backup og kontroll av meny, roller og uendret stream.
+
+
 ## Køinnsetting og manus – installert 02.11.2026, 14:20–14:32 Europe/Oslo
 
 Manusknappene bruker fersk VPS-kø og den eksplisitt godkjente private AI-forbindelsen.

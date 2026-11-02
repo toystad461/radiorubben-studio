@@ -17,6 +17,17 @@ const html=execFileSync(process.env.PHP_BIN||'php',[path.join(root,'tests/fixtur
  await page.locator('#music-selection').selectOption('4');await page.getByRole('button',{name:'Legg valgt låt i kø',exact:true}).click();assert.equal(await page.locator('#next-tracks li').count(),3);
  await page.locator('#draft').fill('Du hører Radio Rubben. Snart får du en ny låt.');await page.getByRole('button',{name:'Godkjenn stikk',exact:true}).click();await page.getByText('Manus godkjent og lagret.',{exact:false}).waitFor();assert.equal(approvals,1);
  await page.locator('#draft').fill('Du hører Radio Rubben. Manuelt rettet tekst.');assert(await page.locator('#break-tts-link').isHidden());
+ if(width<=800)await page.locator('.studio-mobile-menu > summary').click();
+ const nav=page.locator(width<=800?'.studio-mobile-menu .studio-navigation':'.studio-desktop-menu .studio-navigation');
+ await nav.locator('[data-nav-group="settings"] > summary').click();
+ await nav.getByRole('link',{name:'Studioinnstillinger',exact:true}).click();
+ assert(await page.locator('#settings-view').isVisible());
+ assert.equal(await nav.locator('[data-nav-group="settings"]').getAttribute('open'),'');
+ await nav.getByRole('link',{name:'Lydproduksjon og stikk',exact:true}).click();
+ assert(await page.locator('#producer-view').isVisible());
+ assert.equal(await page.locator('#draft').inputValue(),'Du hører Radio Rubben. Manuelt rettet tekst.','workspace navigation keeps unsaved manuscript');
+ assert.equal(audioStreams,0,'workspace navigation never starts audio');
+ if(width<=800)await page.locator('.studio-mobile-menu > summary').click();
  await page.locator('.manual-music summary').click();await page.locator('#manual-now').fill('Manuell artist – Nå');await page.locator('#manual-next-1').fill('Manuell artist – Neste');await page.getByRole('button',{name:'Bruk manuelt musikkgrunnlag',exact:true}).click();assert.match(await page.locator('#now-playing').innerText(),/Manuell artist/);assert.equal(audioStreams,0);
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,`overflow ${width}`);const topbar=await page.locator('.topbar').boundingBox(),main=await page.locator('#main').boundingBox();assert(topbar.y+topbar.height<=main.y+1,'account header must not overlap content');
  if(width===1440){const s=await page.locator('.status-card').boundingBox(),p=await page.locator('.producer').boundingBox();assert(s.x>p.x+p.width-1,'status at far right');}

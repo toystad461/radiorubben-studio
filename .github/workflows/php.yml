@@ -58,6 +58,15 @@ jobs:
       - run: composer install --no-dev --prefer-dist --no-interaction
       - run: npm install --no-save --package-lock=false playwright@1.62.1
       - run: npx playwright install --with-deps chromium
+      - name: Check compact Studio workspaces and preserved editorial access
+        run: node tests/navigation-mobile.cjs
+        env:
+          RR_MENU_SCREENSHOT_DIR: ${{ runner.temp }}/menu-screenshots
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: studio-menu-screenshots
+          path: ${{ runner.temp }}/menu-screenshots/*.png
       - run: node tests/recovered/test-newsroom-mobile.cjs
       - run: node tests/recovered/test-newsroom-channel-mobile.cjs
       - run: node tests/recovered/test-learning-mobile.cjs

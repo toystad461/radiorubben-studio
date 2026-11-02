@@ -785,3 +785,16 @@ footer b {
  .studio-navigation .nav-item{font-size:14px;padding:10px 12px}
  .nr-site-menu[open]{width:min(340px,calc(100vw - 24px))}
 }
+
+/* Compact workspaces; native disclosures work with keyboard and without JS. */
+.studio-navigation .nav-group{margin:3px 0;border:0;min-width:0}
+.studio-navigation .nav-group-title{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:10px 12px;border-radius:7px;color:var(--ink);font-size:13px;list-style:none;overflow-wrap:anywhere}
+.studio-navigation .nav-group-title::-webkit-details-marker{display:none}
+.studio-navigation .nav-group-title::after{content:'›';flex-shrink:0;font-size:20px;line-height:1;transition:transform .15s}
+.studio-navigation .nav-group[open]>.nav-group-title::after{transform:rotate(90deg)}
+.studio-navigation .nav-group-title:hover{background:var(--panel)}
+.studio-navigation .nav-group[open]>.nav-group-title{font-weight:700}
+.studio-navigation .nav-group-content{margin:0 0 8px 9px;padding-left:3px;border-left:1px solid var(--line)}
+.studio-navigation .nav-group-note{margin:4px 9px 8px;color:var(--muted);font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.studio-navigation .nav-item svg{flex-shrink:0}
+@media(max-width:800px){.studio-navigation .nav-group-title{font-size:14px}}
