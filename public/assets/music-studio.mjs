@@ -202,6 +202,7 @@ function render() {
     for(const e of $('rotation-form').elements)e.disabled=!settings||busy||stale||hasInflight()||['starting','playing'].includes(view.player.mode);
     $('rotation-status').textContent=r.enabled?`På · ${r.crossfade} sekunder crossfade · planlagt til ${r.plannedUntil?when(r.plannedUntil):'ukjent'}${r.shortage?' · '+r.shortage:''}`:'Av. Velg standardavspilling for å planlegge neste time.';
   }
+  if(view.hourBridge?.enabled){const b=view.hourBridge;$('rotation-status').textContent+=' · Timeinnslag: '+(b.libraryFull?'biblioteket er fullt – hele sanger fortsetter':b.ready?'tre musikkglimt klare':b.requestedSeconds?`${Math.round(b.requestedSeconds)} sekunder planlagt – hele sanger brukes til lyden er klar`:'venter på en luke på 18–45 sekunder');}
   $('queue-summary').textContent=`${view.entries.length} innslag · ${view.studio.schedule?view.studio.schedule.date+' · Europe/Oslo':'Velg program, dato og starttid'}`;
   stableRows($('studio-entries'),rows,e=>e.id,(e,i)=>{
     const li=document.createElement('li');li.dataset.entryId=e.id;li.classList.toggle('is-selected',e.id===selectedEntry);

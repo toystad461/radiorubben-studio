@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/music-hour-bridge.php';
 /** UTC hour identity distinguishes both occurrences of 02:00 at Oslo's autumn clock change. */
 function music_hourly_settings(mixed $value): ?array {
     if($value===null)return null;
@@ -21,7 +22,10 @@ function music_hourly_reconcile(array $q,array $tracks,array $state,int $now):ar
     foreach(array_merge(array_values($state['outcomes']??[]),array_values($inflight))as$e)
         if(isset($e['hourlyHour']))$lastHour=max($lastHour,$e['hourlyHour']);
     $rows=[];$cursor=(float)$now;$previous=null;
-    foreach($q['entries']as$e){
+    $q['studio']['rotation']['bridgeRequest']=null;
+    $bridgeEnabled=($q['studio']['rotation']['bridgeEnabled']??false)===true;
+    $entries=array_values(array_filter($q['entries'],fn($e)=>!isset($state['outcomes'][$e['id']])&&(!isset($e['hourBridgeHour'])||isset($inflight[$e['id']]))));
+    foreach($entries as$entryIndex=>$e){
         if(isset($state['outcomes'][$e['id']]))continue;
         $protected=isset($inflight[$e['id']]);
         if(isset($e['hourlyHour'])&&!$protected){continue;}
@@ -32,6 +36,23 @@ function music_hourly_reconcile(array $q,array $tracks,array $state,int $now):ar
             $rows[]=$e;$cursor+=$e['playback']['cueOut']-$e['playback']['cueIn'];$previous=$e;continue;
         }
         $hour=(int)(floor($cursor/3600)*3600);
+        $nextHour=$hour+3600;
+        $canBridge=(!($e['locked']??false))&&(!$previous||(!($previous['locked']??false)&&(!isset($inflight[$previous['id']])||$previous['playback']['crossfadeOut']==0)));
+        if($bridgeEnabled&&$ready&&$canBridge&&$nextHour>=$config['notBefore']&&$nextHour>$lastHour&&count($rows)<96){
+            $request=music_hour_bridge_request($entries,$entryIndex,$catalog,$cursor,$nextHour);
+            if($request){
+                // Reserve a natural boundary in advance, even while the montage is preparing.
+                // Full-song fallback remains available; only future music overlap is removed.
+                if($previous&&!isset($inflight[$previous['id']])){$rows[count($rows)-1]['playback']['crossfadeOut']=0.;$previous['playback']['crossfadeOut']=0.;}
+                $q['studio']['rotation']['bridgeRequest']??=$request;
+                $bridge=music_hour_bridge_ready($request,$tracks,$catalog);
+                if($bridge){
+                    if($previous)$rows[count($rows)-1]['playback']['crossfadeOut']=0.;
+                    $rows[]=['id'=>md5('rr-bridge:'.$request['key']),'kind'=>'jingle','trackId'=>$bridge['trackId'],'sha256'=>$bridge['sha256'],'locked'=>false,'hourBridgeHour'=>$nextHour,'plannedAt'=>music_rotation_time($cursor),'playback'=>['cueIn'=>0.,'cueOut'=>$request['duration'],'crossfadeOut'=>0.]];
+                    $previous=end($rows);$cursor=(float)$nextHour;$hour=$nextHour;
+                }
+            }
+        }
         // A prefetched music tail cannot be changed to remove its crossfade.
         $canInsert=!$previous||!isset($inflight[$previous['id']])||$previous['playback']['crossfadeOut']==0;
         if($ready&&$hour>=$config['notBefore']&&$hour>$lastHour&&$canInsert&&count($rows)<97){

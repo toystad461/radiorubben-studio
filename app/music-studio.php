@@ -15,6 +15,8 @@ function music_studio_view(?string $path=null,?string $library=null,?array $play
     // This same-origin route is served by an authenticated Nginx proxy; never
     // expose loopback addresses, upstream credentials or arbitrary URLs.
     if (($result['player']['engine']??null)==='liquidsoap' && ($playout['stream_path']??null)==='/music-test-stream/') $result['player']['streamUrl']='/music-test-stream/';
+    $r=$q['studio']['rotation']??[];$request=$r['bridgeRequest']??null;
+    $result['hourBridge']=['enabled'=>($r['bridgeEnabled']??false)===true,'requestedSeconds'=>$request['duration']??null,'ready'=>$request&&function_exists('music_hour_bridge_ready')?(bool)music_hour_bridge_ready($request,$tracks,music_schedule_catalog($tracks,$q['studio']['policies'])):false,'libraryFull'=>count($tracks)>=MUSIC_LIBRARY_COUNT_LIMIT];
     $result['plan']=null;
     if ($q['studio']['schedule']) $result['plan']=music_schedule_plan($q,$tracks,music_playout_history_from_state($result['player']+music_playout_empty()),0);
     return $result;

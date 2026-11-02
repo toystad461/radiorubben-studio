@@ -49,10 +49,10 @@ REVIEWED_HASHES = {
         "app/music-library.php": "dc37fd5e471cada9f0eeb43e0370c55c3278b98b01104cb5c8d094af8ba0e689",
         "app/music-liquidsoap.php": "b12d26e2d4210a35557d2990b3ee7cc944ab119e9de4e057482fc45e6f7e24bb",
         "app/music-play-queue.php": "6a7a6fa9b211428a6590ff4b7a1242260e5de0f30d4493cc23cdcb09d3e3de23",
-        "app/music-playout.php": "9cd55c7f2932b9a4be5a936d56786ea12d6d0472b2cd1c172c53269a7fe7def0",
+        "app/music-playout.php": "cb3637fdf696cf4dabe17ab63e9b5bb9266c4cbff6030ab9f55951ff0768fec8",
         "app/music-rotation.php": "3f9736dd50bcdc42e746f9e21715a9f04566eee3b98e4781d750b77cf007a135",
         "app/music-scheduling.php": "9611eebfc254856790cf57400db7802c851dc775bad9c8f78d23ba77525cb162",
-        "app/music-studio.php": "4dc38cbf272a8913e9ec246e70f8d1ed58d8e88e88a8f9b77fab6a9ba9861353",
+        "app/music-studio.php": "b1f3949a07a10f4aac104b57c1f9abdb180b1e1f98c270579c988986152e5511",
         "app/views/navigation.php": "b88904b9d42a6243c11de8d6c22af513c17957787cc261c132cb72b2f27cb92d",
         "infra/studio-stream/radio.liq": "f3b9351bb270ed51bad0eb9fe807da1cb073f3fb816b45ae76f6bb9ff1ba2054",
         "infra/studio-stream/rr-studio-rotation.service": "aa5844e3ee3247a468ac7126afe8116fd89f0494856c06b0eb7aa3f46c49bff9",
@@ -60,17 +60,20 @@ REVIEWED_HASHES = {
         "public/assets/jingles.css": "9270651a664f085b02d61991870832af84268d2f2ffe1e6413d122fa68b8dbea",
         "public/assets/jingles.mjs": "cc1122212cc5a111011e1ad2afaa60210e218427305a80dfbfd512e170a54d92",
         "public/assets/music-studio.css": "a66d05df66bfcfa8771ef7b3d0496d0f405c494bcfff6ae7c3b7379e34e2d303",
-        "public/assets/music-studio.mjs": "ea0650ee3daeb7060e4d8df4d852c2ca2d61c5c1954125f633bfab8ee1da7f8c",
+        "public/assets/music-studio.mjs": "e59bc7e8998128fbfa2db36c7f69afda59749b94ffc0addacf3c4f1b574467e5",
         "public/jingles.php": "308883106c69ef14d5561d6c341b6d72217cccb88b670ff4cdc7b343e158e6fb",
         "public/music-library-audio.php": "b77828707570cfc9f31554a055413ea42b0312f9c909e5f64ff1e99fea4d3b67",
         "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",
-        "public/music-studio.php": "40b98f1929fb5460eda1e7d9d6d812c27db2d5c0b90e59701e7fa1042297970d",
+        "public/music-studio.php": "2ba9ae2aa8913e3de125ca42e61274b9d441e49d2dcfa67bebecfd3489100f9e",
         "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
         "scripts/music-autocue.py": "0519faf71ea28fdeab9455dd4d0c831d3d4c0316ced13ded89fb997c1fcddd0a",
         "scripts/music-liquidsoap.php": "87b0fb2915d33880e7fab497598215462942fa7eab3c9450c545b3a5feeec348",
-        "scripts/music-rotation.php": "4ad195ecf96d8f284ca4059ad848812588668ef5045c74e10a49902bdd7dd259"
-        ,"app/music-hourly.php": "a5b4b1c4a564eb52c96592fe14204169308c389db5d4750c235763a68eb60ace"
+        "scripts/music-rotation.php": "c5d9eaf546bb812cc824bf0c155ca65448905db208eca395ed482d34ac33b66f"
+        ,"app/music-hourly.php": "f311e08d294350c98f8c9c828de374f967b9b39ebda25177cd96a9dd7246584b"
         ,"app/music-live-queue.php": "37d7321e908cdaccab9ad21fc0d512ec4fb2f6133e986a1520ce6afffa00fc97"
+        ,"app/music-hour-bridge.php": "176154e4ff38149219a5e35d52e44bf5692d98b14bcb283b9b8f5835cfc0738e"
+        ,"app/music-hour-bridge-worker.php": "d0ca38d6feb6f502ca55ec3abecfddab0d517527974402140cb08ad799592f98"
+        ,"scripts/music-hour-bridge.py": "3764ff2adf9b9ed1c8d833bee496e353d124328fa8ca38460f295c1d4e41ed47"
     },
     "candidate_l01": {
         "public/assets/music-studio.css": "a7cdd298d9c684ddf9800f53f993b23788ca3b34d71cdfdac1afc7ca71fcacaf",

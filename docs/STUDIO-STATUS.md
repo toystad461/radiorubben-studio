@@ -1,5 +1,16 @@
 # Studio – felles status og arbeidsliste
 
+## Køinnsetting og manus – installert 02.11.2026, 14:20–14:32 Europe/Oslo
+
+Manusknappene bruker fersk VPS-kø og den eksplisitt godkjente private AI-forbindelsen.
+Faktisk generert manus og forkorting er kontrollert. Plusstegn etter køinnslag gir
+sju typer og innsetting av lagret lyd på valgt plass, med låse-/versjonskontroll.
+Desktop og mobil kontrollert på VPS; hel sang til innsatt stikk lydtestet isolert.
+Se [manus](STUDIO-PRODUCER-VPS-20261102.md) og [køinnsetting](STUDIO-QUEUE-INSERT-20261102.md).
+Tre neste steg: fullfør timeglimtenes tester/innføring, koble TTS-produksjon til
+lagrede innslag, og gjør videre UI-arbeid i samme PR115. Ingen parallell plattform.
+
+
 ## Spill neste under avspilling – installert 02.11.2026, 12:33 Europe/Oslo
 
 Lagrede jingler og musikk kan settes som neste, og ulåste køinnslag fjernes,

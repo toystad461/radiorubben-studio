@@ -7,6 +7,15 @@ $actor=['role'=>'admin','id'=>'authorized-standard-rotation-worker'];$nonce=bin2
 $library=music_library_root();$playout=music_playout_config();$q=music_play_queue_read();
 if($playout&&($q['studio']['rotation']['enabled']??false)){try{music_studio_change(['action'=>'fill','revision'=>$q['revision']],$actor,$nonce,$nonce,null,$library,$playout);}catch(DomainException){/* The operator changed the queue. Retry next tick. */}}
 
+// A missing montage must never prevent the normal music queue from advancing.
+try{
+    require_once dirname(__DIR__).'/app/music-hour-bridge-worker.php';
+    $bridgeResult=music_hour_bridge_prepare(music_play_queue_read(),$library,time());
+    if($bridgeResult==='prepared'){
+        $latest=music_play_queue_read();
+        music_studio_change(['action'=>'fill','revision'=>$latest['revision']],$actor,$nonce,$nonce,null,$library,$playout);
+    }
+}catch(Throwable){error_log('Hour preview unavailable; full music remains the fallback.');}
 $library=music_library_root();$tracks=music_library_read($library,'all');
 $pending=array_filter($tracks,fn($t)=>($t['technicalCheck']['sourceSha256']??null)!==$t['sha256']);
 if($pending){

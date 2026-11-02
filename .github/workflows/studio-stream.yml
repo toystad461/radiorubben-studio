@@ -48,6 +48,7 @@ jobs:
           php tests/jingles.php
           php tests/music-rotation.php
           php tests/music-hourly.php
+          php tests/music-hour-bridge.php
           php tests/music-autocue.php
           php tests/music-public-boot.php
       - name: Check changed executable syntax
@@ -89,6 +90,10 @@ jobs:
           RR_TEST_CROSSFADE=10 PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
       - name: Edit next audio while current music stays on air
         run: PHP_BIN="$(command -v php)" python3 tests/test-studio-live-queue.py
+      - name: Render and import three source-bound hour excerpts
+        run: |
+          python3 tests/test-hour-bridge-render.py
+          python3 tests/test-hour-bridge-worker.py
       - name: Double beep between complete songs
         run: PHP_BIN="$(command -v php)" python3 tests/test-studio-hourly-stream.py
       - name: Resume after restart while preserving operator Stop
