@@ -112,7 +112,7 @@ function music_playout_publish(string $root,array $q,array $plan,array $tracks,s
     $old=music_playout_json($root.'/control.json');$byId=array_column($tracks,null,'id');$entries=[];
     if (count($plan['rows'])!==count($q['entries'])) throw new InvalidArgumentException('Køen har ukjent varighet eller endrede filer. Rett den før avvikling.');
     foreach ($plan['rows'] as $row) {
-        $entry=array_intersect_key($row,array_flip(['id','kind','trackId','sha256','artist','title','duration','plannedAt','blocked','reasons','cuePoints','audioAnalysis','sources','energy','bpm','key','playback','sourceDuration']));
+        $entry=array_intersect_key($row,array_flip(['id','kind','trackId','sha256','artist','title','duration','plannedAt','blocked','reasons','cuePoints','audioAnalysis','sources','energy','bpm','key','playback','sourceDuration','hourlyHour']));
         if (!$entry['blocked']) {
             $t=$byId[$row['trackId']];$source=music_library_verified_handle($t,$libraryRoot);$target=$root.'/audio/'.$row['sha256'].'.mp3';$tmp=null;
             try {

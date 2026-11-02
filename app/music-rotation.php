@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__.'/music-hourly.php';
 function music_rotation_time(float $seconds):string {
     $date=DateTimeImmutable::createFromFormat('U.u',sprintf('%.6F',$seconds));
     if(!$date)throw new RuntimeException('Ugyldig planlagt tid.');
@@ -9,7 +10,7 @@ function music_rotation_seconds(string $date):float{return (float)(new DateTimeI
 /** Persistent one-hour rotation, selected in advance; no random choice in the player. */
 function music_rotation_settings(array $v):array {
     if(!is_bool($v['enabled']??null)||(!is_int($v['crossfade']??null)&&!is_float($v['crossfade']??null))||!is_finite((float)$v['crossfade'])||$v['crossfade']<0||$v['crossfade']>10)throw new InvalidArgumentException('Crossfade må være mellom 0 og 10 sekunder.');
-    return ['enabled'=>$v['enabled'],'crossfade'=>(float)$v['crossfade'],'horizonSeconds'=>3600,'musicPerJingle'=>3];
+    return ['enabled'=>$v['enabled'],'crossfade'=>(float)$v['crossfade'],'horizonSeconds'=>3600,'musicPerJingle'=>3,'hourly'=>music_hourly_settings($v['hourly']??null)];
 }
 function music_rotation_audio(array $t):array {
     $duration=$t['duration'];$cue=$t['cuePoints']['points']??['start'=>0,'end'=>$duration,'vocalStart'=>null,'transition'=>null];
@@ -34,6 +35,7 @@ function music_rotation_plan(array $q,array $tracks,array $history=[]):array {
     return ['rows'=>$rows,'suggestions'=>[],'missing'=>[],'profile'=>$profile];
 }
 function music_rotation_extend(array $q,array $tracks,array $state,int $now):array {
+    if($q['studio']['rotation']['enabled']??false)$q=music_hourly_reconcile($q,$tracks,$state,$now);
     $s=&$q['studio'];$r=&$s['rotation'];$settings=music_rotation_settings($r);if(!$settings['enabled'])return $q;
     $q['entries']=array_values(array_filter($q['entries'],fn($e)=>!isset($state['outcomes'][$e['id']])));
     $history=music_playout_history_from_state($state);$catalog=music_schedule_catalog($tracks,$s['policies']);$profile=$s['profiles'][$s['schedule']['programId']];$inflight=music_playout_inflight_entries($state);
@@ -63,5 +65,5 @@ function music_rotation_extend(array $q,array $tracks,array $state,int $now):arr
         $r[$usedKey][]=$t['trackId'];$r['sinceJingle']=$kind==='jingle'?0:$r['sinceJingle']+1;
     }
     $last=$q['entries']?end($q['entries']):null;$r['plannedUntil']=$last?music_rotation_time(music_rotation_seconds($last['plannedAt'])+$last['playback']['cueOut']-$last['playback']['cueIn']):null;
-    $r['checkedAt']=gmdate('c',$now);return $q;
+    $r['checkedAt']=gmdate('c',$now);return music_hourly_reconcile($q,$tracks,$state,$now);
 }

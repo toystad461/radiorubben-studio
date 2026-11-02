@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/music-studio.php';
-const JINGLE_CATEGORIES=['station'=>'Stasjonsjingle','news'=>'Nyhetsjingle','season'=>'Sesongjingle'];
+const JINGLE_CATEGORIES=['station'=>'Stasjonsjingle','news'=>'Nyhetsjingle','season'=>'Sesongjingle','hour'=>'Timesignal'];
 
 function jingle_edit(array $input,?array $user,string $csrf,string $expected,?string $root=null):array {
     if(!studio_can($user,'produce') || $expected==='' || !hash_equals($expected,$csrf))throw new InvalidArgumentException('Handlingen er ikke autorisert.');

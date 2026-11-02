@@ -43,6 +43,7 @@ jobs:
           php tests/music-liquidsoap-events.php
           php tests/jingles.php
           php tests/music-rotation.php
+          php tests/music-hourly.php
           php tests/music-autocue.php
           php tests/music-public-boot.php
       - name: Check changed executable syntax
@@ -82,6 +83,8 @@ jobs:
           PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
           RR_TEST_CROSSFADE=0 PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
           RR_TEST_CROSSFADE=10 PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
+      - name: Double beep between complete songs
+        run: PHP_BIN="$(command -v php)" python3 tests/test-studio-hourly-stream.py
       - name: Resume after restart while preserving operator Stop
         run: PHP_BIN="$(command -v php)" python3 tests/test-studio-boot-stream.py
       - uses: actions/upload-artifact@v4

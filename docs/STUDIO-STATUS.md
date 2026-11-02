@@ -1,5 +1,12 @@
 # Studio – felles status og arbeidsliste
 
+## Timesignal – under arbeid 02.11.2026
+
+Dobbel pipelyd ved første naturlige låtskifte etter hel time er bestilt.
+Kode og målrettede tester er lagt i eksisterende PR115. Ikke installert ennå.
+Se [funksjon og verifisering](STUDIO-HOURLY-20261102.md).
+Neste steg: grønn Linux/lyd-CI, selektiv backup/installasjon, faktisk VPS-kontroll.
+
 ## Kontrollrom og felles navigasjon – 02.11.2026, 09:47 Europe/Oslo
 
 ai-studio.php viser nå faktisk VPS-avspilling, målt progresjon og neste tre
