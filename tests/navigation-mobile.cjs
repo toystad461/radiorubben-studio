@@ -30,7 +30,7 @@ const root = path.resolve(__dirname, '..');
     assert(await library.getByRole('link',{name:'Musikk',exact:true}).isVisible(),'library expands with keyboard without JS');
     await library.locator('summary').focus();await page.keyboard.press('Space');
     assert.equal(await library.getAttribute('open'),null);
-    assert.equal(await menu.getByRole('link',{name:'Brukere',exact:true}).count(),role==='admin'?1:0);
+    assert.equal(await menu.getByRole('link',{name:'Brukere',exact:true,includeHidden:true}).count(),role==='admin'?1:0);
     assert.equal(await menu.locator('[data-nav-group="settings"]').count(),['admin','producer'].includes(role)?1:0);
     assert.equal(await menu.locator('[data-nav-group="cooperation"]').count(),role==='admin'?1:0);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,role+' overflow at '+width);
