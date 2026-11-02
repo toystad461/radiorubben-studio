@@ -9,10 +9,10 @@ import { cleanFeedback, rememberRejection, feedbackPrompt } from './services/fee
 import { canAutoPlace } from './services/review.mjs';
 import { StudioEvents, StudioLog } from './services/events.mjs';
 import { MidiService } from './services/midi.mjs';
-import { ACTIONS, PadMapping } from './services/mapping.mjs';
+import { ACTIONS, PadMapping } from './services/mapping.mjs?v=stikk-20261102';
 import { interpretRode } from './services/rodecaster.mjs';
 import { initPlayerSlot } from './services/player-slot.mjs?v=20261102';
-import { emptyContext, demoContext, estimateSeconds, prepareDraft } from './services/producer.mjs';
+import { emptyContext, demoContext, estimateSeconds, prepareDraft } from './services/producer.mjs?v=stikk-20261102';
 const $ = id => document.getElementById(id);
 initPlayerSlot();
 const say = text => { $('feedback').textContent = text; };
@@ -110,7 +110,7 @@ async function action(action, local = false) {
   if (action === 'open') { showView(false); history.replaceState(null, '', location.pathname); $('producer-title').scrollIntoView({behavior:'smooth'}); return; }
   if (generating||contextLoading) { say('AI arbeider allerede med et forslag.'); return; }
   lastAction = action;
-  if($('server-now')){
+  if($('server-now') && ['new','next','refresh'].includes(action)){
     contextLoading=true;
     try{
       const r=await fetch('/controlroom-api.php',{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(4000)});
@@ -137,7 +137,9 @@ async function action(action, local = false) {
     if (!response.ok || typeof result.text !== 'string') throw new Error(result.error || 'AI kunne ikke lage et forslag.');
     aiStatus.update('producer',false,'Stikk mottatt · '+clock(new Date()));
     if (version !== revision) { say('Manus eller kontekst ble endret. Be om et nytt forslag når du er klar.'); return; }
-    stageSuggestion(result.text, 'AI-generert');
+    const weatherSource = result.weatherSource;
+    const origin = weatherSource ? `AI-generert værmelding · MET · hentet ${weatherSource.generatedAt} · gyldig til ${weatherSource.expiresAt}` : 'AI-generert';
+    stageSuggestion(result.text, origin);
     if (canAutoPlace({enabled:$('auto-review').checked, requested:autoReview, review:result.review, unchanged:version === revision})) {
       applySuggestion(true);
     } else if (autoReview) {
@@ -246,7 +248,7 @@ bus.on('*',scheduleRender);
 for (const button of document.querySelectorAll('[data-action]')) button.onclick = () => bus.emit('PRODUCER_ACTION',{action:button.dataset.action,log:ACTIONS[button.dataset.action]});
 $('draft').oninput = () => { resetSuggestion(); undoDraft=null; $('undo-draft').disabled=true; $('draft-origin').textContent='Manuelt redigert'; estimate(); };
 $('producer-notes').oninput = () => { resetSuggestion(); };
-$('local-template').onclick = () => { void action('new', true); };
+$('local-template').onclick = () => { void action(lastAction, true); };
 function applySuggestion(automatic = false) {
   if (suggestion === null) return;
   undoDraft = {text:$('draft').value, origin:$('draft-origin').textContent,ai:draftAiAssisted};

@@ -30,6 +30,8 @@ jobs:
       - run: composer test
       - name: Check controlroom status and role navigation
         run: |
+          php tests/producer-actions.php
+          node tests/producer-actions.mjs
           php tests/controlroom.php
           php tests/controlroom-api.php
           node tests/controlroom.mjs

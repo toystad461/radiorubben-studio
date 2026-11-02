@@ -25,19 +25,21 @@ if (count($requests)>=6) reply(429, ['error'=>'Vent litt før neste forslag.']);
 $requests[]=$now; $_SESSION['producer_requests']=$requests; session_write_close();
 try {
     $playout=music_playout_config();
-    if($playout){
+    if($playout && in_array($input['action'], ['new','next','refresh'], true)){
         $live=studio_controlroom_read($playout);
         $label=static fn($t)=>$t['kind']==='jingle'?'Jingle: '.$t['title']:trim($t['artist'].' – '.$t['title']);
         $input['program']='';$input['nowPlaying']=$live['now']?$label($live['now']):'';
         $input['next']=($live['status']==='playing'&&$live['queueKnown']&&!empty($live['next']))?$label($live['next'][0]):'';
         if($input['action']==='next'&&$input['next']==='')throw new RuntimeException('Ingen fersk, bekreftet neste lyd fra VPS. Oppdater før du lager stikk.');
     }
+    $input = producer_action_context($input);
     $text = producer_generate($config, $input);
     if($playout&&in_array($input['action'],['new','next','refresh'],true)){
         $after=studio_controlroom_read($playout);
         if($after['status']!=='playing'||$after['now']!==$live['now']||$after['next']!==$live['next'])throw new RuntimeException('Køen endret seg mens stikket ble skrevet. Lag et nytt forslag.');
     }
+    if (isset($input['weatherSource']) && strtotime($input['weatherSource']['expiresAt']) <= time()) throw new RuntimeException('Værgrunnlaget utløp under generering. Lag et nytt værstikk.');
     $review = ($data['autoReview'] ?? false) ? producer_review($config, $input, $text) : null;
-    reply(200, ['text'=>$text, 'review'=>$review]);
+    reply(200, ['text'=>$text, 'review'=>$review, 'weatherSource'=>$input['weatherSource'] ?? null]);
 }
 catch (RuntimeException $e) { reply(502, ['error'=>$e->getMessage()]); }

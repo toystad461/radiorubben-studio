@@ -9,6 +9,7 @@ export function prepareDraft(action, context, current = '') {
   if (action === 'shorter') return current.trim().split(/\s+/).slice(0, Math.max(1, Math.floor(current.trim().split(/\s+/).length * .7))).join(' ');
   if (action === 'local') return 'Lokalt stikk: [Sett inn en kontrollert lokal sak, kilde og dato.]\nHva betyr saken for folk her hos oss?';
   if (action === 'weather') return 'Værstikk: [Sett inn oppdatert varsel, sted, kilde og tidspunkt.]';
+  if (action === 'traffic') return 'Trafikkstikk: [Sett inn fersk trafikkmelding med sted, kilde og tidspunkt.]';
   if (action === 'sponsor') return 'Sponsorstikk: [Sett inn godkjent sponsortekst og nødvendig reklamemerking.]';
   if (action === 'next') return context.next ? `Her på Radio Rubben skal vi straks høre ${context.next}. Hyggelig at du er med oss!` : 'Neste låt: [Legg inn bekreftet artist og tittel.]';
   return `Du hører Radio Rubben${context.program ? ` og ${context.program}` : ''}. ${context.nowPlaying ? `Nå spiller ${context.nowPlaying}. ` : '[Legg inn forrige låt.] '}Hyggelig at du er med oss. ${context.next ? `Snart får du ${context.next}.` : '[Legg inn neste programpost.]'}`;

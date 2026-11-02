@@ -1,4 +1,4 @@
-export const ACTIONS = { new:'Lag neste stikk', shorter:'Gjør stikk kortere', local:'Lokal sak', weather:'Vær', next:'Presenter neste låt', sponsor:'Sponsorstikk', refresh:'Oppdater Producer', open:'Åpne AI Studio', lightsOff:'Slå av alle Hue-lys' };
+export const ACTIONS = { new:'Lag neste stikk', shorter:'Gjør stikk kortere', local:'Lokal sak', weather:'Vær', next:'Presenter neste låt', sponsor:'Sponsorstikk', refresh:'Oppdater Producer', open:'Åpne AI Studio', lightsOff:'Slå av alle Hue-lys', traffic:'Trafikk' };
 export const defaults = () => Object.keys(ACTIONS).slice(0,8).map((action, i) => ({pad:i+1, action, enabled:false, channel:1, type:'noteon', number:60+i, value:127}));
 export function validateMappings(rows) {
   if (!Array.isArray(rows) || rows.length !== 8) throw new Error('Mapping må inneholde åtte pads.');
