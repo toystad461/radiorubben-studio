@@ -17,7 +17,7 @@ function render(player, stale = false) {
   const before = JSON.stringify(p);
   vm.runInNewContext(actual + '\nrenderPlayer();', {
     $,view:{player:p},control:true,busy:false,stale,monitorContext:null,monitorAudio:null,
-    renderMonitorControl(){},renderQueueStatus(){},
+    renderMonitorControl(){},renderQueueStatus(){},renderCatalogControls(){},
     title: () => 'Testlåt',duration: () => '0:01',when: () => '12:00',txt: () => ({})
   });
   assert.equal(JSON.stringify(p), before, 'rendering must preserve queue and journal data');

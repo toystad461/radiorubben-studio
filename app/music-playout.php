@@ -126,7 +126,7 @@ function music_playout_publish(string $root,array $q,array $plan,array $tracks,s
         }
         $entries[]=$entry;
     }
-    music_playout_atomic($root.'/control.json',['transitionVersion'=>(($q['studio']['rotation']['enabled']??false)?2:1),'ready'=>true,'revision'=>$q['revision'],'entries'=>$entries,'profile'=>$plan['profile'],'command'=>$command??($old['command']??null)]);
+    music_playout_atomic($root.'/control.json',['editableNext'=>($q['studio']['editableNext']??false)===true,'transitionVersion'=>(($q['studio']['rotation']['enabled']??false)?2:1),'ready'=>true,'revision'=>$q['revision'],'entries'=>$entries,'profile'=>$plan['profile'],'command'=>$command??($old['command']??null)]);
     $keep=array_column($entries,'sha256');$state=music_playout_state($root);
     foreach (['reserved','active'] as $key) foreach ($state[$key]??[] as $entry) $keep[]=$entry['sha256'];
     if ($state['current']??null) $keep[]=$state['current']['sha256'];

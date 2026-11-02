@@ -28,7 +28,7 @@ function music_hourly_reconcile(array $q,array $tracks,array $state,int $now):ar
         if($protected){
             $actual=$inflight[$e['id']];
             if(isset($actual['observedWallStart']))$cursor=(float)$actual['observedWallStart'];
-            elseif($previous)$cursor-=$previous['playback']['crossfadeOut'];
+            elseif($previous&&$previous['kind']==='music'&&$e['kind']==='music')$cursor-=$previous['playback']['crossfadeOut'];
             $rows[]=$e;$cursor+=$e['playback']['cueOut']-$e['playback']['cueIn'];$previous=$e;continue;
         }
         $hour=(int)(floor($cursor/3600)*3600);
@@ -39,7 +39,7 @@ function music_hourly_reconcile(array $q,array $tracks,array $state,int $now):ar
             $signal=['id'=>md5('rr-hour:'.$hour.':'.$config['sha256']),'kind'=>'jingle','trackId'=>$config['trackId'],'sha256'=>$config['sha256'],
                 'locked'=>false,'hourlyHour'=>$hour,'plannedAt'=>music_rotation_time($cursor),'playback'=>music_rotation_audio($tone)];
             $rows[]=$signal;$cursor+=$signal['playback']['cueOut']-$signal['playback']['cueIn'];$previous=$signal;$lastHour=$hour;
-        }elseif($previous){$cursor-=$previous['playback']['crossfadeOut'];}
+        }elseif($previous&&$previous['kind']==='music'&&$e['kind']==='music'){$cursor-=$previous['playback']['crossfadeOut'];}
         // Restore music-only overlap after removing/repositioning a future signal.
         // Existing zero overlap is safe and deliberately retained.
         $e['plannedAt']=music_rotation_time($cursor);$rows[]=$e;

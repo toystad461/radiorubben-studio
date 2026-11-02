@@ -3,13 +3,14 @@ declare(strict_types=1);
 require_once __DIR__.'/music-play-queue.php';
 require_once __DIR__.'/music-scheduling.php';
 require_once __DIR__.'/music-playout.php';
+require_once __DIR__.'/music-live-queue.php';
 function music_studio_settings(array $q): array {
     return $q['studio']??['profiles'=>['god-morgen-bomlo'=>music_schedule_defaults()],'policies'=>[],'schedule'=>null];
 }
 function music_studio_view(?string $path=null,?string $library=null,?array $playout=null): array {
     $q=music_play_queue_read($path);$libraryError=null;try {$tracks=music_library_read($library,'all');}catch(Throwable){$tracks=[];$libraryError='Biblioteket kunne ikke leses. Stopp er fortsatt tilgjengelig; kontroller biblioteket før ny start.';}$q['studio']=music_studio_settings($q);
     $result=music_play_queue_snapshot($q,$tracks);$result['libraryError']=$libraryError;$result['studio']=$q['studio'];$result['catalog']=array_values(music_schedule_catalog($tracks,$q['studio']['policies']));
-    $result['catalog']=array_values(array_filter($result['catalog'],fn($t)=>($t['kind']??'music')==='music'));
+    // Both stored music and jingles can be selected for the next position.
     $result['player']=$playout?music_playout_snapshot($playout['root']):['online'=>false,'mode'=>'unconfigured'];
     // This same-origin route is served by an authenticated Nginx proxy; never
     // expose loopback addresses, upstream credentials or arbitrary URLs.
@@ -36,8 +37,11 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
         $protected=music_playout_protected_ids($s);
         if (in_array($action,['remove','move','replace'],true) && ($entryIndex===false || in_array($input['id'],$protected,true))) throw new InvalidArgumentException('Innslaget mangler eller er allerede behandlet av spilleren.');
         if (in_array($action,['remove','move','replace'],true) && ($q['entries'][$entryIndex]['locked']??false)) throw new InvalidArgumentException('Lås opp innslaget først.');
-        if(($q['studio']['rotation']['enabled']??false)&&!in_array($action,['standard','hourly','fill','start','stop','pause','sync'],true))throw new InvalidArgumentException('Slå av standardrotasjon før manuell køredigering.');
-        if($action==='standard'){
+        if(($q['studio']['rotation']['enabled']??false)&&!in_array($action,['standard','hourly','fill','start','stop','pause','sync','playnext','remove'],true))throw new InvalidArgumentException('Slå av standardrotasjon før manuell køredigering.');
+        if($action==='playnext'){
+            if(!$playout||!music_playout_heartbeat_fresh($s,music_playout_json($playout['root'].'/heartbeat.json')))throw new RuntimeException('Spillerstatus må oppdateres.');
+            $q=music_live_next($q,$tracks,$s,$input);$nextId=null;foreach($q['entries']as$e)if(!in_array($e['id'],$protected,true)){$nextId=$e['id'];break;}$changed=true;
+        } elseif($action==='standard'){
             if(!studio_can($user,'settings'))throw new InvalidArgumentException('Bare produsent/administrator kan endre standardavspilling.');
             if(music_playout_inflight_entries($s)||in_array($s['mode'],['starting','playing'],true))throw new InvalidArgumentException('Stopp avspillingen før du endrer standardrotasjonen.');
             $rotationInput=$input['rotation']??[];if(!array_key_exists('hourly',$rotationInput))$rotationInput['hourly']=$q['studio']['rotation']['hourly']??null;
@@ -97,6 +101,7 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
             if (isset(music_playout_inflight_entries($s)[$input['id']])) throw new InvalidArgumentException('Innslaget er reservert eller aktivt i motoren. Stopp før endring.');
             if (!is_bool($input['locked']??null)) throw new InvalidArgumentException('Ugyldig lås.');$q['entries'][$entryIndex]['locked']=$input['locked'];$changed=true;
         } elseif ($action==='remove' || $action==='move') {
+            if(isset($q['entries'][$entryIndex]['hourlyHour']))throw new InvalidArgumentException('Automatiske timesignaler styres fra Jingles.');
             $entry=$q['entries'][$entryIndex];array_splice($q['entries'],$entryIndex,1);
             if ($action==='move') {
                 $target=($input['beforeId']??null)===null?count($q['entries']):array_search($input['beforeId'],array_column($q['entries'],'id'),true);
@@ -121,6 +126,17 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
         } elseif ($action!=='sync') throw new InvalidArgumentException('Ukjent studiohandling.');
         if ($changed && in_array($action,['remove','replace'],true)) foreach ($before as $i=>$e) {
             if (in_array($e['id'],$protected,true) && ($q['entries'][$i]['id']??null)!==$e['id']) throw new InvalidArgumentException('Endringen flytter et innslag som er reservert eller behandlet av spilleren.');
+        }
+        if($changed&&in_array($action,['playnext','remove'],true)&&($q['studio']['rotation']['enabled']??false)){
+            $q=music_live_retime($q,$s);
+            foreach($before as$i=>$e)if(($e['locked']??false)||in_array($e['id'],$protected,true)){
+                if(($q['entries'][$i]['id']??null)!==$e['id'])throw new InvalidArgumentException('Endringen flytter et låst innslag.');
+            }
+            $plan=music_schedule_plan($q,$tracks,$history,0);
+            if(count($plan['rows'])!==count($q['entries']))throw new InvalidArgumentException('Køen kunne ikke beregnes.');
+            $beforePlan=music_schedule_plan(array_replace($q,['entries'=>$before]),$tracks,$history,0);
+            $blockedBefore=array_column($beforePlan['rows'],'blocked','id');
+            foreach($plan['rows']as$row)if($row['blocked']&&(($action==='playnext'&&$row['id']===$nextId)||!($blockedBefore[$row['id']]??[])))throw new InvalidArgumentException('Endringen bryter programreglene: '.implode(' · ',$row['blocked']));
         }
         if (count($q['entries'])>100) throw new InvalidArgumentException('Køen kan ha inntil 100 innslag.');
         if ($changed) {$q['revision']++;$q['updatedAt']=gmdate('c');$q['updatedBy']=(string)($user['id']??$user['role']);}

@@ -1,5 +1,15 @@
 # Studio – felles status og arbeidsliste
 
+## Spill neste under avspilling – utviklet 02.11.2026
+
+Lagrede jingler og musikk kan settes som neste, og ulåste køinnslag fjernes,
+under standardrotasjon. Forsinket reservasjon gir redigering fram til omtrent
+elleve sekunder før overgang ved tre sekunders crossfade. Aktiv/reservert lyd
+beskyttes fortsatt. Isolert ekte lydtest viser hel første sang og 0,0 sekunders
+hull før innsatt jingle. Ikke installert ved denne statusføringen.
+Se [endring, tester og innføring](STUDIO-LIVE-QUEUE-20261102.md).
+
+
 ## Timesignal – installert 02.11.2026, 11:36 Europe/Oslo
 
 Dobbel pipelyd er aktivert ved første naturlige låtskifte etter hel time, etter

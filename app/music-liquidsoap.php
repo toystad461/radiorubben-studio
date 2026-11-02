@@ -74,6 +74,18 @@ function music_liquidsoap_reset(string $root, array &$state, string $message): v
     $state['message'] = $message;
 }
 
+/** PCM position, not wall time, decides the short preparation window. */
+function music_liquidsoap_claim_due(array $state,array $live):bool {
+    $current=$state['current']??null;if(!$current)return true;
+    // Older supervisors have no currentId. A heartbeat predating the PCM start
+    // is rejected, allowing a compatible selective rollout without a restart.
+    if(isset($live['currentId'])&&$live['currentId']!==$current['id'])return false;
+    if(($live['timestamp']??0)<($current['observedWallStart']??INF))return false;
+    $position=$live['position']??null;
+    if((!is_int($position)&&!is_float($position))||!is_finite((float)$position)||$position<0)return false;
+    return (float)$current['duration']-$position<=8.+(float)($current['playback']['crossfadeOut']??0);
+}
+
 /** request.dynamic calls this through a fixed CLI command, not through the web. */
 function music_liquidsoap_claim(string $root, string $session): string {
     if (!music_liquidsoap_id($session)) throw new RuntimeException('Invalid engine session.');
@@ -94,6 +106,11 @@ function music_liquidsoap_claim(string $root, string $session): string {
         // request.dynamic must not silently skip ahead to the following song.
         // The supervisor turns that unresolved reservation into a visible fault.
         if (!empty($state['reserved'])) return '';
+        // Keep the next occurrence editable until the output PCM approaches
+        // its transition. Local verified files need only a short decode window.
+        if (($control['editableNext'] ?? false) && $state['current']) {
+            if(!music_liquidsoap_claim_due($state,$live))return '';
+        }
         $protected = music_playout_protected_ids($state);
         $entry = null;
         foreach ($control['entries'] ?? [] as $candidate) {

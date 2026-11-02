@@ -229,6 +229,20 @@ async function setup(browser,html,width,engine){
       await page.evaluate(()=>window.dispatchEvent(new Event('pagehide')));
       assert(await page.evaluate(()=>window.__lastMonitorAudio.paused&&!window.__lastMonitorAudio.getAttribute('src')));
       assert.deepEqual(state.posts.map(x=>x.action),['start','stop'],'pagehide only stops local audio');
+      // Live rotation keeps next/delete available until a seq-only reservation.
+      state.snapshot.studio.rotation={enabled:true,crossfade:3};
+      state.snapshot.catalog[0].technicalReady=true;
+      p.online=true;p.mode='playing';p.pendingCommand=null;p.current=state.snapshot.entries[0];
+      p.active={[p.current.id]:p.current};p.reserved={};p.outcomes={};state.snapshot.revision++;
+      await page.waitForFunction(()=>!document.querySelector('[data-entry-id="occurrence-2"] [data-queue-action="next"]').disabled);
+      assert(await page.locator('[data-entry-id="occurrence-2"] [data-queue-action="remove"]').isEnabled());
+      assert(await page.locator('[data-entry-id="occurrence-1"] [data-queue-action="remove"]').isDisabled());
+      assert(await page.locator('#studio-catalog').getByRole('button',{name:'Spill neste',exact:true}).isEnabled());
+      p.reserved={'occurrence-2':state.snapshot.entries[1]};p.seq++;
+      await page.waitForFunction(()=>document.querySelector('#studio-catalog button:last-child').disabled);
+      assert(await page.locator('[data-entry-id="occurrence-2"] [data-queue-action="remove"]').isDisabled());
+      p.reserved={};p.seq++;
+      await page.waitForFunction(()=>!document.querySelector('#studio-catalog button:last-child').disabled);
       assert.deepEqual(state.errors,[]);await page.close();
       assert.deepEqual(state.posts.map(x=>x.action),['start','stop'],'closing page sends no server stop');
 

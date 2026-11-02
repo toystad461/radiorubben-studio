@@ -27,7 +27,7 @@ try{
     $plan=music_schedule_plan($q,$all,[],1);
     jcheck(!$plan['rows'][0]['blocked']&&$plan['rows'][0]['title']==='Test ID','jingle needs no music artist or rotation policy');
     jcheck(!$plan['suggestions'],'unapproved music remains blocked and jingles are not suggested');
-    $view=music_studio_view($path,$lib);jcheck(count($view['catalog'])===1&&$view['entries'][0]['kind']==='jingle','Studio music catalog excludes jingles but rundown includes them');
+    $view=music_studio_view($path,$lib);jcheck(count($view['catalog'])===2&&$view['entries'][0]['kind']==='jingle','Studio selection includes stored music and jingles');
     $spoof=$q;$spoof['entries'][0]['kind']='music';jcheck((bool)music_schedule_plan($spoof,$all,[],0)['rows'][0]['blocked'],'queue/library type mismatch blocked');
     jreject(fn()=>$change(['action'=>'replace','revision'=>2,'id'=>$q['entries'][0]['id']]),'music replacement cannot replace jingle');
     $input['revision']=2;$input['disabled']=true;jingle_edit($input,$actor,'x','x',$lib);
