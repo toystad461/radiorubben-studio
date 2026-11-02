@@ -3,6 +3,8 @@ const control = root.dataset.control === '1', settings = root.dataset.settings =
 let view = null, busy = false, stale = true, proposal = null, policyTrack = null, profileDirty = false;
 let refreshing = null, selectedEntry = null, rotationDirty = false;
 const rowCache = new WeakMap();
+let insertion = null;
+const eventLabels={stikk:'Stikk',innlegg:'Innlegg',jingle:'Jingle',reklame:'Reklame',hilsen:'Hilsen',onske:'Ønske',sang:'Sang'};
 let monitorContext = null, monitorSeen = new Set(), monitorSources = [], monitorNext = 0, monitorBusy = false;
 let monitorAudio = null, monitorStreamUrl = null;
 const outcomeLabels = {planned:'Planlagt',started:'Startet',completed:'Fullført',interrupted:'Avbrutt',failed:'Feilet'};
@@ -10,7 +12,7 @@ const monitorUnconfigured = 'Testlytting er ikke konfigurert i dette miljøet.';
 const txt = (tag, value, cls) => { const n = document.createElement(tag); n.textContent = value; if (cls) n.className = cls; return n; };
 const say = value => { $('studio-message').textContent = value; };
 const split = value => value.split(',').map(s => s.trim()).filter(Boolean);
-const title = t => t.kind==='jingle' ? `Jingle · ${t.title}` : `${t.artist || 'Ukjent artist'} – ${t.title}`;
+const title = t => t.eventType ? `${eventLabels[t.eventType] || 'Innslag'} · ${t.artist ? t.artist+' – ' : ''}${t.title}` : t.kind==='jingle' ? `Jingle · ${t.title}` : `${t.artist || 'Ukjent artist'} – ${t.title}`;
 const when = iso => new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date(iso));
 const duration = s => Number.isFinite(s) ? `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}` : 'ukjent varighet';
 function button(label, callback, disabled = false) { const b=txt('button',label);b.type='button';b.disabled=disabled;b.addEventListener('click',callback);return b; }
@@ -60,6 +62,7 @@ function renderQueueStatus() {
     for(const action of li.querySelectorAll('[data-queue-action]')) {
       const kind=action.dataset.queueAction;
       if(view.studio.rotation?.enabled&&['lock','replace','up','down'].includes(kind)){action.disabled=true;continue;}
+      if(kind==='insert'){action.disabled=!insertionAllowed(e.id);action.title=action.disabled?'Plasseringen krever fersk spillerstatus og kan ikke flytte låste eller behandlede innslag.':'Sett inn lagret lyd på denne plassen';continue;}
       if(kind==='next'){action.disabled=fixed||!view.studio.rotation?.enabled||Object.keys(p.reserved||{}).length>0||!!e.hourlyHour;continue;}
       action.disabled=kind==='preview'?(!control||!e.available):kind==='lock'?disabled:fixed||(kind==='replace'&&e.kind==='jingle')||(kind==='up'&&(i===0||fixedEntry(rows[i-1])))||(kind==='down'&&(i===rows.length-1||fixedEntry(rows[i+1])))||(kind==='remove'&&(!!e.hourlyHour||rows.slice(i+1).some(protectedEntry)));
     }
@@ -67,6 +70,30 @@ function renderQueueStatus() {
   if($('rotation-form'))for(const e of $('rotation-form').elements)e.disabled=!settings||busy||stale||hasInflight()||['starting','playing'].includes(p.mode);
   $('reset-queue').disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!!p.pendingCommand||hasInflight()||['starting','playing'].includes(p.mode);
   for(const e of $('schedule-form').elements)e.disabled=!!view.studio.rotation?.enabled||!control||busy||stale||hasInflight();
+}
+function insertionAllowed(afterId) {
+  if(!control||busy||stale||!view?.studio.rotation?.enabled||!view.player.online||view.player.pendingCommand)return false;
+  const at=view.entries.findIndex(e=>e.id===afterId);if(at<0)return false;
+  return !view.entries.slice(at+1).some(e=>heldEntry(e.id)||view.player.outcomes?.[e.id]||e.locked);
+}
+function openInsertion(afterId) {
+  const at=view.entries.findIndex(e=>e.id===afterId);if(at<0||!insertionAllowed(afterId))return;
+  insertion={afterId,beforeId:view.entries[at+1]?.id||null};
+  $('insert-position').textContent=`Etter ${title(view.entries[at])}${view.entries[at+1]?' · før '+title(view.entries[at+1]):' · sist i køen'}`;
+  $('insert-search').value='';$('insert-status').textContent='';renderInsertResults();$('insert-dialog').showModal();
+}
+function renderInsertResults() {
+  if(!insertion)return;
+  const type=$('insert-type').value,music=['sang','onske'].includes(type),query=$('insert-search').value.toLocaleLowerCase('nb');
+  const matches=view.catalog.filter(t=>(t.kind==='music')===music&&t.available&&t.technicalReady&&!t.jingle?.disabled&&title(t).toLocaleLowerCase('nb').includes(query));
+  $('insert-results').replaceChildren(...matches.map(t=>{
+    const row=txt('div','','ms-track');row.append(txt('span',`${title(t)} · ${duration(t.duration)}`),button('Sett inn her',async()=>{
+      const placement={...insertion};$('insert-status').textContent='Lagrer på valgt plass …';
+      const ok=await mutate({action:'insert',...placement,eventType:type,trackId:t.trackId,sha256:t.sha256});
+      if(ok){$('insert-dialog').close();insertion=null;}else $('insert-status').textContent=$('studio-message').textContent;
+    },!insertionAllowed(insertion.afterId)));return row;
+  }));
+  if(!matches.length)$('insert-results').append(txt('p','Ingen klargjort lyd passer søket. Last opp eller ferdigstill lyden via lenkene nedenfor.'));
 }
 function renderCatalogControls() {
   for(const row of $('studio-catalog').children) {
@@ -117,7 +144,7 @@ function renderPlayer() {
   renderMonitorControl();
   // Player events change seq independently of the saved queue revision. Update
   // only row status and controls so open editors and unsaved fields stay put.
-  renderQueueStatus();renderCatalogControls();
+  renderQueueStatus();renderCatalogControls();if($('insert-dialog').open)renderInsertResults();
 }
 // Reuse unchanged rows, including their focus and scroll position.
 function stableRows(parent, items, key, build, signature = JSON.stringify) {
@@ -185,7 +212,7 @@ function render() {
     if(e.blocked?.length)li.append(txt('p','Sperret: '+e.blocked.join(' · '),'ms-warning'));
     const actions=txt('div','','ms-actions');
     const rowButton=(kind,label,callback)=>{const b=button(label,callback,true);b.dataset.queueAction=kind;return b;};
-    actions.append(rowButton('preview','Forhåndslytt / detaljer',()=>openPreview(e)),rowButton('lock',e.locked?'Lås opp':'Lås',()=>mutate({action:'lock',id:e.id,locked:!e.locked})),rowButton('replace','Bytt',()=>suggest(e.id)),rowButton('up','Opp',()=>mutate({action:'move',id:e.id,beforeId:queueRows()[queueRows().findIndex(row=>row.id===e.id)-1]?.id})),rowButton('down','Ned',()=>mutate({action:'move',id:e.id,beforeId:queueRows()[queueRows().findIndex(row=>row.id===e.id)+2]?.id||null})),rowButton('next','Spill neste',()=>mutate({action:'playnext',id:e.id})),rowButton('remove','Fjern',()=>mutate({action:'remove',id:e.id})));li.append(actions);return li;
+    actions.append(rowButton('preview','Forhåndslytt / detaljer',()=>openPreview(e)),rowButton('lock',e.locked?'Lås opp':'Lås',()=>mutate({action:'lock',id:e.id,locked:!e.locked})),rowButton('replace','Bytt',()=>suggest(e.id)),rowButton('up','Opp',()=>mutate({action:'move',id:e.id,beforeId:queueRows()[queueRows().findIndex(row=>row.id===e.id)-1]?.id})),rowButton('down','Ned',()=>mutate({action:'move',id:e.id,beforeId:queueRows()[queueRows().findIndex(row=>row.id===e.id)+2]?.id||null})),rowButton('next','Spill neste',()=>mutate({action:'playnext',id:e.id})),rowButton('remove','Fjern',()=>mutate({action:'remove',id:e.id})));li.append(actions);const gap=rowButton('insert','+ Legg til innslag',()=>openInsertion(e.id));gap.className='ms-insert-gap';gap.setAttribute('aria-label',`Legg til innslag etter ${title(e)}`);li.append(gap);return li;
   });
   if(!rows.length)$('studio-entries').append(txt('li','Køen er tom. Godkjenn musikk og be om forslag.'));
   if(view.plan?.missing.length)$('studio-entries').append(txt('li',view.plan.missing.map(m=>typeof m==='string'?m:JSON.stringify(m)).join(' · '),'ms-warning'));
@@ -301,3 +328,5 @@ if($('rotation-form')){
   $('rotation-form').addEventListener('input',()=>{rotationDirty=true;});
   $('rotation-form').addEventListener('submit',async e=>{e.preventDefault();if(await mutate({action:'standard',rotation:{enabled:$('rotation-enabled').checked,crossfade:Number($('rotation-crossfade').value)}})){rotationDirty=false;render();}});
 }
+
+$('insert-type').addEventListener('change',renderInsertResults);$('insert-search').addEventListener('input',renderInsertResults);$('insert-close').addEventListener('click',()=>$('insert-dialog').close());$('insert-refresh').addEventListener('click',async()=>{await refresh();renderInsertResults();});

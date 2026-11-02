@@ -23,7 +23,8 @@ try:
  assert t.api(dict(body,revision=-1))[0]==409
  assert t.api(dict(body,sha256='0'*64))[0]==400
  t.change({'action':'remove','id':ids[1]})
- result=t.change({'action':'playnext','trackId':t.tracks[1]['id'],'sha256':t.tracks[1]['sha256']})
+ result=t.change({'action':'insert','afterId':ids[0],'beforeId':ids[2],'eventType':'stikk','trackId':t.tracks[1]['id'],'sha256':t.tracks[1]['sha256']})
+ assert result['entries'][1]['eventType']=='stikk'
  inserted=result['entries'][1]['id'];assert inserted not in ids
  assert [e['id']for e in result['entries'][:3]]==[ids[0],inserted,ids[2]]
  assert t.player()['current']['id']==ids[0] and t.player()['streamConnected']

@@ -42,6 +42,7 @@ jobs:
           php tests/recovered/test-music-studio-store.php
           php tests/music-library-open-basedir.php
           php tests/music-live-claim.php
+          php tests/music-insert.php
           php tests/music-liquidsoap-state.php
           php tests/music-liquidsoap-events.php
           php tests/jingles.php

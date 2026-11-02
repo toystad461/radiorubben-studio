@@ -3,3 +3,5 @@
 @media(max-width:500px){#schedule-form>label:first-child{flex-basis:100%}#schedule-program{width:100%}}
 
 #studio-entries .is-selected{border-left:3px solid #7dd3fc;padding-left:10px}#studio-entries [data-playback-state=active]{background:#163e38}#preview-dialog audio{width:100%}#preview-dialog a{color:#7dd3fc;text-decoration:underline}@media(min-width:901px){#studio-entries,#studio-catalog{max-height:65vh;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}}
+
+.ms-insert-gap{display:block;width:100%;margin-top:1rem;border-style:dashed;min-height:44px}#insert-dialog{width:min(680px,92vw);max-height:85vh;overflow:auto}#insert-dialog label{display:block;margin:.75rem 0}#insert-results{max-height:40vh;overflow:auto}#insert-results .ms-track{gap:.75rem;flex-wrap:wrap}

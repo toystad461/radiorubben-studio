@@ -37,10 +37,11 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
         $protected=music_playout_protected_ids($s);
         if (in_array($action,['remove','move','replace'],true) && ($entryIndex===false || in_array($input['id'],$protected,true))) throw new InvalidArgumentException('Innslaget mangler eller er allerede behandlet av spilleren.');
         if (in_array($action,['remove','move','replace'],true) && ($q['entries'][$entryIndex]['locked']??false)) throw new InvalidArgumentException('Lås opp innslaget først.');
-        if(($q['studio']['rotation']['enabled']??false)&&!in_array($action,['standard','hourly','fill','start','stop','pause','sync','playnext','remove'],true))throw new InvalidArgumentException('Slå av standardrotasjon før manuell køredigering.');
-        if($action==='playnext'){
+        if(($q['studio']['rotation']['enabled']??false)&&!in_array($action,['standard','hourly','fill','start','stop','pause','sync','playnext','insert','remove'],true))throw new InvalidArgumentException('Slå av standardrotasjon før manuell køredigering.');
+        if(in_array($action,['playnext','insert','remove'],true)&&array_filter(music_playout_inflight_entries($s),fn($e)=>isset($e['hourBridgeHour'])))throw new DomainException('Timeinnslaget er låst i motoren. Vent til det er fullført før du endrer køen.');
+        if(in_array($action,['playnext','insert'],true)){
             if(!$playout||!music_playout_heartbeat_fresh($s,music_playout_json($playout['root'].'/heartbeat.json')))throw new RuntimeException('Spillerstatus må oppdateres.');
-            $q=music_live_next($q,$tracks,$s,$input);$nextId=null;foreach($q['entries']as$e)if(!in_array($e['id'],$protected,true)){$nextId=$e['id'];break;}$changed=true;
+            $q=$action==='insert'?music_live_insert($q,$tracks,$s,$input):music_live_next($q,$tracks,$s,$input);$nextId=null;foreach($q['entries']as$e)if(!in_array($e['id'],$protected,true)){$nextId=$e['id'];break;}$changed=true;
         } elseif($action==='standard'){
             if(!studio_can($user,'settings'))throw new InvalidArgumentException('Bare produsent/administrator kan endre standardavspilling.');
             if(music_playout_inflight_entries($s)||in_array($s['mode'],['starting','playing'],true))throw new InvalidArgumentException('Stopp avspillingen før du endrer standardrotasjonen.');
@@ -61,7 +62,7 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
         } elseif($action==='fill'){
             if(!($q['studio']['rotation']['enabled']??false)||!in_array($s['mode'],['playing','starting'],true))return ['revision'=>$q['revision'],'saved'=>false];
             $next=music_rotation_extend($q,$tracks,$s,time());
-            if($next['entries']===$q['entries']&&($next['studio']['rotation']['shortage']??null)===($q['studio']['rotation']['shortage']??null))return ['revision'=>$q['revision'],'saved'=>false];
+            if($next['entries']===$q['entries']&&($next['studio']['rotation']['shortage']??null)===($q['studio']['rotation']['shortage']??null)&&($next['studio']['rotation']['bridgeRequest']??null)===($q['studio']['rotation']['bridgeRequest']??null))return ['revision'=>$q['revision'],'saved'=>false];
             $q=$next;$changed=true;
         } elseif ($action==='schedule') {
             $schedule=$input['schedule']??[];
@@ -127,8 +128,9 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
         if ($changed && in_array($action,['remove','replace'],true)) foreach ($before as $i=>$e) {
             if (in_array($e['id'],$protected,true) && ($q['entries'][$i]['id']??null)!==$e['id']) throw new InvalidArgumentException('Endringen flytter et innslag som er reservert eller behandlet av spilleren.');
         }
-        if($changed&&in_array($action,['playnext','remove'],true)&&($q['studio']['rotation']['enabled']??false)){
+        if($changed&&in_array($action,['playnext','insert','remove'],true)&&($q['studio']['rotation']['enabled']??false)){
             $q=music_live_retime($q,$s);
+            $q=music_hourly_reconcile($q,$tracks,$s,time());
             foreach($before as$i=>$e)if(($e['locked']??false)||in_array($e['id'],$protected,true)){
                 if(($q['entries'][$i]['id']??null)!==$e['id'])throw new InvalidArgumentException('Endringen flytter et låst innslag.');
             }
@@ -136,7 +138,7 @@ function music_studio_change(array $input,?array $user,string $csrf,string $expe
             if(count($plan['rows'])!==count($q['entries']))throw new InvalidArgumentException('Køen kunne ikke beregnes.');
             $beforePlan=music_schedule_plan(array_replace($q,['entries'=>$before]),$tracks,$history,0);
             $blockedBefore=array_column($beforePlan['rows'],'blocked','id');
-            foreach($plan['rows']as$row)if($row['blocked']&&(($action==='playnext'&&$row['id']===$nextId)||!($blockedBefore[$row['id']]??[])))throw new InvalidArgumentException('Endringen bryter programreglene: '.implode(' · ',$row['blocked']));
+            foreach($plan['rows']as$row)if($row['blocked']&&((($action==='playnext'&&$row['id']===$nextId)||($action==='insert'&&!in_array($row['id'],array_column($before,'id'),true)))||!($blockedBefore[$row['id']]??[])))throw new InvalidArgumentException('Endringen bryter programreglene: '.implode(' · ',$row['blocked']));
         }
         if (count($q['entries'])>100) throw new InvalidArgumentException('Køen kan ha inntil 100 innslag.');
         if ($changed) {$q['revision']++;$q['updatedAt']=gmdate('c');$q['updatedBy']=(string)($user['id']??$user['role']);}
