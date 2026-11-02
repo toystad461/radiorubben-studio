@@ -116,3 +116,19 @@ av den fungerende live-visningen er utført.
 Neste tre steg i hovedsporet: gjennomgå/samle eksisterende PR-kjede uten blind
 helutrulling; avstemme de manglende VPS-integrasjonene separat; fortsette øvrige
 L02/L04-funksjoner i #109 med samme kø og motor. L02–L05 er ikke ferdigmeldt.
+
+
+## Endelig CI-kvittering
+
+Kilde-/testcommit c353555c4c262e509cd259732c81f57bfdb5e5be har identisk
+runtime med installert 907b0f0. Alle jobber består:
+
+- [PHP 8.2/8.4, Composer, pakking og full nettlesersuite](https://github.com/toystad461/radiorubben-studio/actions/runs/41416012017).
+- [Liquidsoap-kø, faktisk MP3/crossfade/oppstart og privat nettlesermonitor](https://github.com/toystad461/radiorubben-studio/actions/runs/41416012094).
+- [Release-verifikasjon](https://github.com/toystad461/radiorubben-studio/actions/runs/41416011911); automatisk Uniweb-deploy ble hoppet over.
+
+Tidligere feil i kontrollmanifestets menyhash og en for tidlig måling av
+rulleposisjon er rettet og omprøvd. Ingen kjente blokkere for denne
+kontrollromsleveransen gjenstår. De dokumenterte eksterne integrasjonene og
+fysisk Safari-kontroll er fortsatt utenfor det verifiserte resultatet.
+Denne siste dokumentasjonsoppdateringen endrer ingen installert runtime.

@@ -9,6 +9,8 @@ manusgrunnlag er adskilt fra servervisningen. Felles meny har sju grupper,
 rollebegrensede lenker og ikke-klikkbare planlagte funksjoner.
 
 Ni runtime-filer er selektivt installert og hashverifisert mot 907b0f0 i PR115.
+Alle tre CI-workflows på c353555 (identisk runtime) har bestått, inkludert
+PHP8.2/8.4, full nettlesersuite og faktisk Liquidsoap/Icecast-lyd.
 Motor-PID770, journalprefix og 120 beskyttede filer er bevart. Reell lytting,
 låtbytte uten reload og Chrome ved 320/390/1440 CSS-piksler er kontrollert.
 Tolv hovedsider er åpnet innlogget. Manglende WordPress-/værtilkobling på VPS
