@@ -46,16 +46,16 @@ if($method==='POST'){
     catch(Throwable){http_response_code(503);$error='Endringen kunne ikke bekreftes. Oppdater før du prøver igjen.';}
 }
 $tracks=music_library_read(null,'jingle');$queue=music_play_queue_read();
-$extraStylesheet='/assets/jingles.css?v=20261101';require dirname(__DIR__).'/app/views/head.php';
+$extraStylesheet='/assets/jingles.css?v=20261102-hour';require dirname(__DIR__).'/app/views/head.php';
 ?>
 <div class="shell"><?php $activePage='jingles';require dirname(__DIR__).'/app/views/sidebar.php';?><div class="workspace">
 <header class="topbar"><span>Studio / <strong>Jingler</strong></span><?php require dirname(__DIR__).'/app/views/account.php';?></header>
 <main id="main" class="jingle-page"><header><p class="eyebrow">RADIO RUBBEN / STASJONSLYD</p><h1>Jingler</h1><p>Små innslag som binder sendingen sammen. Forhåndslytt privat og legg dem i sendekøen.</p><a href="/music-studio.php">Åpne sendekøen →</a> · <a href="/music-library.php">Musikkbibliotek</a></header>
 <?php if($message):?><p class="jingle-notice" role="status"><?=escape($message)?></p><?php endif;?>
 <?php if($error):?><p role="alert"><?=escape($error)?></p><?php endif;?>
-<details class="jingle-upload"><summary>Last opp jingler</summary><form method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="<?=escape($_SESSION['csrf'])?>"><input type="hidden" name="action" value="upload"><label>Velg MP3-filer<input type="file" name="jingles[]" accept=".mp3,audio/mpeg" multiple required></label><p>Inntil 10 filer, 20 MiB per fil og 64 MiB samlet. Originalene lagres privat. Jingler inngår ikke i musikkforslag eller rotasjon.</p><button type="submit">Last opp og klargjør jingler</button></form></details>
+<details class="jingle-upload"><summary>Last opp jingler</summary><form method="post" enctype="multipart/form-data"><input type="hidden" name="csrf" value="<?=escape($_SESSION['csrf'])?>"><input type="hidden" name="action" value="upload"><label>Velg MP3-filer<input type="file" name="jingles[]" accept=".mp3,audio/mpeg" multiple required></label><p>Inntil 10 filer, 20 MiB per fil og 64 MiB samlet. Originalene lagres privat. Timesignal aktiveres separat på jinglekortet.</p><button type="submit">Last opp og klargjør jingler</button></form></details>
 <section aria-labelledby="jingle-list-title"><h2 id="jingle-list-title">Jinglebibliotek <small><?=count($tracks)?> innslag</small></h2><label>Vis kategori<select id="jingle-category"><option value="all">Alle jingler</option><?php foreach(JINGLE_CATEGORIES as $value=>$label):?><option value="<?=escape($value)?>"><?=escape($label)?></option><?php endforeach;?></select></label>
-<p>Knappen «Forhåndslytt» spiller bare i denne nettleseren. Nyhets- og sesongjingler velges manuelt; navn og kategori gir ingen automatisk tidsstyring.</p>
+<p>Knappen «Forhåndslytt» spiller bare i denne nettleseren. Nyhets- og sesongjingler velges manuelt. Timesignal må aktiveres på kortet.</p>
 <div class="jingle-grid"><?php foreach($tracks as $t):$j=$t['jingle']??[];$name=$j['name']??$t['originalName'];$category=$j['category']??'station';$meta=music_library_metadata($t);$ready=$t['available']&&$meta&&!($j['disabled']??false);?>
 <article class="jingle-card" id="jingle-<?=escape($t['id'])?>" data-category="<?=escape($category)?>"><p class="eyebrow"><?=escape(JINGLE_CATEGORIES[$category]??'Stasjonsjingle')?></p><h3><?=escape($name)?></h3><p><?=escape(music_library_duration($meta))?> · <?=($j['disabled']??false)?'Deaktivert':($ready?'Klar til kø':'Mangler klargjøring eller lydfil')?></p>
 <?php $check=$t['technicalCheck']??null;$cue=music_library_cues_current($t); ?>
