@@ -63,3 +63,56 @@ PHP/Node-tester dekker foreldelse, feil, timing, rekkefølge, sperret kø,
 personvern, fire roller og lytteisolasjon. Lokal automatisk nettlesertest
 mangler installert testnettleser. Full CI, selektiv installasjon og faktisk
 VPS-kontroll dokumenteres med separat kvittering etter gjennomføring.
+
+
+## Installert og funksjonskontrollert – 02.11.2026, 09:47 Europe/Oslo
+
+Ni runtime-filer er selektivt installert. Etter mobil- og lenkeretting er alle
+ni identiske med kildecommit 907b0f013afcbbc839ea631266e77c6c002b3bb7.
+Ingen merge, full branch-deploy eller restart av lydmotoren er utført.
+Eksakte før-/etter-hasher, UTC-tider og backuper står i
+[deploykvitteringen](STUDIO-CONTROLROOM-DEPLOY-20261102.json).
+
+Hovedinstallasjon 09:42:22 norsk tid fra f78df87, mobil-CSS 09:44:14 fra
+3ea18bc og to navigasjonsfiler 09:47:14 fra 907b0f0. Hver installasjon
+kontrollerte 120 uendrede beskyttede filer, bevart journalprefix og samme
+motor-PID 770. Begge lydtjenestene forble aktive. Køen og journalen fortsetter
+å utvikle seg normalt gjennom avspilling og eksisterende rotasjonstimer.
+
+Innlogget Chrome på faktisk VPS viser artist/tittel, målt varighet/progresjon
+og neste tre inklusive jingler. PSY → DJ Snake ble observert uten reload;
+køen flyttet jinglen fram. Lytt til teststream startet HTML-lyd med framdrift
+uten mediafeil. Stopp lytting ga paused=true mens serverstatus forble playing.
+Separat 10 sekunders offentlig MP3-dekoding avsluttet uten dekoderfeil.
+Dette er teknisk lydkontroll, ikke en ny subjektiv avlytting fra Thomas.
+
+Kontrollert ved 1440, 390 og 320 CSS-piksler. Mobilmenyen har de samme gruppene;
+ingen horisontal overflyt. En gammel fast topphøyde ble rettet slik at brukerfelt
+og Logg ut ikke dekker innhold. Hopp til innhold og lyttesnarveien bruker nå
+samme eksisterende konsollruting. Fysisk telefon/Safari er ikke prøvd her.
+
+Alle tolv hovedruter er åpnet innlogget på VPS: control, music-library,
+jingles, music-studio, music-queue, music-plan, newsdesk, sending, desk,
+crm, learning og users. Dette er visnings-/tilgjengelighetskontroll,
+ikke utførelse av innholds-, opplastings-, kunde- eller brukerhandlinger.
+Anonym kontrollroms-API gir 401. Rolle/method/negative status-scenarier er
+prøvd syntetisk for å unngå å avbryte den virkelige sendingen.
+
+Eksisterende begrensninger: VPS-Nyhetsdesk oppgir manglende WordPress-tilkobling,
+værdata er utilgjengelige, og intro-e-post for nye brukere er ikke konfigurert.
+RR Audio finnes som saksfunksjon, men lydproduksjon er ikke testet/aktivert i
+oppdraget. Disse forholdene er ikke løst eller skjult som aktive integrasjoner.
+
+Tilbakeføring skjer i motsatt rekkefølge med private rollback.py-filer:
+1. /var/lib/rr-vps-deploy/controlroom-jg0oghdw/rollback.py
+2. /var/lib/rr-vps-deploy/controlroom-37ubhf76/rollback.py
+3. /var/lib/rr-vps-deploy/controlroom-gap3qz8l/rollback.py
+
+Hver tilbakeføring verifiserer gjeldende etterhash før den erstatter bare
+sitt filsett. Den stopper ikke motoren og skriver ikke til produksjonsdata.
+Rollback er klargjort og kodekontrollert; ingen unødvendig faktisk tilbakeføring
+av den fungerende live-visningen er utført.
+
+Neste tre steg i hovedsporet: gjennomgå/samle eksisterende PR-kjede uten blind
+helutrulling; avstemme de manglende VPS-integrasjonene separat; fortsette øvrige
+L02/L04-funksjoner i #109 med samme kø og motor. L02–L05 er ikke ferdigmeldt.

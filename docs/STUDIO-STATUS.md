@@ -1,5 +1,26 @@
 # Studio – felles status og arbeidsliste
 
+## Kontrollrom og felles navigasjon – 02.11.2026, 09:47 Europe/Oslo
+
+ai-studio.php viser nå faktisk VPS-avspilling, målt progresjon og neste tre
+innslag inklusive jingler, med oppdatering uten reload og privat lytting.
+Stopped/disconnected/ukjent vises uten falske aktive låtdata. Lokal musikk og
+manusgrunnlag er adskilt fra servervisningen. Felles meny har sju grupper,
+rollebegrensede lenker og ikke-klikkbare planlagte funksjoner.
+
+Ni runtime-filer er selektivt installert og hashverifisert mot 907b0f0 i PR115.
+Motor-PID770, journalprefix og 120 beskyttede filer er bevart. Reell lytting,
+låtbytte uten reload og Chrome ved 320/390/1440 CSS-piksler er kontrollert.
+Tolv hovedsider er åpnet innlogget. Manglende WordPress-/værtilkobling på VPS
+og ikke-konfigurert bruker-introe-post er eksisterende begrensninger.
+Se [sideoversikt, kontroller og rollback](STUDIO-CONTROLROOM-20261102.md) og
+[installasjonskvittering](STUDIO-CONTROLROOM-DEPLOY-20261102.json).
+
+Neste tre steg: gjennomgå eksisterende PR-kjede; avstemme VPS-integrasjonene
+separat; fortsette øvrige L02/L04-mål i #109. Ingen ny parallell plattform,
+produksjonsflytting eller ferdigmelding av hele L02–L05.
+
+
 ## Cover og logo, 02.11.2026 ca.00:12 Europe/Oslo
 
 96 musikkfiler undersøkt: ingen brukbare innebygde cover (95 mangler, ett
