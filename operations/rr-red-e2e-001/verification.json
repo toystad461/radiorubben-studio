@@ -1,0 +1,23 @@
+{
+    "case_id": "c1e86b371a2a9b2d",
+    "post_id": 4,
+    "post_link": "https://5.249.252.78/wordpress/?p=4",
+    "revision": 28,
+    "checks": {
+        "published": true,
+        "one_post": true,
+        "same_id": true,
+        "same_title": true,
+        "same_body": true,
+        "same_intro": true,
+        "ai_disclosure": true,
+        "source_link": true,
+        "confirmed": true,
+        "changed_source_rejected": true,
+        "tampered_source_rejected": true,
+        "expired_check_rejected": true,
+        "production_target_rejected": true,
+        "non_editor_rejected": true
+    },
+    "other_items": []
+}
