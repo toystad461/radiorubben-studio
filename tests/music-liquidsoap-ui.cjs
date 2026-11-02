@@ -238,8 +238,16 @@ async function setup(browser,html,width,engine){
       assert(await page.locator('[data-entry-id="occurrence-2"] [data-queue-action="remove"]').isEnabled());
       assert(await page.locator('[data-entry-id="occurrence-1"] [data-queue-action="remove"]').isDisabled());
       assert(await page.locator('#studio-catalog').getByRole('button',{name:'Spill neste',exact:true}).isEnabled());
+      await page.locator('[data-entry-id="occurrence-1"] [data-queue-action="insert"]').click();
+      assert(await page.locator('#insert-dialog').isVisible());
+      assert.deepEqual(await page.locator('#insert-type option').allTextContents(),['Stikk','Innlegg','Jingle','Reklame','Hilsen','Ønske','Sang']);
+      assert((await page.locator('#insert-position').innerText()).includes('Testlåt 1'));
+      assert((await page.locator('#insert-position').innerText()).includes('Testlåt 2'));
+      await page.locator('#insert-close').click();
       p.reserved={'occurrence-2':state.snapshot.entries[1]};p.seq++;
       await page.waitForFunction(()=>document.querySelector('#studio-catalog button:last-child').disabled);
+      assert(await page.locator('[data-entry-id="occurrence-1"] [data-queue-action="insert"]').isDisabled());
+      assert(await page.locator('[data-entry-id="occurrence-2"] [data-queue-action="insert"]').isEnabled());
       assert(await page.locator('[data-entry-id="occurrence-2"] [data-queue-action="remove"]').isDisabled());
       p.reserved={};p.seq++;
       await page.waitForFunction(()=>!document.querySelector('#studio-catalog button:last-child').disabled);

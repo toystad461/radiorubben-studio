@@ -144,7 +144,7 @@ function renderPlayer() {
   renderMonitorControl();
   // Player events change seq independently of the saved queue revision. Update
   // only row status and controls so open editors and unsaved fields stay put.
-  renderQueueStatus();renderCatalogControls();if($('insert-dialog').open)renderInsertResults();
+  renderQueueStatus();renderCatalogControls();if($('insert-dialog').open)for(const b of $('insert-results').querySelectorAll('button'))b.disabled=!insertionAllowed(insertion?.afterId);
 }
 // Reuse unchanged rows, including their focus and scroll position.
 function stableRows(parent, items, key, build, signature = JSON.stringify) {
