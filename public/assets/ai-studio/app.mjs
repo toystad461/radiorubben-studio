@@ -10,7 +10,7 @@ import { StudioEvents, StudioLog } from './services/events.mjs';
 import { MidiService } from './services/midi.mjs';
 import { ACTIONS, PadMapping } from './services/mapping.mjs';
 import { interpretRode } from './services/rodecaster.mjs';
-import { initPlayerSlot } from './services/player-slot.mjs';
+import { initPlayerSlot } from './services/player-slot.mjs?v=20261102';
 import { emptyContext, demoContext, estimateSeconds, prepareDraft } from './services/producer.mjs';
 const $ = id => document.getElementById(id);
 initPlayerSlot();

@@ -28,6 +28,10 @@ jobs:
         run: bash tests/test-deploy-block.sh
       - run: python3 tests/test-audio-key.py
       - run: composer test
+      - name: Check controlroom status and role navigation
+        run: |
+          php tests/controlroom.php
+          node tests/controlroom.mjs
       - name: Check separate music player and web service users
         run: sudo php tests/music-playout-permissions.php
       - if: matrix.php == '8.4'
