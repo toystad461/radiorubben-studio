@@ -1,5 +1,11 @@
 # Studio – felles status og arbeidsliste
 
+## PR104 – KI-inventar mot installert app, 02.11.2026
+
+Bestilt: bibliotekstatus, aktivering/verifisering av KI-jobb, prøveutvalg og resten av biblioteket. Ny lesende CLI-kontroll skiller full lydanalyse fra L02s tekniske cue-kontroll og viser mangler per låt. Den laster ikke nøkler, gjør ingen API-kall og endrer ikke bibliotek, cue-punkter eller sendegodkjenninger. Kodehashene for den installerte appen følger rapporten.
+
+Syntetiske tester er lagt til for PR104-grunnlaget og fastlåst L02-kode 650e24cde9deebb98d65976189503e170fd7c56b. CI må leses før bestått status. Lokalt finnes ikke native PHP. Serverkontroll avventer tilgang: agentøkten har ingen SSH-nøkkel og nettleseren avviser IP-sertifikatet. Ingen VPS-endring, faktisk analyse eller pilot er utført. Eksisterende rubben-test-tilgang må brukes til den lesende kontrollen; deretter videreføres den allerede autoriserte leveransen. Se [kontroll og videre løp](MUSIC-AI-READINESS-20261102.md).
+
 ## PR104 – administrativt engangsoppsett klart, 21.10.2026
 
 scripts/music-ai-vps-install.py --install installerer bare nye rr-music-ai-enheter.

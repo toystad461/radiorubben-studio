@@ -7,6 +7,7 @@ on:
       - 'scripts/music-ai-*'
       - 'tests/test-music-ai-*'
       - 'tests/recovered/test-music-ai-worker.php'
+      - 'tests/recovered/test-music-ai-inventory.php'
       - '.github/workflows/music-ai-worker.yml'
 permissions:
   contents: read
@@ -24,3 +25,11 @@ jobs:
       - run: composer install --no-dev --prefer-dist --no-interaction
       - run: python3 tests/test-music-ai-vps-install.py
       - run: php tests/recovered/test-music-ai-worker.php
+      - run: php -l scripts/music-ai-inventory.php
+      - run: php tests/recovered/test-music-ai-inventory.php
+      - uses: actions/checkout@v4
+        with:
+          ref: 650e24cde9deebb98d65976189503e170fd7c56b
+          path: .compat/studio
+      - run: composer install --working-dir=.compat/studio --no-dev --prefer-dist --no-interaction
+      - run: RR_MUSIC_AI_TEST_APP="$GITHUB_WORKSPACE/.compat/studio" php tests/recovered/test-music-ai-inventory.php
