@@ -57,8 +57,15 @@ Eksisterende studio-board-mobile-test kontrollerer også at overgang til
 innstillinger og tilbake bevarer ulagret manus uten å starte lyd.
 CI lager skjermbilder som studio-menu-screenshots.
 
-Lokal Node-syntakskontroll består. PHP og testnettleser er ikke installert i
-denne arbeidsøkten; utførelse og resultat følges i GitHub Actions.
+Kontrollert kildecommit: 9bbfae2c7b97414c2b3b96b18aeafa731cb6c5d8.
+[PHP-/mobilkjøring 41459886557](https://github.com/toystad461/radiorubben-studio/actions/runs/41459886557)
+består på PHP 8.2/8.4 og i full eksisterende mobil-/desktop-suite.
+De nye menytestene og konsollbytte med bevart ulagret manus består.
+Skjermbildene på 390 og 1440 px er også visuelt gjennomgått.
+Køkontraktene på PHP 8.2/8.4 besto på 49e37ac; de siste endringene gjelder
+bare fokusmarkering i CSS, fjerning av dobbelt Studio-navn og uendret filmodus.
+Kandidatmanifestet er oppdatert til ny navigasjonshash. Ingen test er fjernet
+eller gjort svakere for å få grønt resultat.
 Grønn CI og skjermbilder dokumenterer isolert kode, ikke aktiv VPS.
 
 ## Installasjonsstatus og neste handling

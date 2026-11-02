@@ -2,20 +2,25 @@
 
 ## Menyopprydding i #115/L02 – 02.11.2026 Europe/Oslo
 
-Avgrenset videreføring fra 650e24c. Studio har direkte kontrollrom, sendekø og
-lydproduksjon, med sammenleggbart bibliotek og forberedelse. Redaksjon, Robåt,
-Samarbeid og Innstillinger er egne grupper. Alle eksisterende adresser og roller
-beholdes; «Sendeliste» heter «Redaksjonell kjøreplan» i menyen. Planlagte,
-ikke-tilkoblede sider er fjernet fra den daglige menyen, ikke fra kodebasen.
-WP-overgang og teknisk Robåt-jobboversikt er uttrykkelig ikke ferdigmeldt.
-Nyere kø-/manus-/timeinnslagsarbeid beholdes.
+Kode ferdig i 9bbfae2: direkte kontrollrom, sendekø og lydproduksjon,
+med sammenleggbart bibliotek og forberedelse. Redaksjon, Robåt, Samarbeid og
+Innstillinger er egne grupper. Alle tidligere lenkemål og roller beholdes.
+«Sendeliste» heter «Redaksjonell kjøreplan» i menyen. Ingen WP-migrering,
+ny Robåt-jobbkonsoll eller endring av kø, lyd, innhold eller godkjenninger.
+Nyere kø-/manus-/timeinnslagsarbeid er bevart.
 
-Kode og målrettede tester klargjøres i samme PR. Selektiv VPS-installasjon er
-ikke utført: denne økten har ingen konfigurert VPS-SSH-forbindelse, og nettleseren
-stopper på sertifikatfeil for test-IP-en. Ingen sikkerhetssperre er omgått.
-Se [omfang, filsett og kontrollstatus](STUDIO-MENU-20261102.md).
-Neste steg er CI-kontroll, deretter fersk VPS-filavstemming, selektiv installasjon
-av seks filer med privat backup og kontroll av meny, roller og uendret stream.
+PHP 8.2/8.4 og full mobil-/desktop-suite er grønne i
+[41459886557](https://github.com/toystad461/radiorubben-studio/actions/runs/41459886557).
+Menytesten dekker fire roller, 320/390/800/1440 px og tastatur uten JS.
+Eksisterende Studio-test bekrefter bevart ulagret manus ved konsollnavigasjon.
+Skjermbilder på 390/1440 px er visuelt gjennomgått.
+
+IKKE installert på VPS: økten mangler konfigurert administratorforbindelse,
+og nettleseren stopper på ERR_CERT_COMMON_NAME_INVALID for test-IP-en.
+Ingen sikkerhetssperre er omgått. Se [leveransen](STUDIO-MENU-20261102.md).
+Neste steg: gjenopprett eksisterende VPS-tilgang, avstem faktiske filer og
+installer kun de seks menyfilene med privat backup og etterkontroll.
+Dette er en tilgangssperre, ikke en ny forespørsel om samme godkjenning.
 
 
 ## Køinnsetting og manus – installert 02.11.2026, 14:20–14:32 Europe/Oslo
