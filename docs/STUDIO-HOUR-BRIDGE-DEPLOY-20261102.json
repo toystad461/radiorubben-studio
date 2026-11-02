@@ -1,0 +1,92 @@
+{
+  "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+  "files": [
+    {
+      "source": "app/music-hour-bridge.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-hour-bridge.php",
+      "before": null,
+      "after": "176154e4ff38149219a5e35d52e44bf5692d98b14bcb283b9b8f5835cfc0738e",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "app/music-hour-bridge-worker.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-hour-bridge-worker.php",
+      "before": null,
+      "after": "d0ca38d6feb6f502ca55ec3abecfddab0d517527974402140cb08ad799592f98",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "app/music-hourly.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-hourly.php",
+      "before": "a5b4b1c4a564eb52c96592fe14204169308c389db5d4750c235763a68eb60ace",
+      "after": "f311e08d294350c98f8c9c828de374f967b9b39ebda25177cd96a9dd7246584b",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "app/music-playout.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-playout.php",
+      "before": "9cd55c7f2932b9a4be5a936d56786ea12d6d0472b2cd1c172c53269a7fe7def0",
+      "after": "cb3637fdf696cf4dabe17ab63e9b5bb9266c4cbff6030ab9f55951ff0768fec8",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "app/music-studio.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-studio.php",
+      "before": "4dc38cbf272a8913e9ec246e70f8d1ed58d8e88e88a8f9b77fab6a9ba9861353",
+      "after": "b1f3949a07a10f4aac104b57c1f9abdb180b1e1f98c270579c988986152e5511",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "public/assets/music-studio.mjs",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/public/assets/music-studio.mjs",
+      "before": "ea0650ee3daeb7060e4d8df4d852c2ca2d61c5c1954125f633bfab8ee1da7f8c",
+      "after": "e59bc7e8998128fbfa2db36c7f69afda59749b94ffc0addacf3c4f1b574467e5",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "public/music-studio.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/public/music-studio.php",
+      "before": "40b98f1929fb5460eda1e7d9d6d812c27db2d5c0b90e59701e7fa1042297970d",
+      "after": "2ba9ae2aa8913e3de125ca42e61274b9d441e49d2dcfa67bebecfd3489100f9e",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "scripts/music-rotation.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/scripts/music-rotation.php",
+      "before": "4ad195ecf96d8f284ca4059ad848812588668ef5045c74e10a49902bdd7dd259",
+      "after": "c5d9eaf546bb812cc824bf0c155ca65448905db208eca395ed482d34ac33b66f",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "scripts/music-hour-bridge.py",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/scripts/music-hour-bridge.py",
+      "before": null,
+      "after": "3764ff2adf9b9ed1c8d833bee496e353d124328fa8ca38460f295c1d4e41ed47",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    }
+  ],
+  "sourceCommit": "b65ae91b47eeb9becc11d59a174fe484d9235928",
+  "installedAtUtc": "2026-11-02T13:38:27Z",
+  "backup": "/var/lib/rr-vps-deploy/hour-bridge-ux_e0yc9",
+  "pidUnchanged": "770",
+  "journalPrefixBytesPreserved": 8864471,
+  "protectedFilesUnchanged": 111
+}

@@ -7,8 +7,12 @@ Faktisk generert manus og forkorting er kontrollert. Plusstegn etter køinnslag 
 sju typer og innsetting av lagret lyd på valgt plass, med låse-/versjonskontroll.
 Desktop og mobil kontrollert på VPS; hel sang til innsatt stikk lydtestet isolert.
 Se [manus](STUDIO-PRODUCER-VPS-20261102.md) og [køinnsetting](STUDIO-QUEUE-INSERT-20261102.md).
-Tre neste steg: fullfør timeglimtenes tester/innføring, koble TTS-produksjon til
-lagrede innslag, og gjør videre UI-arbeid i samme PR115. Ingen parallell plattform.
+Timeglimt er også installert og aktivert14:38; faktisk visning venter på en
+18–45sekunders luke. Isolert21sekunders montage er lydtestet med0,0sekunders gap.
+Se [timeinnslag](STUDIO-HOUR-BRIDGE-20261102.md).
+Tre neste steg: verifiser første kvalifiserte timeinnslag på aktiv stream,
+koble automatisk TTS til lagrede innslag, og avklar resterende CI-lydjobb.
+Ingen parallell plattform. Hele L02–L05 er ikke ferdigmeldt.
 
 
 ## Spill neste under avspilling – installert 02.11.2026, 12:33 Europe/Oslo
