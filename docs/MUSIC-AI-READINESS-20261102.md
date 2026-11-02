@@ -33,8 +33,39 @@ systemctl show rr-music-ai-proxy.service rr-music-ai.service rr-music-ai.timer -
 
 Det eldre --install-løpet aktiverer timeren etter én vurdering. Det er ikke den avtalte ti-låts-piloten og skal ikke brukes uendret for denne leveransen.
 
-## Kontrollstatus
+## Faktisk VPS-kontroll mottatt 02.11.2026 kl. 13:59 UTC
 
-Ny PHP-test dekker gyldige og utdaterte vurderinger, teknisk cue uten full analyse, manglende artist, manglende original, kjørende analyse, jingler og at bibliotek/originaler ikke skrives. Den dedikerte CI-jobben prøver både PR104s appkode og fastlåst L02-kode 650e24cde9deebb98d65976189503e170fd7c56b. Native PHP finnes ikke i agentens lokale miljø; faktisk CI-resultat skal leses før testen meldes bestått.
+Thomas kjørte den fastlåste inventory-kopien fra 5267ad23. Rapporten har status read_only_inventory, og bibliotekets før-/etterhash er identisk. Aktiv app peker på releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb. Dette er en faktisk runtime-observasjon; den erstatter eldre antakelser om at KI-tjenestene ikke er installert.
 
-VPS-kontroll er blokkert i agentøkten: ingen SSH-nøkkel er tilgjengelig, lokal nettleserkobling er ikke eksponert og sky-nettleseren avviser VPS-IP-ens sertifikat med ERR_CERT_COMMON_NAME_INVALID. Ingen sikkerhetssperre er omgått. Eksisterende Windows/Mac-alias rubben-test er dokumentert vei videre. Faktisk bibliotekantall, API-tilgang, installasjon og KI-pilot er derfor ikke bekreftet.
+| Kontroll | Resultat |
+| --- | ---: |
+| Registrerte filer | 129 |
+| Musikk / annen lyd | 121 / 8 |
+| Gyldige filmetadata | 121 |
+| Gjeldende tempo/toneart | 2 |
+| Full lydprofil | 1 |
+| Teknisk cue-kontroll klar | 114 |
+| Gjeldende KI-vurdering | 0 |
+| Komplett grunnlag for KI | 1 |
+
+119 låter mangler gjeldende tempo/toneart, og 120 mangler full lydprofil. Én låt mangler artist. Én lydjobb står running; rapporten beviser ikke om arbeidsleien fortsatt er aktiv. Den ene kvalifiserte låten har musicAiJob=failed og tre forsøk; det må kontrolleres om inngangsgrunnlaget fortsatt er identisk før den tolkes som sperret av forsøksgrensen.
+
+rr-music-ai-proxy.service er active/running og rr-music-ai.timer er active/waiting, begge enabled. Worker-tjenesten er inactive/dead mellom kjøringene; dette alene er normalt for Type=oneshot, ikke bevis på en feil. Ingen gjeninstallasjon er nødvendig ut fra dette funnet.
+
+Full analyse i eksisterende kode skjer fortsatt i musikkbibliotekets åpne nettleserfane. L02s tekniske serverkontroll leverer ikke tempo/toneart og full profil. Avstem nå også kodehasher for køsiden og nettlesermotoren før videre feilsøking. Bruk eksisterende klargjøringskø; ikke merk tekniske cue-punkter som fullført analyse.
+
+## Avgrenset API-diagnostikk
+
+scripts/music-ai-diagnostics.php --check --app-root=... gir bare lokal status. --probe krever i tillegg --track-id=... og gjør maksimalt ett kall med den installerte musikkprodusentens virkelige skjema og låtens metadata/målinger. Den sender ikke original lyd og lagrer ikke vurderingen. Et gyldig prøvesvar er derfor ikke en ferdig vurdert låt i biblioteket.
+
+Kjør kopien midlertidig som rr-studio med samme localhost:3140-proxy og IP-begrensning som KI-jobben, men med hele filsystemet skrivebeskyttet. Ingen timer, konfigurasjon, forsøksgrense, godkjenning, original eller sendekø endres. Ikke bruk --once eller nullstill tre forsøk før årsaken er kjent.
+
+Rapporten viser transportfeilkode, HTTP-status, et begrenset sett kjente API-feilkoder, ufullstendig svar eller valideringsfeil. Rå API-feiltekst, exception-tekst, nøkler og svarinnhold skrives aldri ut. Kontroll av nøkkel er bare apiKeyPresent; et positivt felt beviser ikke at nøkkelen virker. Kontroll av likt inngangsgrunnlag og lydjobbenes aktive arbeidsleie er inkludert.
+
+Målrettede tester bruker syntetisk transport med den faktiske produsentfunksjonen og kontrollerer 401/429/transportfeil, ufullstendig/ugyldig svar, ingen nøkkellekkasje, nøyaktig ett kall, gyldig uspart vurdering og uendret bibliotek/original. De kjøres også mot fastlåst L02-kode. CI-resultat må leses før bestått status oppgis.
+
+Neste: få denne rapporten via eksisterende rubben-test-tilgang, rett den konkrete API-/svarfeilen, og avgrens timeren før ca. ti låter ferdiganalyseres og vurderes. Full pilot og behandling av resterende bibliotek gjenstår; agenten har fortsatt ingen egen SSH-tilgang.
+
+## Tidligere verifisering
+
+Inventory-kode 5267ad23 besto målrettet PHP8.3/installer og L02-kompatibilitet i run 41457009471, PHP8.2/8.4 og nettleser/mobil i run 41457009329. Ingen serverutrulling ble kjørt av agenten. Den faktiske lesende VPS-kontrollen over er mottatt etter disse kjøringene.

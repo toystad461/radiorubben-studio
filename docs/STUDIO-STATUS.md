@@ -1,5 +1,11 @@
 # Studio – felles status og arbeidsliste
 
+## PR104 – faktisk bibliotekstatus og neste feilsøking, 02.11.2026
+
+VPS-rapport fra Thomas kl.13:59 UTC: 121 låter og åtte andre lydfiler. 121 har filmetadata, to tempo/toneart, én full lydprofil, 114 teknisk cue-kontroll og ingen gyldig KI-vurdering. Én låt har komplett grunnlag, men tre feilede KI-forsøk. Én lydjobb står running, og én låt mangler artist. Bibliotekhash er uendret under kontrollen. KI-proxy og timer er allerede aktive; tidligere uavklart installasjonsstatus er dermed avklart. Inactive/dead for oneshot-jobben mellom timerkjøringer er ikke alene en feil.
+
+Ny avgrenset diagnostikk gjør høyst ett API-kall med eksisterende musikkprodusents skjema, skiller transport/HTTP/svarvalidering og skriver aldri vurdering eller nøkkel. Kjøres midlertidig som rr-studio med eksisterende proxy/IP-begrensning og skrivebeskyttet filsystem. Tester og L02-kompatibilitet er lagt til; faktisk CI må avleses. Ingen VPS-endring, ny analyse, gjenstart eller nullstilling av forsøk er utført av agenten. Tilgang via brukerens rubben-test er fortsatt nødvendig. Se [funn og videre løp](MUSIC-AI-READINESS-20261102.md).
+
 ## PR104 – KI-inventar mot installert app, 02.11.2026
 
 Bestilt: bibliotekstatus, aktivering/verifisering av KI-jobb, prøveutvalg og resten av biblioteket. Ny lesende CLI-kontroll skiller full lydanalyse fra L02s tekniske cue-kontroll og viser mangler per låt. Den laster ikke nøkler, gjør ingen API-kall og endrer ikke bibliotek, cue-punkter eller sendegodkjenninger. Kodehashene for den installerte appen følger rapporten.
