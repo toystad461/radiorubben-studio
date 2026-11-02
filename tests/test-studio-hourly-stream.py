@@ -4,6 +4,8 @@ import importlib.util
 import json
 import subprocess
 import hashlib
+import math
+from array import array
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location('stream', Path(__file__).with_name('test-studio-stream.py'))
@@ -24,7 +26,7 @@ try:
     track['metadata'].update(sourceSha256=sha, durationSeconds=1.254)
     t.library.write_text(json.dumps({'schemaVersion':1,'tracks':t.tracks}))
     t.library_bytes = t.library.read_bytes()
-    ids = t.queue([0,1,2])
+    ids = t.queue([0,1,3])
     path = t.site/'config/music-play-queue.private.json'
     q = json.loads(path.read_text())
     q['studio']['rotation'] = {'enabled':True,'crossfade':3}
@@ -34,6 +36,9 @@ try:
     q['entries'][1]['hourlyHour'] = 1793617200
     path.write_text(json.dumps(q))
     t.change({'action':'sync'})
+    body={'action':'hourly','revision':t.view()['revision'],'hourly':{'trackId':track['id'],'sha256':sha,'notBefore':1793617200}}
+    assert t.api(body,role='presenter')[0]==400
+    assert t.api(body,csrf='invalid')[0]==403
     t.start_icecast()
     t.start_worker()
     listener = t.listen()
@@ -49,6 +54,16 @@ try:
     output = t.root/'hour.mp3'
     output.write_bytes(listener.data)
     subprocess.run([t.ffmpeg,'-v','error','-i',str(output),'-f','null','-'],check=True)
+    raw = subprocess.check_output([t.ffmpeg,'-v','error','-i',str(output),'-ac','1','-ar','8000','-f','f32le','-'])
+    samples = array('f'); samples.frombytes(raw)
+    pulses = []; active = False
+    for start in range(0,len(samples)-160,160):
+        power = abs(sum(v*complex(math.cos(2*math.pi*880*i/8000),math.sin(2*math.pi*880*i/8000)) for i,v in enumerate(samples[start:start+160])))/160
+        on = power > .02
+        if on and not active: pulses.append(0.)
+        if on: pulses[-1] += .02
+        active = on
+    assert len(pulses)==2 and all(.1<p<.22 for p in pulses),pulses
     assert t.library.read_bytes()==t.library_bytes
     print(json.dumps({'passed':True,'started':ids,'duration':[e['renderedSeconds'] for e in outcomes],'hourIdentityPreserved':True,'musicOverlapIntoSignal':False}))
     ok = True
