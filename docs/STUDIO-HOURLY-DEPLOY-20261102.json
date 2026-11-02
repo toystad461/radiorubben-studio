@@ -1,0 +1,228 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-02",
+  "timezone": "Europe/Oslo",
+  "scope": "Hourly double beep in existing Studio rotation; no TTS or song clips generated",
+  "deployments": [
+    {
+      "sourceCommit": "3e0ed70d75ac30c5da73005425fba10d6addb6e1",
+      "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+      "files": [
+        {
+          "path": "app/music-hourly.php",
+          "before": null,
+          "after": "4dda7289a3fe2c06f00620744f0f4e592df9e5ad1c3a2364934b05b89c60ca00"
+        },
+        {
+          "path": "app/jingles.php",
+          "before": "ca1d8dac595d29cd4911b2f0c44a1d268f98ffd44d475114f855f47eaa118df2",
+          "after": "0ad87e1365b6e5a632f57e50c0d2bbdcd8aec96b154e11b7fe083e211d83fb84"
+        },
+        {
+          "path": "app/music-playout.php",
+          "before": "46913f5ecad2da6830136422d3e91ca31dda77864ac8b5f843c351c1065da5f8",
+          "after": "2c8bf6018da7be4a07ec9d720bd61cdd3ef4d381e7536befc8c238b4994a5afe"
+        },
+        {
+          "path": "app/music-rotation.php",
+          "before": "8b2b6194939ee659b7d34524827ff1c6c8e6b86344cddd800a8278e78daef947",
+          "after": "3f9736dd50bcdc42e746f9e21715a9f04566eee3b98e4781d750b77cf007a135"
+        },
+        {
+          "path": "app/music-studio.php",
+          "before": "a597e9968b66121152d0364e97136cdfc2117e3b37be7d8cb52bd9203551449d",
+          "after": "f59de880781e171254d2760868d39523b6e76091f65e50fcda14ce89104fe5a6"
+        },
+        {
+          "path": "public/jingles.php",
+          "before": "7588f7bf42eaf02169532d6e618a3d6d9083ca03b6ff0de9ed543e5e6df029f2",
+          "after": "e00efa617c77e41e363d9fb557570a7fc3b93a488bf4fac207b11609200614eb"
+        }
+      ],
+      "backup": "/var/lib/rr-vps-deploy/hourly-a4tkcvvq",
+      "installedAtUTC": "2026-11-02T10:32:10Z",
+      "protectedFilesUnchanged": 120,
+      "journalPrefixBytesPreserved": 7233394,
+      "motorPidUnchanged": "770",
+      "services": "active"
+    },
+    {
+      "sourceCommit": "df4d5ecbec710c12ff0f3b84a0f8d45f4a819910",
+      "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+      "files": [
+        {
+          "path": "public/assets/jingles.css",
+          "before": "301ee1ebf0883c833fe93afffde11d795ea6c3c5f6d1ba9789123053f06006ae",
+          "after": "9270651a664f085b02d61991870832af84268d2f2ffe1e6413d122fa68b8dbea"
+        },
+        {
+          "path": "public/jingles.php",
+          "before": "e00efa617c77e41e363d9fb557570a7fc3b93a488bf4fac207b11609200614eb",
+          "after": "308883106c69ef14d5561d6c341b6d72217cccb88b670ff4cdc7b343e158e6fb"
+        }
+      ],
+      "backup": "/var/lib/rr-vps-deploy/hourly-q05t_uay",
+      "installedAtUTC": "2026-11-02T10:34:10Z",
+      "protectedFilesUnchanged": 121,
+      "journalPrefixBytesPreserved": 7233394,
+      "motorPidUnchanged": "770",
+      "services": "active"
+    },
+    {
+      "sourceCommit": "aac974ac1b2610d44113870c9f9cbd6d09f26b1d",
+      "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+      "files": [
+        {
+          "path": "app/music-hourly.php",
+          "before": "4dda7289a3fe2c06f00620744f0f4e592df9e5ad1c3a2364934b05b89c60ca00",
+          "after": "dc05acb32d05606ec58b87e2f950c68c42202236a13bb63d9e99077ae5d801ac"
+        }
+      ],
+      "backup": "/var/lib/rr-vps-deploy/hourly-kdhpswl7",
+      "installedAtUTC": "2026-11-02T10:36:00Z",
+      "protectedFilesUnchanged": 121,
+      "journalPrefixBytesPreserved": 7256792,
+      "motorPidUnchanged": "770",
+      "services": "active"
+    }
+  ],
+  "activation": {
+    "activatedAtUtc": "2026-11-02T10:32:22+00:00",
+    "trackId": "acfd82963931d6bd91dc84f7568695e5",
+    "sha256": "6ba024c7e85f1ac7442b02ef55cb6a82456c81ae62afa3850bab0167f17234a8",
+    "sourceDuration": 1.202,
+    "queueRevision": 642,
+    "signals": [
+      {
+        "id": "6d781110d299ffe24e3c1adb66d87d25",
+        "kind": "jingle",
+        "trackId": "acfd82963931d6bd91dc84f7568695e5",
+        "sha256": "6ba024c7e85f1ac7442b02ef55cb6a82456c81ae62afa3850bab0167f17234a8",
+        "locked": false,
+        "hourlyHour": 1793617200,
+        "plannedAt": "2026-11-02T12:01:41.660+01:00",
+        "playback": {
+          "cueIn": 0,
+          "cueOut": 1.2,
+          "crossfadeOut": 0
+        }
+      }
+    ],
+    "preview": {
+      "hourUtc": 1793617200,
+      "localHour": "2026-11-02 12:00 +01:00",
+      "queueRevision": 642,
+      "songs": [
+        {
+          "id": "54e178d10c5d49b3d030b95610b05ce8",
+          "trackId": "23293cc9763945755a1301c6331595ed",
+          "sha256": "bcc0d2f9dcd3347765e51d864e9c9215d230650829f556c009769f3e152bf00c",
+          "plannedAt": "2026-11-02T12:01:48.406+01:00"
+        },
+        {
+          "id": "ea19b3924a282ab0baec9ee484665768",
+          "trackId": "26280a0d0af299c36a20d4c6f821a8ee",
+          "sha256": "814a5dd63e18df30325547442e3e34c2adf779e3174b401f31c0b9b1cc08a9f5",
+          "plannedAt": "2026-11-02T12:05:05.461+01:00"
+        },
+        {
+          "id": "f65fb4c80d749aad2f32d64f095cd9d5",
+          "trackId": "2813706a9705785afef1c0db01425f32",
+          "sha256": "1d6ddc5b2431f232516ae66d0caffebb6ab7586697d240d737bf622f1464b21a",
+          "plannedAt": "2026-11-02T12:08:19.555+01:00"
+        }
+      ],
+      "speechReady": false,
+      "clipsReady": false
+    },
+    "existingTracksPreserved": 102,
+    "journalPrefixBytesPreserved": 7233394,
+    "motorPidUnchanged": "770",
+    "backup": "/var/lib/rr-vps-deploy/hourly-a4tkcvvq"
+  },
+  "verification": {
+    "atUtc": "2026-11-02T10:36:39+00:00",
+    "mode": "playing",
+    "online": true,
+    "connected": true,
+    "currentTitle": "Hey Everybody! (Radio Edit)",
+    "position": 126.87999999999738,
+    "queueRevision": 652,
+    "signals": [
+      {
+        "signal": {
+          "id": "6d781110d299ffe24e3c1adb66d87d25",
+          "kind": "jingle",
+          "trackId": "acfd82963931d6bd91dc84f7568695e5",
+          "sha256": "6ba024c7e85f1ac7442b02ef55cb6a82456c81ae62afa3850bab0167f17234a8",
+          "locked": false,
+          "hourlyHour": 1793617200,
+          "plannedAt": "2026-11-02T12:01:41.690+01:00",
+          "playback": {
+            "cueIn": 0,
+            "cueOut": 1.2,
+            "crossfadeOut": 0
+          }
+        },
+        "previous": {
+          "id": "97bfaf61daeaae024bf76ab62830e2d8",
+          "kind": "music",
+          "trackId": "227d9abdc3ad5b7497f0a158bbf0b796",
+          "sha256": "d9b3e7113387f58f2116a021f7b3fadfb36204a37b951fda01d3ec8c2a2343c5",
+          "locked": false,
+          "plannedAt": "2026-11-02T11:58:11.083+01:00",
+          "playback": {
+            "cueIn": 0,
+            "cueOut": 210.607,
+            "crossfadeOut": 0
+          }
+        }
+      }
+    ],
+    "completedSignals": []
+  },
+  "installedRuntimeMatches": "aac974ac1b2610d44113870c9f9cbd6d09f26b1d",
+  "checks": {
+    "syntheticActualMp3": "PASS: 12s music, 1.2s double beep, 12s music; two frequency-detected pulses; no overlap",
+    "privateBrowserPreview": "PASS: duration 1.2, readyState 4, no media error; playback ended",
+    "desktopMobile": "PASS: desktop and 390 CSS pixels; no horizontal overflow; status no longer overlaps buttons",
+    "publicStreamDecode": "PASS: ten seconds after activation",
+    "firstScheduledBroadcast": "not yet due at verification time; expected approximately 12:01:42 Europe/Oslo",
+    "queueUi": "PASS: 12:01:41 Jingle Timesignal – dobbel pip shown in actual authenticated send queue",
+    "stableRefill": "PASS: same signal ID and revision 652 across checks at 11:36:39 and 11:37:32 Europe/Oslo",
+    "rollbackSyntax": "PASS: three private rollback scripts parsed; not executed"
+  },
+  "finalInstalledHashes": {
+    "app/music-hourly.php": "dc05acb32d05606ec58b87e2f950c68c42202236a13bb63d9e99077ae5d801ac",
+    "app/jingles.php": "0ad87e1365b6e5a632f57e50c0d2bbdcd8aec96b154e11b7fe083e211d83fb84",
+    "app/music-playout.php": "2c8bf6018da7be4a07ec9d720bd61cdd3ef4d381e7536befc8c238b4994a5afe",
+    "app/music-rotation.php": "3f9736dd50bcdc42e746f9e21715a9f04566eee3b98e4781d750b77cf007a135",
+    "app/music-studio.php": "f59de880781e171254d2760868d39523b6e76091f65e50fcda14ce89104fe5a6",
+    "public/jingles.php": "308883106c69ef14d5561d6c341b6d72217cccb88b670ff4cdc7b343e158e6fb",
+    "public/assets/jingles.css": "9270651a664f085b02d61991870832af84268d2f2ffe1e6413d122fa68b8dbea"
+  },
+  "ci": {
+    "commit": "aac974ac1b2610d44113870c9f9cbd6d09f26b1d",
+    "conclusion": "success",
+    "runs": [
+      {
+        "name": "PHP, Composer og nettlesertester",
+        "id": 41430078231,
+        "url": "https://github.com/toystad461/radiorubben-studio/actions/runs/41430078231",
+        "conclusion": "success"
+      },
+      {
+        "name": "Liquidsoap, MP3, dobbel pip og omstart",
+        "id": 41430078259,
+        "url": "https://github.com/toystad461/radiorubben-studio/actions/runs/41430078259",
+        "conclusion": "success"
+      },
+      {
+        "name": "Release-verifikasjon",
+        "id": 41430078289,
+        "url": "https://github.com/toystad461/radiorubben-studio/actions/runs/41430078289",
+        "conclusion": "success"
+      }
+    ]
+  }
+}

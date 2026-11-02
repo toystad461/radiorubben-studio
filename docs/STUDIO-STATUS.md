@@ -1,11 +1,23 @@
 # Studio – felles status og arbeidsliste
 
-## Timesignal – under arbeid 02.11.2026
+## Timesignal – installert 02.11.2026, 11:36 Europe/Oslo
 
-Dobbel pipelyd ved første naturlige låtskifte etter hel time er bestilt.
-Kode og målrettede tester er lagt i eksisterende PR115. Ikke installert ennå.
-Se [funksjon og verifisering](STUDIO-HOURLY-20261102.md).
-Neste steg: grønn Linux/lyd-CI, selektiv backup/installasjon, faktisk VPS-kontroll.
+Dobbel pipelyd er aktivert ved første naturlige låtskifte etter hel time, etter
+brukerens valg. Én ny kildebundet jingle på 1,2 sekunder inngår i samme kø.
+Sju berørte runtime-filer matcher aac974a i eksisterende PR115. Alle tre
+CI-workflows på denne versjonen er grønne, inklusive faktisk lyd. Motor-PID770,
+journal og alle 102 eksisterende biblioteksinnslag er bevart. Ingen motorrestart.
+Jinglebiblioteket viser aktivt timesignal, privat lytting og av-knapp; desktop og
+390-pikslers mobilvisning er kontrollert. Første innslag er planlagt rundt
+12:01:42 og er ennå ikke sendt ved denne kontrollen. Den isolerte ekte lydtesten
+har målt to pip mellom hele sanger uten overlapp; offentlig stream dekoder normalt.
+
+Grunnlag for senere timestikk og tre musikkglimt bruker faktisk kørevisjon og
+filidentiteter. Tale og klipp er ikke generert. Se [funksjon og verifisering](STUDIO-HOURLY-20261102.md)
+og [installasjonskvittering](STUDIO-HOURLY-DEPLOY-20261102.json).
+Neste tre steg: kontrollere første faktiske timesignal; bygge timestikk fra
+verifisert timekø; velge og produsere tre kildebundne musikkglimt.
+
 
 ## Kontrollrom og felles navigasjon – 02.11.2026, 09:47 Europe/Oslo
 
