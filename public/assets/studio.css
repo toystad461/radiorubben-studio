@@ -797,4 +797,5 @@ footer b {
 .studio-navigation .nav-group-content{margin:0 0 8px 9px;padding-left:3px;border-left:1px solid var(--line)}
 .studio-navigation .nav-group-note{margin:4px 9px 8px;color:var(--muted);font-size:11px;line-height:1.5;overflow-wrap:anywhere}
 .studio-navigation .nav-item svg{flex-shrink:0}
+.studio-navigation .nav-group-title:focus-visible,.studio-navigation .nav-item:focus-visible{outline-offset:-3px}
 @media(max-width:800px){.studio-navigation .nav-group-title{font-size:14px}}

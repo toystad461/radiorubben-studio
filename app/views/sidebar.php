@@ -1,5 +1,5 @@
 <aside class="sidebar">
- <a href="/" class="brand"><img src="/assets/radio-rubben-logo.png" alt="Radio Rubben" width="2172" height="724"><small>STUDIO</small></a>
+ <a href="/" class="brand"><img src="/assets/radio-rubben-logo.png" alt="Radio Rubben" width="2172" height="724"></a>
  <?php if (($activePage ?? '') === 'ai-studio'): ?>
  <span id="mic-live-banner" class="mic-live-banner" role="status" title="Fader 1-status fra MIDI; bekrefter ikke lydruting eller sending">MIC UKJENT</span>
  <section class="studio-player" aria-labelledby="studio-player-title">
