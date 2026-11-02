@@ -6,7 +6,7 @@ $menuGroups = [
  'Musikkbibliotek' => [['music-library','/music-library.php','AudioLines','Musikkbibliotek',''],['jingles','/jingles.php','AudioLines','Jingler','']],
  'Musikkø / planlegging' => [['music-studio','/music-studio.php','AudioLines','Serverkø og avspilling',''],['music-queue','/music-queue.php','AudioLines','Musikkø · lokal prøvelytting',''],['music-plan','/music-plan.php','FileText','Musikkplan · redaksjonell','']],
  'Nyhetsdesk' => [['newsdesk','/newsdesk.php','FileText','Nyhetsdesk',''],['sending','/sending.php','FileText','Sendeliste','']],
- 'Produksjon / RR Audio' => [['production','/desk.php','FileText','Saksarbeid og RR Audio',''],['script','/ai-studio.php#producer-title','FileText','Manus og stikk',''],['music','/ai-studio.php#music-title','AudioLines','Lokale musikkverktøy','music']],
+ 'Produksjon / RR Audio' => [['production','/desk.php','FileText','Saksarbeid og RR Audio',''],['script','/ai-studio.php#producer-title','FileText','Manus og stikk','scripts'],['music','/ai-studio.php#music-title','AudioLines','Lokale musikkverktøy','music']],
  'CRM' => [['crm','/crm.php','FileText','Samarbeidspartnere','']],
  'System / administrasjon' => [['learning','/learning.php','FileText','Robåt – læring',''],['settings','/ai-studio.php#innstillinger','SlidersHorizontal','Innstillinger','settings'],['rode','/ai-studio.php#rode','AudioLines','RØDE-kontroll','rode'],['users','/users.php','ShieldCheck','Brukere','']],
 ];

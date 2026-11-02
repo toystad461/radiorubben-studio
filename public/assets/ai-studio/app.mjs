@@ -302,8 +302,8 @@ renderMapping(); renderPads(); renderMonitor(); bus.emit('STUDIO_READY',{log:'Ma
 function showView(settings) {
   $('producer-view').hidden = settings;
   $('settings-view').hidden = !settings;
-  $('studio-page-title').textContent = settings ? 'Innstillinger' : 'Studio';
-  document.title = `${settings ? 'Innstillinger' : 'Studio'} – Radio Rubben Studio`;
+  $('studio-page-title').textContent = settings ? 'Innstillinger' : 'Kontrollrom';
+  document.title = `${settings ? 'Innstillinger' : 'Kontrollrom'} – Radio Rubben Studio`;
   for (const link of document.querySelectorAll('[data-studio-nav]')) {
     const active = link.dataset.studioNav === ({'#innstillinger':'settings','#rode':'rode','#music-title':'music','#producer-title':'scripts'}[location.hash] || 'board');
     link.classList.toggle('active', active);
@@ -313,7 +313,7 @@ function showView(settings) {
 function routeView() {
   if ($('main').dataset.settingsAllowed === 'false' && ['#innstillinger','#rode'].includes(location.hash)) history.replaceState(null,'',location.pathname);
   showView(['#innstillinger', '#rode'].includes(location.hash));
-  const target = {'#music-title':'music-title','#producer-title':'producer-title','#rode':'settings'}[location.hash];
+  const target = {'#main':'main','#server-listen':'server-listen','#music-title':'music-title','#producer-title':'producer-title','#rode':'settings'}[location.hash];
   if (target) document.getElementById(target)?.scrollIntoView({block:'start'}); else window.scrollTo(0, 0);
 }
 for (const link of document.querySelectorAll('[data-studio-nav]')) link.addEventListener('click', event => {
