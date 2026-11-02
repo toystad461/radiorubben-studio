@@ -1,0 +1,38 @@
+{
+  "app/rr-red-e2e.php": {
+    "before": null,
+    "after": "d974300938d1f81f189ff951c29a4601bc44215af8984b32990230f900f6ebd8"
+  },
+  "app/web-publish.php": {
+    "before": "512031a44297f88a31b91e5f26d9119c6aed67dbbf6400f0640cd1a671938c7f",
+    "after": "357a53f014c3484a4edda583e2121b8c56cb207219359eaff7c500623f0a224a"
+  },
+  "app/news-script.php": {
+    "before": "317f11d31a5e22186d76d48c2469774d832cc12ab7ba217ee51f090e91a56d5e",
+    "after": "cacc125c2f59fda150c8aabb0e91d40ce348094f5b4f734a424a848cdc5a1a67"
+  },
+  "public/case.php": {
+    "before": "880e2c3521cee1002b951d231602f1ebab768c58088f6041f91a2d8ae8682edf",
+    "after": "fdcc3875ed05f5e5d358a6c6997c9d7a047ecd05c794155bfbfcb74a1059a626"
+  },
+  "app/wordpress-status.php": {
+    "before": "d38a39bdb789905320971348fc2c2a19624b948d399ea120bf62f9b0df6aeab4",
+    "after": "a300eee86a3f9ccab83ae5cab209c87b01b046208feac2084bbc5658ec0fddb5"
+  },
+  "public/e2e-source.php": {
+    "before": null,
+    "after": "8e0e6f3ec8223f695e05ba7eca68253a0e18c3ecfd234582a481a2b82f1633f5"
+  },
+  "wordpress/wp-content/mu-plugins/rr-red-e2e-wordpress.php": {
+    "before": null,
+    "after": "1283d1443a057f559b0fd8358cd6b67bbf359c3e87bf51248ef5438c8aadd965"
+  },
+  "app/views/wordpress-status.php": {
+    "before": "68af3804f899218bd1749e42e9aaccb6391da9c8eba6add60fd2f99f6654f2a5",
+    "after": "bc68160f4651c100851aaade7395db6ae8c071f2b5d15932194fab874d55f3c0"
+  },
+  "/etc/nginx/conf.d/rr-red-e2e.conf": {
+    "before": null,
+    "after": "f6efc9c7ad039a1a0da6d42176a98bf9fc7a5767d79eeca2b31efe810994105d"
+  }
+}

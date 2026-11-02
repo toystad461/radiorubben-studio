@@ -1,0 +1,54 @@
+[
+  {
+    "test": "Normal Studio-login",
+    "passed": true,
+    "detail": {
+      "status": 200
+    }
+  },
+  {
+    "test": "Final kode: gjentatt publisering uten duplikat",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 27,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  },
+  {
+    "test": "Final kode: WordPress-status",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 28,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  },
+  {
+    "test": "Syntetisk kilde kan \u00e5pnes med innlogging",
+    "passed": true,
+    "detail": null
+  },
+  {
+    "test": "Anonym REST-tilgang er sperret",
+    "passed": true,
+    "detail": 401
+  },
+  {
+    "test": "Publisert testsak leses i WordPress-frontenden",
+    "passed": true,
+    "detail": {
+      "url": "https://5.249.252.78/wordpress/?p=4"
+    }
+  }
+]

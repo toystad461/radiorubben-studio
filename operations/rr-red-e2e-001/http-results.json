@@ -1,0 +1,300 @@
+[
+  {
+    "test": "Normal Studio-login",
+    "passed": true,
+    "detail": {
+      "status": 200
+    }
+  },
+  {
+    "test": "CSRF avvises",
+    "passed": true,
+    "detail": {
+      "status": 403,
+      "response": {
+        "body": "Ingen tilgang."
+      }
+    }
+  },
+  {
+    "test": "Lagre syntetisk utkast",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 10,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Foreldet revisjon avvises",
+    "passed": true,
+    "detail": {
+      "status": 409,
+      "response": {
+        "ok": false,
+        "error": "Saken ble endret. Last siden p\u00e5 nytt.",
+        "revision": 10,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Publisering uten kontroll/godkjenning avvises",
+    "passed": true,
+    "detail": {
+      "status": 409,
+      "response": {
+        "ok": false,
+        "error": "Nettsaken m\u00e5 kildekontrolleres og godkjennes f\u00f8r publisering.",
+        "revision": 10,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Ekte WordPress-kladd opprettes",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 12,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Feil faktap\u00e5stand lagres for negativ kontroll",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 13,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Syntetisk kildekontroll oppdager avvik",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 15,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Avvik gir ikke kontrollert-status",
+    "passed": true,
+    "detail": null
+  },
+  {
+    "test": "Avvik kan ikke godkjennes",
+    "passed": true,
+    "detail": {
+      "status": 409,
+      "response": {
+        "ok": false,
+        "error": "Administrator m\u00e5 lese og bekrefte en kildekontrollert nettsak.",
+        "revision": 15,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Rettelse lagres",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 16,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Kildekontroll med ordrette belegg",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 18,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  },
+  {
+    "test": "Korrekt testgrunnlag godtas",
+    "passed": true,
+    "detail": null
+  },
+  {
+    "test": "Kontroll alene gir ikke publisering",
+    "passed": true,
+    "detail": {
+      "status": 409,
+      "response": {
+        "ok": false,
+        "error": "Nettsaken m\u00e5 kildekontrolleres og godkjennes f\u00f8r publisering.",
+        "revision": 18,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  },
+  {
+    "test": "Bekreftelsesfelt kreves",
+    "passed": true,
+    "detail": {
+      "status": 409,
+      "response": {
+        "ok": false,
+        "error": "Administrator m\u00e5 lese og godkjenne nettsaken.",
+        "revision": 18,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  },
+  {
+    "test": "Godkjenning registreres i test",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 19,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  },
+  {
+    "test": "Endring etter godkjenning opphever kontroll",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 20,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Endret innhold er ukontrollert",
+    "passed": true,
+    "detail": null
+  },
+  {
+    "test": "Tidligere godkjenning kan ikke gjenbrukes",
+    "passed": true,
+    "detail": {
+      "status": 409,
+      "response": {
+        "ok": false,
+        "error": "Nettsaken m\u00e5 kildekontrolleres og godkjennes f\u00f8r publisering.",
+        "revision": 20,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Gjenopprett korrekt testtekst",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 21,
+        "radioChecked": false,
+        "webChecked": false
+      }
+    }
+  },
+  {
+    "test": "Ny kildekontroll",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 23,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  },
+  {
+    "test": "Sluttgodkjenn og publiser syntetisk test",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 26,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  },
+  {
+    "test": "Gjentatt publisering uten duplikat",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 26,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  },
+  {
+    "test": "Faktisk WordPress-status leses tilbake",
+    "passed": true,
+    "detail": {
+      "status": 200,
+      "response": {
+        "ok": true,
+        "error": null,
+        "revision": 27,
+        "radioChecked": false,
+        "webChecked": true
+      }
+    }
+  }
+]

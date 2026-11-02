@@ -1,5 +1,13 @@
 # Studio – felles status og arbeidsliste
 
+## Isolert redaksjonell ende-til-ende-test – 02.11.2026
+
+Etter uttrykkelig godkjenning er en avgrenset Studio–WordPress-kobling installert på eksisterende test-VPS med egen TEST-redaktør. Syntetisk sak `c1e86b371a2a9b2d` gikk gjennom lagring, kildekontroll, godkjenningshandling og faktisk publisering som WordPress-innlegg 4. 24 HTTP-flytkontroller, 6 avsluttende HTTP-kontroller og 14 sluttkontroller besto. Manglende godkjenning, kildeavvik, CSRF, gammel revisjon og endret innhold ble avvist. Gjentakelse ga ikke duplikat.
+
+PHPs nettverkssperre er bevart; en lokal Unix-sokkel gir tilgang kun til test-WordPress. Produksjon, Site Kit og avspilling er ikke endret. Testen bruker et deterministisk syntetisk kildegrunnlag, ikke levende KI eller ekte redaktørgodkjenning. Neste steg er menneskelig redaktørprøve av et vanlig kildekontrollert utkast. Ingen produksjonspublisering eller merge er utført.
+
+Se [testresultat og avgrensning](../operations/rr-red-e2e-001/README.md). Testoverlegget og hasher er registrert under operations; det erstatter ikke applikasjonsfilene på main.
+
 ## Nyhetsbilder – modellpilot og svarformat, 14.10.2026
 
 Thomas har godkjent OneDrive, merge og utrulling. PR92 er selektivt publisert

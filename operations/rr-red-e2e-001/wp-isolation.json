@@ -1,0 +1,14 @@
+{
+    "environment": "staging",
+    "home": "https://5.249.252.78/wordpress/",
+    "cron_hash": "99dcad8c2de66c7fc2a168ed90a74f73657d3e2704052dd1bd3e1f08412e700f",
+    "isolation_hash": "d32cdf4fd93bc7e0405b8fb8d861d640594162f5effad10f1c67f96e26399bcf",
+    "test_user_application_password": true,
+    "other_user_application_password": false,
+    "test_posts": [
+        {
+            "ID": "4",
+            "post_status": "publish"
+        }
+    ]
+}
