@@ -26,6 +26,6 @@ $menuGroups = [
 <?php foreach ($visibleItems as [$key,$href,$symbol,$label,$target]): ?>
 <a href="<?= escape($href) ?>" class="nav-item <?= ($activePage ?? '') === $key ? 'active' : '' ?>"<?= ($activePage ?? '') === $key ? ' aria-current="page"' : '' ?><?= $target ? ' data-studio-nav="'.escape($target).'"' : '' ?>><?= icon($symbol,18) ?> <?= escape($label) ?></a>
 <?php endforeach; endforeach; ?>
-<div class="nav-label">Planlagt / ikke tilkoblet</div><span class="nav-planned">Sosiale medier · ikke aktiv</span><span class="nav-planned">Tidsstyrt sendeplan · ikke aktiv</span>
+<div class="nav-label">Planlagt / ikke tilkoblet</div><span class="nav-item nav-planned" aria-disabled="true">Sosiale medier · ikke aktiv</span><span class="nav-item nav-planned" aria-disabled="true">Tidsstyrt sendeplan · ikke aktiv</span>
 </nav>
 <?php })($user ?? null, $activePage ?? ''); ?>

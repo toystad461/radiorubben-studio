@@ -18,6 +18,7 @@ function render(v){
   $('server-updated').textContent=Number.isFinite(timestamp)?`Sist hentet ${new Date(timestamp).toLocaleTimeString('nb-NO',{timeZone:'Europe/Oslo'})} · norsk tid`:'Ingen fersk serverstatus';
   streamUrl=v.streamUrl==='/music-test-stream/'?v.streamUrl:null;
   $('server-listen').disabled=!streamUrl&&$('server-audio').paused;
+  if(!streamUrl&&$('server-audio').paused)$('server-listening').textContent='Privat lytting er ikke tilgjengelig for denne rollen eller forbindelsen.';
 }
 async function refresh(){
   if(busy)return;busy=true;
