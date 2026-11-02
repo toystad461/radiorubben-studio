@@ -11,5 +11,5 @@ export function prepareDraft(action, context, current = '') {
   if (action === 'weather') return 'Værstikk: [Sett inn oppdatert varsel, sted, kilde og tidspunkt.]';
   if (action === 'sponsor') return 'Sponsorstikk: [Sett inn godkjent sponsortekst og nødvendig reklamemerking.]';
   if (action === 'next') return context.next ? `Her på Radio Rubben skal vi straks høre ${context.next}. Hyggelig at du er med oss!` : 'Neste låt: [Legg inn bekreftet artist og tittel.]';
-  return `Du hører Radio Rubben${context.program ? ` og ${context.program}` : ''}. ${context.nowPlaying ? `Nettopp hørte vi ${context.nowPlaying}. ` : '[Legg inn forrige låt.] '}Hyggelig at du er med oss. ${context.next ? `Snart får du ${context.next}.` : '[Legg inn neste programpost.]'}`;
+  return `Du hører Radio Rubben${context.program ? ` og ${context.program}` : ''}. ${context.nowPlaying ? `Nå spiller ${context.nowPlaying}. ` : '[Legg inn forrige låt.] '}Hyggelig at du er med oss. ${context.next ? `Snart får du ${context.next}.` : '[Legg inn neste programpost.]'}`;
 }

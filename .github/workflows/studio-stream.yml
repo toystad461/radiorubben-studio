@@ -31,6 +31,8 @@ jobs:
           python3 -B tests/test-studio-legacy-builder.py
       - name: Check current versus stale player messages
         run: node tests/music-player-message.cjs
+      - run: node tests/server-producer.mjs
+      - run: python3 tests/test-producer-relay.py
       - name: Check visible saved queue, polling clicks and monitor jitter
         run: node tests/music-studio-reliability.cjs
       - name: Check persistent queue, event ownership and media boundary

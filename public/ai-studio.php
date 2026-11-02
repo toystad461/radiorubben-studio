@@ -5,7 +5,8 @@ require dirname(__DIR__) . '/app/producer.php';
 $user = current_user();
 $readOnly = $user && !studio_can($user, 'produce');
 $canSettings = !$user || studio_can($user, 'settings');
-$aiReady = !$readOnly && producer_allowed($user) && trim($config['openai_api_key'] ?? '') !== '';
+$config=producer_transport_config($config);
+$aiReady = !$readOnly && producer_allowed($user) && trim($config['openai_api_key'] ?? '') !== '' && trim($config['openai_model'] ?? '') !== '';
 if ($config['auth_mode'] !== 'demo' && !$user) redirect('/login.php');
 $localMidi = getenv('STUDIO_LOCAL_MIDI') === '1' && in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1','::1'], true);
 $midiEnabled = ($user !== null && studio_can($user, 'settings')) || (!$user && $localMidi);
@@ -45,4 +46,4 @@ require dirname(__DIR__) . '/app/views/head.php';
 </section>
 <?php if ($readOnly): ?></fieldset><?php endif; ?></div>
 <footer><span>Radio Rubben <b>AI Studio</b></span><span>Radiosendingen fungerer uavhengig av AI Studio.</span></footer>
-</main></div></div><?php if (!$readOnly): ?><script type="module" src="/assets/ai-studio/app.mjs?v=controlroom-20261102"></script><?php endif; ?><script type="module" src="/assets/ai-studio/controlroom.mjs?v=20261102"></script></body></html>
+</main></div></div><?php if (!$readOnly): ?><script type="module" src="/assets/ai-studio/app.mjs?v=producer-vps-20261102"></script><?php endif; ?><script type="module" src="/assets/ai-studio/controlroom.mjs?v=20261102"></script></body></html>

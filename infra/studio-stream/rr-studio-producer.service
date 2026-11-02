@@ -1,0 +1,20 @@
+[Unit]
+Description=Radio Rubben restricted text-generation relay
+After=network-online.target
+[Service]
+User=rr-studio
+Group=rr-studio
+ExecStart=/usr/bin/python3 /srv/radiorubben-test/studio/infra/studio-stream/producer-relay.py
+UMask=0077
+Restart=on-failure
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/srv/radiorubben-test/studio-data/producer-relay
+MemoryMax=96M
+TasksMax=8
+[Install]
+WantedBy=multi-user.target

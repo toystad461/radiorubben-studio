@@ -2,6 +2,8 @@
 declare(strict_types=1);
 require dirname(__DIR__) . '/app/bootstrap.php';
 require dirname(__DIR__) . '/app/producer.php';
+require dirname(__DIR__).'/app/controlroom.php';
+$config=producer_transport_config($config);
 header('Content-Type: application/json; charset=utf-8');
 function reply(int $status, array $data): never { http_response_code($status); echo json_encode($data, JSON_UNESCAPED_UNICODE); exit; }
 if ($config['auth_mode'] !== 'demo' && !studio_can(current_user(), 'produce')) reply(403, ['error'=>'Rollen din gir ikke tilgang til AI-produksjon.']);
@@ -22,7 +24,19 @@ $requests = array_values(array_filter($_SESSION['producer_requests'] ?? [], fn($
 if (count($requests)>=6) reply(429, ['error'=>'Vent litt før neste forslag.']);
 $requests[]=$now; $_SESSION['producer_requests']=$requests; session_write_close();
 try {
+    $playout=music_playout_config();
+    if($playout){
+        $live=studio_controlroom_read($playout);
+        $label=static fn($t)=>$t['kind']==='jingle'?'Jingle: '.$t['title']:trim($t['artist'].' – '.$t['title']);
+        $input['program']='';$input['nowPlaying']=$live['now']?$label($live['now']):'';
+        $input['next']=($live['status']==='playing'&&$live['queueKnown']&&!empty($live['next']))?$label($live['next'][0]):'';
+        if($input['action']==='next'&&$input['next']==='')throw new RuntimeException('Ingen fersk, bekreftet neste lyd fra VPS. Oppdater før du lager stikk.');
+    }
     $text = producer_generate($config, $input);
+    if($playout&&in_array($input['action'],['new','next','refresh'],true)){
+        $after=studio_controlroom_read($playout);
+        if($after['status']!=='playing'||$after['now']!==$live['now']||$after['next']!==$live['next'])throw new RuntimeException('Køen endret seg mens stikket ble skrevet. Lag et nytt forslag.');
+    }
     $review = ($data['autoReview'] ?? false) ? producer_review($config, $input, $text) : null;
     reply(200, ['text'=>$text, 'review'=>$review]);
 }
