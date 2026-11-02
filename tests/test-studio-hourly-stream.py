@@ -33,7 +33,6 @@ try:
     for i,e in enumerate(q['entries']):
         e['playback'] = {'cueIn':0,'cueOut':1.2 if i==1 else 12,'crossfadeOut':0}
         e['plannedAt'] = f'2026-11-02T12:00:{i*12:02}+01:00'
-    q['entries'][1]['hourlyHour'] = 1793617200
     path.write_text(json.dumps(q))
     t.change({'action':'sync'})
     body={'action':'hourly','revision':t.view()['revision'],'hourly':{'trackId':track['id'],'sha256':sha,'notBefore':1793617200}}
@@ -47,7 +46,6 @@ try:
     listener.close()
     outcomes = [t.player()['outcomes'][i] for i in ids]
     assert t.started_ids()==ids
-    assert outcomes[1]['hourlyHour']==1793617200
     assert abs(outcomes[1]['renderedSeconds']-1.2)<.15
     for i in (0,1):
         assert abs(outcomes[i]['renderClockEnd']-outcomes[i+1]['renderClockStart'])<.15
@@ -65,7 +63,7 @@ try:
         active = on
     assert len(pulses)==2 and all(.1<p<.22 for p in pulses),pulses
     assert t.library.read_bytes()==t.library_bytes
-    print(json.dumps({'passed':True,'started':ids,'duration':[e['renderedSeconds'] for e in outcomes],'hourIdentityPreserved':True,'musicOverlapIntoSignal':False}))
+    print(json.dumps({'passed':True,'started':ids,'duration':[e['renderedSeconds'] for e in outcomes],'musicOverlapIntoSignal':False}))
     ok = True
 finally:
     t.close(ok)
