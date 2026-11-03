@@ -1,5 +1,29 @@
 # Studio – felles status og arbeidsliste
 
+## Driftsstopp03.11.2026 – gjenopptatt14:19 Europe/Oslo
+
+Motoren gikk til blocked kl.04:39:14 mens Jonas Blue ft. Raye – By Your Side
+spilte. Hendelsen er claim_error; den underliggende årsaken er ikke bevist.
+SupervisorPID770, Icecast og rotasjonstimer var aktive; disk10% brukt.
+Neste lydkopi var gyldig og køen hadde ingen uavklart operatørkommando.
+
+Normal Start14:18 avdekket separat feil når1,2sekunders timesignal kom først:
+started/ended fikk samme PCM-klokke0,32 og renderedSeconds0. Innslaget ble
+registrert failed; ingen historikk eller lyd ble slettet. Ny normal Start14:19
+fortsatte med stasjonsjingle og deretter Major Lazer – Run Up. Jinglefullføring,
+ny sangstart og ekte lyd fra både Icecast og offentlig/radio.mp3 er verifisert.
+Fire sekunder offentlig lyd dekodet, gjennomsnitt-16,6dB og topp-6,0dB.
+Ingen kodeendring, tjenesteomstart eller ny tilgang ble utført. Privat backup
+før begge starter ligger i bibliotekets recovery-20261103-131813.json og
+recovery-20261103-131918.json; journalen er bevart.
+
+Dagens Start/Stopp på music-studio.php styrer serveravspillingen, også når
+nettleseren lukkes. De administrerer ikke systemd-tjenestene. Ny tjenestekontroll
+fra nettleser er foreløpig et forslag, ikke implementert eller aktivert.
+Tre neste steg: reproduser og rett kort-innslag-først-feilen, gjør claim-feilens
+årsakslogging presis, og avklar avgrenset administratorkontroll av tjenestene.
+
+
 ## Menyopprydding i #115/L02 – 02.11.2026 Europe/Oslo
 
 Kode ferdig i 9bbfae2: direkte kontrollrom, sendekø og lydproduksjon,
