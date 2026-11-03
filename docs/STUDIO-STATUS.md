@@ -1,5 +1,32 @@
 # Studio – felles status og arbeidsliste
 
+## L02-kontroll 04.11.2026 Europe/Oslo – timesignal bekreftet, menyinstallasjon blokkert
+
+Thomas bekrefter at timesignalet fungerer i streamen. Dette registreres som
+operatørbekreftelse på ordinært timesignal, ikke som en ny servermåling eller
+som bevis for automatisk montasje med tre musikkglimt. Feilen 03.11 med kort
+signal først ved oppstart er et eget historisk scenario som ikke er gjenprøvd.
+
+PR #115-head `1d3b1228b60f2043245c6a91d8451115ff3e8bfd` er avstemt mot GitHub.
+Siden menycommit `9bbfae2` er bare dokumentasjon endret. CI 41643464543,
+41643464573 og 41643464522 er success. Lyd-/mobilloggene bruker merge-ref `65645ad`,
+som har identisk filinnhold med kontrollert head. Release-deploy er skipped.
+Menyens fire roller og 320/390/800/1440 px består. Isolert faktisk lyd viser
+cue-/crossfade-bruk, 0,0 sekunders gap ved køinnsetting og en 21 sekunders montasje
+med 0,0/0,0 sekunders gap. Dette er CI-resultater, ikke fersk VPS-etterkontroll.
+
+Seks kildefiler og SHA256 er fastlåst i [menyleveransen](STUDIO-MENU-20261102.md).
+Ferske serverhasher, backup, installasjon, rollback og samlet etterkontroll er
+ikke utført: økten mangler konfigurert VPS-SSH/agent; ai-studio.php stopper på
+ERR_CERT_COMMON_NAME_INVALID. Ingen server-/produksjonsendring er gjort.
+Uniweb-produksjonens deployskript er ikke brukt som VPS-omvei.
+
+L02 er fortsatt ikke ferdig og PR #115 beholdes som draft/umerget.
+Neste: 1) gjenoppta eksisterende VPS-tilgang og avstem seks faktiske filer;
+2) installer selektivt med privat backup/rollback og kontroll av uendrede data
+og kontinuerlig lyd;3) dokumenter nå/neste-tre, polling, PC/mobil/roller,
+køredigering, installert cue-bruk og automatisk timeglimt på aktiv stream.
+
 ## Driftsstopp03.11.2026 – gjenopptatt14:19 Europe/Oslo
 
 Motoren gikk til blocked kl.04:39:14 mens Jonas Blue ft. Raye – By Your Side
