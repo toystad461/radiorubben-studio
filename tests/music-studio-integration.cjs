@@ -61,9 +61,16 @@ async function stop(proc,signal='SIGTERM'){if(proc&&proc.exitCode===null){proc.k
  // Use an unused approved song; kill the daemon while decoding, then restart safely.
  await change({action:'suggest',commit:true,trackIds:next.proposal.suggestions.map(t=>t.trackId)});await change({action:'start'});await until(async()=>(await get()).player.current?.startedAt,'restart scenario started');
  const killedId=(await get()).player.current.id;await stop(worker,'SIGKILL');worker=launchWorker();await until(async()=>(await get()).player.outcomes[killedId]?.status==='interrupted','restart records interruption');assert.equal((await get()).player.mode,'stopped');
- const remaining=(await get()).entries.find(e=>e.id!==killedId);fs.unlinkSync(path.join(bus,'audio',remaining.sha256+'.mp3'));
- // Direct local command emulates a file disappearing after the API prepared it.
- const ctl=JSON.parse(fs.readFileSync(path.join(bus,'control.json')));ctl.command={id:'missing-file-test',action:'start'};fs.writeFileSync(path.join(bus,'control.json'),JSON.stringify(ctl));
+ const remaining=(await get()).entries.find(e=>e.id!==killedId);
+ // Inject the missing file and command under the real bus lock. Truncating
+ // control.json from Node can race the worker's JSON read and kill the test
+ // process instead of exercising the intended missing-audio rejection.
+ execFileSync(php,['-r',`require $argv[1];$root=$argv[2];$lock=music_playout_lock($root);
+ try{$ctl=music_playout_json($root.'/control.json');$found=false;
+ foreach($ctl['entries'] as $entry)if($entry['id']===$argv[3]){unlink($root.'/audio/'.$entry['sha256'].'.mp3');$found=true;break;}
+ if(!$found)throw new RuntimeException('Missing synthetic occurrence');
+ $ctl['command']=['id'=>'missing-file-test','action'=>'start'];music_playout_atomic($root.'/control.json',$ctl);
+ }finally{flock($lock,LOCK_UN);fclose($lock);}`,path.join(repo,'app/music-playout.php'),bus,remaining.id]);
  await until(async()=>(await get()).player.outcomes[remaining.id]?.status==='failed','missing file fails closed');assert.equal((await get()).player.mode,'blocked');assert(!(await get()).player.outcomes[remaining.id].startedAt,'failed before first sample is never played');
  fs.writeFileSync(libraryIndex,'broken');await change({action:'stop'});await until(async()=>(await get()).player.mode==='stopped','stop despite library failure');fs.writeFileSync(libraryIndex,savedLibrary);
  const events=fs.readFileSync(path.join(bus,'events.jsonl'),'utf8').trim().split('\n').map(JSON.parse);assert(events.every(e=>e.output==='isolated-test'));assert(events.some(e=>e.event==='planned'));assert(events.some(e=>e.event==='started'));assert(events.some(e=>e.event==='completed'));assert(events.some(e=>e.event==='interrupted'));assert(events.some(e=>e.event==='failed'));

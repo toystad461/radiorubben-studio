@@ -54,7 +54,7 @@ REVIEWED_HASHES = {
         "app/music-scheduling.php": "9611eebfc254856790cf57400db7802c851dc775bad9c8f78d23ba77525cb162",
         "app/music-studio.php": "b1f3949a07a10f4aac104b57c1f9abdb180b1e1f98c270579c988986152e5511",
         "app/views/navigation.php": "3f6da7444e8d69992edf26f26fe953d45f5033570c5ae796ecc150193f5982cd",
-        "infra/studio-stream/radio.liq": "f3b9351bb270ed51bad0eb9fe807da1cb073f3fb816b45ae76f6bb9ff1ba2054",
+        "infra/studio-stream/radio.liq": "11097a564990acc6d7c9092f0c390475743d1b278c0d151c9766a1e99e2d43be",
         "infra/studio-stream/rr-studio-rotation.service": "aa5844e3ee3247a468ac7126afe8116fd89f0494856c06b0eb7aa3f46c49bff9",
         "infra/studio-stream/rr-studio-rotation.timer": "a8fe75229040f56d18b1d476c13a1d2bbf6447bacde362043bdf557bf5ded788",
         "public/assets/jingles.css": "9270651a664f085b02d61991870832af84268d2f2ffe1e6413d122fa68b8dbea",
