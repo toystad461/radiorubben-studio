@@ -1,5 +1,88 @@
 # Menyopprydding – Studio #115/L02, 02.11.2026
 
+## Installert 04.11.2026 kl.15:50 Europe/Oslo
+
+Thomas kjørte `scripts/studio-menu-vps.py --apply` fra
+`fef9132ce9de311cd97940241c0dccddc6b27aba`, etter SHA256-kontroll av skriptet
+(`ea92b4cfe1f31f75b56b60f30a58b4027590de7c3034a52bb3c0d75c2e05d5a6`).
+Serverkvitteringen viser `installed_files_verified`, startet 14:50:03 UTC
+og avsluttet 14:50:04 UTC (15:50:03–15:50:04 Europe/Oslo).
+
+[Innsendt installasjonskvittering](STUDIO-MENU-DEPLOY-20261104.json) er avstemt
+mot installerens seks før-/etterhasher, kildecommits og bevarte rettigheter.
+Alle stemmer. Evidensen er Thomas sin terminalutskrift, ikke en ny direkte
+SSH-avlesning fra assistenten. Begge PR117-konsollfilene er bevart med bare
+menytillegget og ny scriptversjon. De øvrige fire menyfilene er installert
+fra menycommit `9bbfae2`. Ingen merge eller full release er utført.
+
+| Kontroll | Bekreftet i kvittering/kilde |
+| --- | --- |
+| Nginx / PHP8.3-FPM | active/running, PID 810 / 763 uendret |
+| Stream / Icecast | active/running, PID 773 / 770 uendret |
+| Seks kodefiler | Alle etterhasher matcher det avstemte manifestet |
+| Eier, gruppe, modus | root:root, 0644 for alle seks filer |
+| FPM-cache | OPcache på, validate_timestamps på, revalidate_freq 2 s, file_update_protection 2 s |
+| Nettleser-CSS | `20261102-workspaces1` i head.php |
+| Konsoll-JavaScript | `menu-stikk-20261104` i ai-studio.php; PR117-importversjoner beholdt |
+| Backup | `/var/lib/rr-vps-deploy/menu-20261104-bvjor3_1` |
+| Visning og faktisk lyd etter installasjon | Gjenstår; `browserAndAudioAcceptance: pending` |
+
+Skriptet tok privat kodebackup og validerte PHP/JavaScript før filbyttet.
+Det skriver bare de seks kodefilene og sin private backup/kvittering. Kø,
+bibliotek, journal, WordPress, medier og godkjenninger er ikke skrivemål.
+Disse dataene er ikke hashmålt i denne installasjonen. Uendrede tjeneste-PID-er
+beviser ikke alene uavbrutt eller hørbar lyd. Ingen faktisk VPS-rollback var
+nødvendig; installasjon og tilbakeføring er prøvd i isolerte tester.
+
+### CI for eksakt installasjonspakke
+
+Kildecommit `fef9132`; PR-merge-ref `3beb6fce441d762cfee8810bb9d4079a94b795e8`
+har null filforskjeller mot kilden. Alle fire PR-workflows er ferdige med success:
+
+- [Kombinert PR117 + seks menyfiler, 41848734138](https://github.com/toystad461/radiorubben-studio/actions/runs/41848734138):
+  ni installer-/rollbacktester, PHP8.3/JS-syntaks, alle lenkemål/roller,
+  tastatur uten JS, 320/390/800/1440 px og konsollbytte med bevart ulagret manus.
+- [PHP 8.2/8.4 og full mobil-/desktop-suite, 41848733985](https://github.com/toystad461/radiorubben-studio/actions/runs/41848733985).
+- [Liquidsoap-kø og isolert strømtest, 41848733991](https://github.com/toystad461/radiorubben-studio/actions/runs/41848733991).
+- [Releasekontroll, 41848734021](https://github.com/toystad461/radiorubben-studio/actions/runs/41848734021): deploy-jobben er skipped.
+
+Dette er isolerte kode-/funksjonstester. De erstatter ikke akseptanse av
+innlogget faktisk VPS eller fysisk iPhone etter installasjonen.
+
+### Kontrollert tilbakeføring ved behov
+
+Den faktiske private backupen har originaler, kandidat, receipt.json og
+installer.py. Serveren skrev ut denne kommandoen:
+
+```bash
+sudo -n python3 /var/lib/rr-vps-deploy/menu-20261104-bvjor3_1/installer.py --rollback /var/lib/rr-vps-deploy/menu-20261104-bvjor3_1/receipt.json
+```
+
+Kommandoen skal bare brukes ved behov. Den verifiserer backupen og nekter å
+overskrive senere kodeendringer. Den gjenoppretter bare de seks menyfilene og
+starter ingen tjenester på nytt. Aktive data skal ikke tilbakeføres.
+
+### Neste etterkontroll
+
+Nettlesertilgangen fra assistentøkten er blokkert av nettleserens URL-policy
+på den eksisterende feilfanen; sperren er ikke forsøkt omgått. Tidligere
+HTTPS-forsøk viste vertsnavn-/sertifikatavvik. Ingen innlogget servervisning
+eller ny lydavlytting er dermed bekreftet fra assistentens nettleser.
+
+1. Windows: åpne Studio i en ny fane, så eksisterende ulagret manus blir stående
+   i den gamle. Kontroller Studio/Arbeidsrom, bibliotek og
+   Redaksjon → Redaksjonell kjøreplan → Kontrollrom.
+2. I den nye fanen: skriv en ufarlig prøvetekst i manusfeltet, åpne Innstillinger
+   og gå tilbake til Lydproduksjon og stikk. Teksten skal stå igjen. Ingen
+   godkjenning, generering eller køinnsetting trengs for menyprøven.
+3. Lytt gjennom et låtbytte og se at Spiller nå/Neste oppdateres uten reload.
+4. iPhone/Safari: åpne Meny og arbeidsrom, fold ut/inn gruppene, åpne
+   Redaksjonell kjøreplan og gå tilbake. Kontroller at ingen lenker skjules
+   utenfor skjermbredden.
+
+WordPress-integrasjonen er ikke fullført av menyinstallasjonen. Hele L02 er
+fortsatt åpen for øvrige driftskontroller. Eldre status nedenfor er historikk.
+
 ## Avvik forklart og selektiv pakke klargjort 04.11.2026
 
 Innsendt diff viser eksisterende Vær-/Trafikk-/stikkarbeid. Begge komplette

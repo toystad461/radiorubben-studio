@@ -1,5 +1,37 @@
 # Studio – felles status og arbeidsliste
 
+## Meny installert 04.11.2026 kl.15:50 Europe/Oslo – siste brukerprøve gjenstår
+
+Thomas har kjørt den hashkontrollerte installasjonspakken fra `fef9132` på
+`vps-5363103`. Innsendt serverkvittering viser `installed_files_verified`
+kl.14:50:03–14:50:04 UTC / 15:50:03–15:50:04 norsk tid. Alle seks før-/etterhasher
+matcher manifestet. De nyere Vær-/Trafikk-/stikkendringene fra PR117 er bevart.
+Eier/gruppe root:root og filmodus 0644 er beholdt.
+
+Privat backup og rollback er etablert i
+`/var/lib/rr-vps-deploy/menu-20261104-bvjor3_1`.
+Nginx/PHP-FPM/stream/Icecast var active/running før og etter, med uendrede
+PID-er 810/763/773/770. FPM revaliderer endrede PHP-filer, og CSS/JS har nye
+versjonsadresser. Ingen tjenesteomstart inngår i installasjonen.
+
+Alle fire PR-workflows på kildecommit `fef9132` er success: kombinert meny/PR117,
+PHP 8.2/8.4 og mobil, Liquidsoap-kø og releasekontroll. Release-deploy er skipped;
+menyfilene ble installert med det avgrensede skriptet i Thomas sin SSH-økt.
+Se [kvitteringen](STUDIO-MENU-DEPLOY-20261104.json) og
+[etterkontroll/rollback](STUDIO-MENU-20261102.md).
+
+**Kort status for Kontrollsenter:** Menyoppryddingen i #115 er installert og
+filverifisert på test-VPS. Nyere konsollarbeid er bevart. Innlogget PC-/iPhone-
+kontroll og faktisk lyd etter installasjon gjenstår. WordPress-tilkoblingen i
+VPS-nyhetsdesken er fortsatt et eget åpent integrasjonspunkt. L02 er ikke
+ferdigmeldt, og #115 er fortsatt draft/umerget.
+
+Kvitteringen er sammenlignet med fastlåst kode; assistenten har ikke selv
+lest serverfilene på nytt via SSH. Nettlesertilgangen i denne økten er blokkert.
+Uendrede tjeneste-PID-er er ikke alene bevis for uavbrutt eller hørbar lyd.
+Bibliotek/kø/journal inngår ikke i skriptets skrivemål og er heller ikke
+hashmålt av denne menyinstallasjonen. Tidligere avsnitt nedenfor er historikk.
+
 ## Menyavvik avklart 04.11.2026 – PR117 bevares i installasjonspakken
 
 De to avvikende konsollfilene er nå avstemt: innsendt full SHA256 matcher
