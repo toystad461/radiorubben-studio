@@ -1,8 +1,31 @@
 <?php
 declare(strict_types=1);
 
+/** Music jobs retain their own model and proxy; Studio's manuscript relay is separate. */
+function music_ai_worker_request(array $config, array $payload, ?callable $transport=null):string {
+    if(empty($config['openai_model'])||empty($config['openai_api_key']))throw new RuntimeException('Music AI configuration unavailable');
+    $payload['model']=$config['openai_model'];
+    $request=['url'=>'https://api.openai.com/v1/responses','payload'=>$payload,
+        'headers'=>['Content-Type: application/json','Authorization: Bearer '.$config['openai_api_key']]];
+    if($transport){$response=$transport($request);}
+    else {
+        $body='';$curl=curl_init($request['url']);
+        curl_setopt_array($curl,[CURLOPT_POST=>true,CURLOPT_CONNECTTIMEOUT=>8,CURLOPT_TIMEOUT=>35,
+            CURLOPT_FOLLOWLOCATION=>false,CURLOPT_PROTOCOLS=>CURLPROTO_HTTPS,
+            CURLOPT_HTTPHEADER=>$request['headers'],CURLOPT_POSTFIELDS=>json_encode($payload,JSON_THROW_ON_ERROR),
+            CURLOPT_WRITEFUNCTION=>static function($handle,string $chunk)use(&$body):int{
+                if(strlen($body)+strlen($chunk)>1048576)return 0;$body.=$chunk;return strlen($chunk);
+            }]);
+        curl_exec($curl);$response=['body'=>$body,'httpStatus'=>(int)curl_getinfo($curl,CURLINFO_HTTP_CODE),'curlCode'=>curl_errno($curl)];curl_close($curl);
+    }
+    if(($response['curlCode']??-1)!==0||($response['httpStatus']??0)<200||($response['httpStatus']??0)>=300)throw new RuntimeException('Music AI response unavailable');
+    $v=json_decode($response['body'],true,512,JSON_THROW_ON_ERROR);
+    if(!is_array($v))throw new RuntimeException('Music AI response invalid');
+    return producer_text($v);
+}
+
 /** One assessment per invocation. The private lock spans the API call. */
-function music_ai_worker_run(array $config, string $root, ?callable $request=null, ?int $now=null):array {
+function music_ai_worker_run(array $config, string $root, ?callable $request=null, ?int $now=null, ?string $retryId=null):array {
     if(empty($config['openai_model'])||(!$request&&empty($config['openai_api_key'])))return ['status'=>'configuration_required'];
     $now??=time();
     if(!music_library_directory($root,false))return ['status'=>'empty'];
@@ -14,23 +37,36 @@ function music_ai_worker_run(array $config, string $root, ?callable $request=nul
         if(!flock($lock,LOCK_EX|LOCK_NB))return ['status'=>'busy'];
         chmod($lockPath,0600);
         foreach(music_library_read($root) as $track){
+            if($retryId!==null&&$track['id']!==$retryId)continue;
+            if(empty($track['available']))continue;
             if(($track['audioQueue']['status']??null)==='running')continue;
             if(!music_library_analysis_current($track)||!music_audio_profile_current($track))continue;
             try{$input=music_library_producer_input($track);}catch(InvalidArgumentException){continue;}
             $key=hash('sha256',json_encode([$input,$config['openai_model'],'music-ai-worker-1'],JSON_THROW_ON_ERROR));
-            if(music_library_producer_current($track))continue;
+            if($current=music_library_producer_current($track)){
+                if($retryId!==null)return ['status'=>'already_prepared','trackId'=>$track['id'],'assessment'=>array_intersect_key($current,array_flip(['energy','periods','tags','reason','confidence','model']))];
+                continue;
+            }
             $previous=$track['musicAiJob']??[];
             $same=($previous['inputKey']??null)===$key;
-            if($same&&(($previous['attempts']??0)>=3||($previous['nextAttemptAt']??0)>$now))continue;
+            if($retryId!==null){
+                if(($previous['recovery']['inputKey']??null)===$key)return ['status'=>'recovery_attempt_already_used','trackId'=>$track['id']];
+                if(!$same||($previous['status']??null)!=='failed'||($previous['attempts']??0)<3)return ['status'=>'retry_not_eligible','trackId'=>$track['id']];
+            }elseif($same&&(($previous['attempts']??0)>=3||($previous['nextAttemptAt']??0)>$now))continue;
             $job=['inputKey'=>$key,'status'=>'running','attempts'=>$same?($previous['attempts']??0)+1:1,
                 'updatedAt'=>gmdate('c',$now),'nextAttemptAt'=>$now+900];
+            if($retryId!==null)$job['recovery']=['inputKey'=>$key,'previousStatus'=>$previous['status'],
+                'previousAttempts'=>$previous['attempts'],'previousUpdatedAt'=>$previous['updatedAt']??null,
+                'previousErrorCode'=>$previous['errorCode']??null,'requestedAt'=>gmdate('c',$now)];
             // Persist an attempt before the external call, including on process death.
             $track=music_worker_commit($root,$track,['musicAiJob'=>$job]);
             try {
-                $assessment=music_library_producer_assess($config,$track,$request);
+                $assessment=music_library_producer_assess($config,$track,$request??'music_ai_worker_request');
                 $job['status']='prepared';$job['nextAttemptAt']=null;
                 music_worker_commit($root,$track,['producerAssessment'=>$assessment,'musicAiJob'=>$job]);
-                return ['status'=>'prepared','trackId'=>$track['id']];
+                $verified=null;foreach(music_library_read($root)as$after)if($after['id']===$track['id'])$verified=music_library_producer_current($after);
+                if(!$verified||$verified['inputSha256']!==$assessment['inputSha256'])return ['status'=>'changed','trackId'=>$track['id']];
+                return ['status'=>'prepared','trackId'=>$track['id']]+($retryId!==null?['assessment'=>array_intersect_key($verified,array_flip(['energy','periods','tags','reason','confidence','model']))]:[]);
             } catch(Throwable) {
                 $job['status']=$job['attempts']>=3?'failed':'retry';
                 $job['errorCode']='assessment_unavailable';
@@ -40,16 +76,22 @@ function music_ai_worker_run(array $config, string $root, ?callable $request=nul
                 return ['status'=>$job['status'],'trackId'=>$track['id']];
             }
         }
-        return ['status'=>'idle'];
+        return ['status'=>$retryId!==null?'retry_not_eligible':'idle'];
     } finally {flock($lock,LOCK_UN);fclose($lock);}
 }
 
 if(PHP_SAPI==='cli'&&realpath($_SERVER['SCRIPT_FILENAME']??'')===__FILE__){
+    ini_set('display_errors','0');ini_set('log_errors','0');
     try {
         $args=$argv;array_shift($args);
         $mode=array_shift($args);
-        if(!in_array($mode,['--check','--smoke','--once'],true)||count($args)!==1||!str_starts_with($args[0],'--app-root=')){
+        if(!in_array($mode,['--check','--smoke','--once','--retry'],true)||count($args)!==($mode==='--retry'?2:1)||!str_starts_with($args[0],'--app-root=')){
             throw new RuntimeException('Usage: music-ai-worker.php --check|--smoke|--once --app-root=/absolute/path');
+        }
+        $retryId=null;
+        if($mode==='--retry'){
+            if(!preg_match('/^--track-id=([a-f0-9]{16,64})$/D',$args[1],$match))throw new RuntimeException('Invalid track ID');
+            $retryId=$match[1];
         }
         $app=realpath(substr($args[0],11));
         if(!$app||!is_file($app.'/app/config.php')||!is_file($app.'/app/music-library-queue.php'))throw new RuntimeException('Application unavailable');
@@ -66,14 +108,14 @@ if(PHP_SAPI==='cli'&&realpath($_SERVER['SCRIPT_FILENAME']??'')===__FILE__){
             echo json_encode(['status'=>'ready','model'=>$config['openai_model'],'awaitingAi'=>$ready,'assessed'=>$done],JSON_THROW_ON_ERROR)."\n";
         }elseif($mode==='--smoke'){
             // One small synthetic API call; no original, metadata or library writes.
-            $raw=producer_request($config,['model'=>$config['openai_model'],'store'=>false,'max_output_tokens'=>50,
+            $raw=music_ai_worker_request($config,['model'=>$config['openai_model'],'store'=>false,'max_output_tokens'=>50,
                 'input'=>'Return the JSON object with ok set to true.',
                 'text'=>['format'=>['type'=>'json_schema','name'=>'worker_probe','strict'=>true,'schema'=>[
                     'type'=>'object','properties'=>['ok'=>['type'=>'boolean']],'required'=>['ok'],'additionalProperties'=>false]]]]);
             if(json_decode($raw,true,8,JSON_THROW_ON_ERROR)!==['ok'=>true])throw new RuntimeException('Unexpected probe response');
             echo "PASS: Synthetic structured API response. No library changes.\n";
         }else{
-            echo json_encode(music_ai_worker_run($config,music_library_root()),JSON_THROW_ON_ERROR)."\n";
+            echo json_encode(music_ai_worker_run($config,music_library_root(),null,null,$retryId),JSON_THROW_ON_ERROR)."\n";
         }
     }catch(Throwable){fwrite(STDERR,"STOPP: AI worker could not complete. No credentials are logged.\n");exit(1);}
 }

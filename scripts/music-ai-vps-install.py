@@ -22,8 +22,8 @@ DEST = Path('/etc/rr-music-ai')
 UNITS = Path('/etc/systemd/system')
 NAMES = ('rr-music-ai-proxy.service', 'rr-music-ai.service', 'rr-music-ai.timer')
 SOURCE = {
-    'scripts/music-ai-worker.php': 'a2b2d314b5efce409f023b8973b42b9f130bbccf',
-    'tests/recovered/test-music-ai-worker.php': '37fad97ab690c90633683219aa7912dff133cc9a',
+    'scripts/music-ai-worker.php': '6a64f8add4c875281f1f158889608d2baa242091',
+    'tests/recovered/test-music-ai-worker.php': 'c35281974dbb1a5ecbdd38122c8470b5337b05a2',
 }
 PROPERTIES = [
     'User=rr-studio', 'Group=rr-studio', 'NoNewPrivileges=yes',

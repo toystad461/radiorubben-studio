@@ -1,5 +1,14 @@
 # Studio – felles status og arbeidsliste
 
+## PR104 – API virker; engangsforsøk og egen musikktransport, 04.11.2026
+
+VPS-diagnostikk fra Thomas kl.15:01 Europe/Oslo: HTTP200 og gyldig, uspart vurdering. Faded er sperret av tre forsøk på samme grunnlag. Fenrik Lane har utløpt lydarbeidsleie. Dette er ikke ferdig pilot eller lagret KI-vurdering.
+
+Musikkworker har fått egen transport som beholder musikkmodellen når Studio bruker manusrelé, og eksplisitt --retry for ett nytt forsøk på én feilet låt. Ny selektiv oppdaterer verifiserer kjent workerhash, kjører syntetiske tester mot aktiv app, tar privat backup og gjør atomisk bytte av bare /etc/rr-music-ai/worker.php. Ved suksess forblir KI-timeren deaktivert for pilot; ved feil tilbakeføres kode/timer, mens forsøkshistorikk og andre bibliotekendringer bevares.
+
+Lokale Python-tester består; PHP og L02-kompatibilitet er lagt i CI og må avleses. Ingen serverendring eller lagret vurdering er utført av agenten. Windows sin Uniweb-opplåsing gir ikke skyøkten tilgang til test-VPS. Se [funn, avgrensning og kjøring](MUSIC-AI-RESUME-20261104.md).
+
+
 ## PR104 – faktisk bibliotekstatus og neste feilsøking, 02.11.2026
 
 VPS-rapport fra Thomas kl.13:59 UTC: 121 låter og åtte andre lydfiler. 121 har filmetadata, to tempo/toneart, én full lydprofil, 114 teknisk cue-kontroll og ingen gyldig KI-vurdering. Én låt har komplett grunnlag, men tre feilede KI-forsøk. Én lydjobb står running, og én låt mangler artist. Bibliotekhash er uendret under kontrollen. KI-proxy og timer er allerede aktive; tidligere uavklart installasjonsstatus er dermed avklart. Inactive/dead for oneshot-jobben mellom timerkjøringer er ikke alene en feil.
