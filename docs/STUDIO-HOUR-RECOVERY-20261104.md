@@ -30,8 +30,12 @@ Bestått i isolert miljø: vanlig signal mellom sanger; signal først; tre signa
 inkludert siste plass; musikkoverganger på 0/3/10 sekunder med målt lydblanding;
 omstart uten gjentakelse og respekt for operatørens Stop. PHP-kontrollene for
 timeplan, manglende/foreldet klipp, endret kilde/kø, spillerhendelser og tilstand
-består. Regresjonsvariantene er lagt til i CI; lokal kontroll er ikke en
-påstand om at den nye GitHub-kjøringen er grønn.
+består. Full GitHub-CI på kodecommit
+`a0108b1e1aeb0b71caa77198c55499f9c2e1ccc7` består, inkludert actual-stream
+(9 minutter), PHP 8.2/8.4 og mobilkontroll. Køtesten bruker nå samme fillås og
+atomiske lagring som avspilleren når en manglende lydfil injiseres; manifestet
+er oppdatert til den testede Liquidsoap-malen. Se kjøring `41840121569` og
+PHP-kjøringene `41840112813`, `41840121534` og `41840121573`.
 Den komplette eksisterende transporttesten besto også (81,83 sekunder):
 HTTP/rolle/CSRF, avbrudd, endret/manglende lyd, mistet forbindelse og frosset
 PCM-motor. Ingen av disse feilene ble feilaktig registrert som fullført lyd.
@@ -45,11 +49,14 @@ kontrollkvittering fra 12.10 bekrefter TTS på, nøkkel lastet, modell
 `eleven_v4` og testmodus på den eldre Uniweb-installasjonen. Se også den
 historiske RR Audio-statusen i `STUDIO-STATUS.md` og `ai-journalist/RR-AUDIO.md`.
 
-Dagens VPS har TTS av, ingen lastet nøkkel, ingen stemmeliste og tegnbudsjett
-null. Ny lesing av den gamle serveren ble avvist fordi eksisterende SSH-tilgang
-ikke er låst opp. Derfor er nøkkelens nåværende eksistens og gyldighet fortsatt
-uverifisert. Søk etter de to kjente konfigurasjonsfilnavnene i lokale
-prosjektkopier fant ingen fil. Ingen hemmelighet er skrevet til Git eller logg.
+Dagens VPS har fortsatt TTS av, ingen lastet nøkkel, ingen stemmeliste og
+tegnbudsjett null. Etter Thomas sin lokale opplåsing ble eksisterende
+Uniweb-konfigurasjon kontrollert: Thomas-stemmen er godkjent, Eleven v4 er
+valgt, dagsgrensen er 3000 tegn og testmodus er på. Ett faktisk TTS-kall med
+det konkret godkjente manuset lyktes 04.11 kl. 13:43 UTC (130 tegn). Dagens
+bruk ble 130 tegn. Nøkkelen ble på originalserveren. Lesekall til stemme- og
+modelloversikt mangler rettighet, men talegenerering fungerer; dette krever
+ingen ny nøkkel eller utvidet rettighet for prøven.
 
 Lydkvitteringen fra 02.11 bekrefter at Thomas M. også ble brukt gjennom
 ElevenLabs-nettsiden. Det beviser stemmevalg og generering, men ikke API-oppsett
@@ -64,30 +71,60 @@ sangforekomstene, deretter hele første sang. Eksisterende klippgenerator og
 RR Audio-flyt gjenbrukes. Kort forhåndsinnslag før timen holdes av under denne
 piloten, slik at samme time ikke får doble presentasjoner.
 
-Manusutkast for ny time:
+Manus godkjent av Thomas i chat 04.11.2026 med «Godkjenn manuset og lag
+lydprøven»:
 
-> Det er {ukedag}, og klokken har passert {time}. Du hører på Radio Rubben.
-> Her er tre musikkglimt fra timen som kommer. Stemmen i dette innslaget er
-> KI-generert med tillatelse fra Thomas.
+> Denne stemmen er KI-generert. Nå starter en ny time på Radio Rubben.
+> Her er tre musikkglimt fra timen som kommer. God fornøyelse!
 
 Et eventuelt senere forhåndsinnslag må i stedet si «Snart er klokken {time}»
 og må avsluttes før den aktuelle timen. Det skal ikke inneholde timesignalet.
-Dette er manusutkast; ingen ny stemmefil eller publiseringsgodkjenning foreligger.
+Det alternative forhåndsmanuset er ikke godkjent. Den nye timeprøven har
+ingen menneskelig lyttegodkjenning eller publiseringsgodkjenning ennå.
 
 En ferdig pilot må bindes til Oslo-dato/time, tre køforekomster og kildehasher,
 manusversjon, stemme/modell, lydhash og menneskelig lyttegodkjenning. Endret kø,
 utdatert tidsutsagn, manglende fil eller godkjenning skal gi vanlig musikk.
 Aktive/reserverte spor og manuelle rettelser skal bevares.
 
-Neste nødvendige tilgangssteg er lokal opplåsing av eksisterende Uniweb-nøkkel,
-deretter skrivefri kontroll av den gamle private Audio-konfigurasjonen. En
-eventuell overføring til VPS må beholde privat lagring og avklart tegnbudsjett.
-Ingen nye nøkler eller abonnement skal opprettes som skjult del av arbeidet.
+## Faktisk privat lydprøve
+
+Studio-sak `5ca7944a7a194580`, revisjon 5 på Uniweb: ferdig behandlet, teknisk
+kontroll bestått, `approval=null`, ikke kølagt, testmodus beholdt. Originalen
+er bevart (9,6 sekunder). Ett rålydopptak ble behandlet uten flere TTS-kall i
+et privat prøveområde på VPS. Tempo 0,94, moderat dynamikkbehandling og
+nivåjustering gir 10,204 sekunder tale. Både WAV og MP3 består Studios
+eksisterende varighets-, nivå-, topp-, stillhets- og klippingsgrenser.
+Den ferdige stemmen er lagret tilbake i samme sak med revisjonsvern.
+
+Stemmens MP3-SHA256:
+`4355b699c0b8b14411e37c63ab4671d0a6061f8b0ed9d60ccf33341edf83555b`.
+Rålyd-SHA256:
+`33b7c56877d4c2328f5e70ef1d2907d224ce5ba409b3398f4a48106a2aa0607c`.
+
+Komplett privat prøve: 1,2 sekunder dobbelpip, stemmen og tre klipp à sju
+sekunder fra Five – Got The Feelin', DNCE – Cake By The Ocean og Demi Lovato –
+Cool For The Summer. Eksisterende klippgenerator verifiserte alle tre
+originalhashene. Køøyeblikket var revisjon 2534 kl. 13:48:35 UTC; planlagt
+første hele låt var kl. 15:01:11 Oslo. Dette er en bundet prøve, ikke en
+generisk timefil som kan gjentas etter at køen har endret seg.
+
+Komplett MP3: 32,404 sekunder, −18,25 LUFS, −4,81 dBTP, ingen klipping;
+SHA256 `631e21f8c1b5933c418fcb9d89cdb0c4425fb2e52c4e539a50ced8534b536c29`.
+WAV og ferdig dekodet MP3 består nivå- og varighetskontroll. Full kvittering
+og private lydfiler ligger lokalt under `output/hour-pilot-20261104/`, utenfor
+kode-repository. Ingen lyd eller nøkkel er lagt i Git. Ingen OneDrive-
+overføring er utført. Automatisk produksjon av full timesekvens på VPS er
+fortsatt ikke implementert eller aktivert.
 
 ## Leveransestatus
 
 Feilrettingen er forberedt for gjennomgang; ingen produksjonskode er byttet i
 denne utviklingsrunden. Den gjenopprettede strømmen fortsetter med timesignalet
-deaktivert. Full stemmesekvens og tre faktiske påfølgende timeskifter gjenstår.
-Etter ferdig lyd og menneskelig gjennomlytting må pilotens utrulling ha eksakt
-filsett, privat kodebackup, før/etter-kontroll og tilbakeføringsmulighet.
+deaktivert. Strømmen ble kontrollert på nytt kl. 14:51 Oslo: HTTP 200,
+96 000 mottatte lydbyte, spiller i playing og tilkoblet motor.
+Ferdig privat lydprøve foreligger. Menneskelig gjennomlytting, selektiv
+utrulling av oppstartsrettingen, købundet pilot og tre faktiske påfølgende
+timeskifter gjenstår. Før eventuell offentlig pilot må klippene bindes til
+fersk kø; denne prøven skal ikke spilles som om dens køøyeblikk fortsatt er
+gjeldende. Godkjenning av lyd og utrulling av kode holdes adskilt.

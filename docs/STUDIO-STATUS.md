@@ -2314,8 +2314,15 @@ signal mellom sanger, musikkoverganger 0/3/10 sekunder og omstart/Stop består.
 Tre simulerte timeplaner har egne identiteter og gjentar ikke fullført signal.
 Ingen produksjonskode er byttet; offentlig stream går med timesignal av.
 
-Tidligere fungerende Eleven v4/Thomas M. og nøkkel på eldre Uniweb-Studio er
-bekreftet i historiske kvitteringer fra 08.–12.10. Dagens VPS mangler Audio-
-konfigurasjonen. Nåværende nøkkelgyldighet er ikke kontrollert, fordi den gamle
-SSH-tilgangen trenger lokal opplåsing. Full stemmepilot og tre faktiske timer
-står igjen. Se [detaljer og pilotavgrensning](STUDIO-HOUR-RECOVERY-20261104.md).
+Etter lokal opplåsing er gammel Uniweb-tilgang og faktisk Eleven v4/Thomas M.
+bekreftet i drift. Thomas godkjente konkret prøvemanus; ett TTS-kall på 130 tegn
+lyktes. Stemmen er behandlet og teknisk kontrollert (10,204 sekunder), lagret
+i samme Studio-sak `5ca7944a7a194580` revisjon 5, uten lyttegodkjenning eller
+kølegging. Privat komplett prøve på 32,404 sekunder har dobbelpip, stemmen og
+tre kildebundne klipp fra faktisk kø. WAV/MP3 består nivå- og varighetskontroll.
+API-nøkkelen ble på gammel server; VPS mangler fortsatt eget Audio-oppsett.
+Full GitHub-CI består på kodecommit `a0108b1e1aeb0b71caa77198c55499f9c2e1ccc7`.
+Ingen produksjonskode er byttet; stream fortsatt tilkoblet med timesignal av.
+Gjenstår lyttegodkjenning, selektiv kodeutrulling, fersk købundet pilot og tre
+observerte timeoverganger. Kontinuerlig produksjon av full timesekvens er ikke
+implementert. Se [detaljer og pilotavgrensning](STUDIO-HOUR-RECOVERY-20261104.md).
