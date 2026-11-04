@@ -6,7 +6,7 @@ VPS-diagnostikk fra Thomas kl.15:01 Europe/Oslo: HTTP200 og gyldig, uspart vurde
 
 Musikkworker har fått egen transport som beholder musikkmodellen når Studio bruker manusrelé, og eksplisitt --retry for ett nytt forsøk på én feilet låt. Ny selektiv oppdaterer verifiserer kjent workerhash, kjører syntetiske tester mot aktiv app, tar privat backup og gjør atomisk bytte av bare /etc/rr-music-ai/worker.php. Ved suksess forblir KI-timeren deaktivert for pilot; ved feil tilbakeføres kode/timer, mens forsøkshistorikk og andre bibliotekendringer bevares.
 
-Lokale Python-tester består; PHP og L02-kompatibilitet er lagt i CI og må avleses. Ingen serverendring eller lagret vurdering er utført av agenten. Windows sin Uniweb-opplåsing gir ikke skyøkten tilgang til test-VPS. Se [funn, avgrensning og kjøring](MUSIC-AI-RESUME-20261104.md).
+Seks lokale Python-tester består. Worker/PHP og L02-kompatibilitet besto CI41845474039 for a8713a1; siste oppdatererrettelse mot samtidig kjøring må avleses i ny CI. Ingen serverendring eller lagret vurdering er utført av agenten. Windows sin Uniweb-opplåsing gir ikke skyøkten tilgang til test-VPS. Se [funn, avgrensning og kjøring](MUSIC-AI-RESUME-20261104.md).
 
 
 ## PR104 – faktisk bibliotekstatus og neste feilsøking, 02.11.2026

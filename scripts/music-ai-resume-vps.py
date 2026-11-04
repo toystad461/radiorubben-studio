@@ -59,6 +59,18 @@ def replace_worker(data, mode):
             os.unlink(name)
 
 def apply(source, track_id):
+    path = DEST / 'recovery.lock'
+    if path.is_symlink():
+        raise RuntimeError('Unexpected recovery lock')
+    with path.open('a+b') as lock:
+        os.fchmod(lock.fileno(), 0o600)
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            raise RuntimeError('Another recovery is running') from None
+        return apply_locked(source, track_id)
+
+def apply_locked(source, track_id):
     if not re.fullmatch('[a-f0-9]{16,64}', track_id):
         raise RuntimeError('Invalid track ID')
     if not APP.is_dir() or not MEDIA.is_dir() or MEDIA.is_symlink() or WORKER.is_symlink():
@@ -121,6 +133,8 @@ def apply(source, track_id):
             outcome = json.loads(completed.stdout)
             if outcome.get('status') not in ('prepared', 'already_prepared') or outcome.get('trackId') != track_id:
                 raise RuntimeError('Selected track was not prepared; saved attempt history is retained')
+            if digest(WORKER.read_bytes()) != FILES['music-ai-worker.php'] or value(TIMER, 'ActiveState') != 'inactive' or value(TIMER, 'UnitFileState') != 'disabled':
+                raise RuntimeError('Worker or timer changed during recovery')
             return {'status': 'worker_updated_selected_track_prepared_timer_paused',
                     'workerSha256': digest(WORKER.read_bytes()), 'backup': str(backup), 'result': outcome}
         except BaseException:

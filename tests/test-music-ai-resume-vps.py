@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import hashlib
+import fcntl
 import importlib.util
 import json
 from pathlib import Path
@@ -126,6 +127,15 @@ class RecoveryTests(unittest.TestCase):
                          '--property=ProtectSystem=strict', '--property=ReadWritePaths=' + str(self.media),
                          '--setenv=https_proxy=http://127.0.0.1:3140']:
             self.assertIn(expected, args)
+
+    def test_concurrent_recovery_stops_before_service_or_code_change(self):
+        with (self.dest / 'recovery.lock').open('a+b') as lock:
+            fcntl.flock(lock, fcntl.LOCK_EX)
+            with self.assertRaises(RuntimeError):
+                self.perform()
+        self.assertEqual(self.commands, [])
+        self.assertEqual(self.probes, [])
+        self.assertEqual(self.worker.read_bytes(), self.old)
 
 if __name__ == '__main__':
     unittest.main()

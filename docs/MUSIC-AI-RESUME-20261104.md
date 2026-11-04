@@ -35,8 +35,10 @@ Kildepakken består av music-ai-resume-vps.py, music-ai-worker.php og test-music
 
 ## Kontroller og videre arbeid
 
-Fem syntetiske Python-kontroller dekker selektiv oppdatering, timerpause, privat backup, rollback uten tap av samtidige bibliotekendringer, avvisning av ukjent kilde/installasjon og bevart nettverksisolasjon. PHP-testene dekker eksisterende kø/lagring og nytt eksplisitt engangsforsøk, gjentatt kjøring, feilet nytt forsøk, modell/transport og original/manuell bevaring. CI prøver både PR104 og siste avstemte L02-kode75c6e568.
+Seks syntetiske Python-kontroller dekker selektiv oppdatering, timerpause, privat backup, rollback uten tap av samtidige bibliotekendringer, avvisning av ukjent kilde/installasjon samtidige oppdaterere og bevart nettverksisolasjon. PHP-testene dekker eksisterende kø/lagring og nytt eksplisitt engangsforsøk, gjentatt kjøring, feilet nytt forsøk, modell/transport og original/manuell bevaring. CI prøver både PR104 og siste avstemte L02-kode75c6e568.
 
 Faktisk oppdatering, lagret Faded-vurdering og ti-låts-pilot er ikke utført av agenten. Denne skyøkten har ingen SSH-agent eller test-VPS-nøkkel. Thomas sin Windows-opplåsing gjelder radiorubben_uniweb; rubben-test bruker radiorubben_test_ed25519. En lokal opplåsing videresendes ikke automatisk hit.
 
 Neste etter kvittering: vurder første lagrede forslag, fullfør manglende lydanalyse via eksisterende bibliotekskø, velg omtrent ni ytterligere representative låter og kjør avgrenset pilot før periodisk KI-kjøring gjenopptas. Full lydanalyse er fortsatt nettleserbasert; denne leveransen flytter ikke analysemotoren til VPS.
+
+Worker-koden i a8713a1 besto målrettet CI41845474039, også mot L02-kode75c6e568. Oppdatereren er i tillegg låst mot samtidig kjøring og etterkontrollerer workerhash/timerstatus etter forsøket. De seks lokale Python-testene består. Ny CI må fortsatt avleses for denne siste oppdatererendringen.
