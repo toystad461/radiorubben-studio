@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - 'scripts/music-ai-*'
+      - 'app/music-library-producer.php'
+      - 'tests/recovered/test-music-producer.php'
       - 'tests/test-music-ai-*'
       - 'tests/recovered/test-music-ai-worker.php'
       - 'tests/recovered/test-music-ai-inventory.php'
@@ -35,9 +37,12 @@ jobs:
         with:
           ref: 75c6e5688902b456fde653672a0a28bfb4134634
           path: .compat/studio
+      - run: cp app/music-library-producer.php .compat/studio/app/music-library-producer.php
       - run: composer install --working-dir=.compat/studio --no-dev --prefer-dist --no-interaction
       - run: RR_MUSIC_AI_TEST_APP="$GITHUB_WORKSPACE/.compat/studio" php tests/recovered/test-music-ai-inventory.php
 
       - run: RR_MUSIC_AI_TEST_APP="$GITHUB_WORKSPACE/.compat/studio" php tests/recovered/test-music-ai-diagnostics.php
 
       - run: RR_MUSIC_AI_TEST_APP="$GITHUB_WORKSPACE/.compat/studio" php tests/recovered/test-music-ai-worker.php
+
+      - run: RR_MUSIC_AI_TEST_APP="$GITHUB_WORKSPACE/.compat/studio" php tests/recovered/test-music-producer.php
