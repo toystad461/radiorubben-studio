@@ -2326,3 +2326,12 @@ Ingen produksjonskode er byttet; stream fortsatt tilkoblet med timesignal av.
 Gjenstår lyttegodkjenning, selektiv kodeutrulling, fersk købundet pilot og tre
 observerte timeoverganger. Kontinuerlig produksjon av full timesekvens er ikke
 implementert. Se [detaljer og pilotavgrensning](STUDIO-HOUR-RECOVERY-20261104.md).
+
+Privat lydrevisjon v2 04.11 etter Thomas sitt konkrete innspill: mer fylde og
+tydelighet i samme Thomas-opptak, strammere pauser og talt KI-setning fjernet
+etter uttrykkelig bestilling. Syntetisk opphav er bevart i produksjonsloggen.
+De samme tre musikkglimtene er nivåjustert og overlapper med 0,55 sekunder.
+Komplett prøve 27,139 sekunder; nivå, topper, dekoding og fravær av stille hull
+i overgangene kontrollert. Ingen nye TTS-kall, ingen produksjonskode eller
+sendekø endret. Original/v1 bevart; v2 avventer brukerens klangvurdering.
+Ingen generell policyendring eller ny Studio-sluttgodkjenning er utført.

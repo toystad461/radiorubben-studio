@@ -117,13 +117,41 @@ kode-repository. Ingen lyd eller nøkkel er lagt i Git. Ingen OneDrive-
 overføring er utført. Automatisk produksjon av full timesekvens på VPS er
 fortsatt ikke implementert eller aktivert.
 
+## Revidert privat prøve v2 etter lytteinnspill
+
+Thomas ba 04.11 om mer kraft i stemmen, fjerning av KI-merkingen og mer
+sømløse overganger mellom musikkglimtene. Den nyeste konkrete instruksen
+er fulgt for timesekvensprøven: den talte KI-setningen er fjernet. Dette er
+registrert som en uttrykkelig innholdsendring; syntetisk opphav, original,
+modell/stemme, versjon og kontrollsummer er fortsatt dokumentert. Ingen
+generell endring av policy eller produksjonsprogramvare er utført.
+
+V2 gjenbruker samme råopptak og samme tre musikkilder, uten nye TTS-kall.
+Klipp i naturlige pauser fjerner første setning og strammer inn to lange
+pauser. Stemmen får tempo 1,02, mer fylde og tilstedeværelse med EQ og
+dynamikkbehandling. Tonehøyden er bevart. Ferdig stemme varer 6,119 sekunder.
+Hvert musikkglimt nivåjusteres før to overlappinger på 0,55 sekunder med
+kvartsinuskurver. Ingen stille hull ble målt i de dekodede overgangene.
+
+Komplett v2: 27,139 sekunder, −18,25 LUFS, −4,71 dBTP, ingen klipping.
+MP3-SHA256:
+`451c6c1392e5b32ecb1269ececf75a7e604bdbffb45aaede0bf72051594dc819`.
+Stemmens MP3-SHA256:
+`9ed8bfca2c6bea2492236b4e0af61de003dbeed8f9df978c9c458a47ea047c83`.
+Filer og egen kvittering: `output/hour-pilot-20261104/v2/` utenfor Git.
+Original og v1 er bevart ved kontrollsum. V2 er en privat lydmessig
+sammenligning med det tidligere køøyeblikket, ikke en ny påstand om aktuell
+sendekø. Prøven er ikke kølagt eller merket som sluttgodkjent i Studio.
+Studio-saken med v1 er ikke skrevet over. Lydkontrollen er teknisk; Thomas
+vurderer stemmeklang og musikalsk flyt ved gjennomlytting.
+
 ## Leveransestatus
 
 Feilrettingen er forberedt for gjennomgang; ingen produksjonskode er byttet i
 denne utviklingsrunden. Den gjenopprettede strømmen fortsetter med timesignalet
 deaktivert. Strømmen ble kontrollert på nytt kl. 14:51 Oslo: HTTP 200,
 96 000 mottatte lydbyte, spiller i playing og tilkoblet motor.
-Ferdig privat lydprøve foreligger. Menneskelig gjennomlytting, selektiv
+Revidert privat lydprøve v2 foreligger. Menneskelig gjennomlytting, selektiv
 utrulling av oppstartsrettingen, købundet pilot og tre faktiske påfølgende
 timeskifter gjenstår. Før eventuell offentlig pilot må klippene bindes til
 fersk kø; denne prøven skal ikke spilles som om dens køøyeblikk fortsatt er
