@@ -2333,5 +2333,26 @@ etter uttrykkelig bestilling. Syntetisk opphav er bevart i produksjonsloggen.
 De samme tre musikkglimtene er nivåjustert og overlapper med 0,55 sekunder.
 Komplett prøve 27,139 sekunder; nivå, topper, dekoding og fravær av stille hull
 i overgangene kontrollert. Ingen nye TTS-kall, ingen produksjonskode eller
-sendekø endret. Original/v1 bevart; v2 avventer brukerens klangvurdering.
+sendekø endret. Original/v1 bevart. Thomas vurderte deretter v2 som «mye bedre»;
+det er positiv lyttefeedback, ikke registrert sendegodkjenning i Studio.
 Ingen generell policyendring eller ny Studio-sluttgodkjenning er utført.
+
+## Thomas-stemme og flere daglige innslag – undersøkelse 04.11.2026
+
+RR-VOICE-20261104: [kildebasert anbefaling og prøvedesign](RR-VOICE-RESEARCH-20261104.md)
+ferdig etter gjennomgang av ElevenLabs-modeller, kloning, fremføring, API,
+sammenheng, feil og priser. Anbefalt retning er eksisterende Thomas M./v4,
+tre uttrykk, ni sammenlignbare private prøver og deretter fire daglige puljer
+med omtrent ti forskjellige innslag. Puljer, tider og innstillinger er
+forslag, ikke aktive funksjoner eller bekreftet lydforbedring.
+
+Konkrete kodefunn: generiske style/speed-felt passer ikke dokumenterte
+v4-kontroller; manus avviser lydinstruksjoner; stikk-kontroll utløper etter
+én time; arbeidslisten har 30 aktive plasser og biblioteket 200 filer/2 GiB.
+Disse grensene må håndteres før varig flerinnslagsproduksjon. Nyhetskontroll,
+manuelle rettelser og separate manus-/lydgodkjenninger skal bevares.
+
+Kontrollert mot kodehead 2c27a8f og offisielle nettkilder 04.11. Ingen nye
+TTS-kall, kontoendring, innholdspublisering eller runtime-endring. Stemmetype,
+v4-PVC-trening og kontokvote er fortsatt ukjent. Neste anbefalte steg er den
+avgrensede stemmesammenligningen før valg av endelige innstillinger.

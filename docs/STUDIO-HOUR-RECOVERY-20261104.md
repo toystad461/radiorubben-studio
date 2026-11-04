@@ -143,7 +143,12 @@ Original og v1 er bevart ved kontrollsum. V2 er en privat lydmessig
 sammenligning med det tidligere køøyeblikket, ikke en ny påstand om aktuell
 sendekø. Prøven er ikke kølagt eller merket som sluttgodkjent i Studio.
 Studio-saken med v1 er ikke skrevet over. Lydkontrollen er teknisk; Thomas
-vurderer stemmeklang og musikalsk flyt ved gjennomlytting.
+vurderte deretter v2 som «mye bedre». Dette er positiv lyttefeedback på
+prøven; ingen ny Studio-godkjenning eller offentlig sending er utført.
+
+Videre undersøkelse av stemme, manusvariasjon og flere daglige puljer er
+dokumentert i [RR-VOICE-20261104](RR-VOICE-RESEARCH-20261104.md). Den gir et
+konkret prøvedesign og kodefunn, ikke en aktivert produksjonsplan.
 
 ## Leveransestatus
 
@@ -151,8 +156,8 @@ Feilrettingen er forberedt for gjennomgang; ingen produksjonskode er byttet i
 denne utviklingsrunden. Den gjenopprettede strømmen fortsetter med timesignalet
 deaktivert. Strømmen ble kontrollert på nytt kl. 14:51 Oslo: HTTP 200,
 96 000 mottatte lydbyte, spiller i playing og tilkoblet motor.
-Revidert privat lydprøve v2 foreligger. Menneskelig gjennomlytting, selektiv
-utrulling av oppstartsrettingen, købundet pilot og tre faktiske påfølgende
+Revidert privat lydprøve v2 har fått positiv tilbakemelding. Sluttgodkjenning
+av en fersk købundet pilot, selektiv utrulling av oppstartsrettingen og tre faktiske påfølgende
 timeskifter gjenstår. Før eventuell offentlig pilot må klippene bindes til
 fersk kø; denne prøven skal ikke spilles som om dens køøyeblikk fortsatt er
 gjeldende. Godkjenning av lyd og utrulling av kode holdes adskilt.
