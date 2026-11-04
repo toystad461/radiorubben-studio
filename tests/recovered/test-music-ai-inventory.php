@@ -1,0 +1,61 @@
+<?php
+declare(strict_types=1);
+$package = dirname(__DIR__, 2);
+$app = getenv('RR_MUSIC_AI_TEST_APP') ?: $package;
+require $app . '/app/music-library-queue.php';
+define('RR_MUSIC_AI_INVENTORY_TEST', true);
+require $package . '/scripts/music-ai-inventory.php';
+function inventory_ok(bool $ok): void { if (!$ok) throw new RuntimeException('Inventory assertion failed'); }
+$dir = sys_get_temp_dir() . '/rr-ai-inventory-' . bin2hex(random_bytes(6));
+mkdir($dir, 0700); $dir = realpath($dir); $root = $dir . '/media/music';
+$u = ['role' => 'producer', 'id' => 'fixture'];
+try {
+    $bytes = str_repeat(hex2bin('fffb9000') . str_repeat("\0", 413), 1000);
+    $file = $dir . '/test.mp3'; file_put_contents($file, $bytes);
+    $uploaded = music_library_upload(['name' => 'Test.mp3', 'tmp_name' => $file, 'size' => strlen($bytes), 'error' => 0], $u, 'c', 'c', $root, fn() => true, fn($a, $b) => copy($a, $b));
+    $t = music_library_prepare($uploaded['track']['id'], $uploaded['track']['sha256'], 0, $u, 'c', 'c', $root);
+    $id = $t['id']; $sha = $t['sha256'];
+    $t = music_library_edit($id, $sha, $t['revision'], ['artist' => 'Fixture', 'title' => 'Test', 'tags' => 'Keep'], $u, 'c', 'c', $root);
+    $t['available'] = true;
+    $technicalOnly = $t;
+    $technicalOnly['technicalCheck'] = ['sourceSha256' => $sha, 'ready' => true];
+    $r = music_ai_inventory_rows([$technicalOnly]);
+    inventory_ok($r['counts']['technicalCueReady'] === 1 && $r['counts']['readyForAi'] === 0);
+    inventory_ok(in_array('tempo_key_missing_or_stale', $r['tracks'][0]['missing'], true));
+    inventory_ok(in_array('full_audio_profile_missing_or_stale', $r['tracks'][0]['missing'], true));
+    music_audio_enqueue($id, $sha, $u, 'c', 'c', $root);
+    $job = music_audio_claim($u, 'c', 'c', $root);
+    $duration = music_library_metadata($t)['durationSeconds'];
+    $measure = ['engine' => MUSIC_ANALYSIS_ENGINE, 'bpm' => 120.0, 'key' => 'C', 'scale' => 'major', 'tempoConfidence' => 2.0, 'keyStrength' => .8, 'startSeconds' => 0.0, 'durationSeconds' => 15.0];
+    $profile = ['engine' => MUSIC_AUDIO_QUEUE_ENGINE, 'durationSeconds' => $duration, 'rmsDbfs' => -12.0, 'peakDbfs' => -.5, 'clippedFraction' => 0.0, 'leadingSilenceSeconds' => .2, 'trailingSilenceSeconds' => .3, 'vocalStartSeconds' => 3.0, 'lastVocalSeconds' => 20.0, 'vocalScoreMax' => .8, 'voiceModel' => 'yamnet-tfjs-1', 'voiceCoverageSeconds' => $duration, 'waveformPeaks' => array_fill(0, 256, .2)];
+    $t = music_audio_complete($id, $sha, $job['revision'], $job['token'], $measure, $profile, $u, 'c', 'c', $root);
+    $t['available'] = true;
+    $ai = music_library_producer_assess(['openai_model' => 'fixture'], $t, fn() => json_encode(['energy' => 'moderat', 'periods' => ['Morgen'], 'tags' => ['Melodisk'], 'reason' => 'Synthetic only.', 'confidence' => 'low']));
+    $assessed = $t; $assessed['producerAssessment'] = $ai;
+    $stale = $assessed; $stale['manualOverrides']['title'] = 'Changed';
+    $running = $t; $running['audioQueue']['status'] = 'running';
+    $missingFile = $t; $missingFile['available'] = false;
+    $missingIdentity = $t; $missingIdentity['manualOverrides']['artist'] = ''; $missingIdentity['metadata']['fields']['artist'] = null;
+    $jingle = $t; $jingle['kind'] = 'jingle';
+    $snapshot = serialize([$t, $assessed, $stale, $running, $missingFile, $missingIdentity, $jingle]);
+    $before = hash_file('sha256', $root . '/library.json');
+    $names = scandir($root);
+    $r = music_ai_inventory_rows([$t, $assessed, $stale, $running, $missingFile, $missingIdentity, $jingle]);
+    inventory_ok($r['counts']['total'] === 7 && $r['counts']['music'] === 6 && $r['counts']['otherAudio'] === 1);
+    inventory_ok($r['counts']['aiCurrent'] === 1 && $r['counts']['aiStale'] === 1 && $r['counts']['readyForAi'] === 2);
+    inventory_ok($r['counts']['needsAttention'] === 3);
+    inventory_ok($r['tracks'][1]['periods'] === ['Morgen'] && $r['tracks'][1]['confidence'] === 'low');
+    inventory_ok(in_array('artist_or_title_missing', $r['tracks'][5]['missing'], true));
+    $onDisk = music_ai_inventory((string)realpath($app), $root);
+    inventory_ok($onDisk['status'] === 'read_only_inventory' && $onDisk['counts']['readyForAi'] === 1);
+    inventory_ok($onDisk['libraryHashBefore'] === $before && $onDisk['libraryHashAfter'] === $before);
+    inventory_ok(count($onDisk['installedCodeHashes']) > 0);
+    inventory_ok($snapshot === serialize([$t, $assessed, $stale, $running, $missingFile, $missingIdentity, $jingle]));
+    inventory_ok($before === hash_file('sha256', $root . '/library.json') && $names === scandir($root));
+    inventory_ok(hash_file('sha256', $root . '/originals/' . $id . '.mp3') === $sha);
+    inventory_ok(!is_file($root . '/ai-worker.lock'));
+    echo "PASS: read-only inventory, source validity, technical-cue distinction, identity, running analysis, missing originals, stale AI, jingle exclusion and no library/original writes.\n";
+} finally {
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $f) $f->isDir() ? rmdir($f->getPathname()) : unlink($f->getPathname());
+    rmdir($dir);
+}

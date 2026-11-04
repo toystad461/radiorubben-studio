@@ -1,5 +1,93 @@
 # Studio – felles status og arbeidsliste
 
+## PR104 – første vurdering lagret; kvalitet justeres før pilot, 04.11.2026
+
+Thomas har levert VPS-kvittering for worker75b8a9c6, privat backup /etc/rr-music-ai/recovery-x1m_tjv5 og prepared for Faded. Lagret forslag er lest tilbake: moderat energi, Formiddag/Ettermiddag/Kveld. KI-timeren er deaktivert. Dette bekrefter første installasjon/lagring, ikke ferdig pilot.
+
+Begrunnelsen overtolker toneart/keyStrength og dBFS, og modellen setter high. Derfor klargjøres produsentversjon5 med tydelig skille mellom målinger/forslag/usikkerhet, servergrense medium og komplett grunnlag fra ukens eksisterende musikkprofiler. Versjonert input gjør gamle forslag utdaterte etter utrulling uten å slette data. Ingen ny runtime-fil eller vurdering er installert/kjørt av agenten i denne oppfølgingen.
+
+Neste: fullfør lydanalysene i eksisterende bibliotekskø, avstem ferskt utvalg, installer kun forbedret produsentfil og kjør avgrenset pilot før KI-timeren aktiveres igjen. CI og live modellkvalitet må dokumenteres separat. Se [kvittering og videre løp](MUSIC-AI-RESUME-20261104.md).
+
+
+## PR104 – API virker; engangsforsøk og egen musikktransport, 04.11.2026
+
+VPS-diagnostikk fra Thomas kl.15:01 Europe/Oslo: HTTP200 og gyldig, uspart vurdering. Faded er sperret av tre forsøk på samme grunnlag. Fenrik Lane har utløpt lydarbeidsleie. Dette er ikke ferdig pilot eller lagret KI-vurdering.
+
+Musikkworker har fått egen transport som beholder musikkmodellen når Studio bruker manusrelé, og eksplisitt --retry for ett nytt forsøk på én feilet låt. Ny selektiv oppdaterer verifiserer kjent workerhash, kjører syntetiske tester mot aktiv app, tar privat backup og gjør atomisk bytte av bare /etc/rr-music-ai/worker.php. Ved suksess forblir KI-timeren deaktivert for pilot; ved feil tilbakeføres kode/timer, mens forsøkshistorikk og andre bibliotekendringer bevares.
+
+Seks lokale Python-tester består. Worker/PHP og L02-kompatibilitet besto CI41845474039 for a8713a1; siste oppdatererrettelse mot samtidig kjøring må avleses i ny CI. Ingen serverendring eller lagret vurdering er utført av agenten. Windows sin Uniweb-opplåsing gir ikke skyøkten tilgang til test-VPS. Se [funn, avgrensning og kjøring](MUSIC-AI-RESUME-20261104.md).
+
+
+## PR104 – faktisk bibliotekstatus og neste feilsøking, 02.11.2026
+
+VPS-rapport fra Thomas kl.13:59 UTC: 121 låter og åtte andre lydfiler. 121 har filmetadata, to tempo/toneart, én full lydprofil, 114 teknisk cue-kontroll og ingen gyldig KI-vurdering. Én låt har komplett grunnlag, men tre feilede KI-forsøk. Én lydjobb står running, og én låt mangler artist. Bibliotekhash er uendret under kontrollen. KI-proxy og timer er allerede aktive; tidligere uavklart installasjonsstatus er dermed avklart. Inactive/dead for oneshot-jobben mellom timerkjøringer er ikke alene en feil.
+
+Ny avgrenset diagnostikk gjør høyst ett API-kall med eksisterende musikkprodusents skjema, skiller transport/HTTP/svarvalidering og skriver aldri vurdering eller nøkkel. Kjøres midlertidig som rr-studio med eksisterende proxy/IP-begrensning og skrivebeskyttet filsystem. Tester og L02-kompatibilitet er lagt til; faktisk CI må avleses. Ingen VPS-endring, ny analyse, gjenstart eller nullstilling av forsøk er utført av agenten. Tilgang via brukerens rubben-test er fortsatt nødvendig. Se [funn og videre løp](MUSIC-AI-READINESS-20261102.md).
+
+## PR104 – KI-inventar mot installert app, 02.11.2026
+
+Bestilt: bibliotekstatus, aktivering/verifisering av KI-jobb, prøveutvalg og resten av biblioteket. Ny lesende CLI-kontroll skiller full lydanalyse fra L02s tekniske cue-kontroll og viser mangler per låt. Den laster ikke nøkler, gjør ingen API-kall og endrer ikke bibliotek, cue-punkter eller sendegodkjenninger. Kodehashene for den installerte appen følger rapporten.
+
+Syntetiske tester er lagt til for PR104-grunnlaget og fastlåst L02-kode 650e24cde9deebb98d65976189503e170fd7c56b. CI må leses før bestått status. Lokalt finnes ikke native PHP. Serverkontroll avventer tilgang: agentøkten har ingen SSH-nøkkel og nettleseren avviser IP-sertifikatet. Ingen VPS-endring, faktisk analyse eller pilot er utført. Eksisterende rubben-test-tilgang må brukes til den lesende kontrollen; deretter videreføres den allerede autoriserte leveransen. Se [kontroll og videre løp](MUSIC-AI-READINESS-20261102.md).
+
+## PR104 – administrativt engangsoppsett klart, 21.10.2026
+
+scripts/music-ai-vps-install.py --install installerer bare nye rr-music-ai-enheter.
+Før installasjon: eksakte worker/test-blobber, syntetisk test mot aktiv app,
+Squid/systemd-syntaks og faktisk IP-denial med to levende lokale lyttere.
+Deretter egen localhost:3140-proxy med kun api.openai.com:443, rr-studio-jobb
+med ProtectSystem=strict, kun studio-media skrivbar og ingen direkte egress.
+Check/syntetisk API-smoke og én vurdering må bestå før timer hvert minutt.
+Original lyd lastes ikke opp til OpenAI; eksisterende produsentfunksjon bruker
+metadata og lydmålinger. Manuelle felt beholdes. Krever ferdig nettleserlydanalyse.
+Ved feil fjernes bare det nye tjenesteoppsettet; bibliotekets eventuelle jobbstatus
+eller fullførte vurdering tilbakeføres ikke. Eksisterende oppsett avvises ved
+omkjøring. Ingen pakkeinstallasjon, FPM-, Entra-, WP- eller nøkkelendringer.
+Fire lokale syntetiske installasjonstester består. Egen PHP8.3-CI lagt til;
+faktisk installasjon, API-smoke og periodisk kjøring på VPS gjenstår.
+
+
+## AI-worker – testfeil rettet og VPS-forbindelse verifisert, 21.10.2026
+
+GitHub-run 39631001793, forsøk 2, returnerte snapshot av 176 kodefiler,
+recoveryRequired=false. Ingen Studio-kode ble endret av snapshot-kallet.
+Worker-testens tre metadataredigeringer bevarer nå artist Fixture; tidligere
+fjernet de artist og testet dermed manglende metadata i stedet for retry/CAS.
+Commit 2962dfc562615ed7ae99bcc41f195642ba5f68bf består PHP 8.2 og 8.4 i
+run 39635160501. Loggen bekrefter test-music-ai-worker.php og kontrollene for
+forutsetninger, gjenbruk, retry, lås, samtidig redigering og originalbevaring.
+Dette er syntetisk CI, ikke en aktiv AI-jobb på VPS. Gatewayen støtter bare
+app/public-kode; scripts, systemd, proxy og konfigurasjon er utenfor dens
+rettigheter. Egen administrativ engangsinstallasjon av worker og begrenset
+nettverk kreves før API-smoke og periodisk drift. Ikke utvid gatewayens
+rettigheter eller legg oppsett av tjenester i webkode for å omgå grensen.
+
+
+## VPS AI-musikkjobb – klargjøring 21.10.2026
+
+Brukeren har installert PR103-kilde 8ace4d83 selektivt: begge cue-tester og seks
+filhasher besto på VPS; manuell cue-lagring er bekreftet etter ny innlasting.
+AI-nøkkel leses fra studio-data/openai.key via eksisterende config-mappelenke.
+GET /v1/models gir HTTP200; gpt-4.1-mini og gpt-5-mini er oppført.
+Ingen nøkkel er lagret i kode eller utskrift.
+
+Ny avgrenset CLI-jobb på gren feat/music-ai-background-worker bygger på den
+installerte PR103-kilden. Venter på full lydprofil og tempo/toneart, bruker
+eksisterende produsentfunksjon uten krav om nettidentifisering, lagrer
+producerAssessment og bevarer manuelle tags/cues. AI-tags blir liggende som
+kildemerkede AI-vurderinger i eksisterende detaljvisning; ingen kopiering til
+manuelle merkelapper. Gyldige vurderinger gjenbrukes. En privat lås, atomisk
+revisjonskontroll og maksimalt tre forsøk per inngangsgrunnlag begrenser kjøring.
+Standardmodell for denne CLI-jobben er gpt-4.1-mini; global Studio-modell endres ikke.
+
+Native PHP-test er skrevet for forutsetninger, lagring/gjenbruk, retry, lås,
+samtidig redigering og bevaring. Lokal PHP er utilgjengelig; test på VPS/CI
+og én syntetisk API-kjøring gjenstår. Ingen timer/tjeneste er installert eller
+aktivert. Web-FPM, Entra-proxy og nettidentifisering er uendret.
+Neste: staged PHP-test og syntetisk API-smoke, deretter egen begrenset
+proxy/systemd-timer og faktisk én-låts-kontroll før periodisk drift.
+
+
 ## Automatisk lydanalyse og cue-punkter – 21.10.2026
 
 Bestilt: hele den eksisterende lydanalysen skal kjøre automatisk etter opplasting,

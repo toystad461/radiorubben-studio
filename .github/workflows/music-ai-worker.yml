@@ -1,0 +1,48 @@
+name: Music AI worker bootstrap
+on:
+  push:
+    branches: [feat/music-ai-background-worker]
+  pull_request:
+    paths:
+      - 'scripts/music-ai-*'
+      - 'app/music-library-producer.php'
+      - 'tests/recovered/test-music-producer.php'
+      - 'tests/test-music-ai-*'
+      - 'tests/recovered/test-music-ai-worker.php'
+      - 'tests/recovered/test-music-ai-inventory.php'
+      - 'tests/recovered/test-music-ai-diagnostics.php'
+      - '.github/workflows/music-ai-worker.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, mbstring, fileinfo
+          tools: composer:v2
+      - run: composer install --no-dev --prefer-dist --no-interaction
+      - run: python3 tests/test-music-ai-vps-install.py
+      - run: python3 tests/test-music-ai-resume-vps.py
+      - run: php tests/recovered/test-music-ai-worker.php
+      - run: php -l scripts/music-ai-inventory.php
+      - run: php tests/recovered/test-music-ai-inventory.php
+      - run: php -l scripts/music-ai-diagnostics.php
+      - run: php tests/recovered/test-music-ai-diagnostics.php
+      - uses: actions/checkout@v4
+        with:
+          ref: 75c6e5688902b456fde653672a0a28bfb4134634
+          path: .compat/studio
+      - run: cp app/music-library-producer.php .compat/studio/app/music-library-producer.php
+      - run: composer install --working-dir=.compat/studio --no-dev --prefer-dist --no-interaction
+      - run: RR_MUSIC_AI_TEST_APP="$GITHUB_WORKSPACE/.compat/studio" php tests/recovered/test-music-ai-inventory.php
+
+      - run: RR_MUSIC_AI_TEST_APP="$GITHUB_WORKSPACE/.compat/studio" php tests/recovered/test-music-ai-diagnostics.php
+
+      - run: RR_MUSIC_AI_TEST_APP="$GITHUB_WORKSPACE/.compat/studio" php tests/recovered/test-music-ai-worker.php
+
+      - run: RR_MUSIC_AI_TEST_APP="$GITHUB_WORKSPACE/.compat/studio" php tests/recovered/test-music-producer.php
