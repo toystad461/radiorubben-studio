@@ -1,5 +1,25 @@
 # Studio – felles status og arbeidsliste
 
+## Fersk VPS-kontroll 04.11.2026 – gammel meny på disk, to lokale filavvik
+
+Thomas har levert utdata fra `ssh rubben-test` på Windows til `ubuntu@vps-5363103`.
+Innloggingsbanneret er datert 04.11.2026 kl.15:12:29 CET (Europe/Oslo).
+Den etterfølgende lesekontrollen viser Nginx/PHP-FPM/stream/Icecast aktive med
+PID henholdsvis 810/763/773/770. Dette bekrefter tjenestetilstand i innsendt
+serverutdata, ikke en ny lydmåling eller direkte SSH-tilgang fra assistentøkten.
+
+Fire menyfiler på disk matcher nøyaktig grunnlaget før menyendringen.
+`public/assets/ai-studio/app.mjs` og `public/ai-studio.php` avviker fra både
+menygrunnlaget og kandidaten. Vanlig LF/CRLF/BOM forklarer ikke kontrollsummene.
+Full overskriving av disse er derfor ikke klargjort; faktisk diff må leses først.
+Den gamle menyen på disk er bekreftet; nettlesercache er ikke eneste årsak.
+Se ferske hasher i [menyleveransen](STUDIO-MENU-20261102.md).
+
+Ingen ny installasjon, backup, rollback eller tjenesteomstart er utført gjennom
+denne kontrollen. Neste steg er en lesekontroll av de to avvikende kodefilene,
+deretter avstemt seksfilers installasjon med privat backup, hashkontroll og
+etterkontroll. Ingen merge, full release eller endring av kø/innhold inngår.
+
 ## L02-kontroll 04.11.2026 Europe/Oslo – timesignal bekreftet, menyinstallasjon blokkert
 
 Thomas bekrefter at timesignalet fungerer i streamen. Dette registreres som

@@ -1,5 +1,41 @@
 # Menyopprydding – Studio #115/L02, 02.11.2026
 
+## Ferske serverhasher 04.11.2026 – avstemming før installasjon
+
+Thomas har levert resultatet fra en lesekontroll i sin eksisterende SSH-økt
+(`ssh rubben-test`, `ubuntu@vps-5363103`). Banner: 04.11.2026 kl.15:12:29 CET.
+Assistentøkten har ikke selv en tilkoblet SSH-terminal; resultatet nedenfor er
+innsendt faktisk serverutdata sammenlignet med GitHub-kode, ikke en egen fjernmåling.
+
+Aktiv release fra Nginx-konfigurasjonen: `/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb`.
+Nginx, PHP8.3-FPM, rr-studio-stream og rr-studio-icecast viser active/running;
+PID henholdsvis 810, 763, 773 og 770. Aktiv tjeneste dokumenterer ikke alene
+sammenhengende eller hørbar lyd.
+
+| Fil | Innsendt SHA256 fra VPS |
+| --- | --- |
+| `app/views/navigation.php` | `b88904b9d42a6243c11de8d6c22af513c17957787cc261c132cb72b2f27cb92d` |
+| `app/views/sidebar.php` | `e459b4277a7124cc896eaf73ff283327f25a659b1b3c8003a87b01621abe813a` |
+| `app/views/head.php` | `0d4e5414c4410365d06b257e487e34b5348a08def262dff53f73375d04ea0866` |
+| `public/assets/studio.css` | `405e2b52f4c836fc19aaf4cbc9566873d57e8e0421238632392e1b2283223ae5` |
+| `public/assets/ai-studio/app.mjs` | `c70656d0ba51850ebca827f30dc7263229bd9cee0706729e067c8c6407ac6ae1` |
+| `public/ai-studio.php` | `fa7fc0c94d258e3e6e01b2b1e73d087114b70fbef5db8dead87cc6ce8a5b9247` |
+
+De fire første filene er byteidentiske med `650e24cde9deebb98d65976189503e170fd7c56b`,
+altså grunnlaget før menyoppryddingen. Den gamle menyen finnes på disk;
+nettlesercache kan ikke alene forklare avviket.
+
+De to siste filene avviker fra både grunnlaget og kandidatens seksfilers sett.
+Kontrollerte varianter med LF/CRLF, BOM og avsluttende linjeskift ga ingen treff.
+Producer-kvitteringen fra 02.11 har andre etterhasher, og erstatter ikke dagens
+ferske måling. Årsaken til disse to avvikene er foreløpig uavklart. Neste steg
+er lesing av den konkrete kodediffen; ikke full overskriving av konsollfilene.
+
+GitHub-head ved avstemming er `75c6e5688902b456fde653672a0a28bfb4134634`.
+Kandidatens seks kildefiler har fortsatt hashene i tabellen nedenfor.
+Denne oppdateringen endrer bare dokumentasjon. Ingen installasjon, privat backup,
+rollback, tjenesteomstart eller endring av aktive data er utført her.
+
 ## Ny kontroll 04.11.2026 Europe/Oslo – installasjon fortsatt blokkert
 
 Thomas bekrefter i denne økten: «Time signalet fungerer i streamen».
