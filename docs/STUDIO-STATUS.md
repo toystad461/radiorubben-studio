@@ -2356,3 +2356,12 @@ Kontrollert mot kodehead 2c27a8f og offisielle nettkilder 04.11. Ingen nye
 TTS-kall, kontoendring, innholdspublisering eller runtime-endring. Stemmetype,
 v4-PVC-trening og kontokvote er fortsatt ukjent. Neste anbefalte steg er den
 avgrensede stemmesammenligningen før valg av endelige innstillinger.
+
+Senere avgrensning 04.11: Thomas ønsker noen få innslag om dagen og gjenbruk
+både innen samme døgn og over flere dager. Dette erstatter forslaget om fire
+daglige puljer og 40 nye innslag. Ny anbefalt start er seks–åtte avspillinger
+daglig fra tidløse stikk, stikk for riktig ukedag og null–ett ferskt glimt.
+Antall avspillinger er adskilt fra betalt generering. Tallene er forslag;
+ingen bank eller tidsplan er produsert/aktivert. Første pilot er redusert
+til tre korte prøver. Gyldighet og repetisjon må håndteres uten å omgå dagens
+godkjenningskontroller. Detaljer står øverst i RR-VOICE-RESEARCH-20261104.md.

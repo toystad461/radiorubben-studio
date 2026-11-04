@@ -4,6 +4,52 @@ Sak: **RR-VOICE-20261104**. Undersøkt 04.11.2026, Europe/Oslo.
 Status: **kildebasert anbefaling og utviklingsgrunnlag; ikke implementert**.
 Kodegrunnlag: `2c27a8f8c7f03ad55c446ecc1785d9af942e7fd2`, PR #118.
 
+## Siste avgrensning: få innslag og gjenbruk
+
+Thomas presiserte deretter 04.11 at noen innslag om dagen er nok, og ønsker
+at opptak kan brukes flere ganger samme dag og også på flere dager.
+**Dette erstatter anbefalingen om 40 nye innslag i fire daglige puljer.**
+Modellundersøkelsen under beholdes som faggrunnlag; det tidligere store
+produksjonsopplegget og kostnadstabellen er historiske alternativer.
+
+Ny anbefalt start er **seks–åtte avspillinger gjennom dagen**, hovedsakelig
+fra godkjente lydfiler som allerede finnes. Antall avspillinger er ikke
+antall genereringer. Størrelsene under er forslag, ikke bestilt eller
+ferdig produsert lyd:
+
+| Gruppe | Liten startbank | Gjenbruk |
+| --- | --- | --- |
+| Tidløse stikk | Seks korte opptak om musikk, selskap og Radio Rubben | Flere dager og uker; ingen ukedag, dato, vær eller bestemt neste låt |
+| Ukedagsstikk | Ett opptak for hver av de sju ukedagene | På riktig ukedag, også kommende uker; uten dato eller aktuelle hendelser |
+| Ferskt/lokalt glimt | Null–ett nytt innslag når det finnes godt innhold | Kan gjentas samme dag; varer flere dager bare hvis innholdet faktisk tåler det |
+
+Et mulig døgn er to avspillinger av dagens ukedagsstikk, tre–fire forskjellige
+tidløse stikk og ett lokalt glimt. Det er ikke krav om nytt innhold hver dag.
+Start med små innslag på omtrent 8–20 sekunder. Avgrensningen gjelder ekstra
+programlederstikk; timesekvensarbeidet er en egen leveranse og aktiveres ikke her.
+
+Forslag til variasjon: samme fil høyst to ganger i døgnet og minst fire timer
+mellom, basert på faktisk avspilling. Bytt rekkefølge og plassering fra dag
+til dag. Godkjente opptak gjenbrukes uten nye TTS-kall. Bevar hele ytringer;
+unngå hørbare skjøter ved å lime et enkelt ukedagsord inn i en annen setning.
+
+Ukedag beregnes i Europe/Oslo. «Onsdag morgen» får både ukedags- og
+tidsromsbegrensning; et rent onsdagsstikk kan brukes gjennom dagen.
+Unngå eksakt klokke i gjenbruksbanken. Hendelser og nettfunn får konkret
+siste gyldighetsdato og bevarer kildegrunnlaget. Et gammelt opptak får ikke
+automatisk forlenget aktualitet fordi det velges igjen.
+
+Godkjent fil, manus, stemme og kontrollsum gjenbrukes samlet. Studio trenger
+en avgrenset gyldighetsordning før dette kan kjøres; dagens ettimeskontroll
+skal ikke omgås ved å merke gamle stikk som nye. Kilde-/nyhetsregler og
+godkjenninger bevares. Hver faktisk avspilling får egen kvittering.
+
+Neste anbefalte pilot er redusert til **tre korte prøver** med eksisterende
+Thomas-stemme: ett tidløst stikk, ett ukedagsstikk og ett lokalt glimt.
+V2 beholdes som klangreferanse. Ni-prøvers innstillingsmatrisen er valgfri
+fordypning hvis stemmen trenger mer arbeid. Ingen ny TTS eller automatikk
+er aktivert som følge av denne avgrensningen.
+
 ## Behov og beslutningsgrunnlag
 
 Thomas ønsker en kraftigere, troverdig og personlig programlederstemme,
@@ -130,7 +176,9 @@ sju dager, ikke samme kildefunn i flere puljer samme døgn og ikke samme
 innledning blant de siste seks innslagene. Ny vesentlig informasjon kan
 begrunne en oppdatering. Reglene er forslag og må tilpasses lytting.
 
-## Fire daglige puljer som første driftsmål
+## Tidligere alternativ: fire daglige puljer
+
+Historisk forslag, erstattet av avgrensningen om få innslag og gjenbruk øverst.
 
 Foreslåtte produksjonstider: **05:30, 10:30, 14:30 og 18:30, Europe/Oslo**.
 De gir forslag til henholdsvis morgen, dag, ettermiddag og kveld/natt.
@@ -225,7 +273,10 @@ generering og vises i Studio. [ElevenLabs-feilkoder](https://elevenlabs.io/docs/
 Nøkkel og faktiske kontogrenser ligger privat; kall begrenses med rettigheter
 og budsjett. [API-nøkler](https://elevenlabs.io/docs/overview/administration/workspaces/api-keys).
 
-## Volum og kostnadsanslag
+## Tidligere volum og kostnadsanslag
+
+Dette gjelder det opprinnelige forslaget om mange nye innslag, ikke den
+reduserte gjenbruksmodellen. Avspilling av en ferdig fil krever ingen ny TTS.
 
 Vår regnemodell: gjennomsnittlig 220 fakturerbare tegn per innslag,
 25 prosent reserve til nye forsøk/varianter og 30 dager. Faktisk tekst,
@@ -244,7 +295,11 @@ kontoplan må avstemmes. Priser er uten avgifter. Tekstmodell, nettsøk,
 talegjenkjenning, server og lagring er ikke inkludert. Ingen plan eller
 budsjett er endret. [API-priser, kontrollert 04.11.2026](https://elevenlabs.io/pricing/api).
 
-## Første avgrensede prøve og ferdigkriterier
+## Utvidet prøve og tidligere ferdigkriterier
+
+Den første anbefalte piloten er nå tre opptak, som beskrevet øverst.
+Ni-prøvers sammenligning og kravet om fire døgnpuljer nedenfor er ikke lenger
+startomfanget. Sperrene for endret innhold, kilder og godkjenning består.
 
 Neste anbefalte lydprøve: tre manus i de tre profilene over, totalt ni
 private opptak. Dette notatet er ikke godkjenning av nye TTS-manus.
@@ -289,8 +344,10 @@ Ukjent: om Thomas M. er IVC eller PVC, eventuell v4-fintrening, kontoplan og
 ledig kvote. Eksisterende API-nøkkel har fungerende TTS, men mangler lesetilgang
 til stemme-/modelloversikten. Det stanser ikke denne undersøkelsen.
 
-Gjenstår: de ni lydprøvene, valg av faktisk profil og deretter de avgrensede
-Studio-endringene over. [Timearbeidets status](STUDIO-HOUR-RECOVERY-20261104.md)
+Gjenstår etter siste avgrensning: tre korte prøver, vurdering av klang og
+en liten gjenbruksbank med regler for ukedag, aktualitet og repetisjon.
+Ni-prøvers sammenligning og fire daglige puljer er ikke lenger startplanen.
+[Timearbeidets status](STUDIO-HOUR-RECOVERY-20261104.md)
 og [felles utviklingsstatus](STUDIO-STATUS.md) gjelder fortsatt. Dette
 notatet endrer ikke den tidligere forberedte kodepakken eller aktiverer
 timesekvensen.
