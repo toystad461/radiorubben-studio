@@ -1,5 +1,63 @@
 # Menyopprydding – Studio #115/L02, 02.11.2026
 
+## Avvik forklart og selektiv pakke klargjort 04.11.2026
+
+Innsendt diff viser eksisterende Vær-/Trafikk-/stikkarbeid. Begge komplette
+serverhasher matcher PR117-head `290f80c4492122d3cb62060cdfab68872e758ff6`:
+`app.mjs` = `c70656d0ba51850ebca827f30dc7263229bd9cee0706729e067c8c6407ac6ae1`,
+`ai-studio.php` = `fa7fc0c94d258e3e6e01b2b1e73d087114b70fbef5db8dead87cc6ce8a5b9247`.
+Dermed er hele filinnholdet avstemt selv om terminalutdraget viste bare de
+første 20 av 25 tegnvise forskjeller i PHP-filen. PR117s eldre tekst «ingen
+utrulling» er ikke brukt som bevis for dagens installasjon. Dagens filhasher
+viser at disse to PR117-filene finnes på VPS; øvrige PR117-filer er ikke
+kartlagt som del av menyoppdraget.
+
+### Pakke og etterhasher
+
+[Installasjonsskriptet](../scripts/studio-menu-vps.py) bruker bare det avtalte
+seksfilers settet. Fire menyfiler lastes fra `9bbfae2c7b97414c2b3b96b18aeafa731cb6c5d8`
+og beholder kandidatens fire første etterhasher nedenfor. Konsollen patches
+på stedet i minnet, etter kontroll av de ferske PR117-førhashene:
+
+| Fil | Avstemt etterhash, med PR117 bevart |
+| --- | --- |
+| `public/assets/ai-studio/app.mjs` | `6b0122f8933dc7c1b9241bcb83f83cc37b855c3aaaba4a98dc438ac30a5b857d` |
+| `public/ai-studio.php` | `dc853d3248931c377e696b0678ec0556dc34b065b2470ca251231275837966c9` |
+
+Bare fire linjer som åpner aktiv menygruppe tilføyes i JavaScript.
+PHP endrer bare scriptversjonen fra `stikk-20261102` til
+`menu-stikk-20261104`. Værkilder, Trafikk, lokal mal, importer, manus,
+godkjenningsfelt og alle øvrige PR117-byte bevares. Dette er en selektiv
+installasjonspakke i #115, ikke merge eller kopiering av hele PR117.
+
+### Utførelse og tilbakeføring
+
+Standardkjøring klargjør/kontrollerer uten runtime-endring; `--apply` krever
+riktig vert, aktiv Nginx-release, nøyaktige seks førhasher, aktive tjenester,
+tilgjengelig PHP/Node og FPM som oppdager endrede PHP-filer. Skriptet skriver
+ikke kø, bibliotek, journal, innhold, konfigurasjon eller tjenester.
+
+Ved installasjon opprettes en ny privat mappe under `/var/lib/rr-vps-deploy/`
+med prefiks `menu-20261104-`. Den inneholder originaler, kandidat og kvittering.
+Dette er planlagt plassering; en faktisk mappe/kvittering finnes først når
+skriptet kjøres på VPS. Eier, gruppe og modus bevares. Filbytter er atomiske
+per fil; ved feil forsøkes tilbakeføring av akkurat dette filsettet. Hele
+seksfilers byttet er ikke én filsystemtransaksjon. Nye mtime-verdier gjør at
+FPM kan oppdage filbyttet. CSS/JS får versjonerte nettleseradresser.
+
+Skriptet skriver ut kvittering og eksakt rollbackkommando etter vellykket
+filinstallasjon. Tilbakeføring avviser senere filendringer og endrer ingen
+aktive data. Installerens ni isolerte tester dekker bevaring av PR117/data/
+rettigheter, reell tilbakeføring, feil midt i installasjon, PID-avvik,
+samtidige/senere endringer, ødelagt kilde og symbolske/harde lenker.
+Alle ni består lokalt. PHP-/nettlesertest av kombinert kilde kjøres separat
+av `studio-menu-overlay.yml`; resultat må leses før pakken tas i bruk.
+
+Status nå: pakke klargjort, ingen ny serverinstallasjon i denne økten.
+Etter faktisk kjøring gjenstår innlogget PC/mobil, menyer og konsollankre,
+bevart ulagret manus og fortsatt stream. Full L02 krever fortsatt egne bevis
+for øvrige spiller-/timeinnslagspunkter nedenfor. Fysisk iPhone er ikke testet.
+
 ## Ferske serverhasher 04.11.2026 – avstemming før installasjon
 
 Thomas har levert resultatet fra en lesekontroll i sin eksisterende SSH-økt

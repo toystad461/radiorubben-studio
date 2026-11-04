@@ -1,5 +1,25 @@
 # Studio – felles status og arbeidsliste
 
+## Menyavvik avklart 04.11.2026 – PR117 bevares i installasjonspakken
+
+De to avvikende konsollfilene er nå avstemt: innsendt full SHA256 matcher
+byte for byte PR117-head `290f80c4492122d3cb62060cdfab68872e758ff6`.
+Avviket skyldes egne Vær-/Trafikk-/stikkfunksjoner fra dette sporet. Menyens
+GitHub-filer fra PR115 må derfor ikke erstatte konsollen samlet.
+
+`scripts/studio-menu-vps.py` klargjør seksfilers installasjon på den fastlåste
+test-VPS-releasen. Fire filer hentes hashkontrollert fra menycommit `9bbfae2`;
+i de to eksisterende PR117-filene tilføyes bare menygruppeåpning og ny
+JavaScript-cacheversjon. Alle seks før-/etterhasher er låst. Privat kodebackup,
+atomiske filbytter, PHP/JS-syntaks, FPM-cachekontroll, stabile tjeneste-PID-er og
+hashbeskyttet tilbakeføring inngår. Ingen tjenester restartes.
+
+Ni isolerte installer-/tilbakeføringstester består lokalt. Egen CI kontrollerer
+kombinasjonen PR117 + seks menyendringer, inklusive roller, mobil og ulagret
+manus. CI-resultat og faktisk VPS-installasjonskvittering må fortsatt avventes.
+Ingen menyfil er installert på VPS gjennom dette arbeidet ennå. L02 er åpen.
+Se [menyleveransen](STUDIO-MENU-20261102.md) for avgrensning og neste steg.
+
 ## Fersk VPS-kontroll 04.11.2026 – gammel meny på disk, to lokale filavvik
 
 Thomas har levert utdata fra `ssh rubben-test` på Windows til `ubuntu@vps-5363103`.
