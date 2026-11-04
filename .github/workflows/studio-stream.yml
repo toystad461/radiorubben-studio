@@ -60,7 +60,7 @@ jobs:
           python3 -m py_compile scripts/liquidsoap-child.py infra/studio-stream/prepare.py tests/test-studio-stream.py
   actual-stream:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -95,7 +95,10 @@ jobs:
           python3 tests/test-hour-bridge-render.py
           python3 tests/test-hour-bridge-worker.py
       - name: Double beep between complete songs
-        run: PHP_BIN="$(command -v php)" python3 tests/test-studio-hourly-stream.py
+        run: |
+          PHP_BIN="$(command -v php)" python3 tests/test-studio-hourly-stream.py
+          RR_TEST_HOURLY_FIRST=1 PHP_BIN="$(command -v php)" python3 tests/test-studio-hourly-stream.py
+          RR_TEST_HOURLY_REPEAT=1 PHP_BIN="$(command -v php)" python3 tests/test-studio-hourly-stream.py
       - name: Resume after restart while preserving operator Stop
         run: PHP_BIN="$(command -v php)" python3 tests/test-studio-boot-stream.py
       - uses: actions/upload-artifact@v4

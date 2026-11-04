@@ -5,6 +5,7 @@ import json
 import subprocess
 import hashlib
 import math
+import os
 from array import array
 from pathlib import Path
 
@@ -26,12 +27,16 @@ try:
     track['metadata'].update(sourceSha256=sha, durationSeconds=1.254)
     t.library.write_text(json.dumps({'schemaVersion':1,'tracks':t.tracks}))
     t.library_bytes = t.library.read_bytes()
-    ids = t.queue([0,1,3])
+    signal_first = os.environ.get('RR_TEST_HOURLY_FIRST') == '1'
+    repeated = os.environ.get('RR_TEST_HOURLY_REPEAT') == '1'
+    order = [1,0,1,3,1] if repeated else ([1,0,3] if signal_first else [0,1,3])
+    signal_indexes = [i for i,track_index in enumerate(order) if track_index == 1]
+    ids = t.queue(order)
     path = t.site/'config/music-play-queue.private.json'
     q = json.loads(path.read_text())
     q['studio']['rotation'] = {'enabled':True,'crossfade':3}
     for i,e in enumerate(q['entries']):
-        e['playback'] = {'cueIn':0,'cueOut':1.2 if i==1 else 12,'crossfadeOut':0}
+        e['playback'] = {'cueIn':0,'cueOut':1.2 if i in signal_indexes else 12,'crossfadeOut':0}
         e['plannedAt'] = f'2026-11-02T12:00:{i*12:02}+01:00'
     path.write_text(json.dumps(q))
     t.change({'action':'sync'})
@@ -42,12 +47,14 @@ try:
     t.start_worker()
     listener = t.listen()
     t.change({'action':'start'})
-    t.until(lambda:all(t.player()['outcomes'].get(i,{}).get('status')=='completed' for i in ids),'hour signal between intact music',timeout=50)
+    t.until(lambda:all(t.player()['outcomes'].get(i,{}).get('status')=='completed' for i in ids),'hour signals and intact music',timeout=50)
+    t.until(lambda:t.player()['mode']=='stopped','clean end of queue')
     listener.close()
     outcomes = [t.player()['outcomes'][i] for i in ids]
     assert t.started_ids()==ids
-    assert abs(outcomes[1]['renderedSeconds']-1.2)<.15
-    for i in (0,1):
+    for i,e in enumerate(outcomes):
+        assert abs(e['renderedSeconds']-(1.2 if i in signal_indexes else 12))<.15,e
+    for i in range(len(outcomes)-1):
         assert abs(outcomes[i]['renderClockEnd']-outcomes[i+1]['renderClockStart'])<.15
     output = t.root/'hour.mp3'
     output.write_bytes(listener.data)
@@ -61,9 +68,9 @@ try:
         if on and not active: pulses.append(0.)
         if on: pulses[-1] += .02
         active = on
-    assert len(pulses)==2 and all(.1<p<.22 for p in pulses),pulses
+    assert len(pulses)==2*len(signal_indexes) and all(.1<p<.22 for p in pulses),pulses
     assert t.library.read_bytes()==t.library_bytes
-    print(json.dumps({'passed':True,'started':ids,'duration':[e['renderedSeconds'] for e in outcomes],'musicOverlapIntoSignal':False}))
+    print(json.dumps({'passed':True,'signalFirst':order[0]==1,'signalCount':len(signal_indexes),'signalLast':order[-1]==1,'started':ids,'duration':[e['renderedSeconds'] for e in outcomes],'musicOverlapIntoSignal':False,'audiblePulses':pulses}))
     ok = True
 finally:
     t.close(ok)

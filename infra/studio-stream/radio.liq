@@ -44,11 +44,17 @@ queue = request.dynamic(id="rubben_queue", prefetch=1, retry_delay=0.2, timeout=
 # End markers are released only as the final output PCM clock consumes the
 # buffered outgoing tail. Decoder read-ahead itself is never a played receipt.
 pending_ends = ref([])
+# With rr_cross=0, cross can announce an empty outgoing buffer during initial
+# read-ahead, before a short first track has reached PCM. Wait for its output
+# metadata boundary (or the drained source), never the decoder callback alone.
+pending_boundaries = ref([])
 def transition(a, b) =
   tail = source.duration(a.source)
   clock = event_clock()
-  if a.metadata["rr_entry"] != "" then
+  if a.metadata["rr_entry"] != "" and tail > 0. then
     pending_ends := list.append(pending_ends(), [(a.metadata["rr_entry"], clock() + tail)])
+  elsif a.metadata["rr_entry"] != "" then
+    pending_boundaries := list.append(pending_boundaries(), [a.metadata["rr_entry"]])
   end
   incoming = source.on_track(b.source, fun (_) -> emit_track("started", b.metadata))
   if a.metadata["rr_kind"] == "music" and b.metadata["rr_kind"] == "music" and tail > 0. then
@@ -63,8 +69,17 @@ else
   # Preserve L01's existing contract for non-rotation queues.
   fade.in(duration=1., track_sensitive=true, fade.out(duration=1., track_sensitive=true, queue))
 end
-music = source.on_track(music, fun (m) -> emit_track("started", m))
-music = source.on_metadata(music, fun (m) -> emit_track("started", m))
+def output_track(m) =
+  entry = m["rr_entry"]
+  if entry != "" then
+    ended = list.filter(fun (id) -> id != entry, pending_boundaries())
+    pending_boundaries := list.filter(fun (id) -> id == entry, pending_boundaries())
+    list.iter(fun (id) -> emit("ended", id), ended)
+    emit_track("started", m)
+  end
+end
+music = source.on_track(music, output_track)
+music = source.on_metadata(music, output_track)
 music = source.on_end(delay=-1., music, fun (_, m) -> emit_track("ended", m))
 radio = fallback(track_sensitive=false, [music, blank()])
 # This callback is pulled by the audio output clock, including during blank
@@ -73,6 +88,11 @@ event_clock := fun () -> radio.time()
 last_heartbeat = ref(-1.)
 def on_pcm_frame() =
   now = radio.time()
+  if not music.is_ready() then
+    ended = pending_boundaries()
+    pending_boundaries := []
+    list.iter(fun (id) -> emit("ended", id), ended)
+  end
   due = list.filter(fun (item) -> snd(item) <= now, pending_ends())
   pending_ends := list.filter(fun (item) -> snd(item) > now, pending_ends())
   list.iter(fun (item) -> emit("ended", fst(item)), due)

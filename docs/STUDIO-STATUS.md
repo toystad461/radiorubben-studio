@@ -2303,3 +2303,19 @@ Eksisterende musikk-klargjøring fullført14.10: alle6 opplastede låter har nå
 PR89 utrullet14.10.2026 etter konkret autorisasjon. Merge0c76a41ef5e693879b31deddff2580354818a34f, deploy38556772765-1. Begge obligatoriske main-workflows38556772765/38556772656 success. Fem produksjonsfiler og privat kodebackup avstemt mot main-pakken. Originaler/bibliotek med seks ferdige cue-profiler/beskyttet konfigurasjon uendret; sendeliste semantisk uendret. HTTP200/SHA256 på music-cues.mjs?v=20261014-5. Innlogget Bruno-låt viser bølge fra256 lagrede topper straks, uten synlig lasteknapp og med null audio-src. Eksisterende cue-punkter beholdt; ingen ny cue-godkjenning eller avspilling under deploykontroll. Kvittering output/PR89-sluttkontroll.json, skjermbilde output/pr89-live-cues.jpg. Neste: oppdater åpne Studio-faner og prøv punktlytting/justering ved behov.
 
 Musikkø14.10: ny avgrenset rettelse fra main0c76a41. Gyldig kildebundet full lydprofil og BPM/toneart gjenbrukes også uten gammel køpost. Eksplisitt ny analyse er fortsatt mulig. Ferdige jobber skjules fra arbeidskøen; status oppdateres hvert10sek, ventende arbeid starter automatisk ved åpning, manuell pause respekteres i økten. Bare relevante fortsett-/pauseknapper vises. Ingen produksjonsendring eller ny analyse av ekte musikk. PHP8.2/8.4 køkontroll og full isolert nettleserkontroll besto, inkludert reell syntetisk YAMNet/Essentia, gjenåpning/polling uten ny analyse, manuell bevaring og320–1280px. Utløpt jobbstatus kan gjenopptas; aktive jobber i annen fane beskyttes. Ingen merge/utrulling.
+
+## Timesignal ved oppstart – 04.11.2026
+
+RR-HOUR-20261104: kort timesignal først ved start ble gjenskapt med null
+registrerte PCM-sekunder. Liquidsoap-malen venter nå på faktisk utgående
+sporgrense eller tømt kilde for overganger med tom buffer; varighetskontrollen
+beholdes. Isolert MP3-test med tre signaler (og signal først/sist), vanlig
+signal mellom sanger, musikkoverganger 0/3/10 sekunder og omstart/Stop består.
+Tre simulerte timeplaner har egne identiteter og gjentar ikke fullført signal.
+Ingen produksjonskode er byttet; offentlig stream går med timesignal av.
+
+Tidligere fungerende Eleven v4/Thomas M. og nøkkel på eldre Uniweb-Studio er
+bekreftet i historiske kvitteringer fra 08.–12.10. Dagens VPS mangler Audio-
+konfigurasjonen. Nåværende nøkkelgyldighet er ikke kontrollert, fordi den gamle
+SSH-tilgangen trenger lokal opplåsing. Full stemmepilot og tre faktiske timer
+står igjen. Se [detaljer og pilotavgrensning](STUDIO-HOUR-RECOVERY-20261104.md).
