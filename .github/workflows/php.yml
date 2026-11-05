@@ -33,6 +33,7 @@ jobs:
           php tests/controlroom.php
           php tests/controlroom-api.php
           php tests/status-request.php
+          python3 tests/test-status-clock-deploy.py
           node tests/controlroom.mjs
       - name: Check separate music player and web service users
         run: sudo php tests/music-playout-permissions.php

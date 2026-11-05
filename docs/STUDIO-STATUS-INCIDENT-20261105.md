@@ -21,6 +21,41 @@ Koden er klargjort i #115 og web #111; installasjon og brukeretterkontroll
 gjenstår. Ingen lydmotor, sendekø, bibliotek eller WordPress-innhold endres.
 
 
+## Installasjonspakke og kontrollert kode
+
+Kode: Studio bb794f873035154aefbaa884dfc4d795a2f0b906 og
+Web 174c3fdcd4d541a8179cf5da75438074c0a685b8.
+Studio PHP 8.2/8.4 og mobilkontroller består i kjøring42042674979.
+Eksisterende meny/PR117-kontroll42042674879 og releasekontroll42042674906
+består. Web-kjøringene42042679778 og42042679537 består. Deploy er ikke kjørt.
+Bredere Liquidsoap-kjøring42042674984 må rapporteres separat ved avslutning.
+
+scripts/status-clock-deploy.py bruker fastlåste kildecommits og SHA256.
+Standard er kun preflight. --target studio --apply bytter tre statusfiler
+og endrer bare controlroom.mjs-versjonslenken i den hashkontrollerte
+installerte PR117-konsollen. Den øvrige konsollen og seksfilers menyarbeid
+bevares. --target wordpress --apply bytter kun de to eksisterende MU-filene.
+LF/CRLF fra samme kjente kilde er eksplisitt tillatt; ukjent innhold avvises.
+
+Privat backup og receipt etableres før første filbytte. Eierskap og modus
+bevares, og filene byttes atomisk én om gangen. Delvis feil forsøker å
+gjenopprette bare filene pakken selv endret. Rollback avviser nyere arbeid.
+Ni isolerte tester består, inklusive kildehashfeil, symlink, delvis feil,
+samtidig redigering, metadata og bevart PR117-mal.
+
+VPS: bruk eksisterende ubuntu@vps-5363103 / ssh rubben-test og sudo -n.
+WordPress: eksisterende konto cptk37ymg_w1417156 på
+ssh.cptk37ymg.service.one, WordPress-rot /run/webroots/r1417157.
+Det er ikke etablert en ny SSH-forbindelse eller nøkkel fra assistentøkten.
+
+Rekkefølge: installer Studio først, kontroller fersk nå/neste i kontrollrommet,
+installer så Web, tøm eksisterende WordPress-side/minify-cache og kontroller
+nettsiden. Installerens kvittering gir eksakt rollback-kommando.
+Ingen helutrulling, WPVibe-utkast, databaseendring eller tjenesteomstart inngår.
+Publisert status og kontinuerlig lyd gjennom minst ett låtbytte, samt fysisk
+iPhone/Safari, må fortsatt etterkontrolleres. PR-ene er ikke merget.
+
+
 Tidligere kontrollgrunnlag følger nedenfor og er historikk der det er avløst.
 
 Arbeidsområde: Plattform / Teknisk Produksjon. Hovedspor: Studio #115/L02.
