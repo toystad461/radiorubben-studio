@@ -2,7 +2,7 @@ const $=id=>document.getElementById(id);
 const labels={playing:'Spiller på VPS',starting:'Starter',stopped:'Stoppet',paused:'Pauset',blocked:'Stoppet · må kontrolleres',disconnected:'Frakoblet · lydutgang ikke bekreftet',unknown:'Ukjent · ingen fersk bekreftelse',unconfigured:'Ikke konfigurert'};
 const title=t=>t.kind==='jingle'?`Jingle · ${t.title||'Ukjent tittel'}`:`${t.artist||'Ukjent artist'} – ${t.title||'Ukjent tittel'}`;
 const time=n=>Number.isFinite(n)&&n>=0?`${Math.floor(n/60)}:${String(Math.floor(n%60)).padStart(2,'0')}`:'ukjent';
-let busy=false,lastGood=0,streamUrl=null;
+let busy=false,lastGood=null,streamUrl=null,visibilityGeneration=0;
 function render(v){
   const status=Object.hasOwn(labels,v.status)?v.status:'unknown';
   $('server-air-status').textContent=labels[status];$('server-air-status').dataset.state=status;
@@ -23,12 +23,16 @@ function render(v){
 async function refresh(){
   if(busy)return;busy=true;
   try{
-    const response=await fetch('/controlroom-api.php',{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(4000)});
+    // A matching request ID proves this reply was generated for this poll.
+    // Heartbeat freshness remains a server check; PC wall-clock time is irrelevant.
+    const requestId=Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
+    const started=performance.now();
+    const generation=visibilityGeneration;
+    const response=await fetch('/controlroom-api.php?requestId='+requestId,{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(4000)});
     if(!response.ok)throw Error();const v=await response.json();
-    const age=Date.now()-Date.parse(v.generatedAt);
-    if(v.schemaVersion!==1||!Number.isFinite(age)||age < -5000||age>5000)throw Error();
-    lastGood=Date.now();render(v);
-  }catch{lastGood=0;render({status:'unknown'});}finally{busy=false;}
+    if(document.hidden||generation!==visibilityGeneration||v.schemaVersion!==1||v.requestId!==requestId||!Number.isFinite(Date.parse(v.generatedAt))||performance.now()-started>=4000)throw Error();
+    lastGood=performance.now();render(v);
+  }catch{lastGood=null;render({status:'unknown'});}finally{busy=false;}
 }
 if($('server-now')){
   const audio=$('server-audio'),listen=$('server-listen'),message=$('server-listening');
@@ -43,7 +47,8 @@ if($('server-now')){
   audio.addEventListener('error',()=>{listen.textContent='Lytt til teststream';message.textContent='Lytteforbindelsen ble brutt. Serverstatus vises separat.';});
   audio.addEventListener('waiting',()=>{message.textContent='Lytteavspilleren venter på lyd …';});
   void refresh();const poll=setInterval(refresh,2000);
-  const expiry=setInterval(()=>{if(lastGood&&Date.now()-lastGood>5000){lastGood=0;render({status:'unknown'});}},500);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden){render({status:'unknown'});void refresh();}});
+  const expiry=setInterval(()=>{if(lastGood!==null&&performance.now()-lastGood>5000){lastGood=null;render({status:'unknown'});}},500);
+  document.addEventListener('visibilitychange',()=>{visibilityGeneration++;lastGood=null;render({status:'unknown'});if(!document.hidden)void refresh();});
   window.addEventListener('pagehide',()=>{clearInterval(poll);clearInterval(expiry);audio.pause();},{once:true});
 }
+

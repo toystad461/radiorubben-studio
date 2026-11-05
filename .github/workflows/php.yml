@@ -32,6 +32,7 @@ jobs:
         run: |
           php tests/controlroom.php
           php tests/controlroom-api.php
+          php tests/status-request.php
           node tests/controlroom.mjs
       - name: Check separate music player and web service users
         run: sudo php tests/music-playout-permissions.php
@@ -99,3 +100,4 @@ jobs:
           php tests/news-input.php
           php tests/news-input-updates.php
           node tests/news-input-mobile.cjs
+

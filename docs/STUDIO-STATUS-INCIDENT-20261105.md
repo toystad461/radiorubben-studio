@@ -1,5 +1,28 @@
 # Statusavvik i Studio og offentlig spiller – 05.11.2026
 
+## 05.11.2026 – klokkeavvik bekreftet; rettelse under kontroll
+
+Thomas sin nettlesermåling ga HTTP 200 på 556 ms, status playing,
+PC-tid 2026-11-05T14:01:44.306Z og server-tid 14:01:13Z:
+31,306 sekunders forskjell (15:01 norsk tid). Begge API-er leverer gyldige
+nå/neste-data. Den eksisterende klientkontrollen avviser dette: Studio ved
+5 sekunders forskjell, offentlig spiller ved 30 sekunder. Tester gjenskaper
+begge feiltekstene med samme avvik. Målingen fastslår relativt avvik, ikke
+hvilken maskin som har korrekt absolutt tid.
+
+Rettelsen binder hvert svar til en tilfeldig forespørsels-ID og bruker
+performance.now() for svartid og lokal utløpstid. Serverens kontroll av
+hjerteslag og forbindelse beholdes. Gamle eller forsinkede svar avvises,
+og svar fra før et fanebytte får ikke fylle visningen etterpå.
+Gamle API-kall uten requestId fungerer fortsatt. Private lytterrettigheter
+og offentlig feltbegrensning beholdes. Ny klient krever ny serverrute.
+
+Koden er klargjort i #115 og web #111; installasjon og brukeretterkontroll
+gjenstår. Ingen lydmotor, sendekø, bibliotek eller WordPress-innhold endres.
+
+
+Tidligere kontrollgrunnlag følger nedenfor og er historikk der det er avløst.
+
 Arbeidsområde: Plattform / Teknisk Produksjon. Hovedspor: Studio #115/L02.
 Berørt avhengighet: radiorubben-web #111. Ingen ny parallell implementering.
 
@@ -80,3 +103,4 @@ nettleser eller den felles rotårsaken. Sertifikatkontroll er ikke omgått.
 Ingen runtimefiler, tjenester, køer, innhold eller redaksjonelle godkjenninger
 er endret i denne kontrollen. Dokumentasjonsendringen trenger ingen nye
 runtime-tester. Årsaken er fortsatt uavklart; ingen feilretting er ferdigmeldt.
+

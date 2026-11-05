@@ -8,5 +8,8 @@ $user=current_user();
 if(!$user || !isset(studio_roles()[$user['role']??'']))$reply(401,['error'=>'Logg inn i Studio.']);
 if(($_SERVER['REQUEST_METHOD']??'')!=='GET'){header('Allow: GET');$reply(405,['error'=>'Kun lesing.']);}
 session_write_close();
-try{$view=studio_controlroom_read(music_playout_config());if(!studio_can($user,'produce'))unset($view['streamUrl']);$reply(200,$view);}
+$requestId=$_GET['requestId']??null;
+if($requestId!==null && (!is_string($requestId)||!preg_match('/^[a-f0-9]{32}$/D',$requestId)))$reply(400,['error'=>'Ugyldig statusforespørsel.']);
+try{$view=studio_controlroom_read(music_playout_config());if(!studio_can($user,'produce'))unset($view['streamUrl']);if($requestId!==null)$view['requestId']=$requestId;$reply(200,$view);}
 catch(Throwable){$reply(503,['error'=>'Serverstatus kan ikke bekreftes.']);}
+
