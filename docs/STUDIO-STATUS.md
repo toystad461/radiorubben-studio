@@ -1,5 +1,32 @@
 # Studio – felles status og arbeidsliste
 
+## 05.11.2026 – lyd bekreftet av Thomas, sendestatus feiler i Studio og på nettsiden
+
+Thomas bekrefter at streamen starter og går. Innsendt VPS-avlesning viser
+rr-studio-stream PID 773 og Icecast PID 770 active/running, NRestarts=0,
+heartbeat connected=true og alder 0,4 sekunder. Journalen viser løpende
+låtbytter til «Paris (Radio Edit)» kl. 14:32 norsk tid (13:32 UTC).
+Dette er brukerens serverutdata og lyttebekreftelse, ikke ny direkte SSH-
+eller lydmåling fra assistenten, og beviser ikke uavbrutt lyd før avlesningen.
+
+Skjermbilder rundt 14:35 viser fortsatt ukjent motor/nå/neste i Studio og
+«Sendestatus er ikke tilgjengelig akkurat nå» på radiorubben.no.
+Felles lesesti er spillerjournal/heartbeat på VPS; lyden går separat.
+Aktive WordPress-MU-filer er lest: rr-public-radio.php oppgir 1.0.5 og
+rr-public-radio.js henter VPS-ens radio-status.php. Ingen utkastutrulling.
+
+Rotårsaken er åpen. Neste nødvendige bevis er respons og svartid fra
+controlroom-api.php og radio-status.php i Thomas sin eksisterende nettleser.
+Assistentens direkte HTTPS-forsøk avvises ved sertifikatnavnkontrollen;
+dette alene fastslår ikke årsaken i brukerens nettleser. Ingen restart,
+køendring, runtime-endring, merge eller deploy er utført i denne kontrollen.
+Detaljer: [statusavvik 05.11](STUDIO-STATUS-INCIDENT-20261105.md).
+
+**Kort status for Kontrollsenter:** Lyd bekreftet av Thomas. Menyfilene er
+tidligere installert og filverifisert; nå/neste og sendestatus fungerer ikke
+i brukerens viste sider. L02 er fortsatt åpen. Dette er status i GitHub,
+ikke en påstand om at en melding er sendt til Kontrollsenter.
+
 ## Meny installert 04.11.2026 kl.15:50 Europe/Oslo – siste brukerprøve gjenstår
 
 Thomas har kjørt den hashkontrollerte installasjonspakken fra `fef9132` på
