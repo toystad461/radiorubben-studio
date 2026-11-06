@@ -22,7 +22,7 @@ import urllib.request
 
 ROOT = Path('/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb')
 BACKUPS = Path('/var/lib/rr-vps-deploy')
-MENU_COMMIT = '9bbfae2c7b97414c2b3b96b18aeafa731cb6c5d8'
+MENU_COMMIT = 'db809bb3387ed65304f4c000ff39c2b1ca9623f0'
 STIKK_COMMIT = '290f80c4492122d3cb62060cdfab68872e758ff6'
 BEFORE = {
     'app/views/navigation.php': 'b88904b9d42a6243c11de8d6c22af513c17957787cc261c132cb72b2f27cb92d',
@@ -34,7 +34,7 @@ BEFORE = {
 }
 AFTER = {
     'app/views/navigation.php': '3f6da7444e8d69992edf26f26fe953d45f5033570c5ae796ecc150193f5982cd',
-    'app/views/sidebar.php': 'aebb929943b86d89cb32d54e27a3501c2b47438f4893cd1b8346f3b5589f3980',
+    'app/views/sidebar.php': '24f6ce108247e9f3931f1e05cb2d14d91f699fbd1db1681f6e24f28df2533d20',
     'app/views/head.php': '61901ae3982df5c6fc90d602583eb07b8a16da23cce791fcbf6d6b08afc17b6d',
     'public/assets/studio.css': '97c3ab5f6e5f2874426ab18488faee9135ac865b447dd5dd614f2221ba4e1ba9',
     'public/assets/ai-studio/app.mjs': '6b0122f8933dc7c1b9241bcb83f83cc37b855c3aaaba4a98dc438ac30a5b857d',
