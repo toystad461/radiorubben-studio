@@ -2,7 +2,7 @@
 declare(strict_types=1);
 /** Insert a saved audio occurrence at an exact, still-adjacent queue boundary. */
 function music_live_insert(array $q,array $tracks,array $state,array $input):array {
-    $types=['stikk','innlegg','jingle','reklame','hilsen','onske','sang'];
+    $types=['stikk','innlegg','jingle','reklame','lydteppe','program','hilsen','onske','sang'];
     if(!in_array($input['eventType']??null,$types,true)||isset($input['id']))throw new InvalidArgumentException('Velg en innslagstype og lagret lyd.');
     $ids=array_column($q['entries'],'id');$after=$input['afterId']??null;$before=$input['beforeId']??null;
     $index=$after===null?-1:array_search($after,$ids,true);

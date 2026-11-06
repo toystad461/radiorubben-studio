@@ -1,5 +1,37 @@
 # Studio – felles status og arbeidsliste
 
+## 06.11.2026 – L02 cue-/overgangstest på test-VPS
+
+Arbeidsområder: Teknisk Produksjon, Musikk & Tagging, Kontrollsenter.
+Eksisterende #109 / PR #115, kontrollert utgangspunkt e0cf9bd.
+Thomas bekrefter privat lyd og gjentatt 3+1-rotasjon. Følgende er nye tekniske
+målinger, separat fra brukerens lyttebekreftelse:
+
+- Passivt opptak 17:37:38–17:49:38 UTC (18:37:38–18:49:38 Europe/Oslo),
+  720,001 sekunder MP3. Alle 720 heartbeat-prøver connected=true, PID 773.
+- Originallyd korrelert mot opptak rundt «Someone Who Can Dance», «Jingle 3»
+  og «Do You». Cue-grensene ligger inntil hverandre innenfor én prøve ved
+  analyse på 8 kHz. Dette er teknisk måling, ikke subjektiv lyttegodkjenning.
+- Isolert ekte HTTP → Liquidsoap → Icecast består for 0/3/10 sekunders
+  musikkovergang, jingle uten planlagt overlapp, stopp, brutt forbindelse,
+  feil lydkopi, motorstans og køredigering under avspilling.
+- Lagrede kildebundne musikk-cues og jingle-cues gir fem 10,00-sekunders
+  PCM-innslag. Lydmarkører før/etter cue-klippet finnes ikke i opptaket.
+  Originalhashene er bevart. Begge jinglegrenser har 0,00 sekunders PCM-overlapp.
+- Faktisk privat forhåndslytting mens strømmen gikk: Icona Pop 36,53 sekunder,
+  readyState=4, ingen mediefeil; lukking stoppet preview og fjernet lydkilden.
+
+Påvist avvik: lydteppe/programopptak manglet som innslagstyper, og eventType
+ble utelatt ved publisering til motorens manifest og kontrollrommets nå/neste.
+Avgrenset rettelse viderefører merking gjennom samme eksisterende mediegrunnlag.
+Lydteppe/programopptak er ferdige lydfiler som spilles sekvensielt; mikrofon-
+ducking og miksing ligger fortsatt i L05. Motorens PCM-/overgangskode endres ikke.
+
+Rettelsen og den nye lydmarkørtesten er under sluttkontroll i samme PR.
+Selektiv testinstallasjon, etterkontroll og endelig L02-status dokumenteres
+etter faktisk resultat. Ingen produksjons-, WordPress- eller radio.co-endring.
+
+
 ## 05.11.2026 – klokkeavvik bekreftet; rettelse under kontroll
 
 Thomas sin nettlesermåling ga HTTP 200 på 556 ms, status playing,

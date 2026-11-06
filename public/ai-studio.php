@@ -46,5 +46,5 @@ require dirname(__DIR__) . '/app/views/head.php';
 </section>
 <?php if ($readOnly): ?></fieldset><?php endif; ?></div>
 <footer><span>Radio Rubben <b>AI Studio</b></span><span>Radiosendingen fungerer uavhengig av AI Studio.</span></footer>
-</main></div></div><?php if (!$readOnly): ?><script type="module" src="/assets/ai-studio/app.mjs?v=menu-20261102"></script><?php endif; ?><script type="module" src="/assets/ai-studio/controlroom.mjs?v=20261105-clock1"></script></body></html>
+</main></div></div><?php if (!$readOnly): ?><script type="module" src="/assets/ai-studio/app.mjs?v=menu-20261102"></script><?php endif; ?><script type="module" src="/assets/ai-studio/controlroom.mjs?v=20261106-l02-types"></script></body></html>
 

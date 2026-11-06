@@ -1,6 +1,7 @@
 const $=id=>document.getElementById(id);
 const labels={playing:'Spiller på VPS',starting:'Starter',stopped:'Stoppet',paused:'Pauset',blocked:'Stoppet · må kontrolleres',disconnected:'Frakoblet · lydutgang ikke bekreftet',unknown:'Ukjent · ingen fersk bekreftelse',unconfigured:'Ikke konfigurert'};
-const title=t=>t.kind==='jingle'?`Jingle · ${t.title||'Ukjent tittel'}`:`${t.artist||'Ukjent artist'} – ${t.title||'Ukjent tittel'}`;
+const eventLabels={stikk:'Stikk',innlegg:'Innlegg',jingle:'Jingle',reklame:'Reklame',lydteppe:'Lydteppe',program:'Programopptak',hilsen:'Hilsen',onske:'Ønske',sang:'Sang'};
+const title=t=>Object.hasOwn(eventLabels,t.eventType)?`${eventLabels[t.eventType]} · ${t.title||'Ukjent tittel'}`:t.kind==='jingle'?`Jingle · ${t.title||'Ukjent tittel'}`:`${t.artist||'Ukjent artist'} – ${t.title||'Ukjent tittel'}`;
 const time=n=>Number.isFinite(n)&&n>=0?`${Math.floor(n/60)}:${String(Math.floor(n%60)).padStart(2,'0')}`:'ukjent';
 let busy=false,lastGood=null,streamUrl=null,visibilityGeneration=0;
 function render(v){

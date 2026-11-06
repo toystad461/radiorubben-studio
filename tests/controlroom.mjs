@@ -13,6 +13,12 @@ assert.equal(node('server-now').textContent,'Artist – <script>unsafe</script>'
 await node('server-listen').events.click();assert.equal(node('server-audio').src,'/music-test-stream/');assert.equal(node('server-audio').paused,false);
 await node('server-listen').events.click();assert.equal(node('server-audio').paused,true);assert.equal(node('server-audio').src,undefined);
 const poll=intervals.find(i=>i.ms===2000).f;
+for(const [type,label] of [['stikk','Stikk'],['reklame','Reklame'],['lydteppe','Lydteppe'],['program','Programopptak']]){
+ view={...view,now:{...view.now,eventType:type},next:[{title:'Neste',kind:'jingle',eventType:type}]};await poll();
+ assert.equal(node('server-now').textContent,label+' · <script>unsafe</script>');
+ assert(node('server-next').children[0].textContent.startsWith(label+' · Neste'));
+}
+view={...view,now:{...view.now,eventType:null}};
 for(const status of ['stopped','disconnected','unknown','paused','blocked']){view={...view,status};await poll();assert.equal(node('server-progress').hidden,true);assert(!node('server-now').textContent.includes('Artist'));}
 view={...view,status:'playing',streamUrl:'https://evil.invalid/'};await poll();assert.equal(node('server-listen').disabled,true,'reject arbitrary stream source');
 mono+=6000;intervals.find(i=>i.ms===500).f();assert.equal(node('server-air-status').textContent,'Ukjent · ingen fersk bekreftelse');assert.equal(node('server-next').children[0].textContent,'Køstatus ukjent');

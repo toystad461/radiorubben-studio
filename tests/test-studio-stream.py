@@ -284,8 +284,13 @@ $_SESSION = ['csrf'=>'synthetic']; $config = [];
         for index, frequency in enumerate([440, 660, 880, 990, 1100, 1210, 1320, 1430, 1540]):
             identity = hashlib.md5(f'studio-stream-synthetic-{index}'.encode()).hexdigest()
             path = self.site / 'media/music/originals' / f'{identity}.mp3'
+            seconds = getattr(self, 'tone_duration', 6)
+            source = f"sine=frequency={frequency}:duration={seconds}"
+            if getattr(self, 'cue_markers', False):
+                source = (f"aevalsrc=0.12*sin(2*PI*if(lt(t\\,1)\\,220\\,"
+                          f"if(lt(t\\,{seconds-1})\\,{frequency}\\,1760))*t):s=44100:d={seconds}")
             subprocess.run([self.ffmpeg, '-nostdin', '-v', 'error', '-f', 'lavfi', '-i',
-                            f"sine=frequency={frequency}:duration={getattr(self, 'tone_duration', 6)}", '-c:a', 'libmp3lame',
+                            source, '-c:a', 'libmp3lame',
                             '-b:a', '128k', str(path)], check=True, timeout=10)
             duration = float(subprocess.check_output([self.ffprobe, '-v', 'error', '-show_entries',
                                                      'format=duration', '-of', 'default=nw=1:nk=1', str(path)], timeout=5))

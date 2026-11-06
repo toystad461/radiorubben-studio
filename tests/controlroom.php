@@ -11,6 +11,13 @@ $view=studio_controlroom_project($s,$beat,$control,1000);
 check($view['status']==='playing'&&$view['position']===9.0,'fresh PCM playing and measured position');
 check(array_column($view['next'],'title')===['Title b','Title c','Title d'],'reserved next first, no duplicates or completed entries');
 check(!str_contains(json_encode($view),'private-hash')&&!str_contains(json_encode($view),'secret-path'),'no private paths or hashes');
+foreach(['stikk','jingle','reklame','lydteppe','program']as$type){
+ $typed=$s;$typed['current']['eventType']=$type;$typed['reserved']['b']['eventType']=$type;
+ $v=studio_controlroom_project($typed,$beat,$control,1000);
+ check($v['now']['eventType']===$type&&$v['next'][0]['eventType']===$type,'now and reserved next retain audio type '.$type);
+}
+$typed=$s;$typed['current']['eventType']='<script>unknown';
+check(studio_controlroom_project($typed,$beat,$control,1000)['now']['eventType']===null,'unknown audio type omitted');
 foreach(['stopped','paused','blocked','starting']as $mode){$v=studio_controlroom_project(array_replace($s,['mode'=>$mode]),$beat,$control,1000);check($v['status']===$mode&&$v['now']===null&&$v['position']===null,"$mode clears current/progress");}
 foreach([['timestamp'=>995],['timestamp'=>1001],['engine'=>'other']]as $bad){$v=studio_controlroom_project($s,array_replace($beat,$bad),$control,1000);check($v['status']==='unknown'&&$v['now']===null&&$v['next']===[],'expired/future/wrong heartbeat fails closed');}
 $v=studio_controlroom_project($s,array_replace($beat,['connected'=>false]),$control,1000);check($v['status']==='disconnected'&&$v['now']===null,'disconnected never claims playing');

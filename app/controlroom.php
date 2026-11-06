@@ -12,7 +12,9 @@ function studio_controlroom_project(array $s,array $beat,array $control,?float $
     $number=static fn($v)=>is_numeric($v)&&!is_bool($v)&&is_finite((float)$v)&&(float)$v>=0?(float)$v:null;
     $track=static function(array $e)use($number):array {
         $text=static fn($v)=>is_string($v)?mb_substr(trim(strip_tags($v)),0,200):'';
-        return ['artist'=>$text($e['artist']??''),'title'=>$text($e['title']??''),'kind'=>($e['kind']??'music')==='jingle'?'jingle':'music','duration'=>$number($e['duration']??null)];
+        $type=$e['eventType']??null;
+        return ['artist'=>$text($e['artist']??''),'title'=>$text($e['title']??''),'kind'=>($e['kind']??'music')==='jingle'?'jingle':'music','duration'=>$number($e['duration']??null),
+            'eventType'=>in_array($type,['stikk','innlegg','jingle','reklame','lydteppe','program','hilsen','onske','sang'],true)?$type:null];
     };
     $current=$status==='playing'?$track($s['current']):null;
     $position=null;

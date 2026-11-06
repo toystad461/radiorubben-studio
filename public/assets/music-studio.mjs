@@ -4,7 +4,7 @@ let view = null, busy = false, stale = true, proposal = null, policyTrack = null
 let refreshing = null, selectedEntry = null, rotationDirty = false;
 const rowCache = new WeakMap();
 let insertion = null;
-const eventLabels={stikk:'Stikk',innlegg:'Innlegg',jingle:'Jingle',reklame:'Reklame',hilsen:'Hilsen',onske:'Ønske',sang:'Sang'};
+const eventLabels={stikk:'Stikk',innlegg:'Innlegg',jingle:'Jingle',reklame:'Reklame',lydteppe:'Lydteppe',program:'Programopptak',hilsen:'Hilsen',onske:'Ønske',sang:'Sang'};
 let monitorContext = null, monitorSeen = new Set(), monitorSources = [], monitorNext = 0, monitorBusy = false;
 let monitorAudio = null, monitorStreamUrl = null;
 const outcomeLabels = {planned:'Planlagt',started:'Startet',completed:'Fullført',interrupted:'Avbrutt',failed:'Feilet'};

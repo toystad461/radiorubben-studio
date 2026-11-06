@@ -17,5 +17,5 @@ $reserved=$state;$reserved['reserved'][$queue['entries'][1]['id']]=$queue['entri
 check(music_live_insert($queue,$tracks,$reserved,$input)['entries'][2]['eventType']==='reklame','may insert after reservation without replacing it');
 $locked=$queue;$locked['entries'][3]['locked']=true;
 reject(fn()=>music_live_insert($locked,$tracks,$state,$input),'operator lock cannot shift');
-foreach(['stikk','innlegg','jingle','hilsen']as$type)check(music_live_insert($queue,$tracks,$state,array_replace($input,['eventType'=>$type]))['entries'][2]['eventType']===$type,'spoken event label '.$type);
+foreach(['stikk','innlegg','jingle','lydteppe','program','hilsen']as$type)check(music_live_insert($queue,$tracks,$state,array_replace($input,['eventType'=>$type]))['entries'][2]['eventType']===$type,'saved audio event label '.$type);
 foreach(['sang','onske']as$type)check(music_live_insert($queue,$tracks,$state,array_replace($input,['eventType'=>$type,'trackId'=>$tracks[90]['id'],'sha256'=>$tracks[90]['sha256']]))['entries'][2]['kind']==='music','music event '.$type);
