@@ -1,3 +1,23 @@
+## 06.11.2026 kl.22:16:43 Europe/Oslo – v0.2.0 publisert
+
+Offisiell release: https://github.com/toystad461/radiorubben-studio/releases/tag/v0.2.0
+Tagg og HTTPS release.json peker begge på e18a97333148705aa7c00178e53437213f36a86c.
+Live-versjonen er kontrollert i innlogget kontrollrom og sendekø. Synlig testmerking
+er fjernet fra L02-driften; eksempeldata, historikk og interne baner bevares.
+Alle releasekontroller består: 42293924790 (ekte lyd/monitor/kø), 42293924752
+(PHP/mobil), 42293924749 (versjonspakke), 42293924851 (bevart meny/konsoll).
+Ingen omstart av lydtjenestene; PID773/770, null omstarter.
+
+Tilbakeføring til før live-merking skjer i omvendt transaksjonsrekkefølge med
+`sudo -n python3 <backup>/installer.py rollback <backup>` for disse private mappene:
+1. `/var/lib/rr-vps-deploy/l02-official-020-d7mntumj` (endelig versjonsmanifest)
+2. `/var/lib/rr-vps-deploy/l02-official-020-1v8l2hj5` (siste synlige etiketter)
+3. `/var/lib/rr-vps-deploy/l02-official-020-d59jgst0` (opprinnelig live-merking)
+Hver tilbakeføring avviser nyere filendringer. Ingen lydtjeneste omstartes.
+
+L02 er i aktiv VPS-drift. Dette er ikke en helutrulling av PR115 eller en merge
+til main/Uniweb. Full mikrofon-LIVE tilhører L05. Neste leveranse avtales innen L03.
+
 ## 06.11.2026 kl.21:58:48 Europe/Oslo – offisiell VPS-drift v0.2.0
 
 Etter brukerens eksplisitte bestilling er aktiv VPS satt til live-merking.
