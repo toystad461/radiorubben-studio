@@ -1,3 +1,28 @@
+## 06.11.2026 kl.21:49:45 Europe/Oslo – L02 installert på aktiv VPS
+
+Brukeren ba om utrulling. De tidligere sju L02-lydtypefilene er supplert med
+fire selektive statusfiler fra kilde29b1cb5, installer fdb1f4b. Kontrollrommet
+bevarer eksisterende PR117-layout og lydtyper. Backup/kvittering:
+`/var/lib/rr-vps-deploy/status-clock-20261105-jvurneze/receipt.json`.
+Rollback: `sudo -n python3 /var/lib/rr-vps-deploy/status-clock-20261105-jvurneze/installer.py --target studio --rollback /var/lib/rr-vps-deploy/status-clock-20261105-jvurneze/receipt.json`.
+
+Ni installasjons-/rollbacktester, klienttester for klokkeavvik og API-rolletester
+bestod før installasjon. Etterpå observerte autentisert nettleser automatisk
+Meghan Trainor → Radio Rubben Jingle → Avant Garde rundt21:50–21:51, uten refresh.
+Nå/neste og kø fulgte overgangene. Stream/ Icecast beholdt PID773/770 og0omstarter.
+Et passivt75sekunders MP3-opptak dokumenterer lydmottak gjennom overgangene;
+dette erstatter ikke den tidligere spektrale kontrollen av jingle uten overlapp.
+
+Aktiv `/radio.mp3` peker til samme VPS-motor på127.0.0.1:18980. Miljøet er fortsatt
+merket TEST og er ikke flyttet til Uniweb eller omdøpt til produksjon. WordPress,
+radio.co og lydmotoren er uendret. Offentlig statusrute er hashverifisert;
+separat HTTP-kontroll traff feil listener(404), og nettleserens direkte JSON-visning
+ble blokkert. Autentisert Studio-status fungerer. WordPress-klokkerettelsen er
+fortsatt ikke installert. PR115 er ikke helutrullet eller merget.
+
+Neste: avklare eventuell produksjonsadresse/flytting, separat offentlig spiller-
+etterkontroll, deretter neste avtalte L03-leveranse. Full mikrofon-LIVE tilhører L05.
+
 # Studio – felles status og arbeidsliste
 
 ## 06.11.2026 – L02 cue-/overgangstest på test-VPS
