@@ -11,6 +11,7 @@ if(root&&document.querySelector('#cue-form')){
  function changed(){dirty=true;const error=valid(points());form.elements.end.setCustomValidity(error);const save=root.querySelector('[data-cue-save]');if(save){save.hidden=false;save.disabled=!!error;}status.textContent=error||'Ulagrede cue-punkter. Prøv dem og velg Lagre endringene mine.';draw();}
  function select(k){selected=k;for(const b of root.querySelectorAll('[data-cue-select]'))b.setAttribute('aria-pressed',String(b.dataset.cueSelect===k));draw();}
  for(const k of keys)form.elements[k].addEventListener('input',changed);
+ window.addEventListener('rr-audio-analysis-complete',event=>{if(event.detail?.id!==form.elements.id.value)return;if(dirty||audio&&!audio.paused){status.textContent='Ny analyse er lagret. Oppdater siden når du er ferdig med lytting og egne rettelser for å vise forslagene.';}else location.reload();});
  for(const b of root.querySelectorAll('[data-cue-select]'))b.onclick=()=>{select(b.dataset.cueSelect);preview(b.dataset.cueSelect,true);};
  for(const b of root.querySelectorAll('[data-cue-now]'))b.onclick=()=>{if(!audio?.getAttribute('src')||!Number.isFinite(audio.currentTime)){status.textContent='Start forhåndslytting først, eller skriv tiden i feltet.';return;}form.elements[b.dataset.cueNow].value=Math.min(duration,audio.currentTime).toFixed(3);changed();};
  function move(e){const rect=canvas.getBoundingClientRect();form.elements[selected].value=Math.max(0,Math.min(duration,(e.clientX-rect.left)/rect.width*duration)).toFixed(3);changed();}

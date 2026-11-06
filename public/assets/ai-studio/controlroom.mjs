@@ -4,6 +4,24 @@ const eventLabels={stikk:'Stikk',innlegg:'Innlegg',jingle:'Jingle',reklame:'Rekl
 const title=t=>Object.hasOwn(eventLabels,t.eventType)?`${eventLabels[t.eventType]} · ${t.title||'Ukjent tittel'}`:t.kind==='jingle'?`Jingle · ${t.title||'Ukjent tittel'}`:`${t.artist||'Ukjent artist'} – ${t.title||'Ukjent tittel'}`;
 const time=n=>Number.isFinite(n)&&n>=0?`${Math.floor(n/60)}:${String(Math.floor(n%60)).padStart(2,'0')}`:'ukjent';
 let busy=false,lastGood=null,streamUrl=null,visibilityGeneration=0;
+function renderCues(current,position){
+  const canvas=$('server-cues'),summary=$('server-cue-summary');if(!canvas||!summary)return;
+  const cues=current?.cues,keys=['start','vocalStart','transition','end'],names=['Start','Vokalstart','Overgang','Slutt'];
+  const valid=cues&&Number.isFinite(cues.duration)&&cues.duration>0&&keys.every(k=>cues.points?.[k]===null||Number.isFinite(cues.points?.[k])&&cues.points[k]>=0&&cues.points[k]<=cues.duration);
+  canvas.hidden=!valid;
+  summary.textContent=!current?'Cue-punkter vises når en låt spiller.':!valid?'Cue-punkter er ikke tilgjengelige for denne lydfilen.':
+    keys.map((k,i)=>names[i]+': '+(cues.points[k]===null?'ukjent':time(cues.points[k])+' · '+cues.points[k].toFixed(1)+' s')).join(' / ')+
+    (cues.source==='proposal'?' · Analyseforslag, ikke godkjent.':cues.source==='silence'?' · Automatisk start/slutt; vokal ikke funnet.':' · Lagrede punkter.')+
+    ' Avspilling: '+time(cues.playbackIn)+'–'+time(cues.playbackOut)+'.';
+  const c=canvas.getContext?.('2d');if(!c)return;const width=Math.max(260,canvas.clientWidth||800);canvas.width=width;canvas.height=150;c.clearRect(0,0,width,150);if(!valid)return;
+  const x=n=>Math.max(0,Math.min(width,n/cues.duration*width)),p=cues.points;
+  c.fillStyle='#081b2b';c.fillRect(0,0,width,150);
+  for(const [a,b,color]of [[p.start,p.vocalStart,'#174b42'],[p.transition,p.end,'#423251']])if(a!==null&&b!==null&&b>a){c.fillStyle=color;c.fillRect(x(a),0,x(b)-x(a),150);}
+  if(Array.isArray(cues.waveformPeaks)&&cues.waveformPeaks.length===256){c.strokeStyle='#729eb6';c.beginPath();cues.waveformPeaks.forEach((peak,i)=>{if(!Number.isFinite(peak))return;const a=Math.max(0,Math.min(1,peak))*42;c.moveTo(i*width/256,93-a);c.lineTo(i*width/256,93+a);});c.stroke();}
+  keys.forEach((k,i)=>{if(p[k]===null)return;c.strokeStyle=['#69e2b2','#ffc86a','#cb9dff','#ff8d9e'][i];c.fillStyle=c.strokeStyle;c.lineWidth=2;c.beginPath();c.moveTo(x(p[k]),5);c.lineTo(x(p[k]),150);c.stroke();c.font='13px system-ui';const label=names[i];c.fillText(label,Math.max(4,Math.min(width-4-c.measureText(label).width,x(p[k])+5)),17+i*17);});
+  // The motor reports elapsed time in the trimmed occurrence, not in the original file.
+  if(Number.isFinite(position)&&Number.isFinite(cues.playbackIn)){c.strokeStyle='#fff';c.lineWidth=3;c.beginPath();c.moveTo(x(cues.playbackIn+position),75);c.lineTo(x(cues.playbackIn+position),150);c.stroke();}
+}
 function render(v){
   const status=Object.hasOwn(labels,v.status)?v.status:'unknown';
   $('server-air-status').textContent=labels[status];$('server-air-status').dataset.state=status;
@@ -13,6 +31,7 @@ function render(v){
   const measured=current&&Number.isFinite(v.position)&&Number.isFinite(v.now.duration)&&v.now.duration>0&&v.position>=0&&v.position<=v.now.duration;
   $('server-time').textContent=measured?`${time(v.position)} / ${time(v.now.duration)} · sist målt i motoren`:current?`Varighet: ${time(v.now.duration)} · progresjon ukjent`:'Progresjon ukjent';
   const progress=$('server-progress');progress.hidden=!measured;if(measured){progress.max=v.now.duration;progress.value=v.position;}
+  renderCues(current?v.now:null,measured?v.position:null);
   const items=v.queueKnown===true&&Array.isArray(v.next)?v.next.slice(0,3):[];
   $('server-next').replaceChildren(...(items.length?items.map(t=>`${title(t)} · ${time(t.duration)}`):[v.queueKnown?'Ingen flere bekreftede innslag':'Køstatus ukjent']).map(text=>{const li=document.createElement('li');li.textContent=text;return li;}));
   const timestamp=Date.parse(v.generatedAt);

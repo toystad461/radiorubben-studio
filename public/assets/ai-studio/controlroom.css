@@ -1,3 +1,5 @@
 #server-progress{width:100%;height:10px;accent-color:#37ceab}#server-progress[hidden]{display:none}#server-air-status[data-state="playing"]{color:#7ce9c7}#server-air-status:not([data-state="playing"]){color:#ffd18a}#server-now,#server-next{overflow-wrap:anywhere}.music-library>.track-grid{margin:16px 0}.music-library>.track-grid .track{min-width:0}.nav-planned{display:block;padding:8px 14px;color:#aaa;font-size:.85rem}.observer-view{border:0;padding:0;margin:0;min-width:0}.dashboard-grid>.observer-view{display:contents}#server-listen{min-height:44px}#server-time,#server-updated{font-variant-numeric:tabular-nums}
 
 .studio-shell .topbar{height:auto;min-height:58px;padding-top:12px;padding-bottom:12px}.studio-shell .account-menu{min-width:0}.studio-shell .account-menu span{overflow-wrap:anywhere}
+
+#server-cues{display:block;width:100%;height:auto;min-height:90px;border-radius:8px;margin:12px 0}#server-cues[hidden]{display:none}#server-cue-summary{line-height:1.65;overflow-wrap:anywhere}

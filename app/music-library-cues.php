@@ -8,6 +8,18 @@ function music_library_cues_current(array $track):?array {
     $v=$track['cuePoints']??null;$m=music_library_metadata($track);if(!$m||!is_array($v)||($v['schemaVersion']??null)!==1||($v['sourceSha256']??null)!==$track['sha256']||!is_array($v['points']??null))return null;
     try{music_cue_values($v['points'],$m['durationSeconds']);return $v;}catch(Throwable){return null;}
 }
+/** Display fresh vocal proposals without hiding them behind a silence-only scan.
+ * This does not approve or persist points and never changes manual choices.
+ */
+function music_library_cues_editor(array $track):array {
+    $saved=music_library_cues_current($track);
+    $profile=music_audio_profile_current($track);
+    if($saved&&($saved['source']??'')!=='automatic-silence')return ['points'=>$saved['points'],'source'=>'saved'];
+    if($profile)return ['points'=>$profile['cueSuggestion'],'source'=>'proposal'];
+    if($saved)return ['points'=>$saved['points'],'source'=>'silence'];
+    $duration=music_library_metadata($track)['durationSeconds']??0;
+    return ['points'=>['start'=>0,'vocalStart'=>null,'transition'=>null,'end'=>floor($duration*1000)/1000],'source'=>'missing'];
+}
 function music_library_cues_save(string $id,string $sha,int $revision,array $values,?array $user,string $csrf,string $expected,?string $root=null):array {
     if(!music_library_can_upload($user)||$expected===''||!hash_equals($expected,$csrf))throw new InvalidArgumentException('Cue-redigeringen er ikke autorisert.');
     $root??=music_library_root();$track=null;foreach(music_library_read($root)as$t)if($t['id']===$id)$track=$t;

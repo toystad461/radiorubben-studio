@@ -1,3 +1,15 @@
+## 06.11.2026 – cue-visning i editor og kontrollrom, utviklingsutgave
+
+Thomas prioriterer synlige cue-punkter; TTS er sekundært. Ny avgrenset gren
+på PR115/8ad018f retter at automatisk start/slutt skjulte vokalforslag,
+viser samme filbundne punkter grafisk i kontrollrommet og bevarer manuelle
+rettelser. Målt posisjon tar hensyn til avspillingens cue-in. Ukjente punkter
+forblir ukjente. Ingen endring av lydmotor eller sending.
+
+PHP-/JS-kontroller og isolert nettlesergrafikk på 390/1280 px består.
+Se [behov, tester og begrensninger](CUE-DISPLAY-20261106.md).
+Ikke installert. Ekte vokalanalyse på VPS og selektiv etterkontroll gjenstår;
+nettleseranalysen er gjenbrukt, ingen ny serverbasert vokalmotor er levert.
 ## 06.11.2026 kl.22:16:43 Europe/Oslo – v0.2.0 publisert
 
 Offisiell release: https://github.com/toystad461/radiorubben-studio/releases/tag/v0.2.0

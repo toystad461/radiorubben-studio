@@ -31,6 +31,7 @@ jobs:
       - name: Check controlroom status and role navigation
         run: |
           php tests/controlroom.php
+          php tests/cue-display.php
           php tests/controlroom-api.php
           php tests/status-request.php
           python3 tests/test-status-clock-deploy.py
@@ -60,6 +61,8 @@ jobs:
       - run: composer install --no-dev --prefer-dist --no-interaction
       - run: npm install --no-save --package-lock=false playwright@1.62.1
       - run: npx playwright install --with-deps chromium
+      - name: Check cue graphics and editor preservation
+        run: node tests/cue-display-browser.cjs
       - name: Check compact Studio workspaces and preserved editorial access
         run: node tests/navigation-mobile.cjs
         env:
