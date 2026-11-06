@@ -152,7 +152,7 @@ async function setup(browser,html,width,engine){
       await page.waitForFunction(()=>document.querySelector('#studio-message').textContent.startsWith('Lagret.'));
       assert.deepEqual(state.posts.map(x=>x.action),['add']);state.posts=[];
       await page.locator('#player-start').click();
-      await page.waitForFunction(()=>document.querySelector('#player-mode').textContent==='Klargjør teststrøm');
+      await page.waitForFunction(()=>document.querySelector('#player-mode').textContent==='Klargjør lydstrøm');
       assert.deepEqual(state.posts.map(x=>x.action),['start']);
       assert.equal(state.streamRequests+state.segmentRequests,0,'starting the server never autoplays local audio');
       p.streamUrl='/isolated-test-stream.mp3';p.seq++;
