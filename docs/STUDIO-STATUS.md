@@ -27,9 +27,12 @@ Avgrenset rettelse viderefører merking gjennom samme eksisterende mediegrunnlag
 Lydteppe/programopptak er ferdige lydfiler som spilles sekvensielt; mikrofon-
 ducking og miksing ligger fortsatt i L05. Motorens PCM-/overgangskode endres ikke.
 
-Rettelsen og den nye lydmarkørtesten er under sluttkontroll i samme PR.
-Selektiv testinstallasjon, etterkontroll og endelig L02-status dokumenteres
-etter faktisk resultat. Ingen produksjons-, WordPress- eller radio.co-endring.
+Rettelsen er installert selektivt på test-VPS kl. 19:12:35 Europe/Oslo.
+Etterkontroll og rollback-test består; 130 originalfiler er hashverifisert.
+L02-funksjonskontrollen består innenfor testmiljøets avgrensning; ny GitHub-CI
+etter separasjon av gammel menytest og ny lydtypetest avventes. Se
+[full testkvittering](STUDIO-L02-QUALIFICATION-20261106.md).
+Ingen produksjons-, WordPress- eller radio.co-endring.
 
 
 ## 05.11.2026 – klokkeavvik bekreftet; rettelse under kontroll

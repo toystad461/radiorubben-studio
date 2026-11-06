@@ -1,5 +1,7 @@
 # L02 – kontrollrom, første avgrensede leveranse
 
+Nyeste resultat 06.11.2026: [L02-sluttkontroll med lydopptak](STUDIO-L02-QUALIFICATION-20261106.md). Historikken nedenfor beskriver første delleveranse og tidligere gjenstående arbeid.
+
 Arbeidsområder: Teknisk Produksjon, Musikk & Tagging, Kontrollsenter.
 Grunnlag kontrollert 01.11.2026: #109, merget #111 på
 feat/music-scheduler-vps-playout @ 4fcdff392475db0c03fefa8b6990f77edcc223d2.
