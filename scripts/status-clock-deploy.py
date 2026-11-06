@@ -14,7 +14,7 @@ import subprocess
 import tempfile
 import urllib.request
 
-STUDIO_COMMIT = 'bb794f873035154aefbaa884dfc4d795a2f0b906'
+STUDIO_COMMIT = '29b1cb5f46829054d153f2f3f92e3760923d2a16'
 WEB_COMMIT = '174c3fdcd4d541a8179cf5da75438074c0a685b8'
 STUDIO_ROOT = pathlib.Path('/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb')
 WEB_ROOT = pathlib.Path('/run/webroots/r1417157')
@@ -23,7 +23,7 @@ MANIFEST = {
  'studio': [
   ('public/controlroom-api.php','39b86b537370ec69a538c7aa34993c1f2772fc9b7f6f797a91739cbd8dcffd05','2ca22028d3189536f6bafdacd103d3cafccfe1e5d9e4f467cde5c5124805a3db','fcccc661171ca36a007ffa45a0b8105a939f455f618683e003779c9d339530c3'),
   ('public/radio-status.php','46eb50c835b9264a56e97bd22dab21bc27febd9ad9661878e1285cc16ea3f825','668a0e5d82e858f392ad5710f31c93dedc79af5e3d17cdb8f689baca6aa60f16','3f61d2591ee696c3728a20ad154dcc88b3321ed8134e8be7aa04242cf7225f9d'),
-  ('public/assets/ai-studio/controlroom.mjs','6bdd4b37b4a38eee5ee286cefa26b17f2e2dc52c521cef45c05faa7b42f93cdb','c3427b888de6f5c3b558fbcad446d850694b277e5c3f1f48a9b71b30e55008c1','e232bdf8c8c713a9a20b50dc17c366ce9e8eda2c6e895ccf17cd9258334ad027'),
+  ('public/assets/ai-studio/controlroom.mjs','676a7896c6664a203540add344218c961c8c7b9003e668464f06128cb4d262e3','676a7896c6664a203540add344218c961c8c7b9003e668464f06128cb4d262e3','b6bbdbe41e9bae3c23033a70600858e654d66259c9cd974cd9c62b0503d544ef'),
  ],
  'wordpress': [
   ('wp-content/mu-plugins/rr-public-radio.js','dd703ec52ada6cba9493ade920833a59f678d61394ea28586d24bc73a5e7cddd','047fa9c34206be1b1da1c5146e04524b6f2bfde8c7ee4ea3706df092309ebb02','f1e336c975afad7ab79b7050b8e6f308bd8838ddadbc29f70dabe12fb8b3cd72'),
@@ -31,9 +31,9 @@ MANIFEST = {
  ]
 }
 TEMPLATE = 'public/ai-studio.php'
-TEMPLATE_BEFORE = 'dc853d3248931c377e696b0678ec0556dc34b065b2470ca251231275837966c9'
-OLD_TAG = b'/assets/ai-studio/controlroom.mjs?v=20261102'
-NEW_TAG = b'/assets/ai-studio/controlroom.mjs?v=20261105-clock1'
+TEMPLATE_BEFORE = '942bacf44c7315585bef0461728ff0161da420ef99ad6df20f8c9bfd0106e3a3'
+OLD_TAG = b'/assets/ai-studio/controlroom.mjs?v=20261106-l02-types'
+NEW_TAG = b'/assets/ai-studio/controlroom.mjs?v=20261106-l02-live'
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
