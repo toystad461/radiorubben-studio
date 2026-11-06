@@ -2458,3 +2458,65 @@ Eksisterende musikk-klargjøring fullført14.10: alle6 opplastede låter har nå
 PR89 utrullet14.10.2026 etter konkret autorisasjon. Merge0c76a41ef5e693879b31deddff2580354818a34f, deploy38556772765-1. Begge obligatoriske main-workflows38556772765/38556772656 success. Fem produksjonsfiler og privat kodebackup avstemt mot main-pakken. Originaler/bibliotek med seks ferdige cue-profiler/beskyttet konfigurasjon uendret; sendeliste semantisk uendret. HTTP200/SHA256 på music-cues.mjs?v=20261014-5. Innlogget Bruno-låt viser bølge fra256 lagrede topper straks, uten synlig lasteknapp og med null audio-src. Eksisterende cue-punkter beholdt; ingen ny cue-godkjenning eller avspilling under deploykontroll. Kvittering output/PR89-sluttkontroll.json, skjermbilde output/pr89-live-cues.jpg. Neste: oppdater åpne Studio-faner og prøv punktlytting/justering ved behov.
 
 Musikkø14.10: ny avgrenset rettelse fra main0c76a41. Gyldig kildebundet full lydprofil og BPM/toneart gjenbrukes også uten gammel køpost. Eksplisitt ny analyse er fortsatt mulig. Ferdige jobber skjules fra arbeidskøen; status oppdateres hvert10sek, ventende arbeid starter automatisk ved åpning, manuell pause respekteres i økten. Bare relevante fortsett-/pauseknapper vises. Ingen produksjonsendring eller ny analyse av ekte musikk. PHP8.2/8.4 køkontroll og full isolert nettleserkontroll besto, inkludert reell syntetisk YAMNet/Essentia, gjenåpning/polling uten ny analyse, manuell bevaring og320–1280px. Utløpt jobbstatus kan gjenopptas; aktive jobber i annen fane beskyttes. Ingen merge/utrulling.
+
+## Timesignal ved oppstart – 04.11.2026
+
+RR-HOUR-20261104: kort timesignal først ved start ble gjenskapt med null
+registrerte PCM-sekunder. Liquidsoap-malen venter nå på faktisk utgående
+sporgrense eller tømt kilde for overganger med tom buffer; varighetskontrollen
+beholdes. Isolert MP3-test med tre signaler (og signal først/sist), vanlig
+signal mellom sanger, musikkoverganger 0/3/10 sekunder og omstart/Stop består.
+Tre simulerte timeplaner har egne identiteter og gjentar ikke fullført signal.
+Ingen produksjonskode er byttet; offentlig stream går med timesignal av.
+
+Etter lokal opplåsing er gammel Uniweb-tilgang og faktisk Eleven v4/Thomas M.
+bekreftet i drift. Thomas godkjente konkret prøvemanus; ett TTS-kall på 130 tegn
+lyktes. Stemmen er behandlet og teknisk kontrollert (10,204 sekunder), lagret
+i samme Studio-sak `5ca7944a7a194580` revisjon 5, uten lyttegodkjenning eller
+kølegging. Privat komplett prøve på 32,404 sekunder har dobbelpip, stemmen og
+tre kildebundne klipp fra faktisk kø. WAV/MP3 består nivå- og varighetskontroll.
+API-nøkkelen ble på gammel server; VPS mangler fortsatt eget Audio-oppsett.
+Full GitHub-CI består på kodecommit `a0108b1e1aeb0b71caa77198c55499f9c2e1ccc7`.
+Ingen produksjonskode er byttet; stream fortsatt tilkoblet med timesignal av.
+Gjenstår lyttegodkjenning, selektiv kodeutrulling, fersk købundet pilot og tre
+observerte timeoverganger. Kontinuerlig produksjon av full timesekvens er ikke
+implementert. Se [detaljer og pilotavgrensning](STUDIO-HOUR-RECOVERY-20261104.md).
+
+Privat lydrevisjon v2 04.11 etter Thomas sitt konkrete innspill: mer fylde og
+tydelighet i samme Thomas-opptak, strammere pauser og talt KI-setning fjernet
+etter uttrykkelig bestilling. Syntetisk opphav er bevart i produksjonsloggen.
+De samme tre musikkglimtene er nivåjustert og overlapper med 0,55 sekunder.
+Komplett prøve 27,139 sekunder; nivå, topper, dekoding og fravær av stille hull
+i overgangene kontrollert. Ingen nye TTS-kall, ingen produksjonskode eller
+sendekø endret. Original/v1 bevart. Thomas vurderte deretter v2 som «mye bedre»;
+det er positiv lyttefeedback, ikke registrert sendegodkjenning i Studio.
+Ingen generell policyendring eller ny Studio-sluttgodkjenning er utført.
+
+## Thomas-stemme og flere daglige innslag – undersøkelse 04.11.2026
+
+RR-VOICE-20261104: [kildebasert anbefaling og prøvedesign](RR-VOICE-RESEARCH-20261104.md)
+ferdig etter gjennomgang av ElevenLabs-modeller, kloning, fremføring, API,
+sammenheng, feil og priser. Anbefalt retning er eksisterende Thomas M./v4,
+tre uttrykk, ni sammenlignbare private prøver og deretter fire daglige puljer
+med omtrent ti forskjellige innslag. Puljer, tider og innstillinger er
+forslag, ikke aktive funksjoner eller bekreftet lydforbedring.
+
+Konkrete kodefunn: generiske style/speed-felt passer ikke dokumenterte
+v4-kontroller; manus avviser lydinstruksjoner; stikk-kontroll utløper etter
+én time; arbeidslisten har 30 aktive plasser og biblioteket 200 filer/2 GiB.
+Disse grensene må håndteres før varig flerinnslagsproduksjon. Nyhetskontroll,
+manuelle rettelser og separate manus-/lydgodkjenninger skal bevares.
+
+Kontrollert mot kodehead 2c27a8f og offisielle nettkilder 04.11. Ingen nye
+TTS-kall, kontoendring, innholdspublisering eller runtime-endring. Stemmetype,
+v4-PVC-trening og kontokvote er fortsatt ukjent. Neste anbefalte steg er den
+avgrensede stemmesammenligningen før valg av endelige innstillinger.
+
+Senere avgrensning 04.11: Thomas ønsker noen få innslag om dagen og gjenbruk
+både innen samme døgn og over flere dager. Dette erstatter forslaget om fire
+daglige puljer og 40 nye innslag. Ny anbefalt start er seks–åtte avspillinger
+daglig fra tidløse stikk, stikk for riktig ukedag og null–ett ferskt glimt.
+Antall avspillinger er adskilt fra betalt generering. Tallene er forslag;
+ingen bank eller tidsplan er produsert/aktivert. Første pilot er redusert
+til tre korte prøver. Gyldighet og repetisjon må håndteres uten å omgå dagens
+godkjenningskontroller. Detaljer står øverst i RR-VOICE-RESEARCH-20261104.md.

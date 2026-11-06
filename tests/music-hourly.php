@@ -40,3 +40,18 @@ check(!array_filter($disabled['entries'],fn($e)=>isset($e['hourlyHour'])),'disab
 
 $persisted=json_decode(json_encode($queue),true);
 check(music_hourly_reconcile($persisted,$tracks,music_playout_empty(),$hour-360)['entries']===$persisted['entries'],'JSON round trip does not cause unnecessary queue revisions');
+
+// Keep completed occurrence history across three consecutive planning cycles.
+// This is a clock simulation; actual MP3 transport is checked separately.
+$history=music_playout_empty();$hourIds=[];
+foreach(range(0,2) as $offset){
+ $h=$hour+$offset*3600;
+ $cycle=music_rotation_extend($q,$tracks,$history,$h-60);
+ $found=array_values(array_filter($cycle['entries'],fn($e)=>($e['hourlyHour']??null)===$h));
+ check(count($found)===1,'exactly one signal for consecutive hour '.$offset);
+ $entry=$found[0];$hourIds[]=$entry['id'];
+ $history['outcomes'][$entry['id']]=$entry+['status'=>'completed'];
+ $after=music_hourly_reconcile($cycle,$tracks,$history,$h+60);
+ check(!array_filter($after['entries'],fn($e)=>($e['hourlyHour']??null)===$h),'completed hour cannot replay '.$offset);
+}
+check(count(array_unique($hourIds))===3,'consecutive hours retain distinct identities');
