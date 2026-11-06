@@ -49,7 +49,7 @@ REVIEWED_HASHES = {
         "app/music-library.php": "dc37fd5e471cada9f0eeb43e0370c55c3278b98b01104cb5c8d094af8ba0e689",
         "app/music-liquidsoap.php": "b12d26e2d4210a35557d2990b3ee7cc944ab119e9de4e057482fc45e6f7e24bb",
         "app/music-play-queue.php": "6a7a6fa9b211428a6590ff4b7a1242260e5de0f30d4493cc23cdcb09d3e3de23",
-        "app/music-playout.php": "cb3637fdf696cf4dabe17ab63e9b5bb9266c4cbff6030ab9f55951ff0768fec8",
+        "app/music-playout.php": "4d5ab804df71c48be93db69cc6563b54e5ffff8f1355e3fdc41d7851a6a9daf7",
         "app/music-rotation.php": "3f9736dd50bcdc42e746f9e21715a9f04566eee3b98e4781d750b77cf007a135",
         "app/music-scheduling.php": "9611eebfc254856790cf57400db7802c851dc775bad9c8f78d23ba77525cb162",
         "app/music-studio.php": "b1f3949a07a10f4aac104b57c1f9abdb180b1e1f98c270579c988986152e5511",
@@ -60,17 +60,17 @@ REVIEWED_HASHES = {
         "public/assets/jingles.css": "9270651a664f085b02d61991870832af84268d2f2ffe1e6413d122fa68b8dbea",
         "public/assets/jingles.mjs": "cc1122212cc5a111011e1ad2afaa60210e218427305a80dfbfd512e170a54d92",
         "public/assets/music-studio.css": "a66d05df66bfcfa8771ef7b3d0496d0f405c494bcfff6ae7c3b7379e34e2d303",
-        "public/assets/music-studio.mjs": "e59bc7e8998128fbfa2db36c7f69afda59749b94ffc0addacf3c4f1b574467e5",
+        "public/assets/music-studio.mjs": "e4bf36216e847e3f5ed778c00a2060ffe0c2fd3e8096f6d077631b837f5e91f9",
         "public/jingles.php": "308883106c69ef14d5561d6c341b6d72217cccb88b670ff4cdc7b343e158e6fb",
         "public/music-library-audio.php": "b77828707570cfc9f31554a055413ea42b0312f9c909e5f64ff1e99fea4d3b67",
         "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",
-        "public/music-studio.php": "2ba9ae2aa8913e3de125ca42e61274b9d441e49d2dcfa67bebecfd3489100f9e",
+        "public/music-studio.php": "508514fb8958f0e0c0669dde8838d5aee71766b9c69f12327bc0437e48c82816",
         "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
         "scripts/music-autocue.py": "0519faf71ea28fdeab9455dd4d0c831d3d4c0316ced13ded89fb997c1fcddd0a",
         "scripts/music-liquidsoap.php": "87b0fb2915d33880e7fab497598215462942fa7eab3c9450c545b3a5feeec348",
         "scripts/music-rotation.php": "c5d9eaf546bb812cc824bf0c155ca65448905db208eca395ed482d34ac33b66f"
         ,"app/music-hourly.php": "f311e08d294350c98f8c9c828de374f967b9b39ebda25177cd96a9dd7246584b"
-        ,"app/music-live-queue.php": "37d7321e908cdaccab9ad21fc0d512ec4fb2f6133e986a1520ce6afffa00fc97"
+        ,"app/music-live-queue.php": "db98f5e1ee1ef65a158907d080d112425e2919a23c6b40e93401a17e32f76b4f"
         ,"app/music-hour-bridge.php": "176154e4ff38149219a5e35d52e44bf5692d98b14bcb283b9b8f5835cfc0738e"
         ,"app/music-hour-bridge-worker.php": "d0ca38d6feb6f502ca55ec3abecfddab0d517527974402140cb08ad799592f98"
         ,"scripts/music-hour-bridge.py": "3764ff2adf9b9ed1c8d833bee496e353d124328fa8ca38460f295c1d4e41ed47"

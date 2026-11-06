@@ -240,7 +240,7 @@ async function setup(browser,html,width,engine){
       assert(await page.locator('#studio-catalog').getByRole('button',{name:'Spill neste',exact:true}).isEnabled());
       await page.locator('[data-entry-id="occurrence-1"] [data-queue-action="insert"]').click();
       assert(await page.locator('#insert-dialog').isVisible());
-      assert.deepEqual(await page.locator('#insert-type option').allTextContents(),['Stikk','Innlegg','Jingle','Reklame','Hilsen','Ønske','Sang']);
+      assert.deepEqual(await page.locator('#insert-type option').allTextContents(),['Stikk','Innlegg','Jingle','Reklame','Lydteppe','Programopptak','Hilsen','Ønske','Sang']);
       assert((await page.locator('#insert-position').innerText()).includes('Testlåt 1'));
       assert((await page.locator('#insert-position').innerText()).includes('Testlåt 2'));
       await page.locator('#insert-close').click();
