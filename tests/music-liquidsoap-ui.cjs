@@ -98,7 +98,7 @@ async function setup(browser,html,width,engine){
       const p=state.snapshot.player;
       assert(await page.locator('#player-pause').isDisabled(),'unsupported pause stays disabled');
       assert(await page.locator('#monitor').isDisabled());
-      assert.equal(await page.locator('#monitor-status').innerText(),'Testlytting er ikke konfigurert i dette miljøet.');
+      assert.equal(await page.locator('#monitor-status').innerText(),'Lytting er ikke konfigurert i dette miljøet.');
       assert.match(await page.locator('#player-connection').innerText(),/Motor: svarer · Icecast: ikke bekreftet tilkoblet/);
       assert.equal(state.streamRequests+state.segmentRequests,0,'opening Studio never starts audio');
       // L02: retain the same row nodes across unrelated revisions and player polls.
@@ -196,7 +196,7 @@ async function setup(browser,html,width,engine){
       assert.deepEqual(state.posts.map(x=>x.action),['start'],'local monitor stop never stops server');
 
       state.failStream=true;await page.locator('#monitor').click();
-      await page.waitForFunction(()=>document.querySelector('#monitor-status').textContent.includes('Testlytting feilet'));
+      await page.waitForFunction(()=>document.querySelector('#monitor-status').textContent.includes('Lytting feilet'));
       assert.deepEqual(state.posts.map(x=>x.action),['start'],'monitor network/decode errors never stop server');
       assert.equal(state.segmentRequests,0);
       state.failStream=false;
@@ -270,7 +270,7 @@ async function setup(browser,html,width,engine){
       assert(Math.abs(scheduled[1]-scheduled[0]-2)<0.001,'real decoded WAV segments are contiguous');
 
       await legacy.page.locator('#player-pause').click();
-      await legacy.page.waitForFunction(()=>document.querySelector('#monitor').textContent==='Lytt til testutgangen');
+      await legacy.page.waitForFunction(()=>document.querySelector('#monitor').textContent==='Lytt til lydstrømmen');
       assert.deepEqual(legacy.state.posts.map(x=>x.action),['pause']);
       assert.deepEqual(legacy.state.errors,[]);await legacy.page.close();
     }

@@ -40,12 +40,12 @@ if($('server-now')){
   listen.addEventListener('click',async()=>{
     if(!audio.paused){audio.pause();audio.removeAttribute('src');audio.load();return;}
     if(!streamUrl)return;
-    audio.src=streamUrl;message.textContent='Kobler til teststream …';
+    audio.src=streamUrl;message.textContent='Kobler til sendingen …';
     try{await audio.play();}catch{message.textContent='Lytting kunne ikke starte. Prøv igjen.';}
   });
-  audio.addEventListener('playing',()=>{listen.textContent='Stopp lytting';message.textContent='Du lytter til teststreamen. Lyd kan være forsinket i forhold til motorstatus.';});
-  audio.addEventListener('pause',()=>{listen.textContent='Lytt til teststream';message.textContent='Lytting er av. Sendingen fortsetter på serveren.';});
-  audio.addEventListener('error',()=>{listen.textContent='Lytt til teststream';message.textContent='Lytteforbindelsen ble brutt. Serverstatus vises separat.';});
+  audio.addEventListener('playing',()=>{listen.textContent='Stopp lytting';message.textContent='Du lytter til sendingen. Lyd kan være forsinket i forhold til motorstatus.';});
+  audio.addEventListener('pause',()=>{listen.textContent='Lytt til sendingen';message.textContent='Lytting er av. Sendingen fortsetter på serveren.';});
+  audio.addEventListener('error',()=>{listen.textContent='Lytt til sendingen';message.textContent='Lytteforbindelsen ble brutt. Serverstatus vises separat.';});
   audio.addEventListener('waiting',()=>{message.textContent='Lytteavspilleren venter på lyd …';});
   void refresh();const poll=setInterval(refresh,2000);
   const expiry=setInterval(()=>{if(lastGood!==null&&performance.now()-lastGood>5000){lastGood=null;render({status:'unknown'});}},500);

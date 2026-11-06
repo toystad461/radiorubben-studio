@@ -8,7 +8,7 @@ const eventLabels={stikk:'Stikk',innlegg:'Innlegg',jingle:'Jingle',reklame:'Rekl
 let monitorContext = null, monitorSeen = new Set(), monitorSources = [], monitorNext = 0, monitorBusy = false;
 let monitorAudio = null, monitorStreamUrl = null;
 const outcomeLabels = {planned:'Planlagt',started:'Startet',completed:'Fullført',interrupted:'Avbrutt',failed:'Feilet'};
-const monitorUnconfigured = 'Testlytting er ikke konfigurert i dette miljøet.';
+const monitorUnconfigured = 'Lytting er ikke konfigurert i dette miljøet.';
 const txt = (tag, value, cls) => { const n = document.createElement(tag); n.textContent = value; if (cls) n.className = cls; return n; };
 const say = value => { $('studio-message').textContent = value; };
 const split = value => value.split(',').map(s => s.trim()).filter(Boolean);
@@ -105,9 +105,9 @@ function renderMonitorControl() {
   const p=view.player, active=!!monitorAudio||!!monitorContext, liquidsoap=p.engine==='liquidsoap';
   const configured=typeof p.streamUrl==='string'&&p.streamUrl.length>0;
   $('monitor').disabled=!active&&(!control||stale||!p.online||(liquidsoap&&(!configured||!p.streamConnected)));
-  $('monitor').textContent=active?'Slå av monitor':'Lytt til testutgangen';
+  $('monitor').textContent=active?'Slå av monitor':'Lytt til lydstrømmen';
   if(liquidsoap&&!configured)$('monitor-status').textContent=monitorUnconfigured;
-  else if($('monitor-status').textContent===monitorUnconfigured)$('monitor-status').textContent='Av. Start testlytting her; serveravspillingen påvirkes ikke.';
+  else if($('monitor-status').textContent===monitorUnconfigured)$('monitor-status').textContent='Av. Start lytting her; serveravspillingen påvirkes ikke.';
 }
 // PR #113: a previous terminal message can remain while the next track plays.
 // Do not turn an old snapshot into a claim that playback is still running.
@@ -115,13 +115,13 @@ function playerMessage(p) {
   const previousOutcome = ['Køen er ferdig.', 'Fullført på isolert testutgang.', 'Fullført i Liquidsoaps PCM-utgang mens teststrømmen var tilkoblet.'];
   if (p.mode !== 'playing' || !p.current || !previousOutcome.includes(p.message)) return p.message;
   return !stale && p.online === true
-    ? 'Avspilling pågår på testserveren.'
+    ? 'Avspilling pågår på VPS-serveren.'
     : `Avspillingen kan ikke bekreftes. Sist mottatt: ${p.message}`;
 }
 function renderPlayer() {
   const p=view?.player;if(!p)return;
   const liquidsoap=p.engine==='liquidsoap';
-  const modes={starting:liquidsoap?'Klargjør teststrøm':'Klargjør testavspilling',playing:'Spiller på testserveren',paused:'Pauset på VPS',stopped:'Stoppet',blocked:'Stoppet – må kontrolleres',unconfigured:'VPS-spiller ikke installert'};
+  const modes={starting:liquidsoap?'Klargjør lydstrøm':'Klargjør avspilling',playing:'Spiller på VPS-serveren',paused:'Pauset på VPS',stopped:'Stoppet',blocked:'Stoppet – må kontrolleres',unconfigured:'VPS-spiller ikke installert'};
   $('player-mode').textContent=stale?'Spillerstatus må oppdateres':p.online?(modes[p.mode]||'Ukjent spillerstatus'):(p.mode==='unconfigured'?modes[p.mode]:'Spillertjenesten svarer ikke');
   $('player-connection').textContent=stale?'Motor og utgang: status er uavklart.':`Motor: ${p.online?'svarer':'svarer ikke'}${liquidsoap?' · Icecast: '+(p.online&&p.streamConnected?'tilkoblet':'ikke bekreftet tilkoblet'):' · Utgang: privat lydmonitor'}`;
   $('player-current').textContent=p.current?`${stale||!p.online?'Sist kjent: ':'Nå: '}${title(p.current)} · ${duration(p.position)}`:'Ingen aktiv låt';
@@ -132,15 +132,15 @@ function renderPlayer() {
   $('player-detail').textContent=[playerMessage(p),p.pendingCommand?'Venter på kommandobekreftelse':'',p.ready===false?'Køen må synkroniseres':''].filter(Boolean).join(' · ');
   for(const action of ['start','pause','stop']) $('player-'+action).disabled=!control||busy||stale||!p.online||p.pendingCommand;
   if(p.capabilities?.pause===false)$('player-pause').disabled=true;
-  $('player-start').textContent=liquidsoap?'Start testavspilling':'Start / fortsett';
+  $('player-start').textContent=liquidsoap?'Start avspilling':'Start / fortsett';
   $('player-control-note').textContent=p.capabilities?.pause===false?'Bruk Spill neste på et lagret innslag. Neste innslag kan endres til motoren låser overgangen. Aktiv lyd kan ikke fjernes.':'';
-  $('player-output-note').textContent=view.studio?.rotation?.enabled?`Standardrotasjon: ${view.studio.rotation.crossfade} sekunder crossfade mellom sanger. Jingler spilles uten overlapp.`:liquidsoap?'Testavspillingen bruker myke overganger uten overlapp. Motorstatus og Icecast-tilkobling vises hver for seg.':'Monitoren spiller dekodet testlyd fra VPS. Lokal lytting styrer ikke serveravspillingen.';
+  $('player-output-note').textContent=view.studio?.rotation?.enabled?`Standardrotasjon: ${view.studio.rotation.crossfade} sekunder crossfade mellom sanger. Jingler spilles uten overlapp.`:liquidsoap?'Avspillingen bruker myke overganger uten overlapp. Motorstatus og Icecast-tilkobling vises hver for seg.':'Monitoren spiller dekodet lyd fra VPS. Lokal lytting styrer ikke serveravspillingen.';
   $('player-sync').disabled=!control||busy||stale||p.mode==='unconfigured'||p.pendingCommand;
-  $('last-completed').textContent=p.lastCompleted?`${title(p.lastCompleted)} · ${when(p.lastCompleted.endedAt)}`:'Ingen fullført testavspilling';
+  $('last-completed').textContent=p.lastCompleted?`${title(p.lastCompleted)} · ${when(p.lastCompleted.endedAt)}`:'Ingen fullført avspilling';
   const outcomes=Object.values(p.outcomes||{}).slice(-8).reverse();
   $('player-events').replaceChildren(...outcomes.map(e=>txt('li',`${title(e)} · ${outcomeLabels[e.status]||e.status}${e.message?' · '+e.message:''}`)));
-  if(monitorContext && (liquidsoap || !p.online || p.mode!=='playing')) void stopMonitor('Monitor stoppet; testspilleren har endret status. Serveravspillingen er uendret.');
-  if(monitorAudio && (!liquidsoap || !p.online || !p.streamConnected || p.streamUrl!==monitorStreamUrl)) void stopMonitor('Testlytting stoppet; forbindelsen til den valgte teststrømmen er ikke bekreftet. Serveravspillingen er uendret.');
+  if(monitorContext && (liquidsoap || !p.online || p.mode!=='playing')) void stopMonitor('Monitor stoppet; spilleren har endret status. Serveravspillingen er uendret.');
+  if(monitorAudio && (!liquidsoap || !p.online || !p.streamConnected || p.streamUrl!==monitorStreamUrl)) void stopMonitor('Lytting stoppet; forbindelsen til den valgte lydstrømmen er ikke bekreftet. Serveravspillingen er uendret.');
   renderMonitorControl();
   // Player events change seq independently of the saved queue revision. Update
   // only row status and controls so open editors and unsaved fields stay put.
@@ -221,7 +221,7 @@ function render() {
   stableRows($('studio-catalog'),view.catalog.filter(t=>title(t).toLocaleLowerCase('nb').includes(query)),t=>t.trackId,t=>{
     const row=txt('div','','ms-track'), info=document.createElement('div');info.append(txt('strong',title(t)),txt('p',`${duration(t.duration)} · ${t.energy?t.energy+' ('+t.sources.energy+')':'Energi ukjent'} · ${t.bpm?t.bpm+' BPM ('+t.sources.bpm+')':'Tempo ukjent'}`,'ms-muted'));
     info.append(txt('p',Object.entries(t.tags).map(([tag,source])=>`${tag} (${source})`).join(' · '),'ms-muted'));
-    info.append(txt('p',t.kind==='jingle'?'Lagret jingle / innslag':t.policy?.blocked?'Manuelt sperret':t.policy?.approved?'Godkjent for: '+t.policy.programs.map(id=>view.studio.profiles[id]?.name||id).join(', '):'Mangler testgodkjenning','ms-warning'));
+    info.append(txt('p',t.kind==='jingle'?'Lagret jingle / innslag':t.policy?.blocked?'Manuelt sperret':t.policy?.approved?'Godkjent for: '+t.policy.programs.map(id=>view.studio.profiles[id]?.name||id).join(', '):'Mangler godkjenning','ms-warning'));
     const actions=txt('div','','ms-actions');actions.append(button('Forhåndslytt / detaljer',()=>openPreview(t),!control||!t.available),button('Godkjenning / rettelser',()=>editPolicy(t),!settings||busy||stale),button('Legg i kø',()=>mutate({action:'add',trackId:t.trackId,sha256:t.sha256}),!control||busy||stale||!t.available),button('Spill neste',()=>mutate({action:'playnext',trackId:t.trackId,sha256:t.sha256}),true));row.append(info,actions);return row;
   },t=>JSON.stringify([t,view.studio.profiles]));
   renderCatalogControls();
@@ -290,7 +290,7 @@ async function stopMonitor(message='Monitor av. VPS-avspillingen fortsetter uavh
 }
 async function monitorPump(){
   if(!monitorContext||monitorBusy||view.player.engine==='liquidsoap')return;monitorBusy=true;const ctx=monitorContext;
-  try{for(const segment of view.player.segments||[]){if(monitorSeen.has(segment))continue;monitorSeen.add(segment);const response=await fetch('/music-monitor-audio.php?segment='+encodeURIComponent(segment),{cache:'no-store'});if(!response.ok)throw Error('Testlyden kunne ikke hentes.');const buffer=await ctx.decodeAudioData(await response.arrayBuffer());if(monitorContext!==ctx)break;const source=ctx.createBufferSource();source.buffer=buffer;source.connect(ctx.destination);if(monitorNext<ctx.currentTime+.08){monitorNext=ctx.currentTime+2.5;$('monitor-status').textContent='Bufrer privat monitorlyd. Lyttingen er forsinket; serveravspillingen fortsetter.';}source.start(monitorNext);monitorNext+=buffer.duration;monitorSources.push(source);source.onended=()=>{monitorSources=monitorSources.filter(s=>s!==source);};}if(monitorSeen.size>200)monitorSeen=new Set(view.player.segments||[]);}
+  try{for(const segment of view.player.segments||[]){if(monitorSeen.has(segment))continue;monitorSeen.add(segment);const response=await fetch('/music-monitor-audio.php?segment='+encodeURIComponent(segment),{cache:'no-store'});if(!response.ok)throw Error('Lyden kunne ikke hentes.');const buffer=await ctx.decodeAudioData(await response.arrayBuffer());if(monitorContext!==ctx)break;const source=ctx.createBufferSource();source.buffer=buffer;source.connect(ctx.destination);if(monitorNext<ctx.currentTime+.08){monitorNext=ctx.currentTime+2.5;$('monitor-status').textContent='Bufrer privat monitorlyd. Lyttingen er forsinket; serveravspillingen fortsetter.';}source.start(monitorNext);monitorNext+=buffer.duration;monitorSources.push(source);source.onended=()=>{monitorSources=monitorSources.filter(s=>s!==source);};}if(monitorSeen.size>200)monitorSeen=new Set(view.player.segments||[]);}
   catch{if(monitorContext===ctx)await stopMonitor('Monitor feilet. VPS-avspillingen er uendret.');}finally{monitorBusy=false;}
 }
 $('monitor').addEventListener('click',async()=>{
@@ -300,11 +300,11 @@ $('monitor').addEventListener('click',async()=>{
     const streamUrl=view.player.streamUrl;
     if(typeof streamUrl!=='string'||!streamUrl)return;
     const audio=new Audio(streamUrl);audio.autoplay=false;audio.preload='none';monitorAudio=audio;monitorStreamUrl=streamUrl;
-    const failed=()=>{if(monitorAudio===audio)void stopMonitor('Testlytting feilet. Serveravspillingen er uendret.');};
+    const failed=()=>{if(monitorAudio===audio)void stopMonitor('Lytting feilet. Serveravspillingen er uendret.');};
     audio.onerror=failed;
-    audio.onended=()=>{if(monitorAudio===audio)void stopMonitor('Teststrømmen er avsluttet. Serveravspillingen er uendret.');};
-    audio.onplaying=()=>{if(monitorAudio===audio)$('monitor-status').textContent='Lytter til den faktiske Icecast-teststrømmen. Lyden kan være forsinket.';};
-    $('monitor-status').textContent='Kobler til teststrømmen for lokal lytting …';renderMonitorControl();
+    audio.onended=()=>{if(monitorAudio===audio)void stopMonitor('Lydstrømmen er avsluttet. Serveravspillingen er uendret.');};
+    audio.onplaying=()=>{if(monitorAudio===audio)$('monitor-status').textContent='Lytter til den faktiske Icecast-lydstrømmen. Lyden kan være forsinket.';};
+    $('monitor-status').textContent='Kobler til lydstrømmen for lokal lytting …';renderMonitorControl();
     try{await audio.play();}catch{failed();}
     return;
   }
@@ -312,7 +312,7 @@ $('monitor').addEventListener('click',async()=>{
   try {
     await context.resume();if(monitorContext!==context)return;
     const segments=view.player.segments||[];monitorSeen=new Set(segments.slice(0,-1));monitorNext=0;
-    $('monitor-status').textContent='Lytter til faktisk dekodet testlyd fra VPS. Forsinkelse ca. 5–8 sekunder.';void monitorPump();
+    $('monitor-status').textContent='Lytter til faktisk dekodet lyd fra VPS. Forsinkelse ca. 5–8 sekunder.';void monitorPump();
   }catch{if(monitorContext===context)await stopMonitor('Monitor kunne ikke startes. VPS-avspillingen er uendret.');}
 });
 // Closing the tab only closes the monitor. No server pause/stop request is sent.
@@ -323,7 +323,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopPreview
 window.addEventListener('pagehide',()=>{stopPreview();void stopMonitor();});
 void refresh();setInterval(()=>void refresh(true),1000);
 
-$('reset-queue').addEventListener('click',()=>{if(window.confirm('Tømme køen for en ny test? Avspillingshistorikken bevares.'))void mutate({action:'reset'});});
+$('reset-queue').addEventListener('click',()=>{if(window.confirm('Tømme sendekøen? Avspillingshistorikken bevares.'))void mutate({action:'reset'});});
 
 if($('rotation-form')){
   $('rotation-form').addEventListener('input',()=>{rotationDirty=true;});

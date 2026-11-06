@@ -8,7 +8,7 @@
   <select id="studio-player-source" <?= studio_can($user ?? null, 'produce') ? '' : 'disabled' ?>><option value="broadcast">VPS-strøm · lytt i kontrollrommet</option><option value="local">Lokal musikk</option></select>
   <p id="studio-player-state" role="status">VPS-strøm: bruk lytting i kontrollrommet.</p>
   <div class="studio-player-controls"><button type="button" id="studio-player-toggle" disabled aria-label="Spill av valgt lydkilde">Spill</button><label for="studio-player-volume">Volum<input type="range" id="studio-player-volume" min="0" max="100" value="100" disabled></label></div>
-  <a href="#server-listen">Lytt til teststream ↗</a><p class="studio-player-note">Lytting i denne fanen. Bekrefter ikke sendestatus.</p>
+  <a href="#server-listen">Lytt til sendingen ↗</a><p class="studio-player-note">Lytting i denne fanen. Bekrefter ikke sendestatus.</p>
  </section>
  <?php endif; ?>
  <div class="studio-desktop-menu"><?php require __DIR__.'/navigation.php'; ?></div>
