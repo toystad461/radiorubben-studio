@@ -1,3 +1,21 @@
+## 06.11.2026 kl.21:58:48 Europe/Oslo – offisiell VPS-drift v0.2.0
+
+Etter brukerens eksplisitte bestilling er aktiv VPS satt til live-merking.
+Kildecommit: a108b65dfc2ebcaf3fe492051fc84c234236f2cb. Åtte selektive filer:
+seks brukerflatefiler, eksisterende Nginx-banner/header og nytt release.json.
+HTTPS-readback bekrefter v0.2.0, L02, environment=live og samme commit.
+Privat monitor returnerer401 uten innlogging; offentlig nå/neste svarer korrekt.
+Kontrollrom og kø er visuelt kontrollert med fersk motor-/strømstatus.
+Lydtjenestene beholder PID773/770, null omstarter. Filrollback er kontrollert i
+isolert kopi. Ingen WordPress-, radio.co-, DNS- eller lydmotorendring.
+
+Privat backup: `/var/lib/rr-vps-deploy/l02-official-020-d59jgst0`.
+Rollback: `sudo -n python3 /var/lib/rr-vps-deploy/l02-official-020-d59jgst0/installer.py rollback /var/lib/rr-vps-deploy/l02-official-020-d59jgst0`.
+Historisk testbelegg, interne kompatibilitetsbaner og syntetiske prøvesakers
+merking beholdes. Disse skal ikke forveksles med gjeldende miljømerking.
+Release publiseres på GitHub etter kontrollene; PR115 er fortsatt selektivt
+installert, ikke helutrullet eller merget til Uniweb/main.
+
 ## 06.11.2026 kl.21:49:45 Europe/Oslo – L02 installert på aktiv VPS
 
 Brukeren ba om utrulling. De tidligere sju L02-lydtypefilene er supplert med

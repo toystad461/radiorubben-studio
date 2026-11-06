@@ -169,7 +169,7 @@ async function setup(browser,html,width,engine){
       p.message='Køen er ferdig.';p.mode='playing';p.streamConnected=true;p.current=state.snapshot.entries[0];p.active={'occurrence-1':state.snapshot.entries[0],'occurrence-3':state.snapshot.entries[2]};p.reserved={'occurrence-2':state.snapshot.entries[1]};p.seq++;
       await page.waitForFunction(()=>document.querySelector('[data-entry-id="occurrence-2"]').dataset.playbackState==='reserved');
       assert.equal(state.snapshot.revision,savedRevision,'only player sequence changed');
-      assert.equal(await page.locator('#player-detail').innerText(),'Avspilling pågår på testserveren.');
+      assert.equal(await page.locator('#player-detail').innerText(),'Avspilling pågår på VPS-serveren.');
       assert.equal(p.message,'Køen er ferdig.','rendering leaves stored state intact');
       assert(await page.evaluate(()=>window.__savedRow===document.querySelector('[data-entry-id="occurrence-2"]')),'row DOM identity survives player status');
       assert.equal(await page.locator('#profile-description').inputValue(),'Ulagret programendring');
@@ -188,7 +188,7 @@ async function setup(browser,html,width,engine){
 
       await page.locator('#monitor').click();
       await page.waitForFunction(()=>window.__monitorTest.playing>0);
-      assert.match(await page.locator('#monitor-status').innerText(),/faktiske Icecast-teststrømmen/);
+      assert.match(await page.locator('#monitor-status').innerText(),/faktiske Icecast-lydstrømmen/);
       assert(state.streamRequests>0);assert.equal(state.segmentRequests,0,'Liquidsoap never fetches legacy WAV segments');
       assert.deepEqual(await page.evaluate(()=>window.__monitorTest.created),['/isolated-test-stream.mp3']);
       await page.locator('#monitor').click();
@@ -213,8 +213,8 @@ async function setup(browser,html,width,engine){
       await page.waitForFunction(()=>document.querySelector('#player-mode').textContent==='Spillerstatus må oppdateres');
       assert.match(await page.locator('#player-detail').innerText(),/^Avspillingen kan ikke bekreftes/);
       state.failApi=false;
-      await page.waitForFunction(()=>document.querySelector('#player-mode').textContent==='Spiller på testserveren');
-      assert.equal(await page.locator('#player-detail').innerText(),'Avspilling pågår på testserveren.');
+      await page.waitForFunction(()=>document.querySelector('#player-mode').textContent==='Spiller på VPS-serveren');
+      assert.equal(await page.locator('#player-detail').innerText(),'Avspilling pågår på VPS-serveren.');
       await page.locator('#player-stop').click();
       await page.waitForFunction(()=>document.querySelector('#player-mode').textContent==='Stoppet');
       assert.deepEqual(state.posts.map(x=>x.action),['start','stop'],'server stop is an explicit operator action');
@@ -256,8 +256,8 @@ async function setup(browser,html,width,engine){
 
       const legacy=await setup(browser,html,width,'php');
       legacy.state.snapshot.player.message='Fullført på isolert testutgang.';legacy.state.snapshot.player.current=legacy.state.snapshot.entries[0];legacy.state.snapshot.player.mode='playing';legacy.state.snapshot.player.seq++;
-      await legacy.page.waitForFunction(()=>document.querySelector('#player-mode').textContent==='Spiller på testserveren');
-      assert.equal(await legacy.page.locator('#player-detail').innerText(),'Avspilling pågår på testserveren.');
+      await legacy.page.waitForFunction(()=>document.querySelector('#player-mode').textContent==='Spiller på VPS-serveren');
+      assert.equal(await legacy.page.locator('#player-detail').innerText(),'Avspilling pågår på VPS-serveren.');
       assert.equal(await legacy.page.locator('#player-pause').isDisabled(),false,'PHP pause remains supported');
       assert.equal(legacy.state.segmentRequests,0);
       await legacy.page.locator('#monitor').click();
