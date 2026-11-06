@@ -138,7 +138,7 @@ function renderPlayer() {
   $('player-sync').disabled=!control||busy||stale||p.mode==='unconfigured'||p.pendingCommand;
   $('last-completed').textContent=p.lastCompleted?`${title(p.lastCompleted)} · ${when(p.lastCompleted.endedAt)}`:'Ingen fullført avspilling';
   const outcomes=Object.values(p.outcomes||{}).slice(-8).reverse();
-  $('player-events').replaceChildren(...outcomes.map(e=>txt('li',`${title(e)} · ${outcomeLabels[e.status]||e.status}${e.message?' · '+e.message:''}`)));
+  $('player-events').replaceChildren(...outcomes.map(e=>txt('li',`${title(e)} · ${outcomeLabels[e.status]||e.status}${e.message?' · '+e.message.replace('Fullført på isolert testutgang.','Fullført på VPS-utgangen.').replace('teststrømmen','lydstrømmen'):''}`)));
   if(monitorContext && (liquidsoap || !p.online || p.mode!=='playing')) void stopMonitor('Monitor stoppet; spilleren har endret status. Serveravspillingen er uendret.');
   if(monitorAudio && (!liquidsoap || !p.online || !p.streamConnected || p.streamUrl!==monitorStreamUrl)) void stopMonitor('Lytting stoppet; forbindelsen til den valgte lydstrømmen er ikke bekreftet. Serveravspillingen er uendret.');
   renderMonitorControl();
