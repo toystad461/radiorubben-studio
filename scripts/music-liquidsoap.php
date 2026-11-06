@@ -127,7 +127,7 @@ try {
                 $invalid = ($control['ready'] ?? false) !== true;
                 foreach (music_playout_inflight_entries($state) as $entry) {
                     $queued = music_liquidsoap_queued($control, $entry['id']);
-                    if (!$queued || $queued['sha256'] !== $entry['sha256'] || $queued['blocked']) $invalid = true;
+                    if (!$queued || $queued['sha256'] !== $entry['sha256'] || ($queued['playback']??null)!==($entry['playback']??null) || $queued['blocked']) $invalid = true;
                 }
                 if ($invalid) {
                     $state['mode'] = 'blocked'; $state['message'] = 'Køgrunnlaget ble endret eller synkronisering feilet. Kontroller før ny start.';
@@ -181,7 +181,7 @@ try {
                     ? max(0, $lastPcmClock - (float)$state['current']['renderClockStart']) : 0.0;
                 $pcmFresh = $lastPcmAt !== null && microtime(true) - $lastPcmAt < 5;
                 music_playout_atomic($root.'/heartbeat.json', ['timestamp' => microtime(true), 'engine' => 'liquidsoap',
-                    'connected' => (bool)($state['connected'] ?? false) && $pcmFresh, 'position' => $position, 'segments' => [], 'pid' => getmypid()]);
+                    'connected' => (bool)($state['connected'] ?? false) && $pcmFresh, 'position' => $position, 'currentId' => $state['current']['id'] ?? null, 'segments' => [], 'pid' => getmypid()]);
                 $lastBeat = microtime(true);
             }
         } finally { flock($lock, LOCK_UN); fclose($lock); }

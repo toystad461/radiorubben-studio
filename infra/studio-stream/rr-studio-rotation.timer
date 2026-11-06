@@ -1,0 +1,9 @@
+[Unit]
+Description=Keep Radio Rubben private rotation planned ahead
+[Timer]
+OnBootSec=30
+OnUnitInactiveSec=20
+AccuracySec=1
+Unit=rr-studio-rotation.service
+[Install]
+WantedBy=timers.target

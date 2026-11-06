@@ -1,0 +1,120 @@
+{
+  "evidenceType": "operator-provided terminal output",
+  "operator": "Thomas",
+  "installerCommit": "fef9132ce9de311cd97940241c0dccddc6b27aba",
+  "installerSha256": "ea92b4cfe1f31f75b56b60f30a58b4027590de7c3034a52bb3c0d75c2e05d5a6",
+  "backup": "/var/lib/rr-vps-deploy/menu-20261104-bvjor3_1",
+  "cachePreflight": {
+    "opcache.enable": "On",
+    "opcache.validate_timestamps": "On",
+    "opcache.revalidate_freq": "2",
+    "opcache.file_update_protection": "2"
+  },
+  "receipt": {
+    "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+    "menuCommit": "9bbfae2c7b97414c2b3b96b18aeafa731cb6c5d8",
+    "preservedConsoleCommit": "290f80c4492122d3cb62060cdfab68872e758ff6",
+    "before": {
+      "app/views/navigation.php": "b88904b9d42a6243c11de8d6c22af513c17957787cc261c132cb72b2f27cb92d",
+      "app/views/sidebar.php": "e459b4277a7124cc896eaf73ff283327f25a659b1b3c8003a87b01621abe813a",
+      "app/views/head.php": "0d4e5414c4410365d06b257e487e34b5348a08def262dff53f73375d04ea0866",
+      "public/assets/studio.css": "405e2b52f4c836fc19aaf4cbc9566873d57e8e0421238632392e1b2283223ae5",
+      "public/assets/ai-studio/app.mjs": "c70656d0ba51850ebca827f30dc7263229bd9cee0706729e067c8c6407ac6ae1",
+      "public/ai-studio.php": "fa7fc0c94d258e3e6e01b2b1e73d087114b70fbef5db8dead87cc6ce8a5b9247"
+    },
+    "after": {
+      "app/views/navigation.php": "3f6da7444e8d69992edf26f26fe953d45f5033570c5ae796ecc150193f5982cd",
+      "app/views/sidebar.php": "aebb929943b86d89cb32d54e27a3501c2b47438f4893cd1b8346f3b5589f3980",
+      "app/views/head.php": "61901ae3982df5c6fc90d602583eb07b8a16da23cce791fcbf6d6b08afc17b6d",
+      "public/assets/studio.css": "97c3ab5f6e5f2874426ab18488faee9135ac865b447dd5dd614f2221ba4e1ba9",
+      "public/assets/ai-studio/app.mjs": "6b0122f8933dc7c1b9241bcb83f83cc37b855c3aaaba4a98dc438ac30a5b857d",
+      "public/ai-studio.php": "dc853d3248931c377e696b0678ec0556dc34b065b2470ca251231275837966c9"
+    },
+    "metadata": {
+      "app/views/navigation.php": {
+        "uid": 0,
+        "gid": 0,
+        "mode": 420
+      },
+      "app/views/sidebar.php": {
+        "uid": 0,
+        "gid": 0,
+        "mode": 420
+      },
+      "app/views/head.php": {
+        "uid": 0,
+        "gid": 0,
+        "mode": 420
+      },
+      "public/assets/studio.css": {
+        "uid": 0,
+        "gid": 0,
+        "mode": 420
+      },
+      "public/assets/ai-studio/app.mjs": {
+        "uid": 0,
+        "gid": 0,
+        "mode": 420
+      },
+      "public/ai-studio.php": {
+        "uid": 0,
+        "gid": 0,
+        "mode": 420
+      }
+    },
+    "servicesBefore": {
+      "nginx": {
+        "MainPID": "810",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "php8.3-fpm": {
+        "MainPID": "763",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "rr-studio-stream": {
+        "MainPID": "773",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "rr-studio-icecast": {
+        "MainPID": "770",
+        "ActiveState": "active",
+        "SubState": "running"
+      }
+    },
+    "status": "installed_files_verified",
+    "startedAtUTC": "2026-11-04T14:50:03Z",
+    "browserAndAudioAcceptance": "pending",
+    "servicesAfter": {
+      "nginx": {
+        "MainPID": "810",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "php8.3-fpm": {
+        "MainPID": "763",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "rr-studio-stream": {
+        "MainPID": "773",
+        "ActiveState": "active",
+        "SubState": "running"
+      },
+      "rr-studio-icecast": {
+        "MainPID": "770",
+        "ActiveState": "active",
+        "SubState": "running"
+      }
+    },
+    "finishedAtUTC": "2026-11-04T14:50:04Z"
+  },
+  "limits": [
+    "The assistant compared this terminal receipt with the pinned installer manifest; it did not independently reread the VPS.",
+    "Unchanged service PIDs do not prove uninterrupted or audible stream output.",
+    "Filesystem hashes for library, queue and journal were not measured by this six-file menu installer.",
+    "Live browser, audible stream and physical iPhone acceptance remain pending."
+  ]
+}

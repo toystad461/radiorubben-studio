@@ -1,0 +1,137 @@
+{
+  "sourceCommit": "460f73293f74af7b42c0cd72371bf218dbf3adf0",
+  "firstCodeCommit": "5dac1c0f781b6293e169c6108b02f19b03c7b579",
+  "initialBackup": "/var/lib/rr-vps-deploy/l02-jingles-89x9r87g",
+  "correctionBackup": "/var/lib/rr-vps-deploy/l02-jingles-_x88ksh1",
+  "files": [
+    {
+      "path": "studio/app/music-library.php",
+      "before": "a98f2bd03c07ee9ad8df98cf9f0a64e2cccc8c71a4b9494200ae853b6d32d0a1",
+      "after": "aded34f634e7d50bce299ddfe90bc7b8c0073974c5989f46d93708dc38501e97"
+    },
+    {
+      "path": "studio/app/music-liquidsoap.php",
+      "before": "9cebcc0201049906e9c6d77df2f469a5f2fe684de10f8346fab0bac6e7f649c5",
+      "after": "a8647c6b6b3ff98486a0a10c21302fcf43693e4ffdd2d3eaf527aa47b0968cdd"
+    },
+    {
+      "path": "player-code/app/music-liquidsoap.php",
+      "before": "9cebcc0201049906e9c6d77df2f469a5f2fe684de10f8346fab0bac6e7f649c5",
+      "after": "a8647c6b6b3ff98486a0a10c21302fcf43693e4ffdd2d3eaf527aa47b0968cdd"
+    },
+    {
+      "path": "studio/app/music-play-queue.php",
+      "before": "5ca7047b020f42944e6f16b27cb75298fa4396f06be46215e764b34fa2f91352",
+      "after": "6a7a6fa9b211428a6590ff4b7a1242260e5de0f30d4493cc23cdcb09d3e3de23"
+    },
+    {
+      "path": "studio/app/music-playout.php",
+      "before": "b96df4046c4e5130277f8a9587518b9f8f7d8f0d5afa671f203d1a7c51006e3e",
+      "after": "f074a9868550deb6a0e562cc9a370e4939372a4339f4e4655cfb2ef2e34a6f14"
+    },
+    {
+      "path": "player-code/app/music-playout.php",
+      "before": "b96df4046c4e5130277f8a9587518b9f8f7d8f0d5afa671f203d1a7c51006e3e",
+      "after": "f074a9868550deb6a0e562cc9a370e4939372a4339f4e4655cfb2ef2e34a6f14"
+    },
+    {
+      "path": "studio/app/music-scheduling.php",
+      "before": "f4d4c0a3e7f05b3303ddd0d2ac96b4f61c6df8f81579db92d9c3dc6d8a59aaba",
+      "after": "bd09f9f807da1c93feea177e361a4e2a360beadf31f1ec41435d3ab9f9483eeb"
+    },
+    {
+      "path": "studio/app/music-studio.php",
+      "before": "7f6d9f8814c5c9c5cc950fa7cb0f9f79df668009c5e81c1a3cee32201203c732",
+      "after": "b095f1a1a0946f6f666a57f45064ed2a66c52ad5f342124561c6f2d2f9579a4e"
+    },
+    {
+      "path": "studio/app/views/navigation.php",
+      "before": "6a23701178cd190c7d67dbe2935b4f203e5ca094204e4a61c38e3c61f5f28a6f",
+      "after": "f65f245826ecb1cfb817b66a303b9e504ba0910ef3d14c4f4c43529813bc2a65"
+    },
+    {
+      "path": "studio/public/assets/music-studio.mjs",
+      "before": "80826c8d3bf536b339cff81b44f6ced758b7c6b9e8d751de56d905e17909e954",
+      "after": "d8c5f0551305b95cfd2bcb38f0972c95c995a31ac6e9b2da448f495526a2b269"
+    },
+    {
+      "path": "studio/public/music-library-audio.php",
+      "before": "cd9ec58c12df595c4943015a7f16aec06766acd78ec4fee3fb53e335ad7d24fc",
+      "after": "b77828707570cfc9f31554a055413ea42b0312f9c909e5f64ff1e99fea4d3b67"
+    },
+    {
+      "path": "studio/public/music-studio.php",
+      "before": "3657c81d1ac5c65a6c23c60616bbd3cf3e4596967e13a5b9263849692ca2e201",
+      "after": "d2a2b5fe9c1967441a9868e4475349c64065f7484dc14fdbb07cdd006bdc4ffa"
+    },
+    {
+      "path": "studio/app/jingles.php",
+      "before": null,
+      "after": "ca1d8dac595d29cd4911b2f0c44a1d268f98ffd44d475114f855f47eaa118df2"
+    },
+    {
+      "path": "studio/public/jingles.php",
+      "before": null,
+      "after": "964565b5ce9b9dfb1fbba8ced8f3a5661e2f81f06413be7d12598c5cc6eece1f"
+    },
+    {
+      "path": "studio/public/assets/jingles.css",
+      "before": null,
+      "after": "301ee1ebf0883c833fe93afffde11d795ea6c3c5f6d1ba9789123053f06006ae"
+    },
+    {
+      "path": "studio/public/assets/jingles.mjs",
+      "before": null,
+      "after": "cc1122212cc5a111011e1ad2afaa60210e218427305a80dfbfd512e170a54d92"
+    }
+  ],
+  "verification": {
+    "verifiedAtUtc": "2026-11-01T21:14:33+00:00",
+    "mode": "stopped",
+    "queueRevision": 40,
+    "queueCount": 3,
+    "musicCount": 10,
+    "jingleCount": 6,
+    "originalsVerified": 16,
+    "outcomes": [
+      {
+        "kind": "jingle",
+        "title": "Radio Rubben Jingle",
+        "status": "completed",
+        "startedAt": "2026-11-01T21:13:04+00:00",
+        "renderClockStart": 0.28,
+        "evidence": "liquidsoap-pcm",
+        "renderClockEnd": 13.32,
+        "renderedSeconds": 13.040000000000001,
+        "endedAt": "2026-11-01T21:13:17+00:00"
+      },
+      {
+        "kind": "jingle",
+        "title": "Jingle 3",
+        "status": "completed",
+        "startedAt": "2026-11-01T21:13:17+00:00",
+        "renderClockStart": 13.32,
+        "evidence": "liquidsoap-pcm",
+        "renderClockEnd": 23.44,
+        "renderedSeconds": 10.120000000000001,
+        "endedAt": "2026-11-01T21:13:28+00:00"
+      },
+      {
+        "kind": "jingle",
+        "title": "Jingle 10",
+        "status": "completed",
+        "startedAt": "2026-11-01T21:13:28+00:00",
+        "renderClockStart": 23.44,
+        "evidence": "liquidsoap-pcm",
+        "renderClockEnd": 30.48,
+        "renderedSeconds": 7.039999999999999,
+        "endedAt": "2026-11-01T21:13:35+00:00"
+      }
+    ]
+  },
+  "notes": [
+    "Private isolated test VPS only. No public broadcasting, Uniweb, WordPress, DNS or radio.co changes.",
+    "Automatic installer rollback was exercised before import. Full rollback after import must coordinate library index, jingle originals and queue; do not restore old code over typed jingle data blindly.",
+    "Initial backup contains pre-import library/queue/control and journal copy. Original incoming jingle source files remain available."
+  ]
+}

@@ -1,3 +1,4 @@
+import { serverProducerContext } from './services/server-producer.mjs';
 import { initWeather } from './services/weather.mjs';
 import { AiStatus, watchStudioServer } from './services/status.mjs';
 import { initBreakApproval } from './services/break-approval.mjs';
@@ -10,7 +11,7 @@ import { StudioEvents, StudioLog } from './services/events.mjs';
 import { MidiService } from './services/midi.mjs';
 import { ACTIONS, PadMapping } from './services/mapping.mjs';
 import { interpretRode } from './services/rodecaster.mjs';
-import { initPlayerSlot } from './services/player-slot.mjs';
+import { initPlayerSlot } from './services/player-slot.mjs?v=20261102';
 import { emptyContext, demoContext, estimateSeconds, prepareDraft } from './services/producer.mjs';
 const $ = id => document.getElementById(id);
 initPlayerSlot();
@@ -43,6 +44,8 @@ function stopFaderLearning() {
   $('learn-mic-fader').textContent='Lær fader 1'; $('cancel-mic-fader').disabled=true;
 }
 
+let vpsContext=null, contextLoading=false;
+const scriptContext=()=>vpsContext??context;
 let context = emptyContext(), monitor = true, messages = [], learn = null, suggestion = null, renderPending = false;
 let confirmedPort = '', previousPort = '';
 let draftAiAssisted=false;
@@ -80,7 +83,7 @@ function renderMonitor() {
   }));
   $('monitor-status').textContent = `${monitor ? 'Monitor kjører' : 'Monitor pauset'} · ${messages.length} events (viser siste 100)`;
 }
-const breakApproval=initBreakApproval(()=>({text:(suggestion??$('draft').value).trim(),type:lastAction||'new',notes:$('producer-notes').value,context:{source:context.source,program:context.program,nowPlaying:context.nowPlaying,next:context.next,nextTracks:context.nextTracks||[]},aiAssisted:suggestion!==null?suggestionOrigin.startsWith('AI-generert'):draftAiAssisted}),(text,ai)=>{draftAiAssisted=ai;$('draft').value=text;resetSuggestion();estimate();$('draft-origin').textContent=ai?'AI-generert · manuelt godkjent':'Manuelt godkjent';});
+const breakApproval=initBreakApproval(()=>({text:(suggestion??$('draft').value).trim(),type:lastAction||'new',notes:$('producer-notes').value,context:{source:scriptContext().source,program:scriptContext().program,nowPlaying:scriptContext().nowPlaying,next:scriptContext().next,nextTracks:scriptContext().nextTracks||[]},aiAssisted:suggestion!==null?suggestionOrigin.startsWith('AI-generert'):draftAiAssisted}),(text,ai)=>{draftAiAssisted=ai;$('draft').value=text;resetSuggestion();estimate();$('draft-origin').textContent=ai?'AI-generert · manuelt godkjent':'Manuelt godkjent';});
 function estimate() { $('estimate').textContent = `Estimert: ${estimateSeconds($('draft').value)} sek`; }
 function resetSuggestion() { revision++; suggestion = null; $('suggestion-preview').hidden = true; $('suggestion-label').hidden=true; $('use-suggestion').disabled = true; $('suggestion-status').textContent = $('auto-prepare').checked ? 'Venter på nytt låtbytte. Manuset ditt beholdes.' : 'Automatisk klargjøring er av. Manuset ditt beholdes.'; }
 function updateContext(next) {
@@ -105,10 +108,20 @@ function stageSuggestion(text, origin) {
 async function action(action, local = false) {
   if (action === 'lightsOff') { $('hue-follow').checked=false; await hue.allOff(); return; }
   if (action === 'open') { showView(false); history.replaceState(null, '', location.pathname); $('producer-title').scrollIntoView({behavior:'smooth'}); return; }
-  if (generating) { say('AI arbeider allerede med et forslag.'); return; }
+  if (generating||contextLoading) { say('AI arbeider allerede med et forslag.'); return; }
   lastAction = action;
+  if($('server-now')){
+    contextLoading=true;
+    try{
+      const r=await fetch('/controlroom-api.php',{cache:'no-store',redirect:'error',signal:AbortSignal.timeout(4000)});
+      if(!r.ok)throw Error('Logg inn eller oppdater Studio før du lager stikk.');
+      vpsContext=serverProducerContext(await r.json());
+    }catch(e){vpsContext=emptyContext();if(['new','next','refresh'].includes(action)){say(e.message);$('suggestion-status').textContent=e.message;return;}}
+    finally{contextLoading=false;}
+  }
+  const sourceContext=scriptContext();
   if (local || !aiReady) {
-    stageSuggestion(prepareDraft(action,context,$('draft').value), 'Lokal mal · ikke AI-generert');
+    stageSuggestion(prepareDraft(action,sourceContext,$('draft').value), 'Lokal mal · ikke AI-generert');
     say('Lokal mal er klar for gjennomlesing.'); return;
   }
   resetSuggestion(); const version = revision; const autoReview = $('auto-review').checked;
@@ -119,7 +132,7 @@ async function action(action, local = false) {
     const response = await fetch('/producer-api.php', {method:'POST', credentials:'same-origin', signal:controller.signal,
       headers:{'Content-Type':'application/json', 'X-CSRF-Token':$('main').dataset.csrf},
       body:JSON.stringify({action, autoReview, feedback:feedbackPrompt(styleFeedback), notes:$('producer-notes').value, draft:$('draft').value,
-        program:context.program ?? '', nowPlaying:context.nowPlaying ?? '', next:context.next ?? ''})});
+        program:sourceContext.program ?? '', nowPlaying:sourceContext.nowPlaying ?? '', next:sourceContext.next ?? ''})});
     const result = await response.json();
     if (!response.ok || typeof result.text !== 'string') throw new Error(result.error || 'AI kunne ikke lage et forslag.');
     aiStatus.update('producer',false,'Stikk mottatt · '+clock(new Date()));
@@ -135,7 +148,7 @@ async function action(action, local = false) {
     } else { say('AI-forslaget er klart. Les gjennom og velg om du vil bruke det.'); }
   } catch (error) {
     aiStatus.update('producer',false,'Stikk feilet · manuell drift tilgjengelig');
-    $('suggestion-status').textContent = 'Ingen nytt AI-forslag. Manuset er beholdt.';
+    $('suggestion-status').textContent = (error.name==='AbortError'?'AI brukte for lang tid.':error.message)+' Manuset er beholdt.';
     say(error.name === 'AbortError' ? 'AI brukte for lang tid. Prøv igjen eller velg lokal mal.' : error instanceof SyntaxError ? 'AI svarte ikke som forventet. Bruk lokal mal eller prøv igjen.' : error.message);
     bus.emit('AI_ERROR', {log:'Generering feilet · manuell drift tilgjengelig'});
   } finally { clearTimeout(timeout); generating = false; $('reject-regenerate').disabled = false; }
@@ -302,18 +315,22 @@ renderMapping(); renderPads(); renderMonitor(); bus.emit('STUDIO_READY',{log:'Ma
 function showView(settings) {
   $('producer-view').hidden = settings;
   $('settings-view').hidden = !settings;
-  $('studio-page-title').textContent = settings ? 'Innstillinger' : 'Studio';
-  document.title = `${settings ? 'Innstillinger' : 'Studio'} – Radio Rubben Studio`;
+  $('studio-page-title').textContent = settings ? 'Innstillinger' : 'Kontrollrom';
+  document.title = `${settings ? 'Innstillinger' : 'Kontrollrom'} – Radio Rubben Studio`;
   for (const link of document.querySelectorAll('[data-studio-nav]')) {
     const active = link.dataset.studioNav === ({'#innstillinger':'settings','#rode':'rode','#music-title':'music','#producer-title':'scripts'}[location.hash] || 'board');
     link.classList.toggle('active', active);
     if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
+    if (active) {
+      const group = link.closest('details.nav-group');
+      if (group) group.open = true;
+    }
   }
 }
 function routeView() {
   if ($('main').dataset.settingsAllowed === 'false' && ['#innstillinger','#rode'].includes(location.hash)) history.replaceState(null,'',location.pathname);
   showView(['#innstillinger', '#rode'].includes(location.hash));
-  const target = {'#music-title':'music-title','#producer-title':'producer-title','#rode':'settings'}[location.hash];
+  const target = {'#main':'main','#server-listen':'server-listen','#music-title':'music-title','#producer-title':'producer-title','#rode':'settings'}[location.hash];
   if (target) document.getElementById(target)?.scrollIntoView({block:'start'}); else window.scrollTo(0, 0);
 }
 for (const link of document.querySelectorAll('[data-studio-nav]')) link.addEventListener('click', event => {

@@ -19,7 +19,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: curl, openssl, mbstring, pcntl
+          extensions: curl, openssl, mbstring, pcntl, gd
           tools: composer:v2
           coverage: none
       - run: composer install --no-dev --prefer-dist --no-interaction
@@ -28,10 +28,11 @@ jobs:
           python3 -B tests/test-studio-preflight.py
           python3 -B tests/test-studio-install-inventory.py
           sudo -n /usr/bin/python3 -B tests/test-studio-installer.py
-          python3 -B infra/studio-stream/build-test-installer.py --source-commit "$GITHUB_SHA" --output "$RUNNER_TEMP/L01-install-test.py"
-          python3 -m py_compile "$RUNNER_TEMP/L01-install-test.py"
+          python3 -B tests/test-studio-legacy-builder.py
       - name: Check current versus stale player messages
         run: node tests/music-player-message.cjs
+      - run: node tests/server-producer.mjs
+      - run: python3 tests/test-producer-relay.py
       - name: Check visible saved queue, polling clicks and monitor jitter
         run: node tests/music-studio-reliability.cjs
       - name: Check persistent queue, event ownership and media boundary
@@ -40,11 +41,22 @@ jobs:
           php tests/recovered/test-music-scheduling.php
           php tests/recovered/test-music-studio-store.php
           php tests/music-library-open-basedir.php
+          php tests/music-live-claim.php
+          php tests/music-insert.php
+          php tests/controlroom-audio-types.php
           php tests/music-liquidsoap-state.php
           php tests/music-liquidsoap-events.php
+          php tests/jingles.php
+          php tests/music-rotation.php
+          php tests/music-hourly.php
+          php tests/music-hour-bridge.php
+          php tests/music-autocue.php
+          php tests/music-public-boot.php
       - name: Check changed executable syntax
         run: |
           node --check public/assets/music-studio.mjs
+          node --check public/assets/jingles.mjs
+          php -l public/jingles.php
           node --check tests/music-liquidsoap-ui.cjs
           python3 -m py_compile scripts/liquidsoap-child.py infra/studio-stream/prepare.py tests/test-studio-stream.py
   actual-stream:
@@ -72,6 +84,22 @@ jobs:
         env:
           RR_STREAM_TEST_ARTIFACTS: ${{ runner.temp }}/studio-stream-evidence
         run: PHP_BIN="$(command -v php)" python3 tests/test-studio-stream.py
+      - name: Exercise cue cuts and music-only crossfades in actual MP3
+        run: |
+          PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
+          RR_TEST_CROSSFADE=0 PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
+          RR_TEST_CROSSFADE=10 PHP_BIN="$(command -v php)" python3 tests/test-studio-rotation-stream.py
+          PHP_BIN="$(command -v php)" python3 tests/test-studio-cue-stream.py
+      - name: Edit next audio while current music stays on air
+        run: PHP_BIN="$(command -v php)" python3 tests/test-studio-live-queue.py
+      - name: Render and import three source-bound hour excerpts
+        run: |
+          python3 tests/test-hour-bridge-render.py
+          python3 tests/test-hour-bridge-worker.py
+      - name: Double beep between complete songs
+        run: PHP_BIN="$(command -v php)" python3 tests/test-studio-hourly-stream.py
+      - name: Resume after restart while preserving operator Stop
+        run: PHP_BIN="$(command -v php)" python3 tests/test-studio-boot-stream.py
       - uses: actions/upload-artifact@v4
         with:
           name: studio-stream-synthetic-evidence

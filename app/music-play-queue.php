@@ -3,7 +3,7 @@ declare(strict_types=1);
 require_once __DIR__.'/users.php';
 require_once __DIR__.'/music-library-preparation.php';
 
-// Stable typed occurrence contract. Only music can be created/played in this delivery.
+// Stable typed occurrence contract. Music and jingles share the same rundown.
 const MUSIC_PLAY_QUEUE_KINDS=['music','jingle','program_break'];
 // A saved rundown, not an on-air state or an audio transport.
 function music_play_queue_path(): string { return (realpath(dirname(__DIR__).'/config') ?: dirname(__DIR__).'/config').'/music-play-queue.private.json'; }
@@ -104,12 +104,13 @@ function music_play_queue_snapshot(array $q,array $tracks): array
     $catalog=[];
     foreach ($tracks as $track) {
         $metadata=music_library_metadata($track); $fields=$metadata['fields']??[];
+        if(($track['kind']??'music')==='jingle'){$fields['title']=$track['jingle']['name']??$track['originalName'];$fields['artist']='';}
         foreach (['artist','title'] as $key) {
             $value=$track['manualOverrides'][$key]??null;
             if (is_string($value) && trim($value)!=='') $fields[$key]=$value;
         }
         $catalog[$track['id']]=[
-            'trackId'=>$track['id'],'sha256'=>$track['sha256'],
+            'kind'=>$track['kind']??'music','trackId'=>$track['id'],'sha256'=>$track['sha256'],
             'title'=>$fields['title']??$track['originalName'],'artist'=>$fields['artist']??'Ukjent artist',
             'duration'=>$metadata['durationSeconds']??null,'available'=>($track['available']??false)===true,
         ];
@@ -117,7 +118,7 @@ function music_play_queue_snapshot(array $q,array $tracks): array
     $entries=[];
     foreach ($q['entries'] as $e) {
         $track=$catalog[$e['trackId']]??null;
-        $available=$track && $track['available'] && $track['sha256']===$e['sha256'];
+        $available=$track && $track['available'] && $track['sha256']===$e['sha256'] && ($track['kind']??'music')===$e['kind'];
         $entries[]=array_merge($e,[
             'title'=>$track['title']??'Låt fjernet fra biblioteket','artist'=>$track['artist']??'',
             'duration'=>$track['duration']??null,'available'=>(bool)$available,

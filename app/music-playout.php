@@ -86,7 +86,7 @@ function music_playout_history_from_state(array $s): array {
     $history=[];
     $entries=array_merge(array_values($s['outcomes']??[]),array_values($s['active']??[]),($s['current']??null)?[$s['current']]:[]);
     foreach ($entries as $entry) {
-        if (!isset($entry['startedAt']) || isset($history[$entry['id']])) continue;
+        if (($entry['kind']??'music')!=='music' || !isset($entry['startedAt']) || isset($history[$entry['id']])) continue;
         $at=strtotime($entry['startedAt']);if ($at===false) continue;
         $history[$entry['id']]=['entryId'=>$entry['id'],'trackId'=>$entry['trackId'],'artist'=>$entry['artist'],'at'=>$at];
     }
@@ -112,7 +112,7 @@ function music_playout_publish(string $root,array $q,array $plan,array $tracks,s
     $old=music_playout_json($root.'/control.json');$byId=array_column($tracks,null,'id');$entries=[];
     if (count($plan['rows'])!==count($q['entries'])) throw new InvalidArgumentException('Køen har ukjent varighet eller endrede filer. Rett den før avvikling.');
     foreach ($plan['rows'] as $row) {
-        $entry=array_intersect_key($row,array_flip(['id','kind','trackId','sha256','artist','title','duration','plannedAt','blocked','reasons','cuePoints','audioAnalysis','sources','energy','bpm','key']));
+        $entry=array_intersect_key($row,array_flip(['id','kind','eventType','trackId','sha256','artist','title','duration','plannedAt','blocked','reasons','cuePoints','audioAnalysis','sources','energy','bpm','key','playback','sourceDuration','hourlyHour','hourBridgeHour']));
         if (!$entry['blocked']) {
             $t=$byId[$row['trackId']];$source=music_library_verified_handle($t,$libraryRoot);$target=$root.'/audio/'.$row['sha256'].'.mp3';$tmp=null;
             try {
@@ -126,7 +126,7 @@ function music_playout_publish(string $root,array $q,array $plan,array $tracks,s
         }
         $entries[]=$entry;
     }
-    music_playout_atomic($root.'/control.json',['ready'=>true,'revision'=>$q['revision'],'entries'=>$entries,'profile'=>$plan['profile'],'command'=>$command??($old['command']??null)]);
+    music_playout_atomic($root.'/control.json',['editableNext'=>($q['studio']['editableNext']??false)===true,'transitionVersion'=>(($q['studio']['rotation']['enabled']??false)?2:1),'ready'=>true,'revision'=>$q['revision'],'entries'=>$entries,'profile'=>$plan['profile'],'command'=>$command??($old['command']??null)]);
     $keep=array_column($entries,'sha256');$state=music_playout_state($root);
     foreach (['reserved','active'] as $key) foreach ($state[$key]??[] as $entry) $keep[]=$entry['sha256'];
     if ($state['current']??null) $keep[]=$state['current']['sha256'];

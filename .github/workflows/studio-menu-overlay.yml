@@ -1,0 +1,47 @@
+name: Selective menu and preserved PR117 console
+on:
+  push:
+    paths: ['scripts/studio-menu-vps.py', 'tests/test-menu-selective.py', '.github/workflows/studio-menu-overlay.yml']
+  pull_request:
+    paths: ['scripts/studio-menu-vps.py', 'tests/test-menu-selective.py', '.github/workflows/studio-menu-overlay.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-overlay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          ref: 290f80c4492122d3cb62060cdfab68872e758ff6
+          path: existing-console
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: curl, openssl, mbstring, zip
+          tools: composer:v2
+          coverage: none
+      - name: Verify guarded installation and rollback in disposable directories
+        run: python3 tests/test-menu-selective.py -v
+        env:
+          RR_MENU_FIXTURES: ${{ github.workspace }}/existing-console
+      - name: Prepare exact VPS combination in isolated checkout
+        run: python3 tests/test-menu-selective.py --prepare-overlay existing-console
+      - run: composer install --no-dev --prefer-dist --no-interaction
+        working-directory: existing-console
+      - run: npm install --no-save --package-lock=false playwright@1.62.1
+        working-directory: existing-console
+      - run: npx playwright install --with-deps chromium
+        working-directory: existing-console
+      - name: Check actual combined source syntax, roles and console navigation
+        working-directory: existing-console
+        run: |
+          php -l app/views/navigation.php
+          php -l app/views/sidebar.php
+          php -l app/views/head.php
+          php -l public/ai-studio.php
+          node --check public/assets/ai-studio/app.mjs
+          php tests/controlroom.php
+          node tests/navigation-mobile.cjs
+          node tests/studio-board-mobile.cjs

@@ -1,15 +1,18 @@
 const $ = id => document.getElementById(id), root = $('music-studio');
 const control = root.dataset.control === '1', settings = root.dataset.settings === '1';
 let view = null, busy = false, stale = true, proposal = null, policyTrack = null, profileDirty = false;
-let refreshing = null;
+let refreshing = null, selectedEntry = null, rotationDirty = false;
+const rowCache = new WeakMap();
+let insertion = null;
+const eventLabels={stikk:'Stikk',innlegg:'Innlegg',jingle:'Jingle',reklame:'Reklame',lydteppe:'Lydteppe',program:'Programopptak',hilsen:'Hilsen',onske:'Ønske',sang:'Sang'};
 let monitorContext = null, monitorSeen = new Set(), monitorSources = [], monitorNext = 0, monitorBusy = false;
 let monitorAudio = null, monitorStreamUrl = null;
 const outcomeLabels = {planned:'Planlagt',started:'Startet',completed:'Fullført',interrupted:'Avbrutt',failed:'Feilet'};
-const monitorUnconfigured = 'Testlytting er ikke konfigurert i dette miljøet.';
+const monitorUnconfigured = 'Lytting er ikke konfigurert i dette miljøet.';
 const txt = (tag, value, cls) => { const n = document.createElement(tag); n.textContent = value; if (cls) n.className = cls; return n; };
 const say = value => { $('studio-message').textContent = value; };
 const split = value => value.split(',').map(s => s.trim()).filter(Boolean);
-const title = t => `${t.artist || 'Ukjent artist'} – ${t.title}`;
+const title = t => t.eventType ? `${eventLabels[t.eventType] || 'Innslag'} · ${t.artist ? t.artist+' – ' : ''}${t.title}` : t.kind==='jingle' ? `Jingle · ${t.title}` : `${t.artist || 'Ukjent artist'} – ${t.title}`;
 const when = iso => new Intl.DateTimeFormat('nb-NO',{timeZone:'Europe/Oslo',hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date(iso));
 const duration = s => Number.isFinite(s) ? `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}` : 'ukjent varighet';
 function button(label, callback, disabled = false) { const b=txt('button',label);b.type='button';b.disabled=disabled;b.addEventListener('click',callback);return b; }
@@ -53,68 +56,156 @@ function renderQueueStatus() {
   for(const li of $('studio-entries').children) {
     const row=byId.get(li.dataset.entryId);if(!row)continue;
     const {e,i}=row, active=p.current?.id===e.id||Object.hasOwn(p.active||{},e.id), reserved=Object.hasOwn(p.reserved||{},e.id), outcome=p.outcomes?.[e.id];
-    li.querySelector('[data-queue-status]').textContent=[duration(e.duration),e.locked?'Låst':'',active?'Aktiv i motoren':reserved?'Reservert av motoren':'',outcome?outcomeLabels[outcome.status]||outcome.status:''].filter(Boolean).join(' · ');
+    li.querySelector('[data-queue-status]').textContent=[duration(e.duration),e.locked?'Låst':'',active?'Aktiv i motoren':reserved?'Overgang låst av motoren':'',outcome?outcomeLabels[outcome.status]||outcome.status:''].filter(Boolean).join(' · ');
     li.dataset.playbackState=active?'active':reserved?'reserved':outcome?.status||'queued';
     const disabled=!control||busy||stale||!!p.pendingCommand||heldEntry(e.id), fixed=disabled||!!outcome||e.locked;
     for(const action of li.querySelectorAll('[data-queue-action]')) {
       const kind=action.dataset.queueAction;
-      action.disabled=kind==='lock'?disabled:fixed||(kind==='up'&&(i===0||fixedEntry(rows[i-1])))||(kind==='down'&&(i===rows.length-1||fixedEntry(rows[i+1])))||(kind==='remove'&&rows.slice(i+1).some(protectedEntry));
+      if(view.studio.rotation?.enabled&&['lock','replace','up','down'].includes(kind)){action.disabled=true;continue;}
+      if(kind==='insert'){action.disabled=!insertionAllowed(e.id);action.title=action.disabled?'Plasseringen krever fersk spillerstatus og kan ikke flytte låste eller behandlede innslag.':'Sett inn lagret lyd på denne plassen';continue;}
+      if(kind==='next'){action.disabled=fixed||!view.studio.rotation?.enabled||Object.keys(p.reserved||{}).length>0||!!e.hourlyHour;continue;}
+      action.disabled=kind==='preview'?(!control||!e.available):kind==='lock'?disabled:fixed||(kind==='replace'&&e.kind==='jingle')||(kind==='up'&&(i===0||fixedEntry(rows[i-1])))||(kind==='down'&&(i===rows.length-1||fixedEntry(rows[i+1])))||(kind==='remove'&&(!!e.hourlyHour||rows.slice(i+1).some(protectedEntry)));
     }
   }
-  $('reset-queue').disabled=!control||busy||stale||!!p.pendingCommand||hasInflight()||['starting','playing'].includes(p.mode);
-  for(const e of $('schedule-form').elements)e.disabled=!control||busy||stale||hasInflight();
+  if($('rotation-form'))for(const e of $('rotation-form').elements)e.disabled=!settings||busy||stale||hasInflight()||['starting','playing'].includes(p.mode);
+  $('reset-queue').disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!!p.pendingCommand||hasInflight()||['starting','playing'].includes(p.mode);
+  for(const e of $('schedule-form').elements)e.disabled=!!view.studio.rotation?.enabled||!control||busy||stale||hasInflight();
+}
+function insertionAllowed(afterId) {
+  if(!control||busy||stale||!view?.studio.rotation?.enabled||!view.player.online||view.player.pendingCommand)return false;
+  const at=view.entries.findIndex(e=>e.id===afterId);if(at<0)return false;
+  return !view.entries.slice(at+1).some(e=>heldEntry(e.id)||view.player.outcomes?.[e.id]||e.locked);
+}
+function openInsertion(afterId) {
+  const at=view.entries.findIndex(e=>e.id===afterId);if(at<0||!insertionAllowed(afterId))return;
+  insertion={afterId,beforeId:view.entries[at+1]?.id||null};
+  $('insert-position').textContent=`Etter ${title(view.entries[at])}${view.entries[at+1]?' · før '+title(view.entries[at+1]):' · sist i køen'}`;
+  $('insert-search').value='';$('insert-status').textContent='';renderInsertResults();$('insert-dialog').showModal();
+}
+function renderInsertResults() {
+  if(!insertion)return;
+  const type=$('insert-type').value,music=['sang','onske'].includes(type),query=$('insert-search').value.toLocaleLowerCase('nb');
+  const matches=view.catalog.filter(t=>(t.kind==='music')===music&&t.available&&t.technicalReady&&!t.jingle?.disabled&&title(t).toLocaleLowerCase('nb').includes(query));
+  $('insert-results').replaceChildren(...matches.map(t=>{
+    const row=txt('div','','ms-track');row.append(txt('span',`${title(t)} · ${duration(t.duration)}`),button('Sett inn her',async()=>{
+      const placement={...insertion};$('insert-status').textContent='Lagrer på valgt plass …';
+      const ok=await mutate({action:'insert',...placement,eventType:type,trackId:t.trackId,sha256:t.sha256});
+      if(ok){$('insert-dialog').close();insertion=null;}else $('insert-status').textContent=$('studio-message').textContent;
+    },!insertionAllowed(insertion.afterId)));return row;
+  }));
+  if(!matches.length)$('insert-results').append(txt('p','Ingen klargjort lyd passer søket. Last opp eller ferdigstill lyden via lenkene nedenfor.'));
+}
+function renderCatalogControls() {
+  for(const row of $('studio-catalog').children) {
+    const buttons=row.querySelectorAll('button');
+    if(buttons.length===4){const track=view.catalog.find(t=>t.trackId===row.dataset.rowKey);buttons[3].disabled=!view.studio.rotation?.enabled||!control||busy||stale||!track?.available||!track?.technicalReady||!view.player.online||view.player.pendingCommand||Object.keys(view.player.reserved||{}).length>0;buttons[1].hidden=track?.kind==='jingle';buttons[1].disabled=!!view.studio.rotation?.enabled||!settings||busy||stale;buttons[2].disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!view.catalog.find(t=>t.trackId===row.dataset.rowKey)?.available;}
+  }
 }
 function renderMonitorControl() {
   const p=view.player, active=!!monitorAudio||!!monitorContext, liquidsoap=p.engine==='liquidsoap';
   const configured=typeof p.streamUrl==='string'&&p.streamUrl.length>0;
   $('monitor').disabled=!active&&(!control||stale||!p.online||(liquidsoap&&(!configured||!p.streamConnected)));
-  $('monitor').textContent=active?'Slå av monitor':'Lytt til testutgangen';
+  $('monitor').textContent=active?'Slå av monitor':'Lytt til lydstrømmen';
   if(liquidsoap&&!configured)$('monitor-status').textContent=monitorUnconfigured;
-  else if($('monitor-status').textContent===monitorUnconfigured)$('monitor-status').textContent='Av. Start testlytting her; serveravspillingen påvirkes ikke.';
+  else if($('monitor-status').textContent===monitorUnconfigured)$('monitor-status').textContent='Av. Start lytting her; serveravspillingen påvirkes ikke.';
 }
 // PR #113: a previous terminal message can remain while the next track plays.
 // Do not turn an old snapshot into a claim that playback is still running.
 function playerMessage(p) {
-  const previousOutcome = ['Køen er ferdig.', 'Fullført på isolert testutgang.'];
+  const previousOutcome = ['Køen er ferdig.', 'Fullført på isolert testutgang.', 'Fullført i Liquidsoaps PCM-utgang mens teststrømmen var tilkoblet.'];
   if (p.mode !== 'playing' || !p.current || !previousOutcome.includes(p.message)) return p.message;
   return !stale && p.online === true
-    ? 'Avspilling pågår på testserveren.'
+    ? 'Avspilling pågår på VPS-serveren.'
     : `Avspillingen kan ikke bekreftes. Sist mottatt: ${p.message}`;
 }
 function renderPlayer() {
   const p=view?.player;if(!p)return;
   const liquidsoap=p.engine==='liquidsoap';
-  const modes={starting:liquidsoap?'Klargjør teststrøm':'Klargjør testavspilling',playing:'Spiller på testserveren',paused:'Pauset på VPS',stopped:'Stoppet',blocked:'Stoppet – må kontrolleres',unconfigured:'VPS-spiller ikke installert'};
+  const modes={starting:liquidsoap?'Klargjør lydstrøm':'Klargjør avspilling',playing:'Spiller på VPS-serveren',paused:'Pauset på VPS',stopped:'Stoppet',blocked:'Stoppet – må kontrolleres',unconfigured:'VPS-spiller ikke installert'};
   $('player-mode').textContent=stale?'Spillerstatus må oppdateres':p.online?(modes[p.mode]||'Ukjent spillerstatus'):(p.mode==='unconfigured'?modes[p.mode]:'Spillertjenesten svarer ikke');
   $('player-connection').textContent=stale?'Motor og utgang: status er uavklart.':`Motor: ${p.online?'svarer':'svarer ikke'}${liquidsoap?' · Icecast: '+(p.online&&p.streamConnected?'tilkoblet':'ikke bekreftet tilkoblet'):' · Utgang: privat lydmonitor'}`;
-  $('player-current').textContent=p.current?`${title(p.current)} · ${duration(p.position)}`:'Ingen aktiv låt';
+  $('player-current').textContent=p.current?`${stale||!p.online?'Sist kjent: ':'Nå: '}${title(p.current)} · ${duration(p.position)}`:'Ingen aktiv låt';
+  // A reserved occurrence is ahead of the unclaimed next item in the manifest.
+  const reserved=Object.values(p.reserved||{}).find(e=>e.id!==p.current?.id);
+  const next=reserved||p.next;
+  if($('player-next')) $('player-next').textContent=stale||!p.online?'Neste i motoren kan ikke bekreftes.':next?`${reserved?'Reservert neste':'Neste i synkronisert kø'}: ${title(next)}${p.ready===false?' · Køendringer må synkroniseres':''}`:'Ingen neste i synkronisert kø.';
   $('player-detail').textContent=[playerMessage(p),p.pendingCommand?'Venter på kommandobekreftelse':'',p.ready===false?'Køen må synkroniseres':''].filter(Boolean).join(' · ');
   for(const action of ['start','pause','stop']) $('player-'+action).disabled=!control||busy||stale||!p.online||p.pendingCommand;
   if(p.capabilities?.pause===false)$('player-pause').disabled=true;
-  $('player-start').textContent=liquidsoap?'Start testavspilling':'Start / fortsett';
-  $('player-control-note').textContent=p.capabilities?.pause===false?'Denne testmotoren bruker start og stopp. Pause støttes ikke.':'';
-  $('player-output-note').textContent=liquidsoap?'Testavspillingen bruker myke overganger uten overlapp. Motorstatus og Icecast-tilkobling vises hver for seg.':'Monitoren spiller dekodet testlyd fra VPS. Lokal lytting styrer ikke serveravspillingen.';
+  $('player-start').textContent=liquidsoap?'Start avspilling':'Start / fortsett';
+  $('player-control-note').textContent=p.capabilities?.pause===false?'Bruk Spill neste på et lagret innslag. Neste innslag kan endres til motoren låser overgangen. Aktiv lyd kan ikke fjernes.':'';
+  $('player-output-note').textContent=view.studio?.rotation?.enabled?`Standardrotasjon: ${view.studio.rotation.crossfade} sekunder crossfade mellom sanger. Jingler spilles uten overlapp.`:liquidsoap?'Avspillingen bruker myke overganger uten overlapp. Motorstatus og Icecast-tilkobling vises hver for seg.':'Monitoren spiller dekodet lyd fra VPS. Lokal lytting styrer ikke serveravspillingen.';
   $('player-sync').disabled=!control||busy||stale||p.mode==='unconfigured'||p.pendingCommand;
-  $('last-completed').textContent=p.lastCompleted?`${title(p.lastCompleted)} · ${when(p.lastCompleted.endedAt)}`:'Ingen fullført testavspilling';
+  $('last-completed').textContent=p.lastCompleted?`${title(p.lastCompleted)} · ${when(p.lastCompleted.endedAt)}`:'Ingen fullført avspilling';
   const outcomes=Object.values(p.outcomes||{}).slice(-8).reverse();
-  $('player-events').replaceChildren(...outcomes.map(e=>txt('li',`${title(e)} · ${outcomeLabels[e.status]||e.status}${e.message?' · '+e.message:''}`)));
-  if(monitorContext && (liquidsoap || !p.online || p.mode!=='playing')) void stopMonitor('Monitor stoppet; testspilleren har endret status. Serveravspillingen er uendret.');
-  if(monitorAudio && (!liquidsoap || !p.online || !p.streamConnected || p.streamUrl!==monitorStreamUrl)) void stopMonitor('Testlytting stoppet; forbindelsen til den valgte teststrømmen er ikke bekreftet. Serveravspillingen er uendret.');
+  $('player-events').replaceChildren(...outcomes.map(e=>txt('li',`${title(e)} · ${outcomeLabels[e.status]||e.status}${e.message?' · '+e.message.replace('Fullført på isolert testutgang.','Fullført på VPS-utgangen.').replace('teststrømmen','lydstrømmen'):''}`)));
+  if(monitorContext && (liquidsoap || !p.online || p.mode!=='playing')) void stopMonitor('Monitor stoppet; spilleren har endret status. Serveravspillingen er uendret.');
+  if(monitorAudio && (!liquidsoap || !p.online || !p.streamConnected || p.streamUrl!==monitorStreamUrl)) void stopMonitor('Lytting stoppet; forbindelsen til den valgte lydstrømmen er ikke bekreftet. Serveravspillingen er uendret.');
   renderMonitorControl();
   // Player events change seq independently of the saved queue revision. Update
   // only row status and controls so open editors and unsaved fields stay put.
-  renderQueueStatus();
+  renderQueueStatus();renderCatalogControls();if($('insert-dialog').open)for(const b of $('insert-results').querySelectorAll('button'))b.disabled=!insertionAllowed(insertion?.afterId);
+}
+// Reuse unchanged rows, including their focus and scroll position.
+function stableRows(parent, items, key, build, signature = JSON.stringify) {
+  const focus = parent.contains(document.activeElement) ? document.activeElement : null;
+  const scrollTop = parent.scrollTop;
+  const old = new Map(Array.from(parent.children, n => [n.dataset.rowKey, n]));
+  const cache = rowCache.get(parent) || new Map(); rowCache.set(parent, cache);
+  const wanted = new Set();
+  items.forEach((item, index) => {
+    const id = key(item), stamp = signature(item); wanted.add(id);
+    let node = old.get(id);
+    if (!node || cache.get(id) !== stamp) {
+      const fresh = build(item, index); fresh.dataset.rowKey = id;
+      if (node) {
+        const focused = node.contains(document.activeElement) ? document.activeElement : null;
+        const action = focused?.dataset.queueAction;
+        node.replaceChildren(...fresh.childNodes);
+        if (action) node.querySelector(`[data-queue-action="${action}"]`)?.focus({preventScroll:true});
+      } else node = fresh;
+      cache.set(id, stamp);
+    }
+    if (parent.children[index] !== node) parent.insertBefore(node, parent.children[index] || null);
+  });
+  for (const node of Array.from(parent.children)) if (!wanted.has(node.dataset.rowKey)) {
+    cache.delete(node.dataset.rowKey); node.remove();
+  }
+  if (focus?.isConnected && document.activeElement !== focus) focus.focus({preventScroll:true});
+  parent.scrollTop = scrollTop;
+}
+function openPreview(track) {
+  if (!control || !track.available || !/^[a-f0-9]{32}$/.test(track.trackId) || !/^[a-f0-9]{64}$/.test(track.sha256)) return;
+  const audio = $('studio-preview-audio');
+  audio.pause(); audio.src = `/music-library-audio.php?id=${track.trackId}&version=${track.sha256}`;
+  $('preview-title').textContent = title(track);
+  $('preview-details').href = track.kind==='jingle' ? `/jingles.php#jingle-${track.trackId}` : `/music-library.php?detail=1&track=${track.trackId}#track-detail`;
+  $('preview-details').textContent=track.kind==='jingle'?'Åpne jingleinnstillinger':'Åpne låtdetaljer og cue-punkter i egen fane';
+  $('preview-status').textContent = 'Privat forhåndslytting. Trykk Play for å lytte; sendekø og sending er uendret.';
+  if (track.id) selectedEntry = track.id;
+  for (const row of $('studio-entries').children) row.classList.toggle('is-selected', row.dataset.entryId === selectedEntry);
+  $('preview-dialog').showModal();
+}
+function stopPreview() {
+  const audio=$('studio-preview-audio'); audio.pause(); audio.removeAttribute('src'); audio.load();
 }
 function render() {
   if(!view)return;
-  $('suggest').disabled=!control||busy||stale||!view.studio.schedule;$('refresh').disabled=busy;$('reset-queue').disabled=!control||busy||stale||!!view.player.current;
+  $('suggest').disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!view.studio.schedule;$('refresh').disabled=busy;$('reset-queue').disabled=!!view.studio.rotation?.enabled||!control||busy||stale||!!view.player.current;
   for(const e of $('schedule-form').elements)e.disabled=!control||busy||stale;
-  for(const e of $('profile-form').elements)e.disabled=!settings||busy||stale;
+  for(const e of $('profile-form').elements)e.disabled=!!view.studio.rotation?.enabled||!settings||busy||stale;
   const rows=queueRows();
   if(view.libraryError)say(view.libraryError);
+  if($('rotation-form')) {
+    const r=view.studio.rotation||{enabled:false,crossfade:3};
+    if(!rotationDirty){$('rotation-enabled').checked=r.enabled;$('rotation-crossfade').value=r.crossfade;}
+    for(const e of $('rotation-form').elements)e.disabled=!settings||busy||stale||hasInflight()||['starting','playing'].includes(view.player.mode);
+    $('rotation-status').textContent=r.enabled?`På · ${r.crossfade} sekunder crossfade · planlagt til ${r.plannedUntil?when(r.plannedUntil):'ukjent'}${r.shortage?' · '+r.shortage:''}`:'Av. Velg standardavspilling for å planlegge neste time.';
+  }
+  if(view.hourBridge?.enabled){const b=view.hourBridge;$('rotation-status').textContent+=' · Timeinnslag: '+(b.libraryFull?'biblioteket er fullt – hele sanger fortsetter':b.ready?'tre musikkglimt klare':b.requestedSeconds?`${Math.round(b.requestedSeconds)} sekunder planlagt – hele sanger brukes til lyden er klar`:'venter på en luke på 18–45 sekunder');}
   $('queue-summary').textContent=`${view.entries.length} innslag · ${view.studio.schedule?view.studio.schedule.date+' · Europe/Oslo':'Velg program, dato og starttid'}`;
-  $('studio-entries').replaceChildren(...rows.map((e,i)=>{
-    const li=document.createElement('li');li.dataset.entryId=e.id;
+  stableRows($('studio-entries'),rows,e=>e.id,(e,i)=>{
+    const li=document.createElement('li');li.dataset.entryId=e.id;li.classList.toggle('is-selected',e.id===selectedEntry);
     const status=txt('p','','ms-muted');status.dataset.queueStatus='';
     li.append(txt('strong',`${e.plannedAt?when(e.plannedAt)+' · ':''}${title(e)}`),status);
     if(e.reasons?.length)li.append(txt('p',e.reasons.join(' · '),'ms-reasons'));
@@ -122,17 +213,18 @@ function render() {
     if(e.blocked?.length)li.append(txt('p','Sperret: '+e.blocked.join(' · '),'ms-warning'));
     const actions=txt('div','','ms-actions');
     const rowButton=(kind,label,callback)=>{const b=button(label,callback,true);b.dataset.queueAction=kind;return b;};
-    actions.append(rowButton('lock',e.locked?'Lås opp':'Lås',()=>mutate({action:'lock',id:e.id,locked:!e.locked})),rowButton('replace','Bytt',()=>suggest(e.id)),rowButton('up','Opp',()=>mutate({action:'move',id:e.id,beforeId:rows[i-1].id})),rowButton('down','Ned',()=>mutate({action:'move',id:e.id,beforeId:rows[i+2]?.id||null})),rowButton('remove','Fjern',()=>mutate({action:'remove',id:e.id})));li.append(actions);return li;
-  }));
+    actions.append(rowButton('preview','Forhåndslytt / detaljer',()=>openPreview(e)),rowButton('lock',e.locked?'Lås opp':'Lås',()=>mutate({action:'lock',id:e.id,locked:!e.locked})),rowButton('replace','Bytt',()=>suggest(e.id)),rowButton('up','Opp',()=>mutate({action:'move',id:e.id,beforeId:queueRows()[queueRows().findIndex(row=>row.id===e.id)-1]?.id})),rowButton('down','Ned',()=>mutate({action:'move',id:e.id,beforeId:queueRows()[queueRows().findIndex(row=>row.id===e.id)+2]?.id||null})),rowButton('next','Spill neste',()=>mutate({action:'playnext',id:e.id})),rowButton('remove','Fjern',()=>mutate({action:'remove',id:e.id})));li.append(actions);const gap=rowButton('insert','+ Legg til innslag',()=>openInsertion(e.id));gap.className='ms-insert-gap';gap.setAttribute('aria-label',`Legg til innslag etter ${title(e)}`);li.append(gap);return li;
+  });
   if(!rows.length)$('studio-entries').append(txt('li','Køen er tom. Godkjenn musikk og be om forslag.'));
   if(view.plan?.missing.length)$('studio-entries').append(txt('li',view.plan.missing.map(m=>typeof m==='string'?m:JSON.stringify(m)).join(' · '),'ms-warning'));
   const query=$('catalog-search').value.toLocaleLowerCase('nb');
-  $('studio-catalog').replaceChildren(...view.catalog.filter(t=>title(t).toLocaleLowerCase('nb').includes(query)).map(t=>{
+  stableRows($('studio-catalog'),view.catalog.filter(t=>title(t).toLocaleLowerCase('nb').includes(query)),t=>t.trackId,t=>{
     const row=txt('div','','ms-track'), info=document.createElement('div');info.append(txt('strong',title(t)),txt('p',`${duration(t.duration)} · ${t.energy?t.energy+' ('+t.sources.energy+')':'Energi ukjent'} · ${t.bpm?t.bpm+' BPM ('+t.sources.bpm+')':'Tempo ukjent'}`,'ms-muted'));
     info.append(txt('p',Object.entries(t.tags).map(([tag,source])=>`${tag} (${source})`).join(' · '),'ms-muted'));
-    info.append(txt('p',t.policy?.blocked?'Manuelt sperret':t.policy?.approved?'Godkjent for: '+t.policy.programs.map(id=>view.studio.profiles[id]?.name||id).join(', '):'Mangler testgodkjenning','ms-warning'));
-    const actions=txt('div','','ms-actions');actions.append(button('Godkjenning / rettelser',()=>editPolicy(t),!settings||busy||stale),button('Legg i kø',()=>mutate({action:'add',trackId:t.trackId,sha256:t.sha256}),!control||busy||stale||!t.available));row.append(info,actions);return row;
-  }));
+    info.append(txt('p',t.kind==='jingle'?'Lagret jingle / innslag':t.policy?.blocked?'Manuelt sperret':t.policy?.approved?'Godkjent for: '+t.policy.programs.map(id=>view.studio.profiles[id]?.name||id).join(', '):'Mangler godkjenning','ms-warning'));
+    const actions=txt('div','','ms-actions');actions.append(button('Forhåndslytt / detaljer',()=>openPreview(t),!control||!t.available),button('Godkjenning / rettelser',()=>editPolicy(t),!settings||busy||stale),button('Legg i kø',()=>mutate({action:'add',trackId:t.trackId,sha256:t.sha256}),!control||busy||stale||!t.available),button('Spill neste',()=>mutate({action:'playnext',trackId:t.trackId,sha256:t.sha256}),true));row.append(info,actions);return row;
+  },t=>JSON.stringify([t,view.studio.profiles]));
+  renderCatalogControls();
   if(!view.catalog.length)$('studio-catalog').append(txt('p','Biblioteket er tomt. Last opp og klargjør musikk i Musikkbibliotek.'));
   renderPlayer();renderProfile();
 }
@@ -140,7 +232,7 @@ async function refresh(silent=false) {
   if(busy||refreshing)return;
   refreshing=(async()=>{
   try {
-    const data=await request();const first=!view;const changed=first||data.revision!==view.revision;view=data;stale=false;
+    const data=await request();const first=!view;const changed=first||data.revision!==view.revision||JSON.stringify(data.catalog)!==JSON.stringify(view.catalog);view=data;stale=false;
     if(first){options($('schedule-program'),Object.values(view.studio.profiles).map(p=>[p.programId,p.name]),[view.studio.schedule?.programId||'god-morgen-bomlo']);const now=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Oslo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());$('schedule-date').value=view.studio.schedule?.date||now;$('schedule-time').value=view.studio.schedule?.time||'07:00';$('schedule-occurrence').value=view.studio.schedule?.occurrence||'';}
     if(changed){proposal=null;$('proposals').hidden=true;}
     if(!silent)say('Lagret kø og spillerstatus er oppdatert.');
@@ -155,7 +247,7 @@ async function mutate(body) {
   if(refreshing)await refreshing;
   if(!control||busy||stale)return false;
   if(body.action==='pause'&&view.player.capabilities?.pause===false)return false;
-  if(body.id&&['lock','replace','move','remove'].includes(body.action)&&heldEntry(body.id)) {
+  if(body.id&&['lock','replace','move','remove','playnext'].includes(body.action)&&heldEntry(body.id)) {
     say('Innslaget er reservert eller aktivt i motoren og kan ikke endres nå.');renderQueueStatus();return false;
   }
   busy=true;render();
@@ -198,7 +290,7 @@ async function stopMonitor(message='Monitor av. VPS-avspillingen fortsetter uavh
 }
 async function monitorPump(){
   if(!monitorContext||monitorBusy||view.player.engine==='liquidsoap')return;monitorBusy=true;const ctx=monitorContext;
-  try{for(const segment of view.player.segments||[]){if(monitorSeen.has(segment))continue;monitorSeen.add(segment);const response=await fetch('/music-monitor-audio.php?segment='+encodeURIComponent(segment),{cache:'no-store'});if(!response.ok)throw Error('Testlyden kunne ikke hentes.');const buffer=await ctx.decodeAudioData(await response.arrayBuffer());if(monitorContext!==ctx)break;const source=ctx.createBufferSource();source.buffer=buffer;source.connect(ctx.destination);if(monitorNext<ctx.currentTime+.08){monitorNext=ctx.currentTime+2.5;$('monitor-status').textContent='Bufrer privat monitorlyd. Lyttingen er forsinket; serveravspillingen fortsetter.';}source.start(monitorNext);monitorNext+=buffer.duration;monitorSources.push(source);source.onended=()=>{monitorSources=monitorSources.filter(s=>s!==source);};}if(monitorSeen.size>200)monitorSeen=new Set(view.player.segments||[]);}
+  try{for(const segment of view.player.segments||[]){if(monitorSeen.has(segment))continue;monitorSeen.add(segment);const response=await fetch('/music-monitor-audio.php?segment='+encodeURIComponent(segment),{cache:'no-store'});if(!response.ok)throw Error('Lyden kunne ikke hentes.');const buffer=await ctx.decodeAudioData(await response.arrayBuffer());if(monitorContext!==ctx)break;const source=ctx.createBufferSource();source.buffer=buffer;source.connect(ctx.destination);if(monitorNext<ctx.currentTime+.08){monitorNext=ctx.currentTime+2.5;$('monitor-status').textContent='Bufrer privat monitorlyd. Lyttingen er forsinket; serveravspillingen fortsetter.';}source.start(monitorNext);monitorNext+=buffer.duration;monitorSources.push(source);source.onended=()=>{monitorSources=monitorSources.filter(s=>s!==source);};}if(monitorSeen.size>200)monitorSeen=new Set(view.player.segments||[]);}
   catch{if(monitorContext===ctx)await stopMonitor('Monitor feilet. VPS-avspillingen er uendret.');}finally{monitorBusy=false;}
 }
 $('monitor').addEventListener('click',async()=>{
@@ -208,11 +300,11 @@ $('monitor').addEventListener('click',async()=>{
     const streamUrl=view.player.streamUrl;
     if(typeof streamUrl!=='string'||!streamUrl)return;
     const audio=new Audio(streamUrl);audio.autoplay=false;audio.preload='none';monitorAudio=audio;monitorStreamUrl=streamUrl;
-    const failed=()=>{if(monitorAudio===audio)void stopMonitor('Testlytting feilet. Serveravspillingen er uendret.');};
+    const failed=()=>{if(monitorAudio===audio)void stopMonitor('Lytting feilet. Serveravspillingen er uendret.');};
     audio.onerror=failed;
-    audio.onended=()=>{if(monitorAudio===audio)void stopMonitor('Teststrømmen er avsluttet. Serveravspillingen er uendret.');};
-    audio.onplaying=()=>{if(monitorAudio===audio)$('monitor-status').textContent='Lytter til den faktiske Icecast-teststrømmen. Lyden kan være forsinket.';};
-    $('monitor-status').textContent='Kobler til teststrømmen for lokal lytting …';renderMonitorControl();
+    audio.onended=()=>{if(monitorAudio===audio)void stopMonitor('Lydstrømmen er avsluttet. Serveravspillingen er uendret.');};
+    audio.onplaying=()=>{if(monitorAudio===audio)$('monitor-status').textContent='Lytter til den faktiske Icecast-lydstrømmen. Lyden kan være forsinket.';};
+    $('monitor-status').textContent='Kobler til lydstrømmen for lokal lytting …';renderMonitorControl();
     try{await audio.play();}catch{failed();}
     return;
   }
@@ -220,11 +312,22 @@ $('monitor').addEventListener('click',async()=>{
   try {
     await context.resume();if(monitorContext!==context)return;
     const segments=view.player.segments||[];monitorSeen=new Set(segments.slice(0,-1));monitorNext=0;
-    $('monitor-status').textContent='Lytter til faktisk dekodet testlyd fra VPS. Forsinkelse ca. 5–8 sekunder.';void monitorPump();
+    $('monitor-status').textContent='Lytter til faktisk dekodet lyd fra VPS. Forsinkelse ca. 5–8 sekunder.';void monitorPump();
   }catch{if(monitorContext===context)await stopMonitor('Monitor kunne ikke startes. VPS-avspillingen er uendret.');}
 });
 // Closing the tab only closes the monitor. No server pause/stop request is sent.
-window.addEventListener('pagehide',()=>{void stopMonitor();});
+$('preview-close').addEventListener('click',()=>$('preview-dialog').close());
+$('preview-dialog').addEventListener('close',stopPreview);
+$('studio-preview-audio').addEventListener('error',()=>{$('preview-status').textContent='Lydfilen kunne ikke åpnes. Sendingen er uendret.';});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopPreview();});
+window.addEventListener('pagehide',()=>{stopPreview();void stopMonitor();});
 void refresh();setInterval(()=>void refresh(true),1000);
 
-$('reset-queue').addEventListener('click',()=>{if(window.confirm('Tømme køen for en ny test? Avspillingshistorikken bevares.'))void mutate({action:'reset'});});
+$('reset-queue').addEventListener('click',()=>{if(window.confirm('Tømme sendekøen? Avspillingshistorikken bevares.'))void mutate({action:'reset'});});
+
+if($('rotation-form')){
+  $('rotation-form').addEventListener('input',()=>{rotationDirty=true;});
+  $('rotation-form').addEventListener('submit',async e=>{e.preventDefault();if(await mutate({action:'standard',rotation:{enabled:$('rotation-enabled').checked,crossfade:Number($('rotation-crossfade').value)}})){rotationDirty=false;render();}});
+}
+
+$('insert-type').addEventListener('change',renderInsertResults);$('insert-search').addEventListener('input',renderInsertResults);$('insert-close').addEventListener('click',()=>$('insert-dialog').close());$('insert-refresh').addEventListener('click',async()=>{await refresh();renderInsertResults();});

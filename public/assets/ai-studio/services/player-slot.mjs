@@ -10,7 +10,7 @@ export function initPlayerSlot() {
     button.textContent=ready&&!audio.paused?'Pause':'Spill';
     button.setAttribute('aria-label',ready&&!audio.paused?'Pause lokal musikk':'Spill av valgt lydkilde');
     volume.value=String(Math.round(audio.volume*100));
-    state.textContent=!local()?'Radiosending er ikke tilkoblet.'+(!audio.paused&&audio.getAttribute('src')?' Lokal musikk spiller fortsatt.':''):!ready?'Ingen lokal låt er lastet.':audio.error?'Lokal lyd kunne ikke spilles.':!audio.paused?'Spiller lokal musikk i denne fanen.':'Lokal musikk er pauset eller stoppet.';
+    state.textContent=!local()?'VPS-strøm: bruk lytting i kontrollrommet.'+(!audio.paused&&audio.getAttribute('src')?' Lokal musikk spiller fortsatt.':''):!ready?'Ingen lokal låt er lastet.':audio.error?'Lokal lyd kunne ikke spilles.':!audio.paused?'Spiller lokal musikk i denne fanen.':'Lokal musikk er pauset eller stoppet.';
   }
   source.addEventListener('change',render);
   button.addEventListener('click',async()=>{

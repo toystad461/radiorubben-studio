@@ -1,0 +1,56 @@
+{
+  "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+  "files": [
+    {
+      "source": "app/music-live-queue.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-live-queue.php",
+      "before": "2e542068956cf08a868c86c480ac1b80d9b88dc4aed03410b72d86dac68d03a3",
+      "after": "37d7321e908cdaccab9ad21fc0d512ec4fb2f6133e986a1520ce6afffa00fc97",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "app/music-studio.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-studio.php",
+      "before": "973970d7acd747d9db00fe1944a9d7d07507d87df1fbe042dd54a49ba86f1bb9",
+      "after": "4dc38cbf272a8913e9ec246e70f8d1ed58d8e88e88a8f9b77fab6a9ba9861353",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "public/music-studio.php",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/public/music-studio.php",
+      "before": "64701e88b5a3adbb9edf184f8071cc781f97d061da7d39f52b4ddec551e42e9c",
+      "after": "40b98f1929fb5460eda1e7d9d6d812c27db2d5c0b90e59701e7fa1042297970d",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "public/assets/music-studio.mjs",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/public/assets/music-studio.mjs",
+      "before": "5b08c0eb5e32e5724920a983f3ad86d781de5b99ebc831f61d1ece32a762ca57",
+      "after": "ea0650ee3daeb7060e4d8df4d852c2ca2d61c5c1954125f633bfab8ee1da7f8c",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "source": "public/assets/music-studio.css",
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/public/assets/music-studio.css",
+      "before": "a7cdd298d9c684ddf9800f53f993b23788ca3b34d71cdfdac1afc7ca71fcacaf",
+      "after": "a66d05df66bfcfa8771ef7b3d0496d0f405c494bcfff6ae7c3b7379e34e2d303",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    }
+  ],
+  "sourceCommit": "a0643c8bc10f372e80d87aec305d15ca345cabe3",
+  "installedAtUtc": "2026-11-02T13:32:36Z",
+  "backup": "/var/lib/rr-vps-deploy/queue-insert-emcbfwjx",
+  "pidUnchanged": "770",
+  "journalPrefixBytesPreserved": 8802389,
+  "protectedFilesUnchanged": 111
+}

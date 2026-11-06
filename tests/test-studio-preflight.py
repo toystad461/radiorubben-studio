@@ -111,7 +111,7 @@ class InventoryTests(unittest.TestCase):
 
     def test_candidate_manifest_matches_runtime_files_in_this_tree(self):
         repo = Path(__file__).resolve().parents[1]
-        for relative, expected in probe.REVIEWED_HASHES['candidate_l01'].items():
+        for relative, expected in probe.REVIEWED_HASHES['candidate_l02'].items():
             content = (repo / relative).read_bytes()
             self.assertEqual(hashlib.sha256(content).hexdigest(), expected, relative)
 

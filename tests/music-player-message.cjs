@@ -17,16 +17,16 @@ function render(player, stale = false) {
   const before = JSON.stringify(p);
   vm.runInNewContext(actual + '\nrenderPlayer();', {
     $,view:{player:p},control:true,busy:false,stale,monitorContext:null,monitorAudio:null,
-    renderMonitorControl(){},renderQueueStatus(){},
+    renderMonitorControl(){},renderQueueStatus(){},renderCatalogControls(){},
     title: () => 'Testlåt',duration: () => '0:01',when: () => '12:00',txt: () => ({})
   });
   assert.equal(JSON.stringify(p), before, 'rendering must preserve queue and journal data');
   return {detail:nodes.get('player-detail').textContent,mode:nodes.get('player-mode').textContent};
 }
 for (const engine of ['php', 'liquidsoap']) {
-  for (const message of ['Køen er ferdig.', 'Fullført på isolert testutgang.']) {
+  for (const message of ['Køen er ferdig.', 'Fullført på isolert testutgang.', 'Fullført i Liquidsoaps PCM-utgang mens teststrømmen var tilkoblet.']) {
     const playing = {engine,mode:'playing',current:{},message};
-    assert.equal(render(playing).detail, 'Avspilling pågår på testserveren.');
+    assert.equal(render(playing).detail, 'Avspilling pågår på VPS-serveren.');
     for (const mode of ['stopped','paused','starting','blocked']) {
       assert.equal(render({...playing,mode}).detail, message);
     }
@@ -35,7 +35,7 @@ for (const engine of ['php', 'liquidsoap']) {
       assert.match(result.detail, /^Avspillingen kan ikke bekreftes/);
       assert(result.detail.includes(message), 'keep last known message identifiable');
       assert(!result.detail.includes('pågår'));
-      assert.notEqual(result.mode, 'Spiller på testserveren');
+      assert.notEqual(result.mode, 'Spiller på VPS-serveren');
     }
     const pending = render({...playing,pendingCommand:'stop',ready:false}).detail;
     assert.match(pending,/Venter på kommandobekreftelse/);

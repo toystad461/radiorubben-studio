@@ -24,12 +24,18 @@ function music_liquidsoap_runtime(string $path): array {
 
 function music_liquidsoap_entry(array $entry): void {
     if (!music_liquidsoap_id($entry['id'] ?? null) || !music_liquidsoap_id($entry['trackId'] ?? null)
-        || ($entry['kind'] ?? null) !== 'music'
+        || !in_array($entry['kind'] ?? null, ['music','jingle'], true)
         || !is_string($entry['sha256'] ?? null) || !preg_match('/^[a-f0-9]{64}$/D', $entry['sha256'])
         || !is_numeric($entry['duration'] ?? null) || !is_finite((float)$entry['duration'])
         || $entry['duration'] <= 0 || $entry['duration'] > 14400
         || !is_array($entry['blocked'] ?? null)) {
         throw new RuntimeException('Invalid music occurrence in the private manifest.');
+    }
+    if(isset($entry['playback'])){
+        $p=$entry['playback'];$d=$entry['sourceDuration']??null;
+        if(!is_array($p)||!is_numeric($d)||!is_finite((float)$d)||$d<=0||$d>14400)throw new RuntimeException('Invalid source duration.');
+        foreach(['cueIn','cueOut','crossfadeOut']as$k)if((!is_int($p[$k]??null)&&!is_float($p[$k]??null))||!is_finite((float)$p[$k]))throw new RuntimeException('Invalid playback numbers.');
+        if($p['cueIn']<0||$p['cueOut']>$d+.001||$p['cueOut']-$p['cueIn']<.1||abs($entry['duration']-($p['cueOut']-$p['cueIn']))>.001||$p['crossfadeOut']<0||$p['crossfadeOut']>10||$p['crossfadeOut']>$entry['duration']/2||($entry['kind']==='jingle'&&$p['crossfadeOut']!=0))throw new RuntimeException('Unsafe playback points.');
     }
 }
 
@@ -68,6 +74,19 @@ function music_liquidsoap_reset(string $root, array &$state, string $message): v
     $state['message'] = $message;
 }
 
+/** PCM position, not wall time, decides the short preparation window. */
+function music_liquidsoap_claim_due(array $state,array $live):bool {
+    $current=$state['current']??null;if(!$current)return true;
+    // Older supervisors have no currentId. A heartbeat predating the PCM start
+    // is rejected, allowing a compatible selective rollout without a restart.
+    if(isset($live['currentId'])&&$live['currentId']!==$current['id'])return false;
+    if(($live['timestamp']??0)<($current['observedWallStart']??INF))return false;
+    $position=$live['position']??null;
+    if((!is_int($position)&&!is_float($position))||!is_finite((float)$position)||$position<0)return false;
+    if(!isset($live['currentId'])&&$position>(float)$live['timestamp']-(float)$current['observedWallStart']+2.)return false;
+    return (float)$current['duration']-$position<=8.+(float)($current['playback']['crossfadeOut']??0);
+}
+
 /** request.dynamic calls this through a fixed CLI command, not through the web. */
 function music_liquidsoap_claim(string $root, string $session): string {
     if (!music_liquidsoap_id($session)) throw new RuntimeException('Invalid engine session.');
@@ -88,6 +107,11 @@ function music_liquidsoap_claim(string $root, string $session): string {
         // request.dynamic must not silently skip ahead to the following song.
         // The supervisor turns that unresolved reservation into a visible fault.
         if (!empty($state['reserved'])) return '';
+        // Keep the next occurrence editable until the output PCM approaches
+        // its transition. Local verified files need only a short decode window.
+        if (($control['editableNext'] ?? false) && $state['current']) {
+            if(!music_liquidsoap_claim_due($state,$live))return '';
+        }
         $protected = music_playout_protected_ids($state);
         $entry = null;
         foreach ($control['entries'] ?? [] as $candidate) {
@@ -114,7 +138,9 @@ function music_liquidsoap_claim(string $root, string $session): string {
         music_playout_event($root, $state, 'reserved', ['entryId' => $entry['id']]);
         // Only generated hex IDs and a server-controlled spool path become a URI.
         // Untrusted titles, filenames, URLs and cue overrides never become code.
-        return 'annotate:rr_entry="'.$entry['id'].'",rr_session="'.$session.'":'.$audio;
+        $annotations='rr_entry="'.$entry['id'].'",rr_session="'.$session.'",rr_kind="'.$entry['kind'].'"';
+        if(isset($entry['playback'])){foreach(['cueIn'=>'liq_cue_in','cueOut'=>'liq_cue_out','crossfadeOut'=>'rr_cross']as$key=>$name)$annotations.=','.$name.'="'.sprintf('%.3F',$entry['playback'][$key]).'"';}
+        return 'annotate:'.$annotations.':'.$audio;
     } finally { flock($lock, LOCK_UN); fclose($lock); }
 }
 
@@ -151,7 +177,7 @@ function music_liquidsoap_observe(string $root, array &$state, array $event): vo
         }
         $control = music_playout_json($root.'/control.json');
         $queued = music_liquidsoap_queued($control, $id);
-        if (($control['ready'] ?? false) !== true || !$queued || $queued['blocked'] || $queued['sha256'] !== $entry['sha256']) {
+        if (($control['ready'] ?? false) !== true || !$queued || $queued['blocked'] || $queued['sha256'] !== $entry['sha256'] || ($queued['playback']??null)!==($entry['playback']??null)) {
             throw new RuntimeException('Reserved occurrence changed before rendering.');
         }
         $audio = $root.'/audio/'.$entry['sha256'].'.mp3';
@@ -196,6 +222,7 @@ function music_liquidsoap_script(string $root, string $session, array $config, s
     return strtr($template, [
         '{{PHP}}' => $json($php), '{{RPC}}' => $json($rpc), '{{ROOT}}' => $json($root),
         '{{SESSION}}' => $json($session), '{{PORT}}' => (string)$config['port'], '{{PASSWORD}}' => $json($config['password']),
+        '{{ROTATION_MODE}}' => (music_playout_json($root.'/control.json')['transitionVersion']??1)===2?'true':'false',
         '{{ALLOW_ROOT}}' => getenv('RR_STREAM_TEST_ALLOW_ROOT') === '1' ? 'true' : 'false',
     ]);
 }

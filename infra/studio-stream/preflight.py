@@ -27,8 +27,9 @@ PROPERTIES = ('LoadState', 'ActiveState', 'SubState', 'PrivateNetwork',
 PACKAGES = ('php8.3-cli', 'ffmpeg', 'liquidsoap', 'icecast2', 'nginx')
 WEB_FILES = ('app/music-library.php', 'app/music-playout.php',
              'app/music-liquidsoap.php', 'app/music-studio.php',
-             'public/assets/music-studio.mjs', 'public/music-studio.php',
+             'public/assets/music-studio.mjs', 'public/assets/music-studio.css', 'public/music-studio.php',
              'public/music-stream-auth.php')
+WEB_FILES = tuple(dict.fromkeys((*WEB_FILES, 'app/music-live-queue.php', 'app/music-play-queue.php', 'app/music-scheduling.php', 'app/jingles.php', 'app/views/navigation.php', 'public/music-library-audio.php', 'public/jingles.php', 'public/assets/jingles.css', 'public/assets/jingles.mjs')))
 PLAYER_FILES = ('app/music-playout.php', 'app/music-liquidsoap.php',
                 'scripts/music-liquidsoap.php', 'scripts/liquidsoap-child.py',
                 'infra/studio-stream/radio.liq')
@@ -37,15 +38,53 @@ REVIEWED_HASHES = {
     "verified_vps_pr102_library": {"app/music-library.php": "a98f2bd03c07ee9ad8df98cf9f0a64e2cccc8c71a4b9494200ae853b6d32d0a1"},
     "l01_before_queue_reliability": {"public/assets/music-studio.mjs": "7a7aa0391aac098a4abe977edfdb60dcf2933c8ea001eaf97bb60adb6e19703b"},
     "l01_before_player_message": {"public/assets/music-studio.mjs": "a013cecdb174065527ba5cccb01b253286018bdab1a4d1741d8ff92d6acd72b1"},
+    "installed_l01_ui_20261101": {
+        "public/music-studio.php": "3551b2ef117e80f62d1fbc7bb4bbb83b71d746a87375d7338053477ff447ea88",
+        "public/assets/music-studio.mjs": "18e29e380783a104302d779789061ff0ae29ef3651ee55c956aeb309c8a42524",
+        "public/assets/music-studio.css": "43bab865910c87d3e2362a3f96b881744f89aec0b9deb678b24ebf80e530738e"
+    },
+    "candidate_l02": {
+        "app/jingles.php": "0ad87e1365b6e5a632f57e50c0d2bbdcd8aec96b154e11b7fe083e211d83fb84",
+        "app/music-autocue.php": "916ccc0e1164d972890deba19fa67b75395d69eb43d73e5c2fed7c121475652d",
+        "app/music-library.php": "dc37fd5e471cada9f0eeb43e0370c55c3278b98b01104cb5c8d094af8ba0e689",
+        "app/music-liquidsoap.php": "b12d26e2d4210a35557d2990b3ee7cc944ab119e9de4e057482fc45e6f7e24bb",
+        "app/music-play-queue.php": "6a7a6fa9b211428a6590ff4b7a1242260e5de0f30d4493cc23cdcb09d3e3de23",
+        "app/music-playout.php": "4d5ab804df71c48be93db69cc6563b54e5ffff8f1355e3fdc41d7851a6a9daf7",
+        "app/music-rotation.php": "3f9736dd50bcdc42e746f9e21715a9f04566eee3b98e4781d750b77cf007a135",
+        "app/music-scheduling.php": "9611eebfc254856790cf57400db7802c851dc775bad9c8f78d23ba77525cb162",
+        "app/music-studio.php": "b1f3949a07a10f4aac104b57c1f9abdb180b1e1f98c270579c988986152e5511",
+        "app/views/navigation.php": "3f6da7444e8d69992edf26f26fe953d45f5033570c5ae796ecc150193f5982cd",
+        "infra/studio-stream/radio.liq": "f3b9351bb270ed51bad0eb9fe807da1cb073f3fb816b45ae76f6bb9ff1ba2054",
+        "infra/studio-stream/rr-studio-rotation.service": "aa5844e3ee3247a468ac7126afe8116fd89f0494856c06b0eb7aa3f46c49bff9",
+        "infra/studio-stream/rr-studio-rotation.timer": "a8fe75229040f56d18b1d476c13a1d2bbf6447bacde362043bdf557bf5ded788",
+        "public/assets/jingles.css": "9270651a664f085b02d61991870832af84268d2f2ffe1e6413d122fa68b8dbea",
+        "public/assets/jingles.mjs": "cc1122212cc5a111011e1ad2afaa60210e218427305a80dfbfd512e170a54d92",
+        "public/assets/music-studio.css": "a66d05df66bfcfa8771ef7b3d0496d0f405c494bcfff6ae7c3b7379e34e2d303",
+        "public/assets/music-studio.mjs": "2398d046126b859cd9505104f89298007f6c94cd1677aa773cfbf55efc582cc9",
+        "public/jingles.php": "308883106c69ef14d5561d6c341b6d72217cccb88b670ff4cdc7b343e158e6fb",
+        "public/music-library-audio.php": "b77828707570cfc9f31554a055413ea42b0312f9c909e5f64ff1e99fea4d3b67",
+        "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",
+        "public/music-studio.php": "5adef6ff61eccbd451fd296e35d77e8da89e20c023729a35f302db751875e4cc",
+        "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
+        "scripts/music-autocue.py": "0519faf71ea28fdeab9455dd4d0c831d3d4c0316ced13ded89fb997c1fcddd0a",
+        "scripts/music-liquidsoap.php": "87b0fb2915d33880e7fab497598215462942fa7eab3c9450c545b3a5feeec348",
+        "scripts/music-rotation.php": "c5d9eaf546bb812cc824bf0c155ca65448905db208eca395ed482d34ac33b66f"
+        ,"app/music-hourly.php": "f311e08d294350c98f8c9c828de374f967b9b39ebda25177cd96a9dd7246584b"
+        ,"app/music-live-queue.php": "db98f5e1ee1ef65a158907d080d112425e2919a23c6b40e93401a17e32f76b4f"
+        ,"app/music-hour-bridge.php": "176154e4ff38149219a5e35d52e44bf5692d98b14bcb283b9b8f5835cfc0738e"
+        ,"app/music-hour-bridge-worker.php": "d0ca38d6feb6f502ca55ec3abecfddab0d517527974402140cb08ad799592f98"
+        ,"scripts/music-hour-bridge.py": "3764ff2adf9b9ed1c8d833bee496e353d124328fa8ca38460f295c1d4e41ed47"
+    },
     "candidate_l01": {
+        "public/assets/music-studio.css": "a7cdd298d9c684ddf9800f53f993b23788ca3b34d71cdfdac1afc7ca71fcacaf",
         "app/music-library.php": "124ff696e0eb1e596be383a00362711214c4f2bda9db062dd4df6adaa9f5ff79",
         "app/music-liquidsoap.php": "9cebcc0201049906e9c6d77df2f469a5f2fe684de10f8346fab0bac6e7f649c5",
         "app/music-playout.php": "b96df4046c4e5130277f8a9587518b9f8f7d8f0d5afa671f203d1a7c51006e3e",
         "app/music-studio.php": "7f6d9f8814c5c9c5cc950fa7cb0f9f79df668009c5e81c1a3cee32201203c732",
         "infra/studio-stream/radio.liq": "ad5fc0f904bac0980b29d4b8118d39b7def12c3d8e7878fec44f22ee17ecd5b7",
-        "public/assets/music-studio.mjs": "18e29e380783a104302d779789061ff0ae29ef3651ee55c956aeb309c8a42524",
+        "public/assets/music-studio.mjs": "80826c8d3bf536b339cff81b44f6ced758b7c6b9e8d751de56d905e17909e954",
         "public/music-stream-auth.php": "ed255570d06abd656947170a2a5d2bc25b5eb3e87fd35ffa00a2fb0ccf4ade46",
-        "public/music-studio.php": "3551b2ef117e80f62d1fbc7bb4bbb83b71d746a87375d7338053477ff447ea88",
+        "public/music-studio.php": "3657c81d1ac5c65a6c23c60616bbd3cf3e4596967e13a5b9263849692ca2e201",
         "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
         "scripts/music-liquidsoap.php": "52a9fd6f2e46854f53e5447b2abaa6c7cec29e8893707f9800795494c0028ae1"
     },
@@ -194,7 +233,7 @@ def collect(root=ROOT):
         'environment': 'Studio VPS - test',
         'observed_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'reviewed_audio_runtime_source': AUDIO_RUNTIME_SOURCE,
-        'candidate_ui_revision': '2026-10-25.2',
+        'candidate_ui_revision': '2026-11-01-L02-jingles',
         'snapshot_atomic': False,
         'active_release': release.name,
         'services': {name: service_status(name) for name in SERVICES},

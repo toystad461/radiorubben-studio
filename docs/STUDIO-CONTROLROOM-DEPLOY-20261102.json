@@ -1,0 +1,100 @@
+{
+  "receipts": [
+    {
+      "sourceCommit": "f78df87800ea29a159e73bfe9a8d5744b86f1ba4",
+      "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+      "files": [
+        {
+          "path": "app/controlroom.php",
+          "before": null,
+          "after": "143cf97925a7c91b45488ddddc5adbbc4fb9a79b1d141959af8f2d0dcf0e17d7"
+        },
+        {
+          "path": "public/controlroom-api.php",
+          "before": null,
+          "after": "39b86b537370ec69a538c7aa34993c1f2772fc9b7f6f797a91739cbd8dcffd05"
+        },
+        {
+          "path": "public/assets/ai-studio/controlroom.mjs",
+          "before": null,
+          "after": "6bdd4b37b4a38eee5ee286cefa26b17f2e2dc52c521cef45c05faa7b42f93cdb"
+        },
+        {
+          "path": "public/assets/ai-studio/controlroom.css",
+          "before": null,
+          "after": "0c7f1f820cb62f601cfda14bda5f31ab765f9fe6eed43eb13269540a78d4b17f"
+        },
+        {
+          "path": "app/views/navigation.php",
+          "before": "f65f245826ecb1cfb817b66a303b9e504ba0910ef3d14c4f4c43529813bc2a65",
+          "after": "4c1308ba30dcc6bd334d2818f4c554c599ab8814d2a404e9814fd2044438d36d"
+        },
+        {
+          "path": "app/views/sidebar.php",
+          "before": "3ec5ab5c5988abc081d2e323ffb035ef32e8200f1a74d6567f2ada031c06f556",
+          "after": "e459b4277a7124cc896eaf73ff283327f25a659b1b3c8003a87b01621abe813a"
+        },
+        {
+          "path": "public/assets/ai-studio/services/player-slot.mjs",
+          "before": "3509674eb61f09d0dc3c5336fd9df7a9261097a28d16dc4882cec2578c1a0f98",
+          "after": "8e759db14d996e7cc2f9bc50537ac682bf1ea47ea96a5ee5d017e6a6cc2ab3c1"
+        },
+        {
+          "path": "public/assets/ai-studio/app.mjs",
+          "before": "ab0090e4058edf317c6a75ff6f330958439b668106b77bd38aeb91acaeabc589",
+          "after": "9c03ae39363ce5aec787b3fc4a24758af8a0732ef3cabc515fa475429613f401"
+        },
+        {
+          "path": "public/ai-studio.php",
+          "before": "6c7bc2de2b8311eaaebe969c18a1d7fa1c7c3c9a37382e590f941d1c5cecfa05",
+          "after": "782499dc439d6704117bf9442a5b712345cc5e243711d81c8b44eb5da74e3d80"
+        }
+      ],
+      "backup": "/var/lib/rr-vps-deploy/controlroom-gap3qz8l",
+      "installedAtUTC": "2026-11-02T08:42:22Z",
+      "protectedFilesUnchanged": 120,
+      "journalPrefixBytesPreserved": 6264554,
+      "motorPidUnchanged": "770",
+      "services": "active"
+    },
+    {
+      "sourceCommit": "3ea18bc08101ccddf91cee1dba4eb1308e111570",
+      "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+      "files": [
+        {
+          "path": "public/assets/ai-studio/controlroom.css",
+          "before": "0c7f1f820cb62f601cfda14bda5f31ab765f9fe6eed43eb13269540a78d4b17f",
+          "after": "f635c5bbcd6e3dc7a77202640593b98652c3af9c1cc2fe0072ae82b057dd82cb"
+        }
+      ],
+      "backup": "/var/lib/rr-vps-deploy/controlroom-37ubhf76",
+      "installedAtUTC": "2026-11-02T08:44:14Z",
+      "protectedFilesUnchanged": 120,
+      "journalPrefixBytesPreserved": 6287898,
+      "motorPidUnchanged": "770",
+      "services": "active"
+    },
+    {
+      "sourceCommit": "907b0f013afcbbc839ea631266e77c6c002b3bb7",
+      "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+      "files": [
+        {
+          "path": "app/views/navigation.php",
+          "before": "4c1308ba30dcc6bd334d2818f4c554c599ab8814d2a404e9814fd2044438d36d",
+          "after": "b88904b9d42a6243c11de8d6c22af513c17957787cc261c132cb72b2f27cb92d"
+        },
+        {
+          "path": "public/assets/ai-studio/app.mjs",
+          "before": "9c03ae39363ce5aec787b3fc4a24758af8a0732ef3cabc515fa475429613f401",
+          "after": "ee0f6b702ab58d40927a04a399db036530619bb425e1090290867d0ddf7f4211"
+        }
+      ],
+      "backup": "/var/lib/rr-vps-deploy/controlroom-jg0oghdw",
+      "installedAtUTC": "2026-11-02T08:47:14Z",
+      "protectedFilesUnchanged": 120,
+      "journalPrefixBytesPreserved": 6333868,
+      "motorPidUnchanged": "770",
+      "services": "active"
+    }
+  ]
+}

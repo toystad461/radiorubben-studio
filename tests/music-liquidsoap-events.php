@@ -59,7 +59,7 @@ try {
     // callbacks coincide with delivered audio. The stream integration owns that proof.
     $f=lse_fixture($base);$root=$f['root'];$first=$f['entries'][0];
     $uri=music_liquidsoap_claim($root,$f['session']);
-    lse_ok($uri==='annotate:rr_entry="'.$first['id'].'",rr_session="'.$f['session'].'":'.$root.'/audio/'.$first['sha256'].'.mp3',
+    lse_ok($uri==='annotate:rr_entry="'.$first['id'].'",rr_session="'.$f['session'].'",rr_kind="music":'.$root.'/audio/'.$first['sha256'].'.mp3',
         'claim returns only generated identities and the verified spool path');
     $state=music_playout_state($root);
     lse_ok(isset($state['reserved'][$first['id']]) && $state['current']===null && $state['active']===[]

@@ -1,0 +1,19 @@
+[Unit]
+Description=Radio Rubben private Studio rotation and audio checks
+After=local-fs.target rr-studio-stream.service
+[Service]
+Type=oneshot
+User=rr-studio
+Group=rr-studio
+UMask=0007
+ExecStart=/usr/bin/php /srv/radiorubben-test/studio/scripts/music-rotation.php
+TimeoutStartSec=150
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+RestrictAddressFamilies=AF_UNIX
+ReadWritePaths=/srv/radiorubben-test/studio-data /srv/radiorubben-test/studio-media/music /srv/radiorubben-test/playout
+MemoryMax=384M
+TasksMax=64

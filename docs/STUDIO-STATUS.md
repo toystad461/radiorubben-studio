@@ -1,4 +1,544 @@
+## 06.11.2026 kl.22:16:43 Europe/Oslo – v0.2.0 publisert
+
+Offisiell release: https://github.com/toystad461/radiorubben-studio/releases/tag/v0.2.0
+Tagg og HTTPS release.json peker begge på e18a97333148705aa7c00178e53437213f36a86c.
+Live-versjonen er kontrollert i innlogget kontrollrom og sendekø. Synlig testmerking
+er fjernet fra L02-driften; eksempeldata, historikk og interne baner bevares.
+Alle releasekontroller består: 42293924790 (ekte lyd/monitor/kø), 42293924752
+(PHP/mobil), 42293924749 (versjonspakke), 42293924851 (bevart meny/konsoll).
+Ingen omstart av lydtjenestene; PID773/770, null omstarter.
+
+Tilbakeføring til før live-merking skjer i omvendt transaksjonsrekkefølge med
+`sudo -n python3 <backup>/installer.py rollback <backup>` for disse private mappene:
+1. `/var/lib/rr-vps-deploy/l02-official-020-d7mntumj` (endelig versjonsmanifest)
+2. `/var/lib/rr-vps-deploy/l02-official-020-1v8l2hj5` (siste synlige etiketter)
+3. `/var/lib/rr-vps-deploy/l02-official-020-d59jgst0` (opprinnelig live-merking)
+Hver tilbakeføring avviser nyere filendringer. Ingen lydtjeneste omstartes.
+
+L02 er i aktiv VPS-drift. Dette er ikke en helutrulling av PR115 eller en merge
+til main/Uniweb. Full mikrofon-LIVE tilhører L05. Neste leveranse avtales innen L03.
+
+## 06.11.2026 kl.21:58:48 Europe/Oslo – offisiell VPS-drift v0.2.0
+
+Etter brukerens eksplisitte bestilling er aktiv VPS satt til live-merking.
+Kildecommit: a108b65dfc2ebcaf3fe492051fc84c234236f2cb. Åtte selektive filer:
+seks brukerflatefiler, eksisterende Nginx-banner/header og nytt release.json.
+HTTPS-readback bekrefter v0.2.0, L02, environment=live og samme commit.
+Privat monitor returnerer401 uten innlogging; offentlig nå/neste svarer korrekt.
+Kontrollrom og kø er visuelt kontrollert med fersk motor-/strømstatus.
+Lydtjenestene beholder PID773/770, null omstarter. Filrollback er kontrollert i
+isolert kopi. Ingen WordPress-, radio.co-, DNS- eller lydmotorendring.
+
+Privat backup: `/var/lib/rr-vps-deploy/l02-official-020-d59jgst0`.
+Rollback: `sudo -n python3 /var/lib/rr-vps-deploy/l02-official-020-d59jgst0/installer.py rollback /var/lib/rr-vps-deploy/l02-official-020-d59jgst0`.
+Historisk testbelegg, interne kompatibilitetsbaner og syntetiske prøvesakers
+merking beholdes. Disse skal ikke forveksles med gjeldende miljømerking.
+Release publiseres på GitHub etter kontrollene; PR115 er fortsatt selektivt
+installert, ikke helutrullet eller merget til Uniweb/main.
+
+## 06.11.2026 kl.21:49:45 Europe/Oslo – L02 installert på aktiv VPS
+
+Brukeren ba om utrulling. De tidligere sju L02-lydtypefilene er supplert med
+fire selektive statusfiler fra kilde29b1cb5, installer fdb1f4b. Kontrollrommet
+bevarer eksisterende PR117-layout og lydtyper. Backup/kvittering:
+`/var/lib/rr-vps-deploy/status-clock-20261105-jvurneze/receipt.json`.
+Rollback: `sudo -n python3 /var/lib/rr-vps-deploy/status-clock-20261105-jvurneze/installer.py --target studio --rollback /var/lib/rr-vps-deploy/status-clock-20261105-jvurneze/receipt.json`.
+
+Ni installasjons-/rollbacktester, klienttester for klokkeavvik og API-rolletester
+bestod før installasjon. Etterpå observerte autentisert nettleser automatisk
+Meghan Trainor → Radio Rubben Jingle → Avant Garde rundt21:50–21:51, uten refresh.
+Nå/neste og kø fulgte overgangene. Stream/ Icecast beholdt PID773/770 og0omstarter.
+Et passivt75sekunders MP3-opptak dokumenterer lydmottak gjennom overgangene;
+dette erstatter ikke den tidligere spektrale kontrollen av jingle uten overlapp.
+
+Aktiv `/radio.mp3` peker til samme VPS-motor på127.0.0.1:18980. Miljøet er fortsatt
+merket TEST og er ikke flyttet til Uniweb eller omdøpt til produksjon. WordPress,
+radio.co og lydmotoren er uendret. Offentlig statusrute er hashverifisert;
+separat HTTP-kontroll traff feil listener(404), og nettleserens direkte JSON-visning
+ble blokkert. Autentisert Studio-status fungerer. WordPress-klokkerettelsen er
+fortsatt ikke installert. PR115 er ikke helutrullet eller merget.
+
+Neste: avklare eventuell produksjonsadresse/flytting, separat offentlig spiller-
+etterkontroll, deretter neste avtalte L03-leveranse. Full mikrofon-LIVE tilhører L05.
+
 # Studio – felles status og arbeidsliste
+
+## 06.11.2026 – L02 cue-/overgangstest på test-VPS
+
+Arbeidsområder: Teknisk Produksjon, Musikk & Tagging, Kontrollsenter.
+Eksisterende #109 / PR #115, kontrollert utgangspunkt e0cf9bd.
+Thomas bekrefter privat lyd og gjentatt 3+1-rotasjon. Følgende er nye tekniske
+målinger, separat fra brukerens lyttebekreftelse:
+
+- Passivt opptak 17:37:38–17:49:38 UTC (18:37:38–18:49:38 Europe/Oslo),
+  720,001 sekunder MP3. Alle 720 heartbeat-prøver connected=true, PID 773.
+- Originallyd korrelert mot opptak rundt «Someone Who Can Dance», «Jingle 3»
+  og «Do You». Cue-grensene ligger inntil hverandre innenfor én prøve ved
+  analyse på 8 kHz. Dette er teknisk måling, ikke subjektiv lyttegodkjenning.
+- Isolert ekte HTTP → Liquidsoap → Icecast består for 0/3/10 sekunders
+  musikkovergang, jingle uten planlagt overlapp, stopp, brutt forbindelse,
+  feil lydkopi, motorstans og køredigering under avspilling.
+- Lagrede kildebundne musikk-cues og jingle-cues gir fem 10,00-sekunders
+  PCM-innslag. Lydmarkører før/etter cue-klippet finnes ikke i opptaket.
+  Originalhashene er bevart. Begge jinglegrenser har 0,00 sekunders PCM-overlapp.
+- Faktisk privat forhåndslytting mens strømmen gikk: Icona Pop 36,53 sekunder,
+  readyState=4, ingen mediefeil; lukking stoppet preview og fjernet lydkilden.
+
+Påvist avvik: lydteppe/programopptak manglet som innslagstyper, og eventType
+ble utelatt ved publisering til motorens manifest og kontrollrommets nå/neste.
+Avgrenset rettelse viderefører merking gjennom samme eksisterende mediegrunnlag.
+Lydteppe/programopptak er ferdige lydfiler som spilles sekvensielt; mikrofon-
+ducking og miksing ligger fortsatt i L05. Motorens PCM-/overgangskode endres ikke.
+
+Rettelsen er installert selektivt på test-VPS kl. 19:12:35 Europe/Oslo.
+Etterkontroll og rollback-test består; 130 originalfiler er hashverifisert.
+L02-funksjonskontrollen består innenfor testmiljøets avgrensning; ny GitHub-CI
+etter separasjon av gammel menytest og ny lydtypetest avventes. Se
+[full testkvittering](STUDIO-L02-QUALIFICATION-20261106.md).
+Ingen produksjons-, WordPress- eller radio.co-endring.
+
+
+## 05.11.2026 – klokkeavvik bekreftet; rettelse under kontroll
+
+Thomas sin nettlesermåling ga HTTP 200 på 556 ms, status playing,
+PC-tid 2026-11-05T14:01:44.306Z og server-tid 14:01:13Z:
+31,306 sekunders forskjell (15:01 norsk tid). Begge API-er leverer gyldige
+nå/neste-data. Den eksisterende klientkontrollen avviser dette: Studio ved
+5 sekunders forskjell, offentlig spiller ved 30 sekunder. Tester gjenskaper
+begge feiltekstene med samme avvik. Målingen fastslår relativt avvik, ikke
+hvilken maskin som har korrekt absolutt tid.
+
+Rettelsen binder hvert svar til en tilfeldig forespørsels-ID og bruker
+performance.now() for svartid og lokal utløpstid. Serverens kontroll av
+hjerteslag og forbindelse beholdes. Gamle eller forsinkede svar avvises,
+og svar fra før et fanebytte får ikke fylle visningen etterpå.
+Gamle API-kall uten requestId fungerer fortsatt. Private lytterrettigheter
+og offentlig feltbegrensning beholdes. Ny klient krever ny serverrute.
+
+Koden er klargjort i #115 og web #111; installasjon og brukeretterkontroll
+gjenstår. Ingen lydmotor, sendekø, bibliotek eller WordPress-innhold endres.
+
+
+## 05.11.2026 – lyd bekreftet av Thomas, sendestatus feiler i Studio og på nettsiden
+
+Thomas bekrefter at streamen starter og går. Innsendt VPS-avlesning viser
+rr-studio-stream PID 773 og Icecast PID 770 active/running, NRestarts=0,
+heartbeat connected=true og alder 0,4 sekunder. Journalen viser løpende
+låtbytter til «Paris (Radio Edit)» kl. 14:32 norsk tid (13:32 UTC).
+Dette er brukerens serverutdata og lyttebekreftelse, ikke ny direkte SSH-
+eller lydmåling fra assistenten, og beviser ikke uavbrutt lyd før avlesningen.
+
+Skjermbilder rundt 14:35 viser fortsatt ukjent motor/nå/neste i Studio og
+«Sendestatus er ikke tilgjengelig akkurat nå» på radiorubben.no.
+Felles lesesti er spillerjournal/heartbeat på VPS; lyden går separat.
+Aktive WordPress-MU-filer er lest: rr-public-radio.php oppgir 1.0.5 og
+rr-public-radio.js henter VPS-ens radio-status.php. Ingen utkastutrulling.
+
+Rotårsaken er åpen. Neste nødvendige bevis er respons og svartid fra
+controlroom-api.php og radio-status.php i Thomas sin eksisterende nettleser.
+Assistentens direkte HTTPS-forsøk avvises ved sertifikatnavnkontrollen;
+dette alene fastslår ikke årsaken i brukerens nettleser. Ingen restart,
+køendring, runtime-endring, merge eller deploy er utført i denne kontrollen.
+Detaljer: [statusavvik 05.11](STUDIO-STATUS-INCIDENT-20261105.md).
+
+**Kort status for Kontrollsenter:** Lyd bekreftet av Thomas. Menyfilene er
+tidligere installert og filverifisert; nå/neste og sendestatus fungerer ikke
+i brukerens viste sider. L02 er fortsatt åpen. Dette er status i GitHub,
+ikke en påstand om at en melding er sendt til Kontrollsenter.
+
+## Meny installert 04.11.2026 kl.15:50 Europe/Oslo – siste brukerprøve gjenstår
+
+Thomas har kjørt den hashkontrollerte installasjonspakken fra `fef9132` på
+`vps-5363103`. Innsendt serverkvittering viser `installed_files_verified`
+kl.14:50:03–14:50:04 UTC / 15:50:03–15:50:04 norsk tid. Alle seks før-/etterhasher
+matcher manifestet. De nyere Vær-/Trafikk-/stikkendringene fra PR117 er bevart.
+Eier/gruppe root:root og filmodus 0644 er beholdt.
+
+Privat backup og rollback er etablert i
+`/var/lib/rr-vps-deploy/menu-20261104-bvjor3_1`.
+Nginx/PHP-FPM/stream/Icecast var active/running før og etter, med uendrede
+PID-er 810/763/773/770. FPM revaliderer endrede PHP-filer, og CSS/JS har nye
+versjonsadresser. Ingen tjenesteomstart inngår i installasjonen.
+
+Alle fire PR-workflows på kildecommit `fef9132` er success: kombinert meny/PR117,
+PHP 8.2/8.4 og mobil, Liquidsoap-kø og releasekontroll. Release-deploy er skipped;
+menyfilene ble installert med det avgrensede skriptet i Thomas sin SSH-økt.
+Se [kvitteringen](STUDIO-MENU-DEPLOY-20261104.json) og
+[etterkontroll/rollback](STUDIO-MENU-20261102.md).
+
+**Kort status for Kontrollsenter:** Menyoppryddingen i #115 er installert og
+filverifisert på test-VPS. Nyere konsollarbeid er bevart. Innlogget PC-/iPhone-
+kontroll og faktisk lyd etter installasjon gjenstår. WordPress-tilkoblingen i
+VPS-nyhetsdesken er fortsatt et eget åpent integrasjonspunkt. L02 er ikke
+ferdigmeldt, og #115 er fortsatt draft/umerget.
+
+Kvitteringen er sammenlignet med fastlåst kode; assistenten har ikke selv
+lest serverfilene på nytt via SSH. Nettlesertilgangen i denne økten er blokkert.
+Uendrede tjeneste-PID-er er ikke alene bevis for uavbrutt eller hørbar lyd.
+Bibliotek/kø/journal inngår ikke i skriptets skrivemål og er heller ikke
+hashmålt av denne menyinstallasjonen. Tidligere avsnitt nedenfor er historikk.
+
+## Menyavvik avklart 04.11.2026 – PR117 bevares i installasjonspakken
+
+De to avvikende konsollfilene er nå avstemt: innsendt full SHA256 matcher
+byte for byte PR117-head `290f80c4492122d3cb62060cdfab68872e758ff6`.
+Avviket skyldes egne Vær-/Trafikk-/stikkfunksjoner fra dette sporet. Menyens
+GitHub-filer fra PR115 må derfor ikke erstatte konsollen samlet.
+
+`scripts/studio-menu-vps.py` klargjør seksfilers installasjon på den fastlåste
+test-VPS-releasen. Fire filer hentes hashkontrollert fra menycommit `9bbfae2`;
+i de to eksisterende PR117-filene tilføyes bare menygruppeåpning og ny
+JavaScript-cacheversjon. Alle seks før-/etterhasher er låst. Privat kodebackup,
+atomiske filbytter, PHP/JS-syntaks, FPM-cachekontroll, stabile tjeneste-PID-er og
+hashbeskyttet tilbakeføring inngår. Ingen tjenester restartes.
+
+Ni isolerte installer-/tilbakeføringstester består lokalt. Egen CI kontrollerer
+kombinasjonen PR117 + seks menyendringer, inklusive roller, mobil og ulagret
+manus. CI-resultat og faktisk VPS-installasjonskvittering må fortsatt avventes.
+Ingen menyfil er installert på VPS gjennom dette arbeidet ennå. L02 er åpen.
+Se [menyleveransen](STUDIO-MENU-20261102.md) for avgrensning og neste steg.
+
+## Fersk VPS-kontroll 04.11.2026 – gammel meny på disk, to lokale filavvik
+
+Thomas har levert utdata fra `ssh rubben-test` på Windows til `ubuntu@vps-5363103`.
+Innloggingsbanneret er datert 04.11.2026 kl.15:12:29 CET (Europe/Oslo).
+Den etterfølgende lesekontrollen viser Nginx/PHP-FPM/stream/Icecast aktive med
+PID henholdsvis 810/763/773/770. Dette bekrefter tjenestetilstand i innsendt
+serverutdata, ikke en ny lydmåling eller direkte SSH-tilgang fra assistentøkten.
+
+Fire menyfiler på disk matcher nøyaktig grunnlaget før menyendringen.
+`public/assets/ai-studio/app.mjs` og `public/ai-studio.php` avviker fra både
+menygrunnlaget og kandidaten. Vanlig LF/CRLF/BOM forklarer ikke kontrollsummene.
+Full overskriving av disse er derfor ikke klargjort; faktisk diff må leses først.
+Den gamle menyen på disk er bekreftet; nettlesercache er ikke eneste årsak.
+Se ferske hasher i [menyleveransen](STUDIO-MENU-20261102.md).
+
+Ingen ny installasjon, backup, rollback eller tjenesteomstart er utført gjennom
+denne kontrollen. Neste steg er en lesekontroll av de to avvikende kodefilene,
+deretter avstemt seksfilers installasjon med privat backup, hashkontroll og
+etterkontroll. Ingen merge, full release eller endring av kø/innhold inngår.
+
+## L02-kontroll 04.11.2026 Europe/Oslo – timesignal bekreftet, menyinstallasjon blokkert
+
+Thomas bekrefter at timesignalet fungerer i streamen. Dette registreres som
+operatørbekreftelse på ordinært timesignal, ikke som en ny servermåling eller
+som bevis for automatisk montasje med tre musikkglimt. Feilen 03.11 med kort
+signal først ved oppstart er et eget historisk scenario som ikke er gjenprøvd.
+
+PR #115-head `1d3b1228b60f2043245c6a91d8451115ff3e8bfd` er avstemt mot GitHub.
+Siden menycommit `9bbfae2` er bare dokumentasjon endret. CI 41643464543,
+41643464573 og 41643464522 er success. Lyd-/mobilloggene bruker merge-ref `65645ad`,
+som har identisk filinnhold med kontrollert head. Release-deploy er skipped.
+Menyens fire roller og 320/390/800/1440 px består. Isolert faktisk lyd viser
+cue-/crossfade-bruk, 0,0 sekunders gap ved køinnsetting og en 21 sekunders montasje
+med 0,0/0,0 sekunders gap. Dette er CI-resultater, ikke fersk VPS-etterkontroll.
+
+Seks kildefiler og SHA256 er fastlåst i [menyleveransen](STUDIO-MENU-20261102.md).
+Ferske serverhasher, backup, installasjon, rollback og samlet etterkontroll er
+ikke utført: økten mangler konfigurert VPS-SSH/agent; ai-studio.php stopper på
+ERR_CERT_COMMON_NAME_INVALID. Ingen server-/produksjonsendring er gjort.
+Uniweb-produksjonens deployskript er ikke brukt som VPS-omvei.
+
+L02 er fortsatt ikke ferdig og PR #115 beholdes som draft/umerget.
+Neste: 1) gjenoppta eksisterende VPS-tilgang og avstem seks faktiske filer;
+2) installer selektivt med privat backup/rollback og kontroll av uendrede data
+og kontinuerlig lyd;3) dokumenter nå/neste-tre, polling, PC/mobil/roller,
+køredigering, installert cue-bruk og automatisk timeglimt på aktiv stream.
+
+## Driftsstopp03.11.2026 – gjenopptatt14:19 Europe/Oslo
+
+Motoren gikk til blocked kl.04:39:14 mens Jonas Blue ft. Raye – By Your Side
+spilte. Hendelsen er claim_error; den underliggende årsaken er ikke bevist.
+SupervisorPID770, Icecast og rotasjonstimer var aktive; disk10% brukt.
+Neste lydkopi var gyldig og køen hadde ingen uavklart operatørkommando.
+
+Normal Start14:18 avdekket separat feil når1,2sekunders timesignal kom først:
+started/ended fikk samme PCM-klokke0,32 og renderedSeconds0. Innslaget ble
+registrert failed; ingen historikk eller lyd ble slettet. Ny normal Start14:19
+fortsatte med stasjonsjingle og deretter Major Lazer – Run Up. Jinglefullføring,
+ny sangstart og ekte lyd fra både Icecast og offentlig/radio.mp3 er verifisert.
+Fire sekunder offentlig lyd dekodet, gjennomsnitt-16,6dB og topp-6,0dB.
+Ingen kodeendring, tjenesteomstart eller ny tilgang ble utført. Privat backup
+før begge starter ligger i bibliotekets recovery-20261103-131813.json og
+recovery-20261103-131918.json; journalen er bevart.
+
+Dagens Start/Stopp på music-studio.php styrer serveravspillingen, også når
+nettleseren lukkes. De administrerer ikke systemd-tjenestene. Ny tjenestekontroll
+fra nettleser er foreløpig et forslag, ikke implementert eller aktivert.
+Tre neste steg: reproduser og rett kort-innslag-først-feilen, gjør claim-feilens
+årsakslogging presis, og avklar avgrenset administratorkontroll av tjenestene.
+
+
+## Menyopprydding i #115/L02 – 02.11.2026 Europe/Oslo
+
+Kode ferdig i 9bbfae2: direkte kontrollrom, sendekø og lydproduksjon,
+med sammenleggbart bibliotek og forberedelse. Redaksjon, Robåt, Samarbeid og
+Innstillinger er egne grupper. Alle tidligere lenkemål og roller beholdes.
+«Sendeliste» heter «Redaksjonell kjøreplan» i menyen. Ingen WP-migrering,
+ny Robåt-jobbkonsoll eller endring av kø, lyd, innhold eller godkjenninger.
+Nyere kø-/manus-/timeinnslagsarbeid er bevart.
+
+PHP 8.2/8.4 og full mobil-/desktop-suite er grønne i
+[41459886557](https://github.com/toystad461/radiorubben-studio/actions/runs/41459886557).
+Menytesten dekker fire roller, 320/390/800/1440 px og tastatur uten JS.
+Eksisterende Studio-test bekrefter bevart ulagret manus ved konsollnavigasjon.
+Skjermbilder på 390/1440 px er visuelt gjennomgått.
+
+IKKE installert på VPS: økten mangler konfigurert administratorforbindelse,
+og nettleseren stopper på ERR_CERT_COMMON_NAME_INVALID for test-IP-en.
+Ingen sikkerhetssperre er omgått. Se [leveransen](STUDIO-MENU-20261102.md).
+Neste steg: gjenopprett eksisterende VPS-tilgang, avstem faktiske filer og
+installer kun de seks menyfilene med privat backup og etterkontroll.
+Dette er en tilgangssperre, ikke en ny forespørsel om samme godkjenning.
+
+
+## Køinnsetting og manus – installert 02.11.2026, 14:20–14:32 Europe/Oslo
+
+Manusknappene bruker fersk VPS-kø og den eksplisitt godkjente private AI-forbindelsen.
+Faktisk generert manus og forkorting er kontrollert. Plusstegn etter køinnslag gir
+sju typer og innsetting av lagret lyd på valgt plass, med låse-/versjonskontroll.
+Desktop og mobil kontrollert på VPS; hel sang til innsatt stikk lydtestet isolert.
+Se [manus](STUDIO-PRODUCER-VPS-20261102.md) og [køinnsetting](STUDIO-QUEUE-INSERT-20261102.md).
+Timeglimt er også installert og aktivert14:38; faktisk visning venter på en
+18–45sekunders luke. Isolert21sekunders montage er lydtestet med0,0sekunders gap.
+Se [timeinnslag](STUDIO-HOUR-BRIDGE-20261102.md).
+Tre neste steg: verifiser første kvalifiserte timeinnslag på aktiv stream,
+koble automatisk TTS til lagrede innslag, og avklar resterende CI-lydjobb.
+Ingen parallell plattform. Hele L02–L05 er ikke ferdigmeldt.
+
+
+## Spill neste under avspilling – installert 02.11.2026, 12:33 Europe/Oslo
+
+Lagrede jingler og musikk kan settes som neste, og ulåste køinnslag fjernes,
+under standardrotasjon. Forsinket reservasjon gir redigering fram til omtrent
+elleve sekunder før overgang ved tre sekunders crossfade. Aktiv/reservert lyd
+beskyttes fortsatt. Isolert ekte lydtest viser hel første sang og 0,0 sekunders
+hull før innsatt jingle. Ni mål fra4a12d0f er installert med backup uten restart.
+Alle tre CI-workflows er grønne. VPS desktop/390px og faktisk køhandling er
+kontrollert; kl.12:35 var neste innslag ulåst under aktiv sang og streamen tilkoblet.
+Ingen ny jingle ble sendt i VPS-kontrollen; full innsetting er lydtestet isolert.
+Se [endring, tester og innføring](STUDIO-LIVE-QUEUE-20261102.md).
+
+
+## Timesignal – installert 02.11.2026, 11:36 Europe/Oslo
+
+Dobbel pipelyd er aktivert ved første naturlige låtskifte etter hel time, etter
+brukerens valg. Én ny kildebundet jingle på 1,2 sekunder inngår i samme kø.
+Sju berørte runtime-filer matcher aac974a i eksisterende PR115. Alle tre
+CI-workflows på denne versjonen er grønne, inklusive faktisk lyd. Motor-PID770,
+journal og alle 102 eksisterende biblioteksinnslag er bevart. Ingen motorrestart.
+Jinglebiblioteket viser aktivt timesignal, privat lytting og av-knapp; desktop og
+390-pikslers mobilvisning er kontrollert. Første innslag er planlagt rundt
+12:01:42 og er ennå ikke sendt ved denne kontrollen. Den isolerte ekte lydtesten
+har målt to pip mellom hele sanger uten overlapp; offentlig stream dekoder normalt.
+
+Grunnlag for senere timestikk og tre musikkglimt bruker faktisk kørevisjon og
+filidentiteter. Tale og klipp er ikke generert. Se [funksjon og verifisering](STUDIO-HOURLY-20261102.md)
+og [installasjonskvittering](STUDIO-HOURLY-DEPLOY-20261102.json).
+Neste tre steg: kontrollere første faktiske timesignal; bygge timestikk fra
+verifisert timekø; velge og produsere tre kildebundne musikkglimt.
+
+
+## Kontrollrom og felles navigasjon – 02.11.2026, 09:47 Europe/Oslo
+
+ai-studio.php viser nå faktisk VPS-avspilling, målt progresjon og neste tre
+innslag inklusive jingler, med oppdatering uten reload og privat lytting.
+Stopped/disconnected/ukjent vises uten falske aktive låtdata. Lokal musikk og
+manusgrunnlag er adskilt fra servervisningen. Felles meny har sju grupper,
+rollebegrensede lenker og ikke-klikkbare planlagte funksjoner.
+
+Ni runtime-filer er selektivt installert og hashverifisert mot 907b0f0 i PR115.
+Alle tre CI-workflows på c353555 (identisk runtime) har bestått, inkludert
+PHP8.2/8.4, full nettlesersuite og faktisk Liquidsoap/Icecast-lyd.
+Motor-PID770, journalprefix og 120 beskyttede filer er bevart. Reell lytting,
+låtbytte uten reload og Chrome ved 320/390/1440 CSS-piksler er kontrollert.
+Tolv hovedsider er åpnet innlogget. Manglende WordPress-/værtilkobling på VPS
+og ikke-konfigurert bruker-introe-post er eksisterende begrensninger.
+Se [sideoversikt, kontroller og rollback](STUDIO-CONTROLROOM-20261102.md) og
+[installasjonskvittering](STUDIO-CONTROLROOM-DEPLOY-20261102.json).
+
+Neste tre steg: gjennomgå eksisterende PR-kjede; avstemme VPS-integrasjonene
+separat; fortsette øvrige L02/L04-mål i #109. Ingen ny parallell plattform,
+produksjonsflytting eller ferdigmelding av hele L02–L05.
+
+
+## Cover og logo, 02.11.2026 ca.00:12 Europe/Oslo
+
+96 musikkfiler undersøkt: ingen brukbare innebygde cover (95 mangler, ett
+ødelagt bilde). Offentlig avspiller bruker Radio Rubben-logo og er klargjort
+for automatisk cover fra nye filer med gyldig bilde. Sendingen er ikke stoppet.
+Se [covernotatet](STUDIO-PUBLIC-ARTWORK-20261102.md).
+
+## Bibliotek erstattet uten country, 02.11.2026 ca.00:00 Europe/Oslo
+
+Alle tidligere 100 musikkspor er fjernet fra aktivt VPS-bibliotek og erstattet
+med 96 andre Radio Edit-spor, ca.5½ timer musikk. Country og uklar sjanger er
+utelatt. Seks jingler og journal er bevart. Cue-kontroll, filhasher og ny timekø
+med 3 musikk / 1 jingle og 3 sekunders crossfade er verifisert. Sendingen spiller.
+Se [utskiftingsnotatet](STUDIO-MUSIC-REPLACEMENT-20261102.md).
+Nettlesergjenoppkobling er også levert separat i Web PR111, versjon1.0.2;
+eldre status nedenfor beskriver situasjonen før disse endringene.
+
+## Nå/neste og faktisk automatisk oppstart, 01.11.2026 kl.23:30 Europe/Oslo
+
+Hjemmesiden viser faktisk artist/tittel/neste fra et offentlig feltbegrenset
+statusendepunkt. Den gamle statiske neste-låtpåstanden er skjult for VPS-strømmen.
+15 minutter offentlig HTTPS-lyd dekodet uten feil, med flere låt-/jinglebytter.
+Faktisk VPS-reboot 23:27:32 ga automatisk offentlig avspilling 23:27:58 uten
+manuell Start. Bibliotek og tidligere journal er verifisert bevart.
+Operatørstopp over restart er også testet med isolert ekte lydmotor.
+Studio 906057b og Web caa33ac er installert med grønne relevante CI-workflows.
+Se [oppstarts-/statusnotatet](STUDIO-PUBLIC-STATUS-BOOT-20261101.md).
+Åpne lytterfaner trenger Play igjen etter avbrudd; serveren går uten nettleser.
+PR115 Studio og PR111 Web er fortsatt draft, ikke merget.
+
+Neste tre steg: automatisk gjenoppkobling i lytterfanen, lengre driftsmåling,
+og et eget domenenavn for den offentlige strømmen. Ingen av disse er utført her.
+
+## Offentlig lytting fra hjemmesiden, 01.11.2026 Europe/Oslo
+
+Hjemmesidens play-knapp er koblet til https://5.249.252.78/radio.mp3 etter
+Thomas sin nye bestilling. Anonym HTTPS-lyd, faktisk nettleseravspilling og syv
+samtidige lyttere er verifisert. Studio beholder innlogging. Backup, eksakte
+endringer, rollback og begrensninger står i [lytternotatet](STUDIO-PUBLIC-LISTENER-20261101.md).
+Grense100 klienter er konfigurert; full kapasitetsprøve er ikke utført.
+Neste tre steg: reell nå/neste-info, drift etter omstart, lengre lytteprøve.
+
+
+## L02 – 100 Radio Edit-spor, automatiske cue-punkter og timekø, 01.11.2026 Europe/Oslo
+
+90 nye filer er importert gjennom eksisterende bibliotekflyt, slik at biblioteket
+har 100 musikkspor (omtrent 5 t 38 min) og seks separate jingler. Alle 106
+originalhasher er bekreftet uendret. Hele lydfilene dekoder; automatiske inn-/utpunkter
+og teknisk kontroll er kildebundet og lagret. Ingen av jinglene har tekniske merknader.
+To musikkfiler har målt toppnivå 0 dBFS, uten dekoderfeil; dette er en merknad,
+ikke dokumentasjon på hørbar klipping. Vokalstart/taktgrenser gjettes ikke.
+
+Standardrotasjonen er aktivert med tre sanger og én stasjonsjingle. Nyhetsjinglen
+«Nyhetene klokken 7» er utelatt. Valgene lagres omtrent en time fram og fylles av
+rr-studio-rotation.timer uten nettleser. Allerede planlagte innslag bevares.
+Crossfade 0–10 sekunder, standard 3, brukes bare musikk–musikk. Jingler går uten
+overlapping. Innstillingsendring krever stopp. Ingen automatisk start etter omstart.
+
+15 kodefiler/mål er selektivt installert fra cb6d125a0eb3e21b313bd24f29ad766d90edc2ec,
+med privat backup og kontroll av uendrede driftsdata under installasjonen. Timeren
+har egen backup. Bibliotekets PR106-visning og øvrige aktive særendringer er bevart;
+kun kapasitetstekst og en presisering om serverbasert cue-analyse er patch-et inn.
+Eksakte før-/etter-hasher og kvitteringer står i
+[rotasjonsmanifestet](STUDIO-L02-ROTATION-20261101.json). Funksjon og rollback er
+beskrevet i [rotasjonsnotatet](STUDIO-L02-ROTATION.md).
+
+Syntetisk faktisk HTTP-MP3 bekrefter cue-kutt, rekkefølge og overlapp 0, 2,96–3,00
+og 9,96 sekunder for innstilling 0/3/10. Jingleovergang målt uten overlapp. Eksisterende
+strømtest for stopp, prosesskrasj, tilkoblingsbrudd og frosset PCM består. Nye tester
+bevarer manuelle cues, avviser uautoriserte/utdaterte resultater og kjører mer enn
+en full 100-sangers rotasjonsrunde før gjentakelse. Alle tre CI-workflows for
+installert motorkode cb6d125 besto; videre dokumentasjons-/testhead skilles fra dette.
+
+Innlogget Studio viser 100 musikkfiler og seks jingler med cue-punkter. Monitorens
+avspillingsstart ble bekreftet i nettleseren før Studiosiden ble forlatt. Anonym
+stream gir401 og Jingler gir303 til innlogging. Jinglesiden passer mobilbredde390.
+
+Faktisk prøve 22:45:09–22:54:59 Europe/Oslo: William Michael Morgan – Beer
+Drinker → Stevie Wonder ft. Ariana Grande – Faith → Blackhawk – Brothers Of
+The Southland → Jingle 1. Alle fullført med PCM-bevis. Musikkoverlapp 3,00 og
+3,00 sekunder; jinglegrensen innen én 40 ms lydramme uten musikalsk overlapp.
+605,022 sekunder privat HTTP-MP3 dekodet uten feil (14 521 363 byte).
+Studiosiden var forlatt under hele låtbyttene. Kø143 ble fylt til kø150, uten
+endring av eksisterende framtidige innslag eller kandidatunderskudd. Etter
+jinglen startet Beautiful Now, og den private rotasjonen er fortsatt i gang.
+Ingen ny subjektiv lyttebekreftelse fra Thomas er påstått.
+
+CI er også grønn på 9b76889 (full 100-sangers syklustest og forklarende tekst).
+En siste avgrenset statusvisningsrettelse fb079df hindrer at forrige «Fullført»-
+melding står under en ny aktiv låt; målrettede Node-regresjonstester besto.
+Den er lagt inn uten å stoppe lydmotoren, med egen hashkvittering og backup.
+
+Neste tre steg: en hel times lytting med operatør; prøve flere musikktyper og
+vurdere de to toppnivåmerknadene; fortsette resterende L02-kontrollromsarbeid.
+PR #115 er fortsatt draft, ikke merget. Ingen offentlig sending, Uniweb,
+WordPress, DNS eller radio.co er endret.
+
+## L02 – Jingler installert og faktisk prøvd, 01.11.2026 kl.22:14 Europe/Oslo
+
+Seks jingler er tilgjengelige på /jingles.php, separat fra ti musikkspor. Egen
+produsentside har privat forhåndslytting, opplasting, navn/kategori, deaktivering
+og manuell innlegging i samme sendekø. Jingler deltar ikke i musikkforslag eller
+repetisjonshistorikk. Musikkens godkjenningskrav er bevart.
+
+Selektiv installasjon: 16 kodefiler/mål fra 5dac1c0, med to UI-rettelser fra
+460f73293f74af7b42c0cd72371bf218dbf3adf0. Ingen hel gren er installert.
+Eksakte før/etter-hasher og sikkerhetskopier står i
+[installasjonsmanifestet](STUDIO-L02-JINGLES-20261101.json).
+Første installasjonsforsøk tilbakeførte automatisk fordi streng journalhash
+reagerte på forventede omstartshendelser. Deretter ble bevart journalprefix og
+stoppet sluttstatus kontrollert; ny installasjon besto. Full datatilbakeføring
+etter import må samordne bibliotek/kø/originaler, se manifestets merknad.
+
+Faktisk prøve kl.22:13:04–22:13:35: Radio Rubben Jingle → Jingle 3 → Jingle 10.
+Alle tre fullført som jingle i Liquidsoap PCM mens Icecast var tilkoblet;
+sammenhengende rendertider 0,28–13,32–23,44–30,48 sekunder. Studiosiden ble
+forlatt under avspilling. Privat loopback-opptak 751800 byte / 31,311 sekunder
+dekodet uten FFmpeg-feil. Ingen ny subjektiv lyttebekreftelse fra Thomas.
+Sluttstatus stoppet; kø40 har tre fullførte innslag. Alle 16 originalhasher er
+verifisert. Ingen automatisk gjentakelse eller offentlig sending.
+
+Innlogget Chrome: privat original spilte 10,317 sekunder, readyState4, ingen
+mediefeil; kategorifilter og lagring prøvd. Mobilbredde390 uten horisontal
+overflyt. Anonym stream/lydfil gir401 og Jingler-siden sender til innlogging303.
+Isolerte Linux-kontraktprøver og faktisk syntetisk musikk–jingle–musikk gjennom
+HTTP/Liquidsoap/Icecast består, samt PHP-syntaks og Node-køregresjon. Windows
+atomiske rename-prøver måtte kjøres på Linux. CI avdekket foreldede L01-hashforventninger. L02 har nå eget komplett
+kontrollmanifest; den gamle delvise L01-pakkebyggeren avviser L02-kode, med
+egen negativ test. Alle 24 installasjons-/inventartester besto på Linux.
+CI for siste commit følges i PR #115.
+
+Neste tre steg: motorens bruk av lagrede cue-/overgangsverdier; prøve redigering
+og privat lytting under lengre sending; separat gjennomgang av resterende L02.
+PR #115 er fortsatt draft og ikke merget. Ingen Uniweb/WordPress/radio.co-endring.
+
+## L02 – første kontrollromsdel installert, 01.11.2026 kl. 21:23 Europe/Oslo
+
+Thomas autoriserte videreføring av L02. Første avgrensede leveranse er i PR #115,
+gren feat/studio-l02-controlroom, kodecommit 39e58b13a83b93f5d472c5abfa34ff21fc614d23.
+Base er merget L01 på feat/music-scheduler-vps-playout, ikke main.
+
+Kø og bibliotek beholder uendrede rader, utvalg, tastaturfokus og rulleposisjon.
+Privat forhåndslytting/detaljer åpnes separat. Eksisterende cue-editor gjenbrukes
+i egen fane. Nå/neste viser reservert låt før senere ureservert innslag og
+skiller sist kjent status fra bekreftet motorstatus.
+
+Alle tre CI-workflows på kodecommitten besto: 41346214350 (PHP/mobil),
+41346214368 (Liquidsoap/kontrakt/nettleser) og 41346214450 (releasekontroll).
+Lokale syntaks-/regresjonstester og utvidet ekte Chromium/Edge ved 390/1280
+besto også. Én lokal kjøring fikk tidsavbrudd ved køplanoppdatering; ny kjøring
+med diagnostikk besto, og samme funksjonelle tester besto i CI.
+
+**Faktisk installert:** eksisterende root-eide VPS-gateway returnerte deployed.
+Kun public/music-studio.php, public/assets/music-studio.mjs og
+public/assets/music-studio.css ble endret. Før-/etter-snapshot av alle gatewayens
+kodefiler viser nøyaktig disse tre endringene; recoveryRequired=false.
+Privat backup: /var/lib/rr-vps-deploy/backup-2c5kcroc.
+
+Etter vanlig Microsoft-innlogging ble ny visning og dialog kontrollert på VPS.
+Alison Moyet-originalen spilte privat i nettleseren: currentTime 7,777 sekunder,
+readyState 4, ingen mediefeil, varighet 239,334 sekunder. Lukking stoppet lokal
+lytting; motoren sto stoppet. Dette er faktisk dekoding/avspilling i nettleser,
+ikke en ny subjektiv lyttebekreftelse eller testsending gjennom Liquidsoap.
+Kø33 med fire forekomster, kontrollmanifest, journal, bibliotek og alle fem
+originalfiler har identiske SHA-256 før deploy og etter privat lytting.
+
+Tilbakeføring: bruk den klargjorte tre-filers reverspakken gjennom samme gateway.
+Den verifiserer nåværende etterhasher før den gjenoppretter nøyaktig L01-UI.
+Lokal kvittering og reverspakke ligger i denne oppgavens output/l02-deploy-receipt.json
+og output/l02-rollback.json. Ved senere full L01-rollback må L02-UI tilbakeføres
+først; L01-installeren skal fortsatt avvise ukjent nyere UI-kode. L02-rollback er
+klargjort, ikke kjørt som ny gjenopprettingstest.
+
+**L02 er fortsatt under arbeid:** lagrede cue-/overgangsverdier må inn i faktisk
+Liquidsoap-avvikling, øvrige lydtyper må avstemmes, og redigering/privat lytting
+under faktisk sending må prøves. Se STUDIO-L02-CONTROLROOM.md. Ingen merge av
+#115, ingen produksjons-, WordPress-, DNS- eller radio.co-endring.
 
 ## L01 – PR #111 merget og testinstallasjon avstemt, 01.11.2026 kl. 20:26 Europe/Oslo
 

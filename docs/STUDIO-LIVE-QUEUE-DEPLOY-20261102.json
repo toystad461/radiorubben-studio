@@ -1,0 +1,92 @@
+{
+  "root": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb",
+  "files": [
+    {
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-live-queue.php",
+      "source": "app/music-live-queue.php",
+      "before": null,
+      "after": "2e542068956cf08a868c86c480ac1b80d9b88dc4aed03410b72d86dac68d03a3",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-hourly.php",
+      "source": "app/music-hourly.php",
+      "before": "dc05acb32d05606ec58b87e2f950c68c42202236a13bb63d9e99077ae5d801ac",
+      "after": "a5b4b1c4a564eb52c96592fe14204169308c389db5d4750c235763a68eb60ace",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-liquidsoap.php",
+      "source": "app/music-liquidsoap.php",
+      "before": "5941245fdf4e523b6e10ecca10c56f3d04b3f3c0034d23ab7627b2f8bbfd7111",
+      "after": "b12d26e2d4210a35557d2990b3ee7cc944ab119e9de4e057482fc45e6f7e24bb",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-playout.php",
+      "source": "app/music-playout.php",
+      "before": "2c8bf6018da7be4a07ec9d720bd61cdd3ef4d381e7536befc8c238b4994a5afe",
+      "after": "9cd55c7f2932b9a4be5a936d56786ea12d6d0472b2cd1c172c53269a7fe7def0",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/app/music-studio.php",
+      "source": "app/music-studio.php",
+      "before": "f59de880781e171254d2760868d39523b6e76091f65e50fcda14ce89104fe5a6",
+      "after": "973970d7acd747d9db00fe1944a9d7d07507d87df1fbe042dd54a49ba86f1bb9",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/public/assets/music-studio.mjs",
+      "source": "public/assets/music-studio.mjs",
+      "before": "1604bc906fd792fe08db5bcefd41f084faf9d6e6ba4b1d0ac256944ce5a2be57",
+      "after": "5b08c0eb5e32e5724920a983f3ad86d781de5b99ebc831f61d1ece32a762ca57",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "target": "/srv/radiorubben-test/releases/studio-music-fad12a2320de0ff0a036854c414accee794143bb/public/music-studio.php",
+      "source": "public/music-studio.php",
+      "before": "cf38b03b98f6fb2441ad44599cea7bd95eeb3a66fd5824c94f4ebdd0eab084fc",
+      "after": "64701e88b5a3adbb9edf184f8071cc781f97d061da7d39f52b4ddec551e42e9c",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "target": "/srv/radiorubben-test/player-code/app/music-liquidsoap.php",
+      "source": "app/music-liquidsoap.php",
+      "before": "5941245fdf4e523b6e10ecca10c56f3d04b3f3c0034d23ab7627b2f8bbfd7111",
+      "after": "b12d26e2d4210a35557d2990b3ee7cc944ab119e9de4e057482fc45e6f7e24bb",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    },
+    {
+      "target": "/srv/radiorubben-test/player-code/scripts/music-liquidsoap.php",
+      "source": "scripts/music-liquidsoap.php",
+      "before": "6cd2cf31c0bf2ffaa17a70b30c6eaed38c416d39ed5c77ce2c37877fc0c8ea23",
+      "after": "87b0fb2915d33880e7fab497598215462942fa7eab3c9450c545b3a5feeec348",
+      "mode": 420,
+      "uid": 0,
+      "gid": 0
+    }
+  ],
+  "sourceCommit": "4a12d0fb0a4f16615f4d01cc7b4cd5b886879f74",
+  "installedAtUtc": "2026-11-02T11:33:42Z",
+  "backup": "/var/lib/rr-vps-deploy/live-next-1ybalj7s",
+  "pidUnchanged": "770",
+  "journalPrefixBytesPreserved": 7817515,
+  "protectedFilesUnchanged": 110
+}

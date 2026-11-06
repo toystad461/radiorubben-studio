@@ -1,0 +1,21 @@
+<?php
+declare(strict_types=1);
+require __DIR__.'/music-rotation.php';
+$state=music_playout_empty();$queue=$built;$state['current']=$queue['entries'][0];
+$input=['afterId'=>$queue['entries'][1]['id'],'beforeId'=>$queue['entries'][2]['id'],'trackId'=>$tracks[105]['id'],'sha256'=>$tracks[105]['sha256'],'eventType'=>'reklame'];
+$result=music_live_insert($queue,$tracks,$state,$input);
+check($result['entries'][2]['trackId']===$tracks[105]['id']&&$result['entries'][2]['eventType']==='reklame','saved advertisement inserted at exact boundary');
+check(array_column(array_filter($result['entries'],fn($e)=>$e['id']!==$result['entries'][2]['id']),'id')===array_column($queue['entries'],'id'),'all existing occurrences retain order');
+check($result['entries'][0]===$queue['entries'][0],'active occurrence unchanged');
+reject(fn()=>music_live_insert($queue,$tracks,$state,array_replace($input,['beforeId'=>null])),'changed boundary rejected');
+reject(fn()=>music_live_insert($queue,$tracks,$state,array_replace($input,['eventType'=>'unknown'])),'unknown type rejected');
+reject(fn()=>music_live_insert($queue,$tracks,$state,array_replace($input,['eventType'=>'sang'])),'song requires music');
+reject(fn()=>music_live_insert($queue,$tracks,$state,array_replace($input,['sha256'=>str_repeat('0',64)])),'changed audio rejected');
+$reserved=$state;$reserved['reserved'][$queue['entries'][2]['id']]=$queue['entries'][2];
+reject(fn()=>music_live_insert($queue,$tracks,$reserved,$input),'cannot insert before reserved audio');
+$reserved=$state;$reserved['reserved'][$queue['entries'][1]['id']]=$queue['entries'][1];
+check(music_live_insert($queue,$tracks,$reserved,$input)['entries'][2]['eventType']==='reklame','may insert after reservation without replacing it');
+$locked=$queue;$locked['entries'][3]['locked']=true;
+reject(fn()=>music_live_insert($locked,$tracks,$state,$input),'operator lock cannot shift');
+foreach(['stikk','innlegg','jingle','lydteppe','program','hilsen']as$type)check(music_live_insert($queue,$tracks,$state,array_replace($input,['eventType'=>$type]))['entries'][2]['eventType']===$type,'saved audio event label '.$type);
+foreach(['sang','onske']as$type)check(music_live_insert($queue,$tracks,$state,array_replace($input,['eventType'=>$type,'trackId'=>$tracks[90]['id'],'sha256'=>$tracks[90]['sha256']]))['entries'][2]['kind']==='music','music event '.$type);
