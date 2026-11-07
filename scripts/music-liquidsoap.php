@@ -29,6 +29,7 @@ foreach ([$php, $liquidsoap, $python] as $binary) if ($binary[0] !== '/' || !is_
 $child = null; $pipes = []; $buffer = ''; $exit = false;
 $lastBeat = 0.0; $startedAt = 0.0; $drainAt = null; $waitingAt = null; $fatal = null;
 $lastPcmAt = null; $lastPcmClock = null; $connectedAt = null;
+$pendingEvents = [];
 pcntl_async_signals(true);
 foreach ([SIGINT, SIGTERM] as $signal) pcntl_signal($signal, static function () use (&$exit): void { $exit = true; });
 
@@ -61,7 +62,7 @@ try {
     while (!$exit) {
         // Drain callbacks before taking the shared lock: request.dynamic's CLI
         // may need that lock while the audio thread continues to produce frames.
-        $events = [];
+        $events = $pendingEvents; $pendingEvents = [];
         if (isset($pipes[1])) {
             $bytes = stream_get_contents($pipes[1]);
             if ($bytes !== false) $buffer .= $bytes;
@@ -76,7 +77,11 @@ try {
             }
         }
         $stopChild = false; $launch = null;
-        $lock = music_playout_lock($root);
+        // Keep draining PCM callbacks while a producer holds the queue lock.
+        // Blocking here made healthy buffered audio look like a frozen engine.
+        if (count($events) > 4096) throw new RuntimeException('Pending engine events exceeded.');
+        $lock = music_playout_lock($root, false);
+        if ($lock === null) { $pendingEvents = $events; usleep(50000); continue; }
         try {
             $state = music_playout_state($root);
             $control = music_playout_json($root.'/control.json');
@@ -138,7 +143,7 @@ try {
                     $state['mode'] = 'blocked'; $state['message'] = 'Liquidsoap avsluttet uventet.';
                     music_playout_event($root, $state, 'engine_exited');
                 }
-                if ($state['mode'] === 'starting' && microtime(true) - $startedAt > 20) {
+                if ($state['mode'] === 'starting' && music_liquidsoap_start_expired($startedAt, $connectedAt, microtime(true))) {
                     $state['mode'] = 'blocked'; $state['message'] = 'Ingen bekreftet lydstart innen tidsgrensen.';
                     music_playout_event($root, $state, 'engine_timeout');
                 }

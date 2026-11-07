@@ -90,7 +90,10 @@ function music_liquidsoap_claim_due(array $state,array $live):bool {
 /** request.dynamic calls this through a fixed CLI command, not through the web. */
 function music_liquidsoap_claim(string $root, string $session): string {
     if (!music_liquidsoap_id($session)) throw new RuntimeException('Invalid engine session.');
-    $lock = music_playout_lock($root);
+    // A busy editor/rotation must not consume the RPC timeout and kill audio.
+    // No reservation exists yet, so request.dynamic can safely retry.
+    $lock = music_playout_lock($root, false);
+    if ($lock === null) return '';
     try {
         $state = music_playout_state($root);
         if (($state['engine'] ?? null) !== 'liquidsoap' || ($state['session'] ?? null) !== $session
@@ -225,4 +228,9 @@ function music_liquidsoap_script(string $root, string $session, array $config, s
         '{{ROTATION_MODE}}' => (music_playout_json($root.'/control.json')['transitionVersion']??1)===2?'true':'false',
         '{{ALLOW_ROOT}}' => getenv('RR_STREAM_TEST_ALLOW_ROOT') === '1' ? 'true' : 'false',
     ]);
+}
+
+/** Allow cold engine initialization separately from waiting for first audio. */
+function music_liquidsoap_start_expired(float $startedAt, ?float $connectedAt, float $now): bool {
+    return $connectedAt === null ? $now - $startedAt > 90 : $now - $connectedAt > 20;
 }

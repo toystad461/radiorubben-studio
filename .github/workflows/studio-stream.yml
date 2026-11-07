@@ -44,6 +44,7 @@ jobs:
           php tests/music-live-claim.php
           php tests/music-insert.php
           php tests/controlroom-audio-types.php
+          php tests/music-stream-recovery.php
           php tests/music-liquidsoap-state.php
           php tests/music-liquidsoap-events.php
           php tests/jingles.php
@@ -96,6 +97,8 @@ jobs:
         run: |
           python3 tests/test-hour-bridge-render.py
           python3 tests/test-hour-bridge-worker.py
+      - name: Active audio survives competing queue lock
+        run: PHP_BIN="$(command -v php)" python3 tests/test-stream-lock-contention.py
       - name: Double beep between complete songs
         run: PHP_BIN="$(command -v php)" python3 tests/test-studio-hourly-stream.py
       - name: Resume after restart while preserving operator Stop
