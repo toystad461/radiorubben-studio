@@ -47,14 +47,14 @@ REVIEWED_HASHES = {
         "app/jingles.php": "0ad87e1365b6e5a632f57e50c0d2bbdcd8aec96b154e11b7fe083e211d83fb84",
         "app/music-autocue.php": "916ccc0e1164d972890deba19fa67b75395d69eb43d73e5c2fed7c121475652d",
         "app/music-library.php": "dc37fd5e471cada9f0eeb43e0370c55c3278b98b01104cb5c8d094af8ba0e689",
-        "app/music-liquidsoap.php": "b12d26e2d4210a35557d2990b3ee7cc944ab119e9de4e057482fc45e6f7e24bb",
+        "app/music-liquidsoap.php": "a073dc651035ffa3410ba28c2a18cfb9653548c5eda46864a8bd964b274c81c5",
         "app/music-play-queue.php": "6a7a6fa9b211428a6590ff4b7a1242260e5de0f30d4493cc23cdcb09d3e3de23",
-        "app/music-playout.php": "4d5ab804df71c48be93db69cc6563b54e5ffff8f1355e3fdc41d7851a6a9daf7",
+        "app/music-playout.php": "63450e1fa9491b71c8f8535ce9dff757b86b638d3e65a499dd900d1134553817",
         "app/music-rotation.php": "3f9736dd50bcdc42e746f9e21715a9f04566eee3b98e4781d750b77cf007a135",
         "app/music-scheduling.php": "9611eebfc254856790cf57400db7802c851dc775bad9c8f78d23ba77525cb162",
         "app/music-studio.php": "b1f3949a07a10f4aac104b57c1f9abdb180b1e1f98c270579c988986152e5511",
         "app/views/navigation.php": "3f6da7444e8d69992edf26f26fe953d45f5033570c5ae796ecc150193f5982cd",
-        "infra/studio-stream/radio.liq": "f3b9351bb270ed51bad0eb9fe807da1cb073f3fb816b45ae76f6bb9ff1ba2054",
+        "infra/studio-stream/radio.liq": "11097a564990acc6d7c9092f0c390475743d1b278c0d151c9766a1e99e2d43be",
         "infra/studio-stream/rr-studio-rotation.service": "aa5844e3ee3247a468ac7126afe8116fd89f0494856c06b0eb7aa3f46c49bff9",
         "infra/studio-stream/rr-studio-rotation.timer": "a8fe75229040f56d18b1d476c13a1d2bbf6447bacde362043bdf557bf5ded788",
         "public/assets/jingles.css": "9270651a664f085b02d61991870832af84268d2f2ffe1e6413d122fa68b8dbea",
@@ -67,7 +67,7 @@ REVIEWED_HASHES = {
         "public/music-studio.php": "5adef6ff61eccbd451fd296e35d77e8da89e20c023729a35f302db751875e4cc",
         "scripts/liquidsoap-child.py": "f24cc612dd30e76c9014b4b405371231ea2cdd21f2ee7edcf62d4a964fd5f6a8",
         "scripts/music-autocue.py": "0519faf71ea28fdeab9455dd4d0c831d3d4c0316ced13ded89fb997c1fcddd0a",
-        "scripts/music-liquidsoap.php": "87b0fb2915d33880e7fab497598215462942fa7eab3c9450c545b3a5feeec348",
+        "scripts/music-liquidsoap.php": "1be1a4bd5a9c582a8a08c0c3ad5744fa54e055d289e7575d9a00adc8a11e8782",
         "scripts/music-rotation.php": "c5d9eaf546bb812cc824bf0c155ca65448905db208eca395ed482d34ac33b66f"
         ,"app/music-hourly.php": "f311e08d294350c98f8c9c828de374f967b9b39ebda25177cd96a9dd7246584b"
         ,"app/music-live-queue.php": "db98f5e1ee1ef65a158907d080d112425e2919a23c6b40e93401a17e32f76b4f"

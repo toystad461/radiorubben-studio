@@ -66,3 +66,15 @@ Automatisk gjenoppretting må skille midlertidig venting fra ugyldige filer og
 operatørens Stop. Dette er en anbefaling, ikke opprettet overvåking i denne saken.
 Journalreplay er fortsatt lineært når historikken endres; en validert checkpoint-
 løsning er aktuelt ved videre vekst. Ingen garanti om ubegrenset drift er testet.
+
+## Endelig supervisor aktivert08.11.40 (07.11.2026)
+Kildecommit2c1f417. Kun scripts/music-liquidsoap.php oppdatert i andre trinn.
+Backup: `/var/lib/rr-vps-deploy/stream-recovery-20261107-7_t656v0`.
+Ny Start08.11.43; faktisk PCM08.11.59, kort jingle etterfulgt av Shape of You.
+Eksternt15sekunders mottak: HTTP200,354200byte,TLS-verifisering0.
+Frosset PCM ble fortsatt oppdaget og avsluttet i separat isolert test.
+Tilbakeføring må skje i omvendt rekkefølge (andre backup før første), med
+kontroll av at nåværende hasher matcher kvitteringen og manuell Start etterpå.
+GitHub PR: https://github.com/toystad461/radiorubben-studio/pull/120
+Første CI-runde avdekket at kandidatmanifestets kodehasher måtte oppdateres;
+kontrollen er beholdt og manifestet avstemt mot Git-filene med LF-linjeskift.
