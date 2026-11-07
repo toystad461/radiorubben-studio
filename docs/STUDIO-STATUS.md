@@ -1,3 +1,12 @@
+## 07.11.2026 – offentlig stream gjenopprettet, kølås rettet
+
+RR-STREAM-20261107: nattlig claim_error stoppet lyden mens tjenesten var aktiv.
+Offentlig lyd gjenopprettet08.02.34 og naturlige overganger verifisert.
+Opptatt kølås håndteres med ny prøve, kald oppstart har egen tidsgrense og
+journalreplay gjenbrukes ved uendret innhold. En isolert stresstest fant og
+rettet også falsk PCM-timeout ved kølås. Se [hendelse, tester og installasjon](STREAM-RECOVERY-20261107.md).
+Ingen main-merge eller helutrulling; selektive VPS-filer med privat backup.
+
 ## 06.11.2026 kl.22:16:43 Europe/Oslo – v0.2.0 publisert
 
 Offisiell release: https://github.com/toystad461/radiorubben-studio/releases/tag/v0.2.0
