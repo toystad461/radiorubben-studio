@@ -27,12 +27,15 @@ function music_playout_json(string $path,array $default=[]): array {
     $v=json_decode((string)file_get_contents($path),true,64,JSON_THROW_ON_ERROR);
     if (!is_array($v)) throw new RuntimeException('Spillerdata må kontrolleres.');return $v;
 }
-function music_playout_lock(string $root) {
+function music_playout_lock(string $root, bool $wait = true) {
     music_playout_root($root);$path=$root.'/control.lock';
     if (is_link($path)) throw new RuntimeException('Ugyldig spillerlås.');
     $h=fopen($path,'c+b');if (!$h) throw new RuntimeException('Spilleren er opptatt.');
     try {
-        if (!flock($h,LOCK_EX)) throw new RuntimeException('Spilleren er opptatt.');
+        if (!flock($h, LOCK_EX | ($wait ? 0 : LOCK_NB))) {
+            if (!$wait) { fclose($h); return null; }
+            throw new RuntimeException('Spilleren er opptatt.');
+        }
         // The web and player users share a group, not ownership. Only adjust a
         // newly created/nonconforming lock; chmod on the peer's 0660 file fails.
         $stat=fstat($h);
@@ -45,13 +48,25 @@ function music_playout_empty(): array {return ['seq'=>0,'mode'=>'stopped','curre
 function music_playout_state(string $root): array {
     $path=$root.'/events.jsonl';if (is_link($path)) throw new RuntimeException('Ugyldig hendelseslogg.');
     if (!is_file($path)) return music_playout_empty();
+    // The journal stays authoritative. Cache only an exact byte-verified replay
+    // within this process; changed/truncated/corrupt content is replayed normally.
+    // This avoids JSON-decoding the entire multi-day history on every 0.2s tick.
+    static $replays = [];
+    // XXH128 is a fast change detector, not authentication. The local journal
+    // already has the same trusted writers as the state it contains. Audio
+    // authenticity still uses SHA-256 and is unaffected by this replay cache.
+    $digest = hash_file('xxh128', $path);
+    if ($digest === false) throw new RuntimeException('Hendelsesloggen kunne ikke leses.');
+    if (isset($replays[$path]) && hash_equals($replays[$path]['digest'], $digest)) return $replays[$path]['state'];
     $h=fopen($path,'rb');$state=music_playout_empty();
     try {while (($line=fgets($h))!==false) {
         if (!str_ends_with($line,"\n")) throw new RuntimeException('Ufullstendig spillerlogg. Krever kontroll; ingen automatisk gjenspilling.');
         $record=json_decode($line,true,32,JSON_THROW_ON_ERROR);
         if (($record['seq']??null)!==$state['seq']+1 || !is_array($record['state']??null)) throw new RuntimeException('Ugyldig hendelsesrekkefølge.');$outcomes=$state['outcomes'];$state=$record['state'];$state['outcomes']=$outcomes;
         if (in_array($record['event']??'', ['completed','interrupted','failed'],true) && isset($record['detail']['entry']['id'])) $state['outcomes'][$record['detail']['entry']['id']]=$record['detail']['entry'];
-    }} finally {fclose($h);}return $state;
+    }} finally {fclose($h);}
+    $replays[$path] = ['digest'=>$digest, 'state'=>$state];
+    return $state;
 }
 function music_playout_event(string $root,array &$s,string $event,array $detail=[]): void {
     $s['seq']++;$s['updatedAt']=gmdate('c');$record=['seq'=>$s['seq'],'event'=>$event,'at'=>$s['updatedAt'],'output'=>'isolated-test','detail'=>$detail,'state'=>$s];

@@ -44,6 +44,7 @@ jobs:
           php tests/music-live-claim.php
           php tests/music-insert.php
           php tests/controlroom-audio-types.php
+          php tests/music-stream-recovery.php
           php tests/music-liquidsoap-state.php
           php tests/music-liquidsoap-events.php
           php tests/jingles.php

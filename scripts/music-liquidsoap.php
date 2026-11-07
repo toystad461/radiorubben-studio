@@ -138,7 +138,7 @@ try {
                     $state['mode'] = 'blocked'; $state['message'] = 'Liquidsoap avsluttet uventet.';
                     music_playout_event($root, $state, 'engine_exited');
                 }
-                if ($state['mode'] === 'starting' && microtime(true) - $startedAt > 20) {
+                if ($state['mode'] === 'starting' && music_liquidsoap_start_expired($startedAt, $connectedAt, microtime(true))) {
                     $state['mode'] = 'blocked'; $state['message'] = 'Ingen bekreftet lydstart innen tidsgrensen.';
                     music_playout_event($root, $state, 'engine_timeout');
                 }
